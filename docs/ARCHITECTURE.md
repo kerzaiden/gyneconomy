@@ -26,8 +26,10 @@ described under "How the live layer works" below; the decisions are these:
   knows. Replacing dropped all three.
 - **A number outside its band is refused, never clamped.** A `set` that cannot place its value throws,
   and a throw is a refusal.
-- **Repaints go through the doors**, every `[data-open="<sheet>"]`, never by element id (V619): a reading
-  is printed on more than one door and painting one left the other stale with no visible symptom.
+- **Today's figure is computed, never painted (0.8.6).** A reading's figure, unit and word come from
+  `todayFace` (`era.ts`), read from the model whenever Indicators, Cycle Statistics or AI Insights draws, so a
+  live document needs no painter to reach them. Until 0.8.6 the figures lived on the category cards, and a
+  repaint walked every door (V619).
 - **A cached figure contradicting a load-time assertion warns**, and the suite turns the warning into a
   failing check. That is the design working. Since V698 the unit tests fail on a warning at boot too, so
   `npm run check` (all the Backfill runs before it commits) stops a bot commit that CI would reject.
@@ -98,11 +100,9 @@ blank the app on every later visit):
   strip a page on the next visit, and a document cannot move a band.
 - **A Fed document's own fields win (1.2.1).** A move without a decision clears the stale decision fields but
   keeps the date it carries, so the older-than-the-file guard still has a date to compare.
-- **A past cycle is not overwritten.** `paintReading` leaves a card that a past cycle has taken over, and
-  `leaveEra` runs `repaintLive` so the card comes back with today's live figure, not the snapshot.
-- **A card's date is its figure's date.** Pressure and Volatility date their cards from the applied
-  document's `asOf`, and `paintWhen` repaints the date with the figure. `liveApplied` is written before the
-  painters run (V698; it was written after, so a card carried the previous document's date).
+- **A reading's date is its document's date.** `curveAsOf` and `liveIsoOf` read the applied document's `asOf`,
+  and `liveApplied` is written before the painters run (V698; it was written after, so a card carried the
+  previous document's date).
 - **What is derived from a live figure is derived again when it lands (V698).** A note that quotes a live
   figure is a function (`HIST_NOTE[id]` may be one, read when the head is drawn), and the Pressure verdict
   (`deriveHorizon`) reruns in the yield curve's `set`.
@@ -121,41 +121,21 @@ the literal's own field names, so there is one schema and the fallback cannot dr
 #### The repaint layer
 
 ```text
-Do not re-render. The category builder MOVES the subject rows out of the markup that produced them,
-so a renderer cannot be run twice — but the ELEMENTS holding the printed figures survive the move,
-so a repaint edits those in place.
-
-Each repaint touches as little as possible: the figure's own text node and its tag, never the row's
-innerHTML. That is deliberate. `catItem` normalises `.unit` to `.ci-unit` when it moves a row, so
-rebuilding the markup here would quietly undo the normalisation and the row would come back at the
-wrong type size.
-
-Everything else needs no repaint: the inner pages draw on open, from these same module vars,
-through `sheetRenderers`. A figure only needs a repaint if it is visible WITHOUT opening a page.
-```
-
-#### One reading, one paint
-
-```text
-A reading is printed on every list that offers a door to its page — the category item in Weather or Mood
-(.ci-value, its verdict lifted out into a sibling .ci-word) and a subject row (.subject-value, the figure
-alone) — and `[data-open="<sheet>"]` is what those have in common. A Cycle analysis row (.lab-row) is a door
-too but prints the cycle's own figure, not today's, so it holds no .ci-value and painting passes it by. Walking the doors is the
-only honest way to repaint a reading, and this is the only function that does it. Never paint a reading by
-element id: an id reaches exactly one copy and leaves the others stale, and a stale figure looks exactly
-like a fresh one, so nothing would show it.
-A tag with no `state` has only its words replaced, because the policy row's class carries a meaning the
-caller does not own. A reading whose doors print nothing is recorded, and the suite asserts that record
-stays empty.
+Nothing on screen holds today's figure for a repaint to edit. Indicators, Cycle Statistics and AI Insights
+compute it from the model when they draw (`todayFace`, `todayValue`), and the inner pages draw on open
+through `sheetRenderers`. A live document changes the model; `repaintDerived` (on every reading) forgets the
+cached results and redraws whichever of those is open. The named painters left redraw what is visible
+without opening anything: the policy facts, the Pressure chart, the CAPE history behind Mood. A reading
+with no named painter declares `onOpen`, and `checkLiveCoverage` holds every live name to one or the other.
 ```
 
 #### The roster
 
 Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
 dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.ts`,
-one row per reading in card order), and everything that used to name it again reads the row: the category pages
-and their groups (`catPicks`), Cycle analysis's rows and each reading's good side, the timing chips, the split pages (`splitPages` holds only what a split page adds to its row), the card
-dates (`when`), the history heads (`HIST_HEAD`), every page's window, mode and cycle state and its range stops
+one row per reading in card order), and everything that used to name it again reads the row: Indicators'
+subcategories (`sub`) and groups, Cycle analysis's rows and each reading's good side, the timing chips, the split pages (`splitPages` holds only what a split page adds to its row), today's
+figure (`todayFace`), the history heads (`HIST_HEAD`), every page's window, mode and cycle state and its range stops
 (`pageState`), the past cycles' series (`hist`, read through `keyed`), and the marks on every door and head.
 `CATEGORIES` beside it holds the four categories in source order with `shown`, their place in Cycle analysis and the
 Diagnosis (two orders, both Keren's). A row's fields:
@@ -165,17 +145,18 @@ id, name, cat, timing, mark   the page, the name on every door, the category, th
 good                          the side that is good for it ("up" or "down"; none where neither is), which colours
                               a Cycle analysis result outside its range
 group                         consecutive rows with one group are one group (Valuations, Stress)
-door                          how the card is built: peek (a peek card), pair (Pulse and Volume's peek pair),
-                              split (a split peek), subject (an authored subject row), row (a sign row)
-term                          the bodyTerm of the reading object a sign row or pair is built from
+door                          where today's figure and the page come from: peek (an authored page, its figure
+                              in OWN_FACE), pair and row (a reading object), split (a split page), subject (an
+                              authored subject page, its figure in OWN_FACE)
+term                          the bodyTerm of the reading object a row or pair is built from
 slot                          the authored page whose timing slot and order orderMetricSheets sets (the
                               deficit's since V670)
 hk, head, range, cycles, stops   the history key (when it is not the page id), its head's title, its default
                               window, false where it has no Cycles mode, and its window stops
-hist, pair, peek              the series as written ({s, k, y0} or a function), read by keyed() into {k, v}
-flip, pre, last, eraUnit, rule, ring, pulse, mid   how the past cycles read and draw it (a figure's format
-                              is never declared: it is the card's, read by pastFigure)
-when, cardUnit, miniSel       the card's date, its unit, the element that is its miniature
+hist, pair                    the series as written ({s, k, y0} or a function), read by keyed() into {k, v}
+flip, mid                     how Cycle Statistics reads it (a figure's format is never declared: it is
+                              today's, read by eraFig)
+cardUnit                      the unit beside today's figure (a row reading's comes from its metricSub)
 live                          the live registry rows that feed it
 ```
 
@@ -241,11 +222,9 @@ A name here describes what a step BUILT the first time; the kind describes wheth
 AGAIN. `renderCycleDial` draws a dial on the first pass and only binds handlers on a second,
 so it is named render and classified wire. The two are answering different questions.
 
-`build` is the honest kind for a step that is one-shot by design. `renderSignsList` runs
-`while (sum.firstChild) face.appendChild(...)` — it MOVES the static markup into the category
-rows, consuming its own source, which is the documented "catItem consumes its source"
-behaviour. `renderSubjectRows` writes into hosts that `renderSignsList` then moves, so calling
-it again throws on a host that no longer exists. `renderVolatility` reads a note a later
+`build` is the honest kind for a step that is one-shot by design. `renderSignsList` MOVES the
+authored subject markup into the reading pages, consuming its own source, and `renderPagesAndNav`
+mounts the split pages and wires the navigation, which a second run would wire twice. `renderVolatility` reads a note a later
 step fills, so a second call renders MORE than the first. None of these is sloppy, and
 calling them builders says so instead of pretending a fix is pending.
 
@@ -415,9 +394,8 @@ Season; Volatility, never Fear or Sentiment (V663); Households, never Debt servi
 
 Rules that shape the pages:
 
-- **Category sheets are built by MOVING existing cards and rows in** (the V314 rule); pages stay put and
-  are found by id. Anything reading a reading's authored markup runs before the categories are built, or
-  reads the snapshot `catItem` stashes.
+- **Reading pages are built by MOVING the authored markup in** (the V314 rule); pages stay put and are
+  found by id. Anything reading a reading's authored markup runs before `renderSignsList` moves it.
 - **Navigation is `NAV` and nothing else** (`NAV.open`, `NAV.panel`, or emit `data-open`). Inner pages are
   pages, not popups; the host moves as live DOM. **Don't invent a second navigation idea.**
 - **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),
@@ -428,23 +406,16 @@ Rules that shape the pages:
   built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, joined by
   `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
-  **Since V660 a category page carries no group headings** (Keren: "i don't need valuations in the mood page"):
-  the cards run as one list. **The group is one card on its category page**, its first member's figure as the
-  preview, opening a group page (`#sheet-grp-valuations`, `#sheet-grp-economic-power`) built by the same
-  `catSheet` as the category pages. Its cards are the category's own, never copies: the group's
-  `.cat-group` element moves into the group page when that page opens (its `sheetRenderers` entry) and back
-  to its seat (`.cat-seat`) when the category page opens, so the live repaint, the era mode and the one-card
-  rule all still see one element per reading. **A category page wears its colour** (V660, after Apple Health):
-  a fixed `::before` wash from `--cat` down to the page, and the top bar turns clear over it.
+  Indicators holds the groups as its subcategories (0.8.5); the group pages that held them went in 0.8.6.
   The Power score is gone (V660, Keren: "remove the power score"): its card, page, composite and history;
   the three fiscal markers it summed each keep their own page.
 - **A parent owns what its children share (V662, Keren: "i want all parent components to have all the properties of
   their children so we don't have to change different pages all the time").** `npm run check` runs `tools/hygiene.js`,
-  which fails on: a chart height set outside `histFrame`; a chart margin set outside it (only the mini charts,
-  `colPeek` and `meterPeek`, own theirs); a `font-size` that is not a `--type-` token; a style aimed
+  which fails on: a chart height set outside `histFrame`; a chart margin set outside it (only the mini chart,
+  `colPeek`, owns its own); a `font-size` that is not a `--type-` token; a style aimed
   at one page by id (make it an option of the component, as `goodAbove` is for Productivity's bars); a branch on a
   reading's name (`ind.bodyTerm === ...`: a reading declares its page in `ind.page` — `bare`, `noHead`, `noMark`,
-  `chartFirst`, `deferHighlights`, `peeked`, `chart`, `after`, `seat` — and `signSubject` only reads it; looking a
+  `chartFirst`, `deferHighlights`, `chart`, `after`, `seat` — and `signSubject` only reads it; looking a
   reading up by name is fine); and anything unused — a function or variable nothing calls, a style class nothing
   carries (classes built at run time are listed in the tool). V662 removed what that found: the Temperature and
   Growth cycle cards (drawn but shown nowhere since V656), the hidden GDP and Valuation summary blocks, eleven dead
@@ -463,18 +434,13 @@ Rules that shape the pages:
   is good, so its bars read green).
 - **Every reading keeps its own icon, in its category's colour (V661).** Keren first asked for the category's
   icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
-  the color." The card was already `--cat`; `catItem` also marks the reading's page with
-  its category class, so the page head disc and the history head take `--cat` too. Group rows keep a mark
+  the color." `wearCategories` (`cycle-tab`) marks each reading's page with
+  its category class, so the page head disc and the history head take `--cat`. Group rows keep a mark
   of their own (`GROUP_MARK`: Stress the bolt; Valuations its first member's).
-  **A group is one card on its category page (V688).** `groupSheet` builds it with `groupCard`: a clone of the
-  first member's card renamed to the group, `data-open` the group's page and `data-preview` the member it
-  previews, so `paintReading` repaints both doors and `eraCards` reads the past cycle's figure through it. The
-  members move onto the group's page (`catSheet`), and the tests enumerate readings as `.cat-item[data-open]:not([data-preview])`. Every card on a
-  category page stands the same height: the value never wraps and a long unit ellipses.
   The two Treasury spreads (one view of Pressure) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
-  Category cards (`.cat-sheet`) follow Apple Health's spacing: the title in the category colour, the date on the
-  right, one large figure with the verdict as a quiet label above it.
-- **Analysis shows every cycle as one `subjectRow`** (V631, the one door component), expanding in place.
+  The quarter sheet's cards (`.cat-sheet`, built by `catCard`) follow Apple Health's spacing: the title in the
+  category colour, the date on the right, one large figure with the verdict as a quiet label above it.
+- **Analysis shows every cycle as one `.era-row`** (V631), opening the cycle's page.
   Don't split it into list + overview.
 - **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
   tab's own live DOM (`#cycle-view`, the dial, and `#today-analysis`, the Diagnosis and the category and
@@ -482,22 +448,11 @@ Rules that shape the pages:
   back arrow both call, puts it back. That container shares the tab panel's stack rule (`.tab-panel,
   #calendar-cycle`: a column at `--gap`) and has no wrapper of its own, so a past cycle stacks exactly like
   the current one (V665: a slot inside it once took the gap away; the suite now compares the two frames). In
-  between, `eraShow` rewrites the same category cards for the cycle (`eraCard`: the figure at the cycle's
-  last reading, the range over the cycle as the label, the cycle's own mini) and sets every history page's
-  cycle picker to it (`pageCycles`, cycles mode; each page's own mode is restored on leaving). Today's cards
-  are kept on the element (`__today`) and restored as they were, so the live repaint still finds its first
-  text node; the copy is dropped on restore (V670), so it exists only while a cycle is shown and the next cycle
-  copies the card as it then stands. The reading pages' panels and insights stay today's: they are the page, and the picker says
-  which cycle the chart shows. A reading without history in the cycle shows a dash and says since when it is
-  measured. This replaced `renderCycleCats` (V656–V658), a second, flat set of cards that led nowhere
-  (Keren, V659: one view to maintain). **Since V660 the cycle's card is built like today's** (Keren:
-  "identical in design to the current cycle categories"): the figure is today's first text node with only
-  the number replaced (`eraFig` keeps its decimals, sign, prefix and suffix, drops the ≈ of an estimate),
-  the unit stays (a roster row's `eraUnit` names a different measure: the effective rate, not the target
-  range; a surplus year says surplus), and the mini is today's kind drawn with the cycle's data (`colPeek`
-  with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
-  The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
-  bands a past value can be read against.
+  between, `eraShow` sets every history page's cycle picker to it (`pageCycles`, cycles mode; each page's own mode
+  is restored on leaving). The reading pages' panels and insights stay today's: they are the page, and the picker
+  says which cycle the chart shows. The category cards that showed a closed cycle's figures (`eraCard`, V659 to
+  0.8.5) went with the category pages; a cycle's figures are Cycle Statistics' (Keren, 0.8.6: "All the previous
+  designs we made, we can throw them out").
 - **Cycle analysis is a blood test of each cycle** (`cycle-analysis`), and since 0.6.1 the tab where every
   reading is found (Search's job before it). One renderer, `drawChart(id)`, draws two hosts: `#chart-home`, the
   tab's home (a search box that is a door, the Health Score, Cycle Statistics, Interest Environment and Insights, the
@@ -514,12 +469,11 @@ Rules that shape the pages:
   readings that are Normal. On top of the Indicators page sits the search box, the filter button inside it opening a small menu of tiers
   (`.lab-menu`, closed by Escape through `layer` or a tap outside); `narrow` hides the rows that fail either and any
   category left empty. A tier pick redraws (the counts and the button's label change); typing only narrows, so the
-  box keeps its focus. A reading's row is a button that opens its page and a category's name opens its category page,
+  box keeps its focus. A reading's row is a button that opens its page and a category's name filters Indicators to it,
   through the panels' one `[data-open]` handler; the heading's count and chevron are a separate button that folds it.
-- **A category page is its cards, then `.cat-more`** (`insightRow` in `insights.ts`): the category's insights behind
-  one More details, untitled, or nothing for Energy. `eraShow` and `repaintDiagnosis` call `replaceInsight`, so a past
-  cycle's Mood story and a live VIX reach the sheet. The composite analysis that sat first on the page (1.5.0) is gone;
-  `git show v0.6.0:src/js/category-analysis.ts` is its last copy.
+- **The category pages are gone (0.8.6).** Indicators replaced them in 0.8.5; each category's insights sit behind
+  Indicators' More details on that category (`catInsight` in `insights.ts`). `git show v0.8.5:src/js/cycle-tab.ts`
+  is the last copy of the builder (`buildCategories`, `catItem`, the group pages and the doors it moved).
 - **Portfolio is three containers** (`portfolio`): doors to All Weather and the Investment Clock, each its own page drawn on open (so today's weather and phase follow live data), and a Custom card that says "Coming soon". No placeholder figures.
 - **Copy density**: fold into what exists; a new section is one kicker, one short visual, detail behind (i).
   No information twice per screen; no card in a card; borders, no shadows; a collapsible row is icon ·
@@ -686,8 +640,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   pages-nav): the text of the Mood page's "She's in …" card, for the cycle on screen (`eraOpen`, else
   `currentEra`): the `moodTrack` months inside its years, the first, the highest and lowest `pct`, the last (today's
   `moodToday` for the open cycle), told in month order, with the high or low folded into the opening or closing
-  beat when they share a month, and the two emotions with the most months. `eraShow` runs `replaceInsights` on
-  entering and leaving a past cycle, so the card follows the cycle. `moodFigures` is the first fact of `moodInfo`.
+  beat when they share a month, and the two emotions with the most months. It is read when More details opens,
+  so the card follows the cycle on screen. `moodFigures` is the first fact of `moodInfo`.
   It replaced Emotion × Season (a twelve-by-four grid with a slid test), which Keren found uninformative.
 - **The record is computed at load, never written down** (`moodTrack`): every month her mood can be read, and the
   S&P 500 twelve months on.
@@ -721,10 +675,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   the year rows, which vary with the data, aside). Under the Fed's phases the Diagnosis has one card, then Year by Year. Today's is
   AI Insights (`aiInsights`); a closed cycle's is Cycle Statistics (`chartDoor`): the cycle's `story` from
   `marketCycles`, clamped to three lines like the AI Insights lede, and its health score, jumping to the Analysis tab
-  set to that cycle. The mood card (`moodDoor`, V681 to 0.6.16) went with it, so a closed cycle's category pages,
-  still drawn for the cycle on screen, have no door of their own; the browser suite opens Mood there directly.
-  Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
-  left out of the Analysis.
+  set to that cycle. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
+  hub opens on Indicators (Weather).
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's button opens it (`hubOpen`'s `cat`) while the dial shows today; a parked quarter or a closed
   cycle opens its quarter sheet (`quarterSheet`), since the Weather page is today's. The Diagnosis's Analysis leaves out
@@ -828,7 +780,7 @@ with no reading, by Keren's decision.**
 - **The top bar is restored from the page's home, not remembered** (V671). Each `PAGE_HOME` entry has a
   `bar()` that returns the title and back action for its tab as it stands now: inside a past cycle the
   Analysis home is the cycle (its name and `eraPageBack`, the way back to the list), so backing out of a
-  category page keeps the arrow. It used to restore the bare "Analysis" title, which dropped the arrow.
+  reading's page keeps the arrow. It used to restore the bare "Analysis" title, which dropped the arrow.
 - **The readout is a fixed block above the chart, never a tooltip on it.** No register under the chart.
 - **A panel built by a renderer is built once and placed, never rebuilt.** `detailTexts` is
   content-addressed (V532), so a note following a control is never frozen and never leaks.
@@ -878,12 +830,11 @@ one segment per year from `sp500AnnualReturns`, carrying the **peak year**: the 
 year by annual total return, **per year, never the compounded high** (Keren's rule); the reader-facing term
 is "Peak year". Press and hold the year badge to scrub; it stays where it is let go; tapping a moon parks the
 badge there too. The hub is one button (`#season-wheel-hub-open`): date, season with a grey ›, theme, and the
-year's S&P 500 return from `sp500AnnualReturns`, the band's own number. `hubOpen` points it at Weather (today),
+year's S&P 500 return from `sp500AnnualReturns`, the band's own number. `hubOpen` points it at Indicators on Weather (today),
 at a quarter's sheet (a detail slot), or at nothing (a year). **The quarter sheet** (V693, `quarterSheet`) is
 the Weather page's own cards at that quarter, built by the same `tempPeek`, `gdpPeek` and `marketPeek` the
-pages use and turned into category cards by `catCard` (the half of `catItem` with no side effects); its "About" row opens the season's prose (`quarterPopup`). The cards sit
-in a `.cat-sheet` without `.metric-sheet`, which is why the category gradient is drawn only for
-`.metric-sheet.cat-sheet`. A card in the sheet opens its page from whichever tab holds the dial (the
+pages use and turned into cards by `catCard`; its "About" row opens the season's prose (`quarterPopup`). The cards sit
+in a `.cat-sheet`, the one place that card design is left. A card in the sheet opens its page from whichever tab holds the dial (the
 `detail-modal-body` handler in `buildNav`). Sheets are cached per quarter in `dialState.sheets`.
 
 **The date line always reads "Today, <the reader's date>"**, never `DATA_COMPILED`. Provenance lives on
@@ -975,7 +926,7 @@ had no listener for two hundred versions (V623) and the listener itself was miss
 **How the suite is written (V667).** It waits on the app, never on a clock: `ready` waits for the app and
 the Diagnosis, `settle` for two frames and every running animation; there is no `waitForTimeout` (fixed
 sleeps were four fifths of a 265-second run; the suite now takes about 40). A check pins a rule, not a
-count: the page loop walks every reading the category pages list (`NO_HISTORY` names any exception; it is empty
+count: the page loop walks every reading Indicators lists (`NO_HISTORY` names any exception; it is empty
 since Industrial output went in V688), cycle counts come from the cycle list, Cycle analysis's counts from its own rows, and a date or
 figure that moves with the data is compared, never written in. What is Keren's decision stays pinned exactly
 (the tab order, the categories, the card order, the tokens, the verdict words). Static facts belong in the

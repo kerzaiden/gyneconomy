@@ -10,7 +10,6 @@ import { DATED_UNIT, growthShownCap, horizonInfoHtml, indOf, marketCol, marketWo
 import { heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
 import { peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
 import type { ModelReading, TrackSeg } from "./model.ts";
-export type SubjectRowOpts = { cls?: string; subject?: string; open: string; title: string; icon?: string; text: string };
 type YieldPt = { q: string; v: number | null; latest?: boolean };
 type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string };
 type Plot = (i: number) => number;
@@ -111,24 +110,12 @@ export function econChips(growth: number | null, prices: number | null, market: 
   return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") +
     chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + '</span></span>';
 }
-// ---- THE SUBJECT ROW ----
-export function subjectRow(o: SubjectRowOpts){
-  return '<div class="subject sign-row' + (o.cls ? ' ' + o.cls : '') + '"' +
-    (o.subject ? ' data-subject="' + o.subject + '"' : '') +
-    ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '">' +
-    '<div class="subject-summary">' +
-      '<div class="subject-ring">' + (o.icon || '') + '</div>' +
-      '<div class="subject-text">' + o.text + '</div>' +
-      '<div class="subject-more">' + CHEV + '</div>' +
-    '</div></div>';
-}
 export function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(title) + '</div>'; }
 export function dxSys(cls: string, inner: string){ return '<section class="dx-sys' + cls + '">' + inner + '</section>'; }
 export function catHeadCard(cls: string, key: string, head: { tag: string; cls: string; attrs: string; name: string; aside: string }, body: string){
   return '<section class="' + cls + ' ind-card cat-' + key + '"><' + head.tag + ' class="' + head.cls + 'cat-head"' + head.attrs + '><span class="ind-cat-name">' + head.name + '</span>' +
     head.aside + '</' + head.tag + '>' + body + '</section>';
 }
-export function subjectIcon(state: string, svg: string){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
 function timingMark(kind: string){
   var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
   return '<svg viewBox="0 0 20 12" aria-hidden="true">' +

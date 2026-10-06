@@ -22,7 +22,6 @@
     --on-accent: #ffffff;
     --overlay: rgba(43,21,32,0.38);
     --track: #f3e3dd;
-    --mark-wash: #ead2ca;
     --good: #2a9488;
     --good-ink: #16675f;
     --good-wash: color-mix(in srgb, var(--good) 14%, var(--surface));
@@ -73,7 +72,7 @@
       --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
       --on-accent: #170d13;
       --overlay: rgba(0,0,0,0.62);
-      --track: #3a2530; --mark-wash: #4a3040;
+      --track: #3a2530;
       --good: #4cc2b4;
       --good-ink: #6fd6ca;
       --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
@@ -120,7 +119,7 @@
     --accent-ink: #f5c6d3;
     --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
     --on-accent: #170d13;
-    --track: #3a2530; --mark-wash: #4a3040;
+    --track: #3a2530;
     --good: #4cc2b4;
     --good-ink: #6fd6ca;
     --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
@@ -425,19 +424,6 @@
   #signs-list:not(:has(> :not([hidden]))){ display:none; }
   .tab-panel[hidden]{ display:none; }
 
-  .vital-ring{ width:100%; height:100%; }
-  .vital-ring-track{ fill:none; stroke:var(--track); stroke-width:9; }
-  .vital-ring-fill{
-    fill:none; stroke-width:9; stroke-linecap:round; transform-origin:60px 60px; transform:rotate(-90deg);
-    transition:stroke-dashoffset 0.6s ease;
-  }
-  .vital-ring-fill.accent{ stroke:var(--accent); }
-  .vital-ring.mark .vital-ring-track{ stroke-width:15; stroke:var(--border); }
-  .vital-ring.mark .vital-ring-fill{ stroke-width:15; stroke:currentColor; }
-  .sign-row .subject-label{ display:inline-flex; align-items:center; }
-  .vital-ring-fill.good{ stroke:var(--good); } .vital-ring-fill.warning{ stroke:var(--warning); }
-  .vital-ring-fill.serious{ stroke:var(--serious); } .vital-ring-fill.critical{ stroke:var(--critical); }
-
   .cv-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
 
   .cv-kicker{ font-size:var(--type-meta); text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-weight:600; display:inline-flex; align-items:center; gap:2px; }
@@ -565,58 +551,10 @@
   .tm-now{ stroke:var(--text-muted); stroke-width:1.4; stroke-linecap:round; fill:none; opacity:0.8; }
   .tm-dot{ fill:var(--text-primary); }
   .tm-span{ stroke:var(--text-primary); stroke-width:4.4; stroke-linecap:round; fill:none; }
-
-  .sign-row{ cursor:pointer; }
-  .sign-row:hover{ border-color:var(--border-strong); }
-  .sign-row:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .metric-sheet[hidden]{ display:none; }
-
-  .subject{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
   .spark{ display:flex; align-items:center; gap:9px; margin:9px 0 0; }
   .spark svg{ display:block; width:108px; height:26px; flex:none; overflow:visible; }
-
-  .subject[open] .spark{ display:none; }
   @media (max-width:560px){ .spark svg{ width:96px; height:24px; } }
-
-  .subject-say{ font-size:var(--type-meta); line-height:1.55; color:var(--text-secondary); margin:7px 0 0; max-width:54ch; }
-  .subject[open] .subject-say{ display:none; }
-  .subject-summary{
-    list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px; padding:var(--pad);
-    user-select:none;
-  }
-  .subject-summary::-webkit-details-marker{ display:none; }
-  .subject-verdict{ margin-top:6px; }
-  .subject-ring{ position:relative; width:64px; height:64px; flex:none; }
-  .subject-ring svg{ width:100%; height:100%; display:block; }
-  .subject-ring .vital-ring-track{ stroke-width:10; }
-  .subject-ring .vital-ring-fill{ stroke-width:10; }
-  .subject-icon{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-  .subject-icon span{ width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-  .subject-icon svg{ width:27px; height:27px; }
-  .subject-icon .good{ background:var(--good-wash); color:var(--good-ink); }
-  .subject-icon .warning{ background:var(--warning-wash); color:var(--warning-ink); }
-  .subject-icon .serious{ background:var(--serious-wash); color:var(--serious-ink); }
-  .subject-icon .critical{ background:var(--critical-wash); color:var(--critical-ink); }
-  .subject-icon .norm{ background:var(--mark-wash); color:var(--text-secondary); }
-  .subject-icon span:empty{ background:none; }
-  @media (max-width:560px){ .subject-icon span{ width:42px; height:42px; } .subject-icon svg{ width:24px; height:24px; } }
-  .subject-text{ flex:1; min-width:0; }
-  .subject-label{ font-size:var(--type-meta); color:var(--text-muted); margin-bottom:3px; }
-  .subject-label b{ font-weight:600; color:var(--text-secondary); }
-
-  .subject-value{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-section); font-weight:700; color:var(--text-primary); letter-spacing:-0.02em; line-height:1.15; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
-  .subject-value .unit{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:600; letter-spacing:0; color:var(--text-muted); }
-  .subject-value .tag{ transform:translateY(-2px); }
-  .subject-value .chip{ font-size:var(--type-reading); font-weight:700; }
-  .subject-value .chip i{ font-family:"Public Sans",sans-serif; font-style:normal; font-weight:400; font-size:var(--type-meta); letter-spacing:0; color:var(--text-muted); margin-right:4px; }
-  .subject-value .chip + .chip::before{ content:"\00b7"; color:var(--text-muted); margin:0 8px 0 0; font-weight:400; }
-  .subject-more{ flex:none; display:flex; align-items:center; padding:0 4px; color:var(--text-muted); }
-  .subject-more .peek-chev{ margin-right:4px; transition:transform 0.15s ease; }
-  .subject[open] .subject-more .peek-chev{ transform:rotate(90deg); }
-  .subject-summary:hover .subject-more .peek-chev{ color:var(--accent-ink); opacity:1; }
-  .subject-body{ padding:0 var(--pad) 20px; border-top:1px solid var(--border); }
-  .peek-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:stretch; }
-  .peek-row > .peek:only-child{ grid-column:1 / -1; }
   .dx{ display:flex; flex-direction:column; gap:var(--gap); }
   .dx-sys{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
   .dx-sys-head{ display:flex; align-items:center; gap:7px; width:100%; margin:0 0 8px; padding:0; border:0; background:none;
@@ -731,36 +669,14 @@
   .ci-mini > *{ flex:1 1 auto; min-width:0; max-height:var(--mini-h); }
   .ci-mini > .peek-chart{ width:100%; margin:0; }
   .ci-mini > svg{ flex:none; height:var(--mini-h); width:auto; display:block; }
-  .ci-mini > .peek-ring{ width:auto; height:var(--mini-h); flex:none; }
-  .peek-ring{ display:block; width:var(--mini-h); height:var(--mini-h); margin:11px 0 0; }
   .ci-mini .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.5; }
   .ci-mini .peek-chart.heat .now{ stroke:var(--accent-ink) !important; opacity:1; }
   .ci-mini .peek-base{ stroke:var(--border-strong) !important; opacity:0.6; }
-  .ci-mini .vital-ring-track{ stroke:var(--border-strong) !important; opacity:0.45; }
-  .ci-mini .vital-ring-fill{ stroke:var(--accent-ink) !important; opacity:1; }
-  .ci-mini .pt-ref{ stroke:var(--border-strong) !important; opacity:0.6; }
-  .ci-mini .pt-now{ stroke:var(--accent-ink) !important; opacity:1; }
-  .cat-item .subject-value .unit{ margin-left:4px; }
-  .cat-item .subject-say{ margin:3px 0 0; }
-  @media (min-width:900px){ .peek-row{ grid-template-columns:repeat(4, 1fr); } }
-  .peek{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 14px 13px;
-    display:flex; flex-direction:column; align-items:flex-start; text-align:left; width:100%;
-    font:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; position:relative; }
-  .peek-kicker{ display:inline-flex; align-items:center; gap:4px; }
   .peek-mark{ flex:none; width:15px; height:15px; color:var(--text-secondary); }
   .peek-mark svg{ display:block; width:100%; height:100%; }
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .peek:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
-  .peek:hover{ border-color:var(--border-strong); }
-  .peek:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .peek-kicker{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; letter-spacing:0.06em;
-    text-transform:uppercase; color:var(--text-muted); }
-  .peek-value{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-section); font-weight:700; line-height:1;
-    color:var(--text-primary); margin-top:9px; }
-  .peek-unit{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; color:var(--text-muted);
-    letter-spacing:0.01em; margin-left:4px; }
   .peek-word{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; margin-top:6px;
     letter-spacing:0.01em; color:var(--text-secondary); }
   .hh-bill{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
@@ -770,10 +686,6 @@
   .hh-col.kept{ stroke:var(--text-secondary); opacity:0.85; }
   .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
   .pv-col.over{ stroke:var(--good); }
-
-  .peek-text{ display:flex; flex-direction:column; align-items:stretch; width:100%; }
-  .peek-text > .peek-chart{ margin:12px 0 13px; }
-  .peek-text > .peek-value{ margin-top:0; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .gdp-col, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -843,25 +755,9 @@
   .yl-col{ fill:none; stroke-linecap:round; }
   .yl-col.inverted{ stroke:var(--critical); }
   .yl-col.normal{ stroke:var(--season-autumn); }
-  .meterpeek .mp-track, .meterpeek .mp-band{ fill:none; stroke-linecap:round; vector-effect:non-scaling-stroke; }
-  .meterpeek .mp-track{ stroke:var(--border); opacity:0.6; }
-  .meterpeek .mp-band{ stroke:var(--good); opacity:0.85; }
-  .meterpeek .mp-here{ fill:var(--surface); stroke-width:3; vector-effect:non-scaling-stroke; }
-  .meterpeek .mp-here.good{ stroke:var(--good); } .meterpeek .mp-here.warning{ stroke:var(--warning); }
-  .meterpeek .mp-here.serious{ stroke:var(--serious); } .meterpeek .mp-here.critical{ stroke:var(--critical); }
-  .meterpeek .mp-core.good{ fill:var(--good); } .meterpeek .mp-core.warning{ fill:var(--warning); }
-  .meterpeek .mp-core.serious{ fill:var(--serious); } .meterpeek .mp-core.critical{ fill:var(--critical); }
-  @media (max-width:400px){ .peek{ padding:13px 12px 12px; } .peek-value{ font-size:var(--type-section); } }
   .metric-sheet{ display:flex; flex-direction:column; }
-  .metric-sheet .subject{ border:0; border-radius:0; background:transparent; box-shadow:none; }
-  .metric-sheet .subject:not(.sign-row) .subject-summary{ display:none; }
-  .metric-sheet .sign-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:var(--shadow); }
-  .metric-sheet .sign-row + .sign-row{ margin-top:10px; }
 
   .metric-sheet > .timing-row{ margin-bottom:16px; }
-  .metric-sheet .subject-body{ padding:0; border-top:0; }
-  .metric-sheet .subject-body > *{ margin-top:0; }
 
   .metric-sheet .sign-detail > .card{ border:0; background:transparent; padding:0; box-shadow:none; }
   :root{ --ctl-h:40px; --btn-h:40px; }
@@ -914,8 +810,8 @@
 
   .metric-sheet{ --page-gap:var(--gap); }
   .metric-sheet .page-chart{ margin-top:var(--page-gap); }
-  .metric-sheet > .subject, .metric-sheet > .sign-detail{ margin-top:var(--page-gap); }
-  .metric-sheet > .sign-detail:empty, .metric-sheet > .subject:empty{ display:none; }
+  .metric-sheet > .sign-detail{ margin-top:var(--page-gap); }
+  .metric-sheet > .sign-detail:empty{ display:none; }
   .metric-sheet .page-foot{ margin-top:var(--page-gap); }
   .metric-sheet .page-chart:has(.band-head){ margin-top:0; }
   .band-head{ display:flex; align-items:center; gap:10px; }
@@ -1064,20 +960,7 @@
   .metric-sheet > *:first-child > .card-head{ margin-top:2px; }
 
   @media (min-width:760px){
-    .peek{ padding:var(--pad); }
-    .peek-value{ font-size:var(--type-section); }
     .peek-chart svg{ height:calc(var(--mini-h) + 11px); }
-  }
-
-  .subject-body > *{ margin-top:var(--gap); }
-
-  .subject-body .hero, .subject-body .longcycle{ background:transparent; border:none; box-shadow:none; padding:0; }
-  .subject-body .grid{ margin-top:var(--gap); }
-
-  @media (max-width:560px){
-    .subject-summary{ gap:13px; padding:var(--pad); }
-    .subject-ring{ width:54px; height:54px; }
-    .subject-value{ font-size:var(--type-section); }
   }
 
   .cyc-more{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
@@ -1092,7 +975,6 @@
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-energy{ --cat:var(--good); }
   .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
-  .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-item, .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
@@ -1101,7 +983,6 @@
   .labs .more-row{ margin-top:0; }
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
-  .cat-more:empty{ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
   .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:color-mix(in srgb, var(--border) 40%, transparent); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
@@ -1219,9 +1100,7 @@
     letter-spacing:0; text-transform:none; }
   .cat-sheet .ci-word:empty::before{ content:"\00a0"; }
   .cat-sheet .ci-mini{ flex:0 0 64px; width:64px; }
-  .cat-sheet .ci-mini .peek-chart.heat .now, .cat-sheet .ci-mini .pt-now{ stroke:var(--cat) !important; }
-  .cat-sheet .ci-mini .vital-ring-fill{ stroke:var(--cat) !important; }
-  .tab-panel[data-tab="analysis"] .cat-sheet .highlights{ display:none; }
+  .cat-sheet .ci-mini .peek-chart.heat .now{ stroke:var(--cat) !important; }
   .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }
@@ -1312,7 +1191,6 @@
   .metric-sheet .longcycle{ padding:0; border:0; background:transparent; border-radius:0; }
   .metric-sheet .hero{ padding:0; border:0; background:transparent; border-radius:0; box-shadow:none; }
   .metric-sheet .hero > .spread-history:first-child{ margin-top:0; }
-  .metric-sheet > .subject{ margin-top:var(--page-gap); }
 
   .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap:16px; }
   .card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:var(--pad); display:flex; flex-direction:column; box-shadow: var(--shadow); }
@@ -1331,8 +1209,6 @@
   .tag.phase-up{ background:var(--phase-up-wash); color:var(--phase-up-ink); }
   .tag.phase-down{ background:var(--phase-down-wash); color:var(--phase-down-ink); }
   .hi-name.phase-up{ color:var(--phase-up-ink); } .hi-name.phase-down{ color:var(--phase-down-ink); }
-  .subject-summary .tag{ background:transparent; padding:3px 0 3px 2px; font-weight:700; letter-spacing:0.01em; }
-  .subject-summary .tag.norm{ color:var(--text-muted); }
 
   .card .metric-row{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:2px;}
   .metric-row > .tag{ margin-left:auto; }
@@ -1619,7 +1495,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.5 (763)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.6 (764)</span></p>
     </div>
   </div>
 
@@ -1881,20 +1757,12 @@
     }) : null;
   }
   var CHEV = '<span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>';
-  function prettyKey(k) {
-    if (/^\d{4}-\d{2}$/.test(k)) return MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(0, 4);
-    if (/^\d{4} Q[1-4]$/.test(k)) return k.slice(5) + " " + k.slice(0, 4);
-    return k;
-  }
   function qLabel(q) {
     var m = /^(\d{4}) (Q[1-4])$/.exec(q);
     return m ? m[2] + " " + m[1] : q;
   }
   function monthLabel(m) {
     return MONTHS_SHORT[parseInt(m.slice(5, 7), 10) - 1] + " " + m.slice(0, 4);
-  }
-  function clampPct(v, lo, hi) {
-    return Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100));
   }
   function ledeHtml(text) {
     return '<p class="lede">' + text + "</p>";
@@ -30552,7 +30420,7 @@
     summer: {
       name: "Summer",
       theme: "Inflation",
-      altName: "Ovulation"
+      altName: null
     },
     autumn: {
       name: "Autumn",
@@ -32556,17 +32424,6 @@
     });
     return '<span class="peek-chart heat"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + "</svg></span>";
   }
-  function meterPeek(m, state2) {
-    var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;
-    function at(v) {
-      return x0 + (x1 - x0) * Math.max(0, Math.min(1, (v - m.min) / (m.max - m.min || 1)));
-    }
-    var ends = bandEnds(m.optimal, m.min, m.max);
-    var a = at(ends[0]), c = at(ends[1]);
-    if (c - a < sw) c = a + sw;
-    var hx = at(m.value);
-    return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + "," + cy + "H" + x1 + '"/><path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + "," + cy + "H" + c.toFixed(1) + '"/><circle class="mp-here ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/><circle class="mp-core ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/></svg></span>';
-  }
   function windowYears(fromYear, toYear, want) {
     if (toYear <= fromYear) return [ fromYear ];
     var raw = (toYear - fromYear) / Math.max(1, want - 1);
@@ -32582,7 +32439,6 @@
     return w.charAt(0).toUpperCase() + w.slice(1);
   }
   var PULSE_WINDOW = 5;
-  var PULSE_WINDOW_PEEK = 3;
   var pulseClipN = 0;
   function beatPath(x0, x1, y, period, amp) {
     var f = function(n) {
@@ -32625,17 +32481,9 @@
     }).join("");
     return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs><g clip-path="url(#' + id + ')">' + paths + "</g></svg>";
   }
-  function pulsePeek(rate, ref) {
-    return '<span class="peek-chart pulsepeek">' + pulseTraceSvg(rate, ref, PEEK_W, PEEK_H, 8, "", PULSE_WINDOW_PEEK) + "</span>";
-  }
   function peekCard(o) {
-    var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
+    var art = o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
-  }
-  function vitalRingSvg(pct2, state2, label, cls) {
-    var r = 46, c = 2 * Math.PI * r;
-    var offset = c * (1 - clampPct(pct2, 0, 100) / 100);
-    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state2 + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
   var page = {
     mode: void 0,
@@ -33293,7 +33141,6 @@
       bare: true,
       noHead: true,
       chartFirst: true,
-      peeked: true,
       chart: function(ind) {
         return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind);
       }
@@ -33336,7 +33183,6 @@
       bare: true,
       noHead: true,
       chartFirst: true,
-      peeked: true,
       chart: function(ind) {
         return volumeBlock(ind);
       }
@@ -33858,10 +33704,6 @@
       u: "https://fred.stlouisfed.org/series/PSAVERT"
     } ]);
   }
-  function vixPct(v) {
-    var m = now.vixRow.meter;
-    return v == null ? 0 : Math.max(0, Math.min(100, 100 * Math.log(v / m.min) / Math.log(m.max / m.min)));
-  }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
     return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
@@ -33932,10 +33774,6 @@
     if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
   }
   var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
-  function indPeriod(R) {
-    var ind = indOf(R), m = ind && DATED_UNIT.exec(String(ind.metricSub || "").trim());
-    return m ? m[2] : "";
-  }
   var productivityReading;
   var confidenceRecord;
   var confidenceReading;
@@ -34600,20 +34438,6 @@
       };
     });
   }
-  function lastDate(R) {
-    var h = keyed(R.hist);
-    return prettyKey(h[h.length - 1].k);
-  }
-  function compiledDay() {
-    return dataCompiledLabel;
-  }
-  function isoLabel(iso) {
-    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
-    return m ? MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + ", " + m[1] : "";
-  }
-  function labPeriod(R) {
-    return periodOf(labRow(R.id));
-  }
   function rosterFor(ind) {
     return ROSTER.filter(function(R) {
       return R.term === ind.bodyTerm;
@@ -34677,7 +34501,6 @@
         s: inflationHistory,
         k: "m"
       },
-      when: lastDate,
       cardUnit: "PCE, YoY"
     }, {
       id: "sheet-metric-gdp",
@@ -34694,7 +34517,6 @@
         s: gdpQuarterlyYoY,
         k: "q"
       },
-      when: lastDate,
       cardUnit: "YoY"
     }, {
       id: "sheet-sign-market",
@@ -34712,13 +34534,12 @@
         k: "y"
       },
       mid: 0,
-      when: lastDate,
       cardUnit: "total return"
     }, {
       id: "sheet-sign-hormones",
       name: "Interest rates",
       cat: "circulation",
-      sub: "Rates",
+      sub: "Pressure",
       timing: "leading",
       mark: heartSvg,
       door: "subject",
@@ -34728,18 +34549,13 @@
         s: fedFundsHistory,
         k: "m"
       },
-      rule: true,
-      eraUnit: "Fed funds rate",
       cardUnit: "Fed funds target",
-      when: function() {
-        return now.fedFunds.asOf;
-      },
       live: [ "fedFunds" ]
     }, {
       id: "sheet-sign-real-rate",
       name: "Real interest rate",
       cat: "circulation",
-      sub: "Rates",
+      sub: "Pressure",
       timing: "leading",
       mark: heartSvg,
       door: "row",
@@ -34750,13 +34566,12 @@
         k: "m"
       },
       mid: NEUTRAL_RATE,
-      when: lastDate,
       cardUnit: "after inflation"
     }, {
       id: "sheet-sign-pressure",
-      name: "Pressure",
+      name: "US 10-year Treasury",
       cat: "circulation",
-      sub: "Rates",
+      sub: "Pressure",
       timing: "leading",
       mark: gaugeSvg,
       door: "subject",
@@ -34767,11 +34582,7 @@
         s: t10yYieldHistory,
         k: "q"
       },
-      rule: true,
       cardUnit: "10-year Treasury",
-      when: function() {
-        return isoLabel(curveAsOf());
-      },
       live: [ "yieldCurve" ]
     }, {
       id: "sheet-sign-pulse",
@@ -34789,8 +34600,6 @@
         k: "qi",
         y0: M2V_FROM_YEAR
       },
-      pulse: PULSE_PRE2008,
-      when: lastDate,
       cardUnit: "M2 velocity",
       live: [ "coincident" ]
     }, {
@@ -34808,10 +34617,6 @@
         s: m2Yoy,
         k: "qi",
         y0: M2_FROM_YEAR
-      },
-      rule: true,
-      when: function(R) {
-        return indPeriod(R) || lastDate(R);
       },
       cardUnit: "M2, YoY",
       live: [ "coincident" ]
@@ -34831,10 +34636,7 @@
         s: capeHistory,
         k: "y"
       },
-      pre: "Jan ",
-      last: "today",
       mid: CAPE_FAIR,
-      when: lastDate,
       cardUnit: "CAPE",
       live: [ "valuation", "capeValue" ]
     }, {
@@ -34853,7 +34655,6 @@
         k: "q"
       },
       mid: BUFFETT_LINE,
-      when: lastDate,
       cardUnit: "of GDP",
       live: [ "valuation" ]
     }, {
@@ -34871,11 +34672,7 @@
         s: volatilityHistory,
         k: "m"
       },
-      ring: vixPct,
       cardUnit: "VIX",
-      when: function() {
-        return isoLabel(liveIsoOf("vixClose")) || compiledDay();
-      },
       live: [ "sentiment", "vixClose", "vix3mClose" ]
     }, {
       id: "sheet-sign-desire",
@@ -34894,7 +34691,6 @@
         k: "m"
       },
       mid: DESIRE_LINE,
-      when: lastDate,
       cardUnit: "demand, YoY"
     }, {
       id: "sheet-sign-premium",
@@ -34913,7 +34709,6 @@
         k: "m"
       },
       mid: PREMIUM_LINE,
-      when: lastDate,
       cardUnit: "over bonds"
     }, {
       id: "sheet-sign-confidence",
@@ -34931,7 +34726,6 @@
         k: "m"
       },
       mid: CONFIDENCE_LINE,
-      when: lastDate,
       cardUnit: "OECD index"
     }, {
       id: "sheet-metric-debt",
@@ -34949,7 +34743,6 @@
         k: "q"
       },
       mid: DEBT_LINE,
-      when: labPeriod,
       cardUnit: "of GDP"
     }, {
       id: "sheet-metric-interest",
@@ -34967,7 +34760,6 @@
         k: "y"
       },
       mid: INTEREST_LINE,
-      when: labPeriod,
       cardUnit: "of GDP"
     }, {
       id: "sheet-marker-deficit",
@@ -34989,7 +34781,6 @@
       },
       flip: true,
       mid: DEFICIT_LINE,
-      when: labPeriod,
       cardUnit: "deficit, of GDP"
     }, {
       id: "sheet-metric-households",
@@ -35014,8 +34805,6 @@
         k: "qi",
         y0: SAV_FROM_YEAR
       },
-      peek: "pair",
-      when: lastDate,
       cardUnit: "% paid / kept"
     }, {
       id: "sheet-sign-activity",
@@ -35047,8 +34836,7 @@
         s: productivityHistory,
         k: "q"
       },
-      mid: PRODUCTIVITY_SLOWDOWN,
-      when: lastDate
+      mid: PRODUCTIVITY_SLOWDOWN
     } ];
   }
   function bootRoster() {
@@ -40496,7 +40284,7 @@
   function bootPagesNav() {
     GYN.step("renderSignsList", renderSignsList, "build");
     renderSignsList();
-    GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
+    GYN.step("renderPagesAndNav", renderPagesAndNav, "build");
     renderPagesAndNav();
     sourceIndex = {
       all: allSources,

@@ -1,7 +1,7 @@
 import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, srcBlock, tagFor, titleCase } from "./format.ts";
 import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
-import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
+import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg } from "./charts.ts";
 import { confidenceHistory, durablesHistory, fedFundsHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, NEUTRAL_RATE, NEUTRAL_SRC, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
@@ -89,7 +89,7 @@ export function deficitBlock(){
 export var coincident: Indicator[] = [
   {
     bodyTerm:"Pulse", econTerm:"Money velocity",
-    page:{ bare:true, noHead:true, chartFirst:true, peeked:true,
+    page:{ bare:true, noHead:true, chartFirst:true,
            chart:function(ind){ return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind); } },
     tag:{text:"Recovering", state:"warning"},
     metric:"1.42×", metricSub:"M2 velocity, Q2 2026",
@@ -103,7 +103,7 @@ export var coincident: Indicator[] = [
   },
   {
     bodyTerm:"Volume", econTerm:"Money stock (M2)",
-    page:{ bare:true, noHead:true, chartFirst:true, peeked:true, chart:function(ind){ return volumeBlock(ind); } },
+    page:{ bare:true, noHead:true, chartFirst:true, chart:function(ind){ return volumeBlock(ind); } },
     tag:null,
     metric:"+5.7%", metricSub:"M2, year over year, Aug 2026",
     meter:{min:-4.64, max:25.61, value:5.66, optimal:{from:M2_PACE_LO, to:M2_PACE_HI, label:M2_PACE_LO + "\u2013" + M2_PACE_HI + "%"},
@@ -526,15 +526,6 @@ export function savInfoHtml(){
       {t:"BEA via FRED \u2014 Personal Saving Rate (PSAVERT)", u:"https://fred.stlouisfed.org/series/PSAVERT"}
     ]);
 }
-export function vixPct(v: number | null | undefined){
-  var m = now.vixRow.meter;
-  return v == null ? 0 : Math.max(0, Math.min(100, 100 * Math.log(v / m.min) / Math.log(m.max / m.min)));
-}
-export function volatilityRing(){
-  var m = now.vixRow.meter;
-  return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + metered(m).toFixed(2) + ", between its record low of " +
-    m.min + " and its record high of " + m.max);
-}
 export function volatilityDetailHtml(){
   var m = now.vixRow.meter;
   return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + '</div>' + facts([
@@ -596,10 +587,6 @@ function seatTemperature(ind: Indicator, d: HTMLElement){
   if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
 }
 export var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
-export function indPeriod(R: { term?: string }){
-  var ind = indOf(R), m = ind && DATED_UNIT.exec(String(ind.metricSub || "").trim());
-  return m ? m[2] : "";
-}
 
 export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, realRateHistory: MonthPoint[], realRateRecord: SeriesRecord<MonthPoint>, realRateReading: RealRateReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
 var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;

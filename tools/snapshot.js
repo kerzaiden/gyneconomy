@@ -62,7 +62,7 @@ async function capture(file, out) {
     });
     p.on('pageerror', e => errs.push(w + ': ' + String(e).slice(0, 140)));
     await p.goto('file://' + file); await p.waitForTimeout(1500);
-    const sheets = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(c => c.dataset.open));
+    const sheets = await p.evaluate(() => window.__GYN.ROSTER.map(R => R.id));
     snaps.push(await grab(p, w + '/home'));
     for (const t of TABS) {
       await p.evaluate(x => { const el = document.querySelector('.tab-btn[data-tab="' + x + '"]'); if (el) el.click(); }, t);

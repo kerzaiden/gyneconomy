@@ -60,14 +60,8 @@ export function maxIn<P extends Point & { v: number }>(series: P[], from: number
   return vs.length ? vs.reduce(function(a: P, b: P){ return b.v > a.v ? b : a; }) : null;
 }
 export var CHEV = '<span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>';
-export function prettyKey(k: string){
-  if (/^\d{4}-\d{2}$/.test(k)) return MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(0, 4);
-  if (/^\d{4} Q[1-4]$/.test(k)) return k.slice(5) + " " + k.slice(0, 4);
-  return k;
-}
 export function qLabel(q: string){ var m = /^(\d{4}) (Q[1-4])$/.exec(q); return m ? m[2] + " " + m[1] : q; }
 export function monthLabel(m: string){ return MONTHS_SHORT[parseInt(m.slice(5, 7), 10) - 1] + " " + m.slice(0, 4); }
-export function clampPct(v: number, lo: number, hi: number){ return Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100)); }
 export function ledeHtml(text: string){ return '<p class="lede">' + text + '</p>'; }
 export function auxStat(f: { label: string; value: string | number; wordy?: boolean }){
   return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' + f.value + '</b></div>';

@@ -178,7 +178,7 @@ function renderPagesAndNav(){
 export function bootPagesNav(){
   GYN.step("renderSignsList", renderSignsList, "build");
   renderSignsList();
-  GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
+  GYN.step("renderPagesAndNav", renderPagesAndNav, "build");
   renderPagesAndNav();
   sourceIndex = { all: allSources, cards: ([] as Indicator[]).concat(coincident, lagging).map(function(c){ return {name:c.bodyTerm, src:c.src || []}; }), annual: sp500AnnualReturnSource, gdp: gdpSrc };
 }

@@ -1,4 +1,4 @@
-import { bandEnds, CHEV, clampPct } from "./format.ts";
+import { CHEV } from "./format.ts";
 
 export type Fit = { slope: number; intercept: number; n: number };
 export type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
@@ -206,20 +206,6 @@ export function colPeek(all: readonly (number | null)[] | null | undefined, clas
   });
   return '<span class="peek-chart heat"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + '</svg></span>';
 }
-function meterPeek(m: Meter, state?: string){
-  var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;
-  function at(v: number){ return x0 + (x1 - x0) * Math.max(0, Math.min(1, (v - m.min) / ((m.max - m.min) || 1))); }
-  var ends = bandEnds(m.optimal, m.min, m.max);
-  var a = at(ends[0]), c = at(ends[1]);
-  if (c - a < sw) c = a + sw;
-  var hx = at(m.value as number);
-  return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
-    '<path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + ',' + cy + 'H' + x1 + '"/>' +
-    '<path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + ',' + cy + 'H' + c.toFixed(1) + '"/>' +
-    '<circle class="mp-here ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/>' +
-    '<circle class="mp-core ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/>' +
-  '</svg></span>';
-}
 export function windowYears(fromYear: number, toYear: number, want: number): number[] {
   if (toYear <= fromYear) return [fromYear];
   var raw = (toYear - fromYear) / Math.max(1, want - 1);
@@ -233,7 +219,6 @@ function refName(t?: string | null){
   return w.charAt(0).toUpperCase() + w.slice(1);
 }
 export var PULSE_WINDOW = 5;
-var PULSE_WINDOW_PEEK = 3;
 var pulseClipN = 0;
 function beatPath(x0: number, x1: number, y: number, period: number, amp: number){
   var f = function(n: number){ return n.toFixed(1); };
@@ -266,15 +251,8 @@ export function pulseTraceSvg(rate: number | null, ref: number | null | undefine
     '<defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs>' +
     '<g clip-path="url(#' + id + ')">' + paths + '</g></svg>';
 }
-export function pulsePeek(rate: number | null, ref: number | null | undefined){
-  return '<span class="peek-chart pulsepeek">' + pulseTraceSvg(rate, ref, PEEK_W, PEEK_H, 8, "", PULSE_WINDOW_PEEK) + '</span>';
-}
 export function peekCard(o: PeekCardOpts){
-  var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring")
-          : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref)
-          : o.meter ? meterPeek(o.meter, o.state)
-          : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule)
-          : "";
+  var art = o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
   return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target +
     '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ', ' + o.value + ' ' + o.unit + ' \u2014 open">' +
     '<span class="peek-text">' +
@@ -286,14 +264,4 @@ export function peekCard(o: PeekCardOpts){
       '<span class="peek-word">' + o.word + '</span>' +
     '</span>' +
   '</button>';
-}
-export function vitalRingSvg(pct: number, state?: string, label?: string | null, cls?: string){
-  var r = 46, c = 2 * Math.PI * r;
-  var offset = c * (1 - clampPct(pct, 0, 100) / 100);
-  return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' +
-    (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '>' +
-    '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' +
-    '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' +
-      'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' +
-  '</svg>';
 }

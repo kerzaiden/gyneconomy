@@ -57,8 +57,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Effective" was doing the note's job in the title. (V608)
 - **A section of sentences about the figures above it is called Insights, on every reading's page.** The app had
   two names for one component and Keren chose one; Insights has been her word for it since V379. A category's
-  combined reading is the exception since 1.5.0: it sits behind its analysis card's More details, untitled (see
-  Search and the category pages). (V453, V604, 1.5.0)
+  combined reading is the exception since 1.5.0: it sits behind Indicators' More details on that category,
+  untitled. (V453, V604, 1.5.0, 0.8.6)
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
 - **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
@@ -137,7 +137,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   or first container states the figure drops the head, figure and bar above it; no meter, lab row or second
   figure restates what the chart draws; a level already listed is not repeated as a side figure; a phase the
   trend row names gets no tag; no heading repeats what the screen shows (no span label over a history, no
-  context line introducing a table that introduces itself); a category page carries no group titles. Keren: "I
+  context line introducing a table that introduces itself). Keren: "I
   don't need to see expansion twice"; "I don't need to see it again as in another form". (V274, V305, V361,
   V384, V582, V599, V606, V660)
 - **Every history head is in title case, with short joining words ("of", "or", "over") left lowercase.**
@@ -280,29 +280,21 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   stay one view, Households' debt service and saving rate stay one page, and Pressure stays one card with its
   maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
-  filter inside it; each reading opens its page and each category name opens its category page.** Keren: "if I go to
+  filter inside it; each reading opens its page and each category name filters Indicators to that category.** Keren: "if I go to
   the health chart page and I click on, let's say, temperature, I would get to the temperature page"; "the filter
   should be inside the search … if I click filter, I see what I can filter by, but it doesn't take up space from the
   screen." The filter offers All, Risk, Attention and Normal with their counts; the chevron beside a category's count
   still folds it. The box matches a reading's name, its series, its group or its category. There is no timing filter:
   "the division of Structural, leading, coincident, lagging … It's not something that I would filter by", so timing
-  lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.6.1)
-- **On a category page a group is one card too: its mark, its name, and its first member's figure and verdict
-  as the preview (Valuations shows the Shiller CAPE); the card opens the group's page, which holds the members'
-  cards.** Keren: "I don't need to see them both… just put a preview KPI, like the cape… so that we'll have
-  some more breathing room in the category pages." (V688)
+  lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.6.1, 0.8.6)
+- **The category pages and their group pages are gone, with every design that came before Indicators; Indicators
+  holds every reading, by category and subcategory, and each category's insights behind its More details.** Keren:
+  "All the previous designs we made, we can throw them out." A closed cycle's figures are Cycle Statistics'. This
+  replaced the group card (V688), the category page's ground (0.6.2), its cards and More details (1.5.0, 0.6.1), the
+  equal-height cards (V688) and the past cycle's category cards (V660, V665). (0.8.6, Oct 6, 2026)
 - **The federal side and the household balance sheet are one group, Stress (Federal debt, Interest payments,
   Federal budget, Households); the name Economic power is retired.** Keren: "households should be inside
   economic power… the terminology is stress because debts are stress", then chose Stress. (V688)
-- **A category page has no group headings, and its ground is the same apricot-blush splash as every page; it is
-  no longer washed in its category's colour.** Keren: "make all backgrounds with peach apricot blush, beautiful
-  like mosaic behind the screens of white containers" (0.6.2, replacing V660's category wash).
-- **A category page is its reading cards, then one More details holding the category's insights, with no section
-  titles and no analysis card.** Keren: "the category analysis that we made, is not that good. It's not very
-  informative … we have a lot of text inside the more details, which can remain below the subcategories". The
-  insights carry no title, and Mood's own figures follow her story in the same sheet; Energy has none, so it ends on
-  its cards. The composite analysis of 1.5.0 (each category as one rank-averaged reading matched against past cycles)
-  is retired. (1.5.0, 0.6.1)
 - **Weather's insights carry no "What usually comes next" card.** It read as a forecast; Keren: "drop the forecast".
   The season's prose behind a dial quarter keeps it, one tap further in. (1.5.0)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
@@ -625,11 +617,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Rates (Interest rates, Real interest
-  rate, Pressure) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
+  Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Pressure (Interest rates, Real interest
+  rate, US 10-year Treasury) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
   names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
-  subcategorize each indicator", and "temperature and growth is the season, S&P is the market". (0.8.5, Oct 6, 2026)
+  subcategorize each indicator", and "temperature and growth is the season, S&P is the market". Keren renamed
+  Circulation's first subcategory Pressure and the reading that was Pressure US 10-year Treasury: "the title needs
+  to be pressure. And instead of pressure, we should have the US 10 year treasury." (0.8.5, 0.8.6, Oct 6, 2026)
 - **The fourth category is Activity, not Energy** (its key stays `energy`). Keren: "the market convention is economic
   activity." An open year's figure carries no "so far" on Indicators: every figure there is so far. (0.8.5, Oct 6, 2026)
 - **A category opens in Indicators, never on its old page of chart cards.** Its heading on Indicators and the
@@ -664,9 +658,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 ## The season model
 
 - **There are six seasons, in this order: Summer–Inflation, Autumn–Disinflation, Autumn–Stagflation,
-  Winter–Deflation, Spring–Deflation, Spring–Reflation.** Only Summer (Ovulation) and Winter (Groundation)
-  carry the book's fertility names, and none is invented for the others until the manuscript supplies one.
-  (undated, Sep 16–19, 2026)
+  Winter–Deflation, Spring–Deflation, Spring–Reflation.** Only Winter (Groundation) carries a fertility name
+  from the book on screen, and none is invented for the others until the manuscript supplies one. Summer's
+  (Ovulation) stays in the book: Keren, "I don't think we should say ovulation in this app" (0.6.12). (undated,
+  Sep 16–19, 2026; 0.8.6)
 - **The Season Model table runs in colour order: the blues first (Winter, then the two Springs), then the
   oranges (Summer, then the two Autumns).** Keren's order; the lists keep the cycle's order above, and she
   confirmed both at V668. (V193, V668)
@@ -784,10 +779,6 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   the risk-free loan across the economy", which still sets the opening series). (V598, V639, V688)
 - **Pressure is a leading sign.** The market's price of money moves before the activity it finances shows it.
   (V597, V639)
-- **Every card on a category page stands the same height: the card keeps its word line even when the reading has
-  no word (Pressure's, by decision), and a figure's unit stays on its line, trimmed with an ellipsis rather than
-  wrapped.** Keren: "the pressure container is a bit smaller than the rest … They need to be in the same height."
-  The suite measures every card on Circulation, Mood and Energy. (V688)
 - **Mood swings are Volatility: no separate mood-swing figure, and the VIX keeps the market's words (Calm,
   Elevated, Fearful).** Keren: "if we already have it as the vix lets use volatility - i prefer market
   terminology." (V686)
@@ -1282,7 +1273,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   measuring Apple Health: the infographic is small, and the white space sits in one place; she asked for them
   20% shorter than 52. (V449, V459, V507)
 - **A miniature is a grey picture with a single coloured mark, the newest reading, never a state colour; on
-  category pages that mark takes the category's colour.** Twelve coloured pictures read as twelve things to
+  the quarter sheet's cards that mark takes the category's colour.** Twelve coloured pictures read as twelve things to
   press; one mark in grey shows the reading the row is about. (V504, V506, V661)
 - **On a card the verdict word is one quiet neutral, a step below the figure; severity speaks in the inner
   pages' tags.** "Highly overvalued" is not made more alarming by being red. (V251, V309)
@@ -1298,15 +1289,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "put a purple line so I can understand what is above the line and what is below". (V312)
 - **Several readings inside one container are separated by hairlines, not each given its own border.** That is
   how the panel Keren sent separates siblings. (V488)
-- **A category card stays white when it is touched, scrolled or hovered: no hover fill and no tap highlight.**
+- **A card stays white when it is touched, scrolled or hovered: no hover fill and no tap highlight.**
   Keren: "When I click and scroll, a category container, it changes color. to faded uh, gray. Fix it so it will
   always be white." On a phone a touch leaves `:hover` stuck on the card. (V678)
 - **A chevron on a door is the `CHEV` SVG, never a CSS border box.** A chevron drawn as a picture cannot fail
   to lay out; the border-box chevron did fail inside a `<button>`. (V450)
-- **A past cycle's category cards are built like today's: the same unit and mini chart, with the cycle's
-  figure and its range over the cycle as the label.** Keren: "in the past cycles the categories should be
-  identical in design to the current cycle categories". Since V665 they live on the category pages, which Search
-  opens. (V660, V665, 1.8.0)
 - **A past cycle's miniature is drawn from that cycle's own points for every reading; a series the past cycles
   read is always dated points, never bare numbers.** Desire's quarter-ends were bare numbers, so its past-cycle
   miniature could never draw. (V670)
@@ -1527,7 +1514,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   at the width of the current cycle" (V674); the systems card (Circulation and Energy, one Analysis line each, and
   "Across the cycle") left in 1.8.0. Keren: "circulation and energy is not that important because I can see that
   in the search or in the cycle itself … Yes, drop this circulation and energy." Don't re-add the systems or the
-  Symptoms; the category pages hold the readings. (V665, V672, V674, V682, V686, 1.8.0)
+  Symptoms; Indicators holds the readings. (V665, V672, V674, V682, V686, 1.8.0)
 - **The cycle reads year by year under its story, one row a year, the years parted by hairlines, and each year
   opens its quarter's sheet.** Keren: "I need to turn the dial all the way back and click on the button … what I
   would want is some kind of a very brief summary of the cycle by years … it correlates pretty well with the story
@@ -1706,10 +1693,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   it lands and what it repaints; a number outside its band is refused, never clamped, and `receive` is the
   only way a reading comes in.** Keren: "a component based app that will be 100% ready for server side
   integration with controllers and services." (V629)
-- **The subject row, the one row the app opens pages from, is built once in `subjectRow`; callers pass only
-  what differs.** Keren: "make it a 10." (V631)
 - **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.ts`): its page, name, category, subcategory,
-  group, timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
+  group, timing, mark, door, history and unit; Indicators, today's figure, the Diagnosis, Cycle Statistics, the history
   heads and every page's state read it, and a new reading is one row.** Keren: “make the app as consolidated as possible so we won't have to write the same code twice, meaning dry code and as efficient components as possible.” (V670)
 - **Rows are addressed by name (`valRow`), never by array index, so the display order is free to follow the
   page.** Reordering by index would silently swap one reading for another. (V494)
