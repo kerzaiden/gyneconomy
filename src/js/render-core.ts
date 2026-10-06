@@ -1,5 +1,5 @@
-import { auxStat, CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, qLabel, srcBlock, tagFor, titleCase } from "./format.ts";
-import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, need, onScreen, put, svgEl, ui } from "./dom.ts";
+import { auxStat, CHEV, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, qLabel, srcBlock, titleCase } from "./format.ts";
+import { addSources, byId, detailTexts, focusQuiet, layer, need, onScreen, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
 import { dataCompiledLabel, wheelMeta } from "./refresh-season.ts";
@@ -8,7 +8,7 @@ import { cycleQtrIdx, cycleSlice, openCycle, seasonGroup, seasonTitle } from "./
 import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, page, pageCycle, qWindowFrom } from "./history.ts";
 import { horizonInfoHtml, indOf, pressureZone } from "./readings.ts";
 import { m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
-import { ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
+import { ROSTER_BY, TIMING } from "./roster.ts";
 import type { ModelReading, TrackSeg } from "./model.ts";
 type YieldPt = { q: string; v: number | null; latest?: boolean };
 type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string };
@@ -65,7 +65,7 @@ function wireDetailModal(){
 }
 export var detailClose: (() => void) | null = null;
 // ---- A season strip and the economy's chips, shared by the cycle list and the Diagnosis's years ----
-export type StripRun = { g: string; n: number; from: string; to: string; seasons: Record<string, boolean> };
+type StripRun = { g: string; n: number; from: string; to: string; seasons: Record<string, boolean> };
 var stripGroupName: Record<string, string> = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };
 export function strip(cls: string, label: string, inner: string){
   return '<span class="strip' + cls + '" role="img" aria-label="' + label + '">' + inner + '</span>';
@@ -150,34 +150,17 @@ export function seatPageFoot(sheet: HTMLElement | null){
   if (more && more.parentNode !== home) home.appendChild(more);
   if (sheet.lastElementChild !== foot) sheet.appendChild(foot);
 }
-function headHtml(ind: Indicator, noMark?: boolean){
-  var mk = noMark ? "" : '<span class="head-mark" aria-hidden="true"><span class="head-mark-disc">' +
-    rosterFor(ind).mark() + '</span></span>';
-  return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + '</span></div>';
-}
 export function cardDetailHtml(ind: Indicator, opts?: IndicatorPage){
   opts = opts || {};
   var facts = ([] as AuxFact[]).concat(ind.facts || [], ind.aux || []);
+  var lede = ind.lead != null ? ind.lead : (ind.shortCaption != null ? ind.shortCaption : (ind.caption || ""));
+  var figs = facts.map(auxStat).join("");
   var chartHtml = opts.chart ? opts.chart(ind) : '';
-  var bloodTest = opts.bare ? '' :
-    ((opts.noHead ? '' : headHtml(ind, opts.noMark) +
-      '<div class="metric-row"><span class="metric mono">' + ind.metric + '</span><span class="metric-sub">' + ind.metricSub + '</span></div>'));
-  if (bloodTest && opts.bloodCard) bloodTest = '<div class="page-chart blood-card">' + bloodTest + '</div>';
-  return (opts.chartFirst ? chartHtml + bloodTest : bloodTest + chartHtml) +
-  (function(){
-    var lede = ind.lead != null ? ind.lead : (ind.shortCaption != null ? ind.shortCaption : (ind.caption || ""));
-    var figs = facts.map(auxStat).join("");
-    if (!lede && !figs) return "";
-    var block = '<section class="highlights"><div class="hi-head">Insights</div>' +
-      (lede ? '<div class="hi-card"><p>' + lede + '</p></div>' : "") + figs + '</section>';
-    if (opts.deferHighlights){ ui.heldHighlights = block; return ""; }
-    return block;
-  })() +
-    (function(){
-      if (opts.bare || ind.info) return ind.info && !opts.bare ? moreRow(ind.info()) : "";
-      var rest = dropWhatIsShown(ind.caption, ind.lead || ind.shortCaption || "");
-      return rest ? moreRow('<h4>' + titleCase(ind.bodyTerm) + '</h4><div class="marker-sub">' + ind.econTerm + '</div>' + factsFrom(rest)) : "";
-    })();
+  if (!lede && !figs) return chartHtml;
+  var block = '<section class="highlights"><div class="hi-head">Insights</div>' +
+    (lede ? '<div class="hi-card"><p>' + lede + '</p></div>' : "") + figs + '</section>';
+  if (opts.deferHighlights){ ui.heldHighlights = block; return chartHtml; }
+  return chartHtml + block;
 }
 // ---- RENDER: Pressure — U.S. Treasury yields, one maturity at a time ----
 var CURVE_KEY: Record<string, string> = { "3m":"3M", "2y":"2Y", "5y":"5Y", "10y":"10Y", "30y":"30Y" };

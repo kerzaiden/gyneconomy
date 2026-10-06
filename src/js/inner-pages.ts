@@ -3,14 +3,14 @@ import { byId, byIdMaybe, focusQuiet, layer, moreRow, need, put } from "./dom.ts
 import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.ts";
-import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, growthWord, inflationFigure, nowModel, potentialGap, totalGrowthYears, totalRiseIn } from "./model.ts";
+import { currentEra, cycleQtrIdx, cycleSlice, growthWord, inflationFigure, nowModel, potentialGap, totalGrowthYears, totalRiseIn } from "./model.ts";
 import { attachHistory, controlKeys, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.ts";
 import { deficitBlock, dsrInfoHtml, growthInfoHtml, householdsNow, phaseClass, savInfoHtml, tempCaptionFull, tempInfo, tempLeadShown } from "./readings.ts";
 import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, unempHistoryChart } from "./history-charts.ts";
 import { sheetRenderers } from "./render-core.ts";
 import { growthDetail } from "./dial-cycle.ts";
 
-export type MetricCtx = { capeNow: number; buffNow: number | null; tempInd: Indicator | undefined; r: typeof nowModel.reading; gq: QuarterPoint[] };
+type MetricCtx = { capeNow: number; buffNow: number | null; tempInd: Indicator | undefined; r: typeof nowModel.reading; gq: QuarterPoint[] };
 // ---- THE INNER PAGES ----
 function actCycleMonths(c: Cycle){
   var to = c.to || calendarTodayY, a = -1, b = -1;
@@ -56,7 +56,7 @@ function registerTempGdpPages(){
     var hist = need("temp-history"); hist.hidden = false;
     var win;
     if (cyc){
-      var span = cycleMonths(cyc);
+      var span = cycleSlice(inflationHistory, cyc);
       win = span ? inflationHistory.slice(span[0], span[1]) : [];
       hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
                                        { to:span ? span[1] : undefined, cycle:true });

@@ -8,16 +8,16 @@ import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, PCE_SRC, PCE_SWITCH_SRC, cape
 import { cpiNow, growthWord, HOLD_BAND, inflationFigure, nowModel, potentialGap } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
-export type SeriesRecord<P> = { now: P; lo: P; hi: P };
+type SeriesRecord<P> = { now: P; lo: P; hi: P };
 type WordReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; page: IndicatorPage };
-export type ProductivityReading = WordReading & { wordWhy: string };
-export type ConfidenceReading = WordReading & { wordSays: string };
-export type DesireReading = WordReading & { wordSays: string };
-export type PremiumReading = WordReading & { side: string };
-export type MarketReading = WordReading & { wordSays: string; now: YearPoint; lo: YearPoint; hi: YearPoint; open: boolean };
+type ProductivityReading = WordReading & { wordWhy: string };
+type ConfidenceReading = WordReading & { wordSays: string };
+type DesireReading = WordReading & { wordSays: string };
+type PremiumReading = WordReading & { side: string };
+type MarketReading = WordReading & { wordSays: string; now: YearPoint; lo: YearPoint; hi: YearPoint; open: boolean };
 type HznPoint = { v: number | null; partial?: boolean };
 type HznAt = { i: number; v: number };
-export type HorizonRead = { spread: number; q: HznAt; q2: HznAt; dSpread: number; dLong: number; dShort: number; was: number | null; was2: number | null; d2: number; word: string; state: State };
+type HorizonRead = { spread: number; q: HznAt; q2: HznAt; dSpread: number; dLong: number; dShort: number; was: number | null; was2: number | null; d2: number; word: string; state: State };
 type WordOf = { state: State; text: string; says: string; why?: string };
 
 function productivityWord(v: number): WordOf & { why: string } {
@@ -82,8 +82,7 @@ export function deficitBlock(){
 export var coincident: Indicator[] = [
   {
     bodyTerm:"Pulse", econTerm:"Money velocity",
-    page:{ bare:true, noHead:true, chartFirst:true,
-           chart:function(ind){ return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind); } },
+    page:{ chart:function(ind){ return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind); } },
     tag:{text:"Recovering", state:"warning"},
     metric:"1.42×", metricSub:"M2 velocity, Q2 2026",
     meter:{min:1.126, max:2.192, value:1.415, optimal:{from:PULSE_PRE2008 * PULSE_STEADY_LO, to:PULSE_PRE2008 * PULSE_STEADY_HI,
@@ -96,7 +95,7 @@ export var coincident: Indicator[] = [
   },
   {
     bodyTerm:"Volume", econTerm:"Money stock (M2)",
-    page:{ bare:true, noHead:true, chartFirst:true, chart:function(ind){ return volumeBlock(ind); } },
+    page:{ chart:function(ind){ return volumeBlock(ind); } },
     tag:null,
     metric:"+5.7%", metricSub:"M2, year over year, Aug 2026",
     meter:{min:-4.64, max:25.61, value:5.66, optimal:{from:M2_PACE_LO, to:M2_PACE_HI, label:M2_PACE_LO + "\u2013" + M2_PACE_HI + "%"},
@@ -252,8 +251,8 @@ function volumeBlock(ind: Indicator){
     '<div id="volume-trend"></div>' +
     '</div>';
 }
-function velocityRecordBlock(pulseInd: Indicator | undefined){
-  if (pulseInd) histNote("pulse-range", pulseInfoHtml(pulseInd));
+function velocityRecordBlock(pulseInd: Indicator){
+  histNote("pulse-range", pulseInfoHtml(pulseInd));
   return histBar("", "pulse-timeline") +
     '<div class="page-chart pulsebox">' +
     histHead("pulse-range") +
@@ -274,7 +273,7 @@ export function unempState(v: number, sahm: number | null){
        : v <= ACT_BAND_HI ? "good"
        : sahm != null && sahm >= SAHM_TRIGGER ? "serious" : "warning";
 }
-export function sahmNow(){ for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSahm[i] != null) return unempSahm[i]; return null; }
+function sahmNow(){ for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSahm[i] != null) return unempSahm[i]; return null; }
 function potentialSentence(){
   var r = nowModel.reading;
   return 'And the economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 is the line the Season Model ' +
@@ -332,7 +331,7 @@ function derivePulseTag(){
 export var lagging: Indicator[] = [
   {
     bodyTerm:"Activity", econTerm:"Labor market",
-    page:{ bare:true, noMark:true, deferHighlights:true, after:activityStackHtml },
+    page:{ deferHighlights:true, after:activityStackHtml },
     tag:null,
     metric:"4.1%", metricSub:"unemployment rate, Aug 2026",
     meter:{min:2.5,max:24.9,value:4.1,optimal:{from:ACT_BAND_LO,to:ACT_BAND_HI, label:ACT_BAND_LO + "\u2013" + ACT_BAND_HI + "%"},
@@ -348,7 +347,7 @@ export var lagging: Indicator[] = [
   },
   {
     bodyTerm:"Temperature", econTerm:"Inflation",
-    page:{ bare:true, seat:seatTemperature },
+    page:{ seat:seatTemperature },
     tag:null,
     get metric(){ return inflationFigure(cpiNow) + "%"; }, metricSub:"PCE, YoY, Aug 2026",
     meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:TEMP_BAND_LO,to:TEMP_BAND_HI, label:TEMP_BAND_LO + "\u2013" + TEMP_BAND_HI + "%"},
@@ -430,12 +429,10 @@ export function horizonInfoHtml(pick: string){
       'but no source says where \u201cjust above\u201d ends, so the page draws no zone for it.</p>' +
     String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
 }
-function pulseBlock(rate: number, ref: number, ind?: Indicator){
+function pulseBlock(rate: number, ref: number, ind: Indicator){
   var slower = Math.round((1 - rate / ref) * 100);
-  var title = ind
-    ? '<div class="spread-history-head"><h4>' + titleCase(ind.econTerm) + '</h4>' +
-      '<span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + '</span></div>'
-    : "";
+  var title = '<div class="spread-history-head"><h4>' + titleCase(ind.econTerm) + '</h4>' +
+    '<span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + '</span></div>';
   return velocityRecordBlock(ind) + '<div class="page-chart pulsebox"><div class="pulsetrace">' + title +
     '<div class="pt-head"><span class="pt-k">Now</span><span class="pt-v mono">' + rate.toFixed(2) + '× a year</span></div>' +
     pulseTraceSvg(rate, null, 520, 34, 11, "solo") +
@@ -501,11 +498,11 @@ export function volatilityDetailHtml(){
     'Daily record on the VIX since 1990: <b>' + m.min + '</b> low, <b>' + m.max + '</b> high.'
   ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
 }
-export function marketWord(v: number): WordOf {
+function marketWord(v: number): WordOf {
   if (v >= 0) return { state:"good", text:"Bull year", says:"a positive total return, which the dial draws as a bull year" };
   return { state:"serious", text:"Bear year", says:"a negative total return, which the dial draws as a bear year" };
 }
-export function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
+function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
 function marketInfoHtml(f: MarketReading){
   return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +
@@ -563,7 +560,7 @@ function deriveFeelingReadings(){
     var span = R.lo.v.toFixed(1) + " (" + monthLabel(R.lo.m) + ") to " + R.hi.v.toFixed(1) + " (" + monthLabel(R.hi.m) + ")";
     return {
       bodyTerm:"Confidence", info:function(){ return confidenceInfoHtml(confidenceReading); },
-      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-confidence-chart"></div><div id="sheet-sign-confidence-highlights"></div>'; } },
+      page:{ chart:function(){ return '<div id="sheet-sign-confidence-chart"></div><div id="sheet-sign-confidence-highlights"></div>'; } },
       econTerm:"Confidence", metricSub:"OECD index, United States, " + at,
       metric:R.now.v.toFixed(1), tag:{ state:word.state, text:word.text }, wordSays:word.says,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:CONFIDENCE_LINE, label:"\u2265 100"}, ends:{ low:"Pessimistic" } },
@@ -586,7 +583,7 @@ function deriveFeelingReadings(){
     var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
     return {
       bodyTerm:"Desire", info:function(){ return desireInfoHtml(desireReading); },
-      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-desire-chart"></div><div id="sheet-sign-desire-highlights"></div>'; } },
+      page:{ chart:function(){ return '<div id="sheet-sign-desire-chart"></div><div id="sheet-sign-desire-highlights"></div>'; } },
       econTerm:"Consumer demand", metricSub:"consumer demand, YoY, " + at,
       metric:fmtSigned(R.now.v, 1) + "%", tag:{ state:word.state, text:word.text }, wordSays:word.says,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:DESIRE_LINE, label:"\u2265 0%"}, ends:{ low:"Low appetite" } },
@@ -610,7 +607,7 @@ function deriveFeelingReadings(){
     var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
     return {
       bodyTerm:"Equity risk premium", info:function(){ return premiumInfoHtml(premiumReading); },
-      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-premium-chart"></div><div id="sheet-sign-premium-highlights"></div>'; } },
+      page:{ chart:function(){ return '<div id="sheet-sign-premium-chart"></div><div id="sheet-sign-premium-highlights"></div>'; } },
       econTerm:"Equity risk premium", metricSub:"Excess CAPE Yield, " + at,
       metric:fmtSigned(R.now.v, 1) + "%", tag:{ state:"norm", text:"" }, side:side,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PREMIUM_LINE, label:"\u2265 0%"} },
@@ -635,7 +632,7 @@ export function bootReadings(){
     var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
     return {
       bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
-      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
+      page:{ chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
       econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
       metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PRODUCTIVITY_SLOWDOWN, label:"\u2265 " + PRODUCTIVITY_SLOWDOWN + "% YoY"},
@@ -656,7 +653,7 @@ export function bootReadings(){
   derivePulseTag();
   GYN.step("deriveLaggingTags", deriveLaggingTags, "derive");
   deriveLaggingTags();
-  // ---- Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring ----
+  // ---- Temperature's notes ----
   tempInfo = '<h4>Temperature</h4>' +
     ledeHtml("Her basal temperature: inflation against the 2% the Fed aims at, month by month through this cycle.") +
     facts([
@@ -679,7 +676,7 @@ export function bootReadings(){
     var span = fmtSigned(lo.v, 1) + "% (" + lo.y + ") to " + fmtSigned(hi.v, 1) + "% (" + hi.y + ")";
     return {
       bodyTerm:"S&P 500", info:function(){ return marketInfoHtml(marketReading); },
-      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-market-chart"></div><div id="sheet-sign-market-highlights"></div>'; } },
+      page:{ chart:function(){ return '<div id="sheet-sign-market-chart"></div><div id="sheet-sign-market-highlights"></div>'; } },
       econTerm:"S&P 500", metricSub:"total return", now:now, lo:lo, hi:hi, open:open,
       metric:fmtSigned(now.v, 1) + "%", tag:{ state:word.state, text:word.text }, wordSays:word.says,
       meter:{ min:lo.v, max:hi.v, value:now.v, optimal:{ gte:0, label:"\u2265 0%" }, ends:{ low:"Bear year" } },

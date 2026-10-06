@@ -1,15 +1,14 @@
 
-export type Fit = { slope: number; intercept: number; n: number };
-export type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
-export type YScale = (v: number) => number | string;
-export type FitOpts = { fit?: Fit; fmt: (v: number) => string };
-export type XLabelOpts = { xLabel?: ((d: never, i: number) => string) | null; _years?: number[] };
-export type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; noGridAt?: number | null; base?: number | string | null };
-export type DivergeDatum = { v: number | null; y?: number; [k: string]: unknown };
-export type DivergeOpts = XLabelOpts & FitOpts & { vals: DivergeDatum[]; mid: number; midLabel?: string; tickFmt?: (v: number) => string; step?: number; goodAbove?: boolean; at?: ChartGeom["at"]; alt?: string };
+type Fit = { slope: number; intercept: number; n: number };
+type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
+type YScale = (v: number) => number | string;
+type FitOpts = { fit?: Fit; fmt: (v: number) => string };
+type XLabelOpts = { xLabel?: ((d: never, i: number) => string) | null; _years?: number[] };
+type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; noGridAt?: number | null; base?: number | string | null };
+type DivergeDatum = { v: number | null; y?: number; [k: string]: unknown };
+type DivergeOpts = XLabelOpts & FitOpts & { vals: DivergeDatum[]; mid: number; midLabel?: string; tickFmt?: (v: number) => string; step?: number; goodAbove?: boolean; at?: ChartGeom["at"]; alt?: string };
 export type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: number; T: number; B: number };
 
-// ---- Content tab: reading companion ----
 // ---- The range bar ----
 export function trendOf(vals: (number | null)[] | null | undefined, unit?: string, period?: string): Trend {
   period = period || "period";
@@ -40,9 +39,6 @@ export function trendPill(t: Trend, key?: string | null, toggles?: boolean, word
   return '<button type="button" class="trendpill can-toggle" aria-pressed="false" ' +
     'aria-label="Show the trend on the chart">' + inner + '</button>';
 }
-// ---- Insights: what the series says about today, computed ----
-// ---- The record rows ----
-// ---- The cycle average component ----
 // ---- The inner pages' charts ----
 function yearsAcross(all: { y?: number }[]){ var a = all[0].y, b = all[all.length - 1].y; if (a == null || b == null) throw new Error("a dated chart has an undated end"); return windowYears(a, b, 5); }
 function xLabelOf(o: XLabelOpts, d: { y?: number }, i: number, all?: { y?: number }[]){

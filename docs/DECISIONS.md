@@ -367,9 +367,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   not already there". (V287, V288, V426)
 - **Nothing sits above a page's window bar but its timing chip, and a page has one Insights box.** Momentum and
   Productivity growth still drew the old card head (mark, name, word, figure) and a second, lede-only Insights
-  box, because their readings never declared `bare` and so `cardDetailHtml` added both; Keren: "everything that
-  is above the selection bar is redundant … there should only be one insight." The suite now fails a page with a
-  card head above its bar or a second Insights box. (V661, V673)
+  box; Keren: "everything that is above the selection bar is redundant … there should only be one insight." The
+  suite fails a page with a second Insights box, and the card head is gone from the code. (V661, V673, 0.8.10)
 - **Every page's window bar sits the same distance under the top bar (`--gap-top`), whatever wraps it.** Momentum
   opened 20px lower than the rest because its wrapper and its bar each added the gap; Keren: "make sure that all
   pages are built with the same structure and same spacing, so that we don't need to go over page by page." The
@@ -1729,6 +1728,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   page.** Reordering by index would silently swap one reading for another. (V494)
 - **No function grows (the V624 ratchet; the cap is 150 lines under CLAUDE.md); new work becomes a separate
   step.** As Pressure's Insights did. (V624, V640)
+- **Nothing stays that the app never draws or runs: a retired design leaves with its code, its styles, its
+  tokens, its options and its tests.** Keren: "I want a lean, mean, coding machine." The 0.8.10 sweep traced
+  every function the unit tests and the browser suite run and every style rule any of the 48 snapshot states
+  matches, removed what never ran or matched, and proved each page's elements compute the same styles before and
+  after. Hygiene now matches a style's class as a whole word, so a class that only appears inside a longer name
+  (`.spark` in `sparkleSvg`) no longer counts as used. (0.8.6, 0.8.10)
 - **Functions get meaningful names, like `seasonHalf`.** Keren: "give the functions meaningful names like
   seasonHalf". (V664)
 - **A probe asserts on what a reader can see (paint, opacity, size), not on element state such as `hidden`.**

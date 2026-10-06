@@ -67,12 +67,7 @@ type ChartGeom = {
 };
 type AuxFact = { label: string; value: string; wordy?: boolean };
 type IndicatorPage = {
-  bare?: boolean;
-  noMark?: boolean;
-  noHead?: boolean;
-  chartFirst?: boolean;
   deferHighlights?: boolean;
-  bloodCard?: boolean;
   after?: (ind: Indicator) => string;
   chart?: (ind: Indicator) => string;
   seat?: (ind: Indicator, d: HTMLElement) => void;
@@ -125,8 +120,6 @@ type RosterRow = {
   normal?: { lo: number; hi: number; why: string };
   live?: string[];
   stops?: string[];
-  range?: string;
-  cycles?: boolean;
   mid?: number;
   flip?: boolean;
   pair?: HistSpec;

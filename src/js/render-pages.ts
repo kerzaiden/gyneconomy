@@ -13,7 +13,7 @@ import { drawsPage, spreadPick } from "./render-core.ts";
 type SpreadSeries = { title: string; lede: string; data: typeof t10y3mHistory; detail: string; sources: Src[] };
 type VolPoint = (typeof volatilityHistory)[number];
 
-// ---- RENDER: yield-curve spread history chart — toggle between 10Y-3M and 10Y-2Y ----
+// ---- RENDER: yield-curve spread history chart, 10Y-3M or 10Y-2Y ----
 function spreadSeries(): Record<string, SpreadSeries>{
   return {
     "3m": {
@@ -139,14 +139,6 @@ function renderSpreadHistory(){
   Object.keys(series).forEach(function(k){
     var sr = series[k];
     sr.detail = sr.detail.replace("</h4>", '</h4><p class="caption">' + sr.lede + "</p>");
-  });
-
-  document.querySelectorAll(".spread-toggle-btn").forEach(function(btn){
-    btn.addEventListener("click", function(){
-      document.querySelectorAll(".spread-toggle-btn").forEach(function(b){ b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
-      btn.classList.add("active"); btn.setAttribute("aria-selected","true");
-      var key = btn.getAttribute("data-series"); if (key != null) draw(key);
-    });
   });
 
   GYN.on("drawSpreadWindow", function(key: string, win: [number, number]){ draw(key, win[0], win[1]); });

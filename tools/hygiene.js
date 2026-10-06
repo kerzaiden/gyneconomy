@@ -4,7 +4,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const PAD_OWNERS = ['colPeek', 'meterPeek'];
-const DYNAMIC_CLASS = /^(cat-(cycle|weather|circulation|mood|energy)|kind-(structural|leading|coincident|lagging)|mkt-(up|down)|f[0-9])$/;
+const DYNAMIC_CLASS = /^(cat-(weather|circulation|mood|energy)|mkt-(up|down)|f[0-9])$/;
 const GONE = ['vh-line', 'subject-chev', 'gdpPeers', 'pickPeer', 'data-gdp-peer', 'panel-row', 'pbar', 'rbar-track', 'reading-box', 'all-row', 'sheet-indicators', 'growth-peers', 'peer-picker'];
 const PINNED = [['COL_FILL', /var COL_FILL = 0\.68;/], ['AXIS', /var AXIS = \{ L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 \};/]];
 
@@ -94,7 +94,7 @@ function unused(js, html, css, files) {
     if (count(n) <= 1) out.push('var ' + n + ' is never used');
   });
   new Set([...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/\.([a-zA-Z][\w-]*)/g)].map(m => m[1])).forEach(c => {
-    if (!DYNAMIC_CLASS.test(c) && !all.includes(c)) out.push('style .' + c + ' matches nothing in the app');
+    if (!DYNAMIC_CLASS.test(c) && !new RegExp('(^|[^\\w-])' + c + '(?![\\w-])').test(all)) out.push('style .' + c + ' matches nothing in the app');
   });
   return out;
 }

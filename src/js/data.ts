@@ -4,10 +4,10 @@ import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
 
 export var BUFFETT_LINE = 80, DEBT_LINE = 70, INTEREST_LINE = 2, DEFICIT_LINE = 3.8;
-export type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number };
-export type SeasonReading = { body: string; economy: string };
-export type UninvLagCycle = { cycle: string; uninv: string; recession: string; lag: string };
-export type FrameworkRow = { indicator: string; body: string; economy: string; category: string };
+type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number };
+type SeasonReading = { body: string; economy: string };
+type UninvLagCycle = { cycle: string; uninv: string; recession: string; lag: string };
+type FrameworkRow = { indicator: string; body: string; economy: string; category: string };
 
 export var CAPE_FAIR = 17;
 export var VIX_CALM = 20, VIX_FEAR = 30;

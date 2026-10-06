@@ -391,7 +391,7 @@ export function m2GrowthChart(Wpx: number, from: number, to?: number | null){
     ', against the long-run norm of ' + M2_NORM + ' per cent">' +
     out.join("") + '</svg>';
 }
-export function m2Step(v: number){
+function m2Step(v: number){
   return v < 0 ? "v5" : v < M2_PACE_LO ? "v4" : v < M2_NORM ? "v3" : v < M2_PACE_HI ? "v2" : v <= M2_FLOOD ? "v1" : "v0";
 }
 var heatTop: number[] = [];
@@ -399,7 +399,7 @@ function heatEdges(){
   if (!heatTop.length){ var all = inflationHistory.map(function(d){ return d.v; }); heatTop = [pctl(all, 0.9), pctl(all, 0.95)]; }
   return heatTop;
 }
-export function heatStep(v: number){
+function heatStep(v: number){
   var top = heatEdges();
   return v < TEMP_BAND_LO ? "s0" : v < CPI_TARGET ? "s1" : v < TEMP_BAND_HI ? "s2" : v < top[0] ? "s3" : v < top[1] ? "s4" : "s5";
 }

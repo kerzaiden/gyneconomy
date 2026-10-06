@@ -7,7 +7,7 @@ import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, 
 import { page } from "./history.ts";
 
 // ---- The roster: every reading, declared once ----
-export type Category = { key: string; title: string; shown: number; onDial?: boolean };
+type Category = { key: string; title: string; shown: number; onDial?: boolean };
 export var TIMING: Record<RosterTiming, { label: string }> = {
   structural: { label:"Structural" },
   leading:    { label:"Leading" },
@@ -112,9 +112,9 @@ function declareRoster(): RosterRow[] {
 export function bootRoster(){
   ROSTER = declareRoster();
   ROSTER.forEach(function(R){ ROSTER_BY[R.id] = R; });
-  page.mode = pageState(function(R){ return R.cycles === false ? undefined : "cycles"; });
-  page.cycles = pageState(function(R){ return R.cycles === false ? undefined : null; });
-  page.range = pageState(function(R){ return R.range || "10y"; });
+  page.mode = pageState(function(){ return "cycles"; });
+  page.cycles = pageState(function(){ return null; });
+  page.range = pageState(function(){ return "10y"; });
   page.stops = pageState(function(R){ return R.stops || ["5y", "10y", "25y", "max"]; });
   page.head = pageState(function(R){ return { mark:R.mark, title:R.head }; });
   page.y0 = pageState(function(R){ var d = R.hist ? keyed(R.hist).filter(function(x){ return x.v != null; })[0] : null; return d ? +String(d.k).slice(0, 4) : undefined; });

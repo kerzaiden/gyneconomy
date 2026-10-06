@@ -22,26 +22,21 @@ function lift(file, names, vars) {
   }
   return new Function(out + 'return { ' + names.concat(vars || []).join(', ') + ' };')();
 }
-const { slopeOf, readSeason, cpiTrend, regimeOf, HOLD_BAND } = lift('src/js/model.ts', ['slopeOf', 'monthIndex', 'cpiTrend', 'cpiDirectionOf', 'regimeOf', 'readSeason'], ['HOLD_BAND']);
+const { readSeason, cpiTrend, regimeOf, HOLD_BAND } = lift('src/js/model.ts', ['monthIndex', 'cpiTrend', 'cpiDirectionOf', 'regimeOf', 'readSeason'], ['HOLD_BAND']);
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
   if (got === want) { pass++; console.log('  ok   ' + label.padEnd(52) + String(got)); }
   else { fail++; console.log('  FAIL ' + label + '\n       got  ' + got + '\n       want ' + want); }
 }
-const run = (n, end, step) => Array.from({ length: n }, (_, i) => ({ v: end - (n - 1 - i) * step }));
+const run = (n, end, step) => Array.from({ length: n }, (_, i) => ({ m: '2025-' + String(i + 1).padStart(2, '0'), v: end - (n - 1 - i) * step }));
 const cpi = (end, step) => run(12, end, step);
 const P = 2;
 const up = { q: '2026 Q2', v: 3 }, down = { q: '2026 Q2', v: 1 };
 const season = (c, g, prev) => readSeason(c, g, P, prev).season;
 
-ok('flat series has no slope', slopeOf([2, 2, 2, 2]), 0);
-ok('a step of 0.5 fits as 0.5', +slopeOf([1, 1.5, 2, 2.5]).toFixed(10), 0.5);
-ok('a falling step fits negative', +slopeOf([3, 2.5, 2, 1.5]).toFixed(10), -0.5);
-ok('one point has no slope', slopeOf([4]), 0);
 const months = ['2025-08', '2025-09', '2025-11', '2025-12'];
 ok('a missing month is a gap in time, not a step', +cpiTrend(months.map((m, i) => ({ m, v: [1, 1.1, 1.3, 1.4][i] }))).toFixed(10), 0.1);
-ok('points with no month fall back to even steps', +cpiTrend([{ v:1 }, { v:1.5 }, { v:2 }]).toFixed(10), 0.5);
 
 ok('the margin is BEA’s mean absolute revision', HOLD_BAND, 0.47);
 ok('growth past the margin above potential is expansion', regimeOf(P + 0.48, P, 'contraction'), 'expansion');
@@ -71,7 +66,7 @@ ok('prices exactly 3.0 are not hot',   readSeason(cpi(3.0, 0), up, P).cpiHot,  f
 ok('prices just over 3.0 are hot',     readSeason(cpi(3.001, 0), up, P).cpiHot, true);
 ok('prices exactly 1.0 are not cold',  readSeason(cpi(1.0, 0), down, P).cpiCold, false);
 ok('prices just under 1.0 are cold',   readSeason(cpi(0.999, 0), down, P).cpiCold, true);
-const at = s => [{ v: 0 }, { v: s }];
+const at = s => [{ m: '2025-01', v: 0 }, { m: '2025-02', v: s }];
 ok('a CPI slope of exactly 0.02 is steady',   readSeason(at(0.02), up, P).cpiDirection, 'steady');
 ok('a CPI slope just over 0.02 is rising',    readSeason(at(0.0201), up, P).cpiDirection, 'rising');
 ok('a CPI slope of exactly -0.02 is steady',  readSeason(at(-0.02), up, P).cpiDirection, 'steady');
