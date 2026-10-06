@@ -17,12 +17,7 @@ type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
 var FENCE_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)", u:"https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm" };
-var TRACKER_SRC: Src[] = [
-  { t:"Munro, Critchley & Fraser — The two FIGO systems for normal and abnormal uterine bleeding symptoms: 2018 revisions (normal length and regularity)", u:"https://obgyn.onlinelibrary.wiley.com/doi/10.1002/ijgo.12666" },
-  { t:"Bull et al. — Real-world menstrual cycle characteristics of more than 600,000 menstrual cycles, npj Digital Medicine 2019 (Natural Cycles)", u:"https://www.nature.com/articles/s41746-019-0152-7" },
-  { t:"Li et al. — Menstrual cycle length variation by demographic characteristics from the Apple Women’s Health Study, npj Digital Medicine 2023", u:"https://www.nature.com/articles/s41746-023-00848-1" },
-  { t:"Clue — How long would it take Clue to give accurate predictions? (three cycles)", u:"https://support.helloclue.com/hc/en-us/articles/29049246302237-My-current-tracker-knows-my-cycle-already-How-long-would-it-take-Clue-to-give-accurate-predictions" }
-];
+var FIGO_SRC: Src = { t:"Munro, Critchley & Fraser — The two FIGO systems for normal and abnormal uterine bleeding symptoms: 2018 revisions (normal length and regularity)", u:"https://obgyn.onlinelibrary.wiley.com/doi/10.1002/ijgo.12666" };
 var BASELINE = 3;
 
 function quartile(vs: number[], p: number){
@@ -242,8 +237,8 @@ function depthWords(){
   return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
 }
 function methodFacts(){
-  return ["<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are; " + word(BASELINE) + " is the fewest Clue builds a baseline on.",
-    "<b>As a cycle tracker reads her:</b> each range is her own record’s, as Clue and Natural Cycles judge a woman against her own cycles; Normal is a percentile band, as FIGO’s normal cycle length is; a season turns only past a margin for noise, as the temperature method waits for a sustained rise; and a peak is confirmed after the fact, never forecast."];
+  return ["<b>FIGO</b>, the International Federation of Gynecology and Obstetrics, sets the clinical definition of a normal cycle: a normal length is the middle of a large population’s cycles (24 to 38 days, the 5th to 95th percentile), and cycles are regular when the shortest and the longest are close (within 7 to 9 days). Cycle Statistics reads her the same way, against her own record rather than a body’s days.",
+    "<b>Regularity</b> is FIGO’s spread, from the shortest to the longest of the " + word(BASELINE) + " cycles before it. FIGO looks over a year of cycles; hers last years, so " + word(BASELINE) + " is the app’s choice."];
 }
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
@@ -251,7 +246,7 @@ function chartDetail(){
     "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
     "<b>Health Score</b> is the share of results that are Normal, out of 100."
-  ].concat(methodFacts(), ["<b>History, not forecast:</b> it describes her past, not what comes next."])) + srcBlock([FENCE_SRC].concat(TRACKER_SRC));
+  ].concat(methodFacts(), ["<b>History, not forecast:</b> it describes her past, not what comes next."])) + srcBlock([FENCE_SRC, FIGO_SRC]);
 }
 export function cycleScore(m: CycleModel){ var i = marketCycles.indexOf(m.era); return i < 0 ? "" : scoreBox(i); }
 export function chartDoor(m: CycleModel){

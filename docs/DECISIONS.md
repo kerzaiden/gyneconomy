@@ -577,15 +577,17 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   declining over some 250 years, which the app does not cover. Don't re-propose. (0.8.3, Oct 6, 2026)
 - **Regularity is a cycle result: the spread from the shortest to the longest of the three cycles before it.** FIGO
   measures how regular cycles are by the gap between the shortest and the longest (Munro, Critchley and Fraser,
-  2018); three is the fewest cycles Clue builds a baseline on. Lower is its good side, and its range is the middle
+  2018). FIGO looks over a year of cycles; hers last years, so three is the app's choice, and the (i) says so. Lower
+  is its good side, and its range is the middle
   half of all her closed cycles, like every other result. It is the one cycle result
   read on the open cycle, since the three cycles before it have closed. Keren: "I think we should show track
   regularity." (0.8.3, Oct 5, 2026)
-- **Cycle Statistics' (i) says how its statistics compare with a cycle tracker's, with the trackers' published
-  sources: her own record as the baseline (Clue, Natural Cycles), Normal as a percentile band (FIGO), a season
-  turning only past a margin for noise (the temperature method), a peak confirmed after the fact.** Keren: "We need
-  to somehow incorporate this data in our app … so people can have more reliable view on what we're doing." FIGO
-  here is its system for normal menstrual bleeding (System 1), not its cancer staging models. (0.8.3, Oct 5, 2026)
+- **Cycle Statistics' (i) explains FIGO and nothing else from the cycle trackers: FIGO's clinical definition of a
+  normal cycle (24 to 38 days, the 5th to 95th percentile; regular when the shortest and the longest are within 7 to
+  9 days, Munro, Critchley and Fraser, 2018), and that the app reads her the same way against her own record.**
+  Keren: "Let's use only FIGO. Explain FIGO. We don't have to explain how we compare to other menstrual cycle app."
+  FIGO here is its system for normal menstrual bleeding (System 1), not its cancer staging models. The ±0.47 band
+  stays "Sensitivity" (Keren: "I think sensitivity is a better word", after "margin for noise" was tried). (0.8.3, Oct 6, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
@@ -635,10 +637,6 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   a gap smaller than that is inside what BEA itself later revises. Keren left the margin to Claude ("do it
   yourself"). Without it the side switched 58 times since 1950, with 82 quarters within half a point of
   potential; with it, 42. (0.8.0, Oct 5, 2026)
-- **The 0.47 points is called the margin for noise, in the Season Model's (i) and under the dial.** Keren: "I love
-  the term margin for noise … when we explain the sensitivity I think noise is a better terminology" (0.8.3, Oct 5,
-  2026; "Sensitivity" until then).
-
 - **The price direction's flat tolerance (±0.02 pp a month) is Keren's call under the rule that cut-offs come
   from convention or the record.** A 95% significance test on the same slopes was measured first; it asks whether a
   trend is certain, and a season has to say it has turned before certainty arrives. Keren: "Keep mine". The growth
