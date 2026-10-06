@@ -135,7 +135,6 @@ type RosterRow = {
   pre?: string;
   last?: string;
   ring?: (v: number | null | undefined) => number;
-  miniSel?: string;
   flip?: boolean;
   pair?: HistSpec;
   peek?: "pair";

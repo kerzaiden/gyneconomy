@@ -1,13 +1,13 @@
-import { allSources, byId, elFrom, focusQuiet, layer, need, put, ui } from "./dom.ts";
+import { allSources, byId, focusQuiet, layer, need, put, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { gdpSrc, sp500AnnualReturnSource } from "./data.ts";
 import { coincident, lagging, rowReadings } from "./readings.ts";
 import { ROSTER, rosterFor } from "./roster.ts";
-import { cardDetailHtml, collapseEmptyBlocks, detailClose, metricSheet, seatPageFoot, sheetRenderers, subjectIcon, subjectRow, timingPill } from "./render-core.ts";
+import { cardDetailHtml, collapseEmptyBlocks, detailClose, metricSheet, seatPageFoot, sheetRenderers, timingPill } from "./render-core.ts";
 import { cycleViewEl, setTopbar } from "./render-pages.ts";
 import { cycleView } from "./dial-cycle.ts";
 import { renderMetricPages } from "./inner-pages.ts";
-import { renderPeekAndCategories } from "./cycle-tab.ts";
+import { renderReadingPages } from "./cycle-tab.ts";
 export type SourceIndex = { all: Src[]; cards: { name: string; src: Src[] }[]; annual: Src[]; gdp: Src[] };
 export var sourceIndex: SourceIndex = { all: [], cards: [], annual: [], gdp: [] };
 
@@ -17,22 +17,10 @@ type PageHome = { panel: HTMLElement; bar: () => [string, (() => void) | null]; 
 function convertLeadingSigns(){
   ROSTER.filter(function(R){ return R.door === "subject"; }).forEach(function(R){
     var key = R.id.replace("sheet-sign-", ""), det = document.querySelector('.subject[data-subject="' + key + '"]'); if (!det) return;
-    var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body"); if (!sum || !body) throw new Error("the subject " + key + " lacks its summary or body");
-    var id = R.id;
-    var row = document.createElement("div");
-    row.className = "subject sign-row";
-    row.setAttribute("data-subject", key);
-    row.setAttribute("role", "button"); row.tabIndex = 0;
-    row.setAttribute("data-open", id); row.setAttribute("data-title", R.name);
-    var face = document.createElement("div"); face.className = "subject-summary";
-    while (sum.firstChild) face.appendChild(sum.firstChild);
-    var lab = face.querySelector(".subject-label");
-    if (lab) lab.innerHTML = '<span class="peek-mark">' + R.mark() + '</span>' + lab.innerHTML;
-    row.appendChild(face);
-    var sheet = metricSheet(id);
+    var sheet = metricSheet(R.id);
     sheet.innerHTML = timingPill(R.timing);
-    while (body.firstChild) sheet.appendChild(body.firstChild);
-    det.before(row, sheet);
+    while (det.firstChild) sheet.appendChild(det.firstChild);
+    det.before(sheet);
     det.remove();
   });
 }
@@ -50,10 +38,6 @@ function orderSheet(sheet: HTMLElement){
     .sort(function(a, b){ return a.r - b.r || a.i - b.i; })
     .forEach(function(x){ sheet.appendChild(x.el); });
 }
-function rowFrom(html: string): Element { var n = elFrom(html); if (!n) throw new Error("a subject row drew nothing"); return n; }
-function tagOf(ind: Indicator): Tag & { state: Tone } {
-  var t = ind.tag; if (!t || t.state === undefined) throw new Error("the reading " + ind.bodyTerm + " has no tag state"); return { text:t.text, state:t.state };
-}
 function openTarget(el: Element){ var id = el.getAttribute("data-open"); return id ? byId(id) : null; }
 function tabPanel(tab: string){ return need("panel-" + tab); }
 function scrollSoon(y: number){ window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); }); }
@@ -69,22 +53,12 @@ function orderMetricSheets(){
 function renderSignsList(){
   var host = need("signs-list");
   function signSubject(ind: Indicator){
-    var R = rosterFor(ind), id = R.id, key = id.replace("sheet-sign-", ""), pg: IndicatorPage = ind.page || {}, timing = R.timing;
-    var svg = R.mark(), tag = tagOf(ind);
-    var row = rowFrom(subjectRow({
-      subject:"sign-" + key, open:id, title:R.name,
-      icon: subjectIcon(tag.state, svg),
-      text: '<div class="subject-label">' + ind.bodyTerm + ' \u00b7 ' + ind.econTerm + '</div>' +
-            '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div>' +
-            '<div class="subject-verdict">' + (tag.text ? '<span class="tag ' + tag.state + '">' + tag.text + '</span>' : '') + '</div>' +
-            (ind.peek || "")
-    }));
-    var d = metricSheet(id);
+    var R = rosterFor(ind), pg: IndicatorPage = ind.page || {}, timing = R.timing;
+    var d = metricSheet(R.id);
     d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
     put(d.querySelector(".sign-detail"), cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") +
       (function(){ var h = ui.heldHighlights; ui.heldHighlights = ""; return h; })());
-    if (pg.peeked){ host.appendChild(d); return d; }
-    if (pg.seat) pg.seat(ind, d); else { host.appendChild(row); host.appendChild(d); }
+    if (pg.seat) pg.seat(ind, d); else host.appendChild(d);
     return d;
   }
   rowReadings().forEach(function(ind){ signSubject(ind); });
@@ -188,7 +162,7 @@ function buildNav(){
   });
   cyclePanel.addEventListener("keydown", function(e){
     if (e.key !== "Enter" && e.key !== " ") return;
-    var row = (e.target as Element).closest && (e.target as Element).closest(".sign-row, tr[data-open]"); if (!row) return;
+    var row = (e.target as Element).closest && (e.target as Element).closest("tr[data-open]"); if (!row) return;
     e.preventDefault();
     openMetricPage(openTarget(row), row.getAttribute("data-title"));
   });
@@ -196,9 +170,7 @@ function buildNav(){
   NAV.panel = analysisPanel;
 }
 function renderPagesAndNav(){
-  var ctx = renderPeekAndCategories();
-  if (!ctx) return;
-  renderMetricPages(ctx);
+  renderMetricPages(renderReadingPages());
   buildNav();
 }
 // ---- The Diagnosis: under the dial, today or at a cycle's close ----

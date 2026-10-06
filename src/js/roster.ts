@@ -9,7 +9,7 @@ import { page } from "./history.ts";
 import { indPeriod, realRateHistory, vixPct } from "./readings.ts";
 
 // ---- The roster: every reading, declared once ----
-export type Category = { key: string; title: string; shown: number; onDial?: boolean; inTrend?: boolean };
+export type Category = { key: string; title: string; shown: number; onDial?: boolean };
 export var TIMING: Record<RosterTiming, { label: string }> = {
   structural: { label:"Structural" },
   leading:    { label:"Leading" },
@@ -19,7 +19,7 @@ export var TIMING: Record<RosterTiming, { label: string }> = {
 export var CATEGORIES: Category[] = [
   { key:"weather", title:"Weather", shown:0, onDial:true },
   { key:"circulation", title:"Circulation", shown:2 },
-  { key:"mood", title:"Mood", shown:1, inTrend:true },
+  { key:"mood", title:"Mood", shown:1 },
   { key:"energy", title:"Activity", shown:3 }
 ];
 export var GROUP_MARK: Record<string, () => string> = { "Stress":boltSvg };
@@ -40,11 +40,6 @@ function compiledDay(){ return dataCompiledLabel; }
 function isoLabel(iso: string | null | undefined){
   var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
   return m ? MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + ", " + m[1] : "";
-}
-export function paintWhen(sheet: string){
-  var R = ROSTER_BY[sheet], when = cardDate(R);
-  if (!when) return;
-  Array.prototype.forEach.call(document.querySelectorAll('[data-open="' + sheet + '"] .ci-when'), function(w: Element){ w.textContent = when; });
 }
 function labPeriod(R: RosterRow){ return periodOf(labRow(R.id)); }
 export function rosterFor(ind: { bodyTerm: string }): RosterRow { return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
@@ -86,12 +81,12 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return" },
     { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", sub:"Rates", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
-      head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate",
+      head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate", cardUnit:"Fed funds target",
       when:function(){ return now.fedFunds.asOf; }, live:["fedFunds"] },
     { id:"sheet-sign-real-rate", name:"Real interest rate", cat:"circulation", sub:"Rates", timing:"leading", mark:heartSvg, door:"row", term:"Real interest rate",
       head:"Real Federal Funds Rate", hist:{ s:realRateHistory, k:"m" }, mid:NEUTRAL_RATE, when:lastDate, cardUnit:"after inflation" },
     { id:"sheet-sign-pressure", name:"Pressure", cat:"circulation", sub:"Rates", timing:"leading", mark:gaugeSvg, door:"subject", hk:"pressure-range",
-      head:"", stops:["5y", "10y", "max"], hist:{ s:t10yYieldHistory, k:"q" }, rule:true, when:function(){ return isoLabel(curveAsOf()); }, live:["yieldCurve"] },
+      head:"", stops:["5y", "10y", "max"], hist:{ s:t10yYieldHistory, k:"q" }, rule:true, cardUnit:"10-year Treasury", when:function(){ return isoLabel(curveAsOf()); }, live:["yieldCurve"] },
     { id:"sheet-sign-pulse", name:"Pulse", cat:"circulation", sub:"Money", timing:"coincident", mark:ecgSvg, door:"pair", term:"Pulse", hk:"pulse-range",
       head:"Velocity of Money (M2)", hist:{ s:m2vHistory, k:"qi", y0:M2V_FROM_YEAR }, pulse:PULSE_PRE2008, when:lastDate,
       cardUnit:"M2 velocity", live:["coincident"] },
@@ -105,7 +100,7 @@ function declareRoster(): RosterRow[] {
       head:"Buffett Indicator, Market Value ÷ GDP", hist:{ s:buffettHistory, k:"q" }, mid:BUFFETT_LINE, when:lastDate,
       cardUnit:"of GDP", live:["valuation"] },
     { id:"sheet-sign-sentiment", name:"Fear", cat:"mood", sub:"Sentiment", good:"down", timing:"leading", mark:volatilitySvg, door:"subject", hk:"fear-range",
-      head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, ring:vixPct, miniSel:".subject-ring > svg",
+      head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, ring:vixPct, cardUnit:"VIX",
       when:function(){ return isoLabel(liveIsoOf("vixClose")) || compiledDay(); }, live:["sentiment", "vixClose", "vix3mClose"] },
     { id:"sheet-sign-desire", name:"Consumer demand", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"coincident", mark:flameSvg, door:"row", term:"Desire",
       head:"Consumer Demand", hist:{ s:durablesHistory, k:"m" }, mid:DESIRE_LINE, when:lastDate,

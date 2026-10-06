@@ -5,7 +5,7 @@ import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
-import { cardFace, cardValue, eraFig } from "./era.ts";
+import { eraFig, todayFace, todayValue } from "./era.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { cycLabel, cycleModel, nowModel, openCycle } from "./model.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
@@ -64,7 +64,7 @@ function spanOf(print: (v: number) => string){
   return function(lo: number, hi: number){ return print(lo) === print(hi) ? print(lo) : print(lo) + " – " + print(hi); };
 }
 function cardPrint(R: RosterRow){
-  var g = eraFig(cardFace(R.id).text), pc = R.pair ? "%" : "", f = function(v: number){ return g(v) + pc; };
+  var g = eraFig(todayFace(R).text), pc = R.pair ? "%" : "", f = function(v: number){ return g(v) + pc; };
   if (!R.flip) return { print:function(v: number){ return f(v); }, span:spanOf(function(v){ return f(v); }) };
   var word = function(v: number){ return v > 0 ? " surplus" : " deficit"; }, print = function(v: number){ return f(Math.abs(v)) + word(v); };
   return { print:print, span:function(lo: number, hi: number){
@@ -74,7 +74,7 @@ function cardPrint(R: RosterRow){
 }
 function readingLab(R: RosterRow): Lab {
   var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; }, p = cardPrint(R);
-  var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? cardValue(R) : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
+  var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? todayValue(R) : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
   return { id:R.id, name:R.name, cat:R.cat, good:R.good, per:per, now:readingsNorm(seen), print:p.print, span:p.span,
     norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
 }
@@ -111,7 +111,7 @@ function findWords(l: Lab){
 }
 function rowTag(l: Lab){ return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"'; }
 function cardWord(l: Lab, i: number){
-  var w = marketCycles[i].ongoing ? document.querySelector('.cat-item[data-open="' + l.id + '"] .ci-word') : null, t = w ? (w.textContent || "").trim() : "";
+  var R = ROSTER_BY[l.id], t = R && marketCycles[i].ongoing ? todayFace(R).word : "";
   return t ? t + " \u00b7 " : "";
 }
 function labItem(l: Lab, i: number){

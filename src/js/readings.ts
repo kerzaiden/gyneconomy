@@ -823,7 +823,7 @@ export function bootReadingRegistry(){
       set: function(v: Partial<typeof now.valuation>){
         now.valuation = merge(now.valuation, v.rows ? merge(v, { rows: overRows(now.valuation.rows, v.rows) }) : v);
         var cape = valRow("cape"); if (cape) now.valuation.tag = valuationVerdict(metered(cape.meter));
-      }
+      }, onOpen: true
     },
     coincident: {
       kind: "series", fileAsOf: coincidentAsOf,
@@ -838,7 +838,7 @@ export function bootReadingRegistry(){
         row.meter.value = v;
         row.flagValue = v.toFixed(1);
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
-      }
+      }, onOpen: true
     },
     vix3mClose: { kind: "scalar", band: [5, 100], fileAsOf: vixAsOf, set: function(v: number){ now.vix3mClose = v; }, onOpen: true },
     capeValue: {
