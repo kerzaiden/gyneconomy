@@ -3,7 +3,7 @@ import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./d
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { CLOCK_SRC, frameworkRows, marketCycles } from "./data.ts";
-import { cpiNow, currentEra, currentSeason, HOLD_BAND, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
+import { cpiNow, currentEra, currentSeason, HOLD_BAND, inflationFigure, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { sourceIndex } from "./pages-nav.ts";
 
@@ -70,7 +70,7 @@ function renderSeasonRows(){
   put("seasons-rows", seasonRules.map(function(r){
       var m = wheelMeta[r.key as Season], now = r.key === currentSeason;
       return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
-        '<span class="range-cell" title="' + r.range + (now ? ' · PCE ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
+        '<span class="range-cell" title="' + r.range + (now ? ' · PCE ' + inflationFigure(cpiNow) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
     }).join(""));
   put("cycle-model-line", cycleModelLine());
   put("seasons-kicker", "The Season Model" + expandBtn(

@@ -1,7 +1,7 @@
 import { fedFundsHistory, fedMoves } from "./history-fred.ts";
 import { now, usRealGdpGrowth } from "./data.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { cpiDirectionAt, growthWord } from "./model.ts";
+import { cpiDirectionAt, growthWord, inflationFigure } from "./model.ts";
 import { fmtSigned, isoDay, MONTHS_SHORT } from "./format.ts";
 import type { CycleModel } from "./model.ts";
 
@@ -106,7 +106,7 @@ function levelsHtml(m: CycleModel, at: Phase | null, peak: string){
   var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
   var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
   return '<ul class="fp-levels">' + (at ? level("fp-rate", "Federal funds rate", (at.s > 0 ? "Tightening" : "Easing") + ' since ' + monthName(at.m)) : "") +
-    level("fp-prices", "Prices", range + ', ' + heat + ' (' + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "\u2212") + '%)') + peak +
+    level("fp-prices", "Prices", range + ', ' + heat + ' (' + inflationFigure(r.cpiNow) + '%)') + peak +
     level("fp-growth", "Growth", word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '%, potential ' + r.potential.toFixed(1) + '%)') + '</ul>';
 }
 function endMonthOf(m: CycleModel){

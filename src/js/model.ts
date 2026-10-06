@@ -150,8 +150,13 @@ export function potentialGap(r: ModelReading){
 function seasonWhyFor(m: CycleModel){
   var r = m.reading;
   return "Today the economy is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " +
-    (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + r.cpiNow.toFixed(1) + "%). " +
+    (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + inflationFigure(r.cpiNow) + "%). " +
     seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
+}
+export function inflationFigure(v: number){
+  var s = (Math.round(v * 10) / 10 || 0).toFixed(1);
+  if ((v > 3 && Number(s) <= 3) || (v < 1 && Number(s) >= 1)) s = v.toFixed(2);
+  return s.replace("-", "\u2212");
 }
 export function growthWord(r: ModelReading){
   return r.regime === "contraction" ? "contracting" : "expanding";

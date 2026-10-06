@@ -908,6 +908,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Figures
 
+- **An inflation reading past the 1–3% band never prints as the band's edge: one decimal, or two when one would
+  round onto 1.0 or 3.0 (3.04% is "3.04%", not "Above range (3.0%)").** Written once, `inflationFigure` in
+  model.ts, and read on every card, page and note that prints the reading. Keren asked for the fix after the
+  6 Oct code review. (0.8.4, Oct 6, 2026)
 - **Federal debt, Interest payments and Federal budget ask three different questions (the stock owed, what
   carrying it costs, what is added this year), so their different figures never contradict each other.**
   (V358)
