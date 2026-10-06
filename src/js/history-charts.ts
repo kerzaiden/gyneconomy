@@ -391,7 +391,7 @@ export function m2GrowthChart(Wpx: number, from: number, to?: number | null){
     ', against the long-run norm of ' + M2_NORM + ' per cent">' +
     out.join("") + '</svg>';
 }
-export function m2Step(v: number){
+function m2Step(v: number){
   return v < 0 ? "v5" : v < M2_PACE_LO ? "v4" : v < M2_NORM ? "v3" : v < M2_PACE_HI ? "v2" : v <= M2_FLOOD ? "v1" : "v0";
 }
 var heatTop: number[] = [];

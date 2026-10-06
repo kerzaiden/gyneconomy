@@ -1,7 +1,7 @@
 import { CHEV, titleCase } from "./format.ts";
 
-export type Layer = { rank?: number; open(): boolean; close(): void; box?: () => Element | null };
-export type UiStore = {
+type Layer = { rank?: number; open(): boolean; close(): void; box?: () => Element | null };
+type UiStore = {
   eraOpen: Cycle | null;
   shownEra: Cycle | null;
   topbarBack: (() => void) | null;

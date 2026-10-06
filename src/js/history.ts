@@ -3,11 +3,11 @@ import { byId, detailTexts, focusQuiet, layer, onScreen } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, pendingGeom } from "./charts.ts";
 import { deficitHistory, marketCycles } from "./data.ts";
-import { cycLabel, cycleByName, cycleSpanYears, openCycle } from "./model.ts";
+import { cycLabel, cycleByName, openCycle } from "./model.ts";
 
-export type HeadGroup = { key: string; label: string; on: boolean; value: string; rows: string };
-export type HistHeadSpec = { mark?: () => string; title?: string | (() => string); menu?: () => HeadGroup[] };
-export type PageStore = { mode: Record<string, string | undefined>; cycles: Record<string, string | null | undefined>; range: Record<string, string>; stops: Record<string, string[]>; head: Record<string, HistHeadSpec>; y0: Record<string, number | undefined> };
+type HeadGroup = { key: string; label: string; on: boolean; value: string; rows: string };
+type HistHeadSpec = { mark?: () => string; title?: string | (() => string); menu?: () => HeadGroup[] };
+type PageStore = { mode: Record<string, string | undefined>; cycles: Record<string, string | null | undefined>; range: Record<string, string>; stops: Record<string, string[]>; head: Record<string, HistHeadSpec>; y0: Record<string, number | undefined> };
 type GeomVal = ChartGeom["vals"][number];
 type TimelineSource = { series?: Point[]; depth?: number | null };
 export var page = {
@@ -97,27 +97,21 @@ function headMenuShut(refocus: boolean){
 }
 export function histNote(head: string, info: string | (() => string)){ if (head && info) HIST_NOTE[head] = info; }
 var TIMELINE_STOPS = [
-  { key:"cycle",  label:"Current cycle" },
-  { key:"5y",     label:"5Y",  span:5 },
-  { key:"10y",    label:"10Y", span:10 },
-  { key:"25y",    label:"25Y", span:25 },
-  { key:"max",    label:"Max", span:Infinity },
-  { key:"cycles", label:"Cycles" }
+  { key:"5y",  label:"5Y",  span:5 },
+  { key:"10y", label:"10Y", span:10 },
+  { key:"25y", label:"25Y", span:25 },
+  { key:"max", label:"Max", span:Infinity }
 ];
 export function timelineSpan(key: string | undefined){
-  if (key === "cycle") return cycleSpanYears();
   for (var i = 0; i < TIMELINE_STOPS.length; i++) if (TIMELINE_STOPS[i].key === key) return TIMELINE_STOPS[i].span;
   return null;
 }
-export function timelineFor(o: TimelineSource & { stops: string[] }){
+function timelineFor(o: TimelineSource & { stops: string[] }){
   var ser = o.series || [], n = ser.length;
   var depth = o.depth != null ? o.depth : (n ? yearOf(ser[n - 1]) - yearOf(ser[0]) + 1 : 0);
-  var hasCycle = o.stops.indexOf("cycle") !== -1;
   return TIMELINE_STOPS.filter(function(r){
     if (o.stops.indexOf(r.key) === -1) return false;
-    if (r.span == null || r.span === Infinity) return true;
-    if (hasCycle && r.span === 5) return false;
-    return depth >= r.span;
+    return r.span === Infinity || depth >= r.span;
   });
 }
 export function timelineWindow<T extends Point>(series: T[], key: string): T[] {
@@ -141,7 +135,7 @@ export function windowScale(vals: (number | null)[], must?: number[]){
     ticks.push(Math.abs(t) < step * 1e-6 ? 0 : t);
   return { lo:lo, hi:hi, ticks:ticks };
 }
-export function histReadEnsure(host: HTMLElement){
+function histReadEnsure(host: HTMLElement){
   var cont = (host.closest(".page-chart, .spread-history") || host.parentNode || host) as HTMLElement;
   var el = cont.querySelector<HTMLElement>(":scope > .hist-read");
   if (!el){
@@ -163,7 +157,7 @@ export function histReadEnsure(host: HTMLElement){
 }
 function geomFmt(g: ChartGeom){ return function(v: number){ return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212"); }; }
 function attrNum(el: Element, name: string){ return parseFloat(el.getAttribute(name) || ""); }
-export function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: number){
+function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: number){
   var g = host.__geom, el = host.__readEl;
   if (!g || !el) return;
   var fmt = geomFmt(g);
@@ -222,7 +216,7 @@ function histAxisEnds(svg: SVGSVGElement, fr: Element | null){
     else if (bb.x + bb.width > x1){ t.setAttribute("text-anchor", "end"); t.setAttribute("x", x1.toFixed(1)); }
   });
 }
-export function histLegend(host: HTMLElement){
+function histLegend(host: HTMLElement){
   var g = host.__geom;
   var svg = host.querySelector<SVGSVGElement>("svg.hist-svg") || host.querySelector<SVGSVGElement>("svg.vh-svg") || host.querySelector("svg");
   if (!svg) return;
@@ -366,7 +360,7 @@ export function defFrom(key: string){
   var sp = timelineSpan(key);
   return (sp == null || sp === Infinity) ? 0 : Math.max(0, deficitHistory.length - sp);
 }
-export function tabSegs(items: string[][], active: string | undefined, attr: string){
+function tabSegs(items: string[][], active: string | undefined, attr: string){
   var any = items.some(function(t){ return t[0] === active; });
   return items.map(function(t, i){
     var on = t[0] === active;
@@ -424,7 +418,7 @@ function cyclePicker(id: string, picked: string | null | undefined, minYear?: nu
         '</span><span class="cycsel-yr">' + L.years + '</span></button>';
     }).join("") + '</div></div>';
 }
-export function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
+function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
   if (!ranges || ranges.length < 2) return "";
   return tabBar('data-range-for="' + id + '"', ranges.map(function(r){ return [r.key, r.label]; }), active, "data-range");
 }

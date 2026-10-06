@@ -137,8 +137,6 @@ async function openPage(p, url, sheet) {
           return !!bar && !bar.closest('.page-chart, .spread-history'); })(),
         frame: q('.bt-frame'), grid: q('.bt-grid'), vgrid: q('.bt-vgrid'), yl: q('.bt-yl'), xl: q('.bt-xl'),
         mark: !!(btn && btn.closest('.band-head').querySelector('.bh-mark svg')), chip: !!mp.querySelector('.timing-row'),
-        above: (() => { const bar = mp.querySelector('.hist-bar');
-          return bar ? [...mp.querySelectorAll('.card-head, .metric-row')].filter(e => e.compareDocumentPosition(bar) & 4).length : 0; })(),
         boxes: mp.querySelectorAll('.highlights').length,
         gap: (() => { const bar = mp.querySelector('.hist-bar'), top = document.querySelector('.wrap > .topbar');
           return bar && top ? Math.round(bar.getBoundingClientRect().top - top.getBoundingClientRect().bottom) : null; })(),
@@ -150,7 +148,7 @@ async function openPage(p, url, sheet) {
     if (!r.frame) miss.push('frame'); if (!r.grid) miss.push('gridlines');
     if (!r.vgrid) miss.push('vertical rules'); if (!r.yl) miss.push('y labels'); if (!r.xl) miss.push('x labels');
     if (!r.mark) miss.push('the head\u2019s mark'); if (!r.chip) miss.push('the timing chip');
-    if (r.above) miss.push('the bar first (a card head sits above it)'); if (r.boxes > 1) miss.push('a single Insights box (' + r.boxes + ')');
+    if (r.boxes > 1) miss.push('a single Insights box (' + r.boxes + ')');
     miss.length ? bad('page ' + label, 'missing ' + miss.join(', ')) : ok('page ' + label, r.title);
     tall[label] = r.tall; gaps[label] = r.gap;
     pills[label] = await p.evaluate(() => {
@@ -586,7 +584,7 @@ async function openPage(p, url, sheet) {
     headCol.got === headCol.want && headCol.worn
       ? ok('a reading\u2019s page wears its category colour', headCol.got)
       : bad('a reading\u2019s page wears its category colour', JSON.stringify(headCol));
-    const square = () => p.evaluate(() => [...document.querySelectorAll('.rangebar, .range-seg.on, .search-field, .cycsel-btn, .more-row, .contact-send, .spread-toggle-btn.active, .trendpill, .lab-filter')]
+    const square = () => p.evaluate(() => [...document.querySelectorAll('.rangebar, .range-seg.on, .search-field, .cycsel-btn, .more-row, .contact-send, .trendpill, .lab-filter')]
       .filter(e => e.offsetParent && e.getBoundingClientRect().height).map(e => ({ c: e.className.split(' ')[0], ok: parseFloat(getComputedStyle(e).borderTopLeftRadius) >= e.getBoundingClientRect().height / 2 - 0.5 })));
     const seen = [...await square()];
     await goHome(p, url); await p.click('.tab-btn[data-tab="chart"]'); await settle(p); seen.push(...await square());

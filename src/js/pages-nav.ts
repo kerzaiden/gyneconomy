@@ -8,7 +8,7 @@ import { cycleViewEl, setTopbar } from "./render-pages.ts";
 import { cycleView } from "./dial-cycle.ts";
 import { renderMetricPages } from "./inner-pages.ts";
 import { renderReadingPages } from "./cycle-tab.ts";
-export type SourceIndex = { all: Src[]; cards: { name: string; src: Src[] }[]; annual: Src[]; gdp: Src[] };
+type SourceIndex = { all: Src[]; cards: { name: string; src: Src[] }[]; annual: Src[]; gdp: Src[] };
 export var sourceIndex: SourceIndex = { all: [], cards: [], annual: [], gdp: [] };
 
 type OpenPage = (el: HTMLElement | null, title: string | null, returning?: boolean, homeKey?: string | null) => void;

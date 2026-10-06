@@ -350,9 +350,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   not already there". (V287, V288, V426)
 - **Nothing sits above a page's window bar but its timing chip, and a page has one Insights box.** Momentum and
   Productivity growth still drew the old card head (mark, name, word, figure) and a second, lede-only Insights
-  box, because their readings never declared `bare` and so `cardDetailHtml` added both; Keren: "everything that
-  is above the selection bar is redundant … there should only be one insight." The suite now fails a page with a
-  card head above its bar or a second Insights box. (V661, V673)
+  box; Keren: "everything that is above the selection bar is redundant … there should only be one insight." The
+  suite fails a page with a second Insights box, and the card head is gone from the code. (V661, V673, 0.8.10)
 - **Every page's window bar sits the same distance under the top bar (`--gap-top`), whatever wraps it.** Momentum
   opened 20px lower than the rest because its wrapper and its bar each added the gap; Keren: "make sure that all
   pages are built with the same structure and same spacing, so that we don't need to go over page by page." The

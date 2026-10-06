@@ -2,7 +2,7 @@ import SERIES from "../data/series.json" with { type: "json" };
 import { MONTHS_SHORT } from "./format.ts";
 import { cpiYoYBefore, gdpYoYBefore, pceYoYHistory } from "./history-fred.ts";
 
-// ---- Layers: Escape closes only the topmost open layer; Tab stays inside a dialog ----
+// ---- Today's date ----
 export function hubTodayHtml(){
   var d = new Date();
   return "<b>Today,</b> " + MONTHS_SHORT[d.getMonth()] + " " + d.getDate();
@@ -21,7 +21,7 @@ export var wheelMeta: Record<Season, { name: string; theme: string; altName: str
   spring:{name:"Spring", theme:"Reflation", altName:null}
 };
 export var seasonOverride: Season | null = null;
-export var PCE_FROM = "2000-01";
+var PCE_FROM = "2000-01";
 export var inflationHistory: MonthPoint[] = SERIES.cpiYoYHistory;
 export var gdpQuarterlyYoY = SERIES.gdpQuarterlyYoY;
 
@@ -36,6 +36,5 @@ export function bootRefreshSeason(){
   dataCompiledLabel = MONTHS_SHORT[DATA_COMPILED.getMonth()] + " " + DATA_COMPILED.getDate() + ", " + DATA_COMPILED.getFullYear();
   inflationHistory = fedGauge(cpiYoYBefore.concat(inflationHistory));
   gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
-  // ---- Daily Feeling/Energy readout (Cycle tab) ----
   calendarTodayY = DATA_COMPILED.getFullYear();
 }

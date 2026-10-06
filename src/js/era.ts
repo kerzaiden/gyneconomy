@@ -11,7 +11,7 @@ export function eraFig(today: string){
   function one(x: number){ var a = Math.abs(x).toFixed(dp); return (+a === 0 ? "" : x < 0 ? "\u2212" : signed ? "+" : "") + a; }
   return function(x: number, y?: number | null){ return pre + one(x) + (y != null ? "/" + one(y) : suf); };
 }
-export type Face = { text: string; unit: string; word: string };
+type Face = { text: string; unit: string; word: string };
 var OWN_FACE: Record<string, () => [string, string]> = {
   "sheet-metric-temp": function(){ return [needInd("sheet-metric-temp").metric, tempWord(nowModel.reading)]; },
   "sheet-metric-gdp": function(){ return [gdpFigure(nowModel.reading), growthShownCap(nowModel.reading)]; },

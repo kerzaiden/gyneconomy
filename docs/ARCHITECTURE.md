@@ -244,10 +244,9 @@ answer registers it, the view that needs it fires it, and neither holds a refere
 with no handler is recorded, which makes the suite able to see it.
 ```
 
-Since V707 the same holds between modules: the five view hooks that rode on `ui` behind a silent `if`
-(`openIndicatorsPage`, `calendarReset`, `metricPageReset`, `drawSpreadView`, `drawSpreadWindow`) are `GYN`
-actions, and the two `window` channels are exports (`sourceIndex` from `pages-nav`, `catSnap` from
-`render-core`). `ui.topbarBack` and `ui.eraPageBack` stay in the store: they are state (what Back does now),
+Since V707 the same holds between modules: the view hooks that rode on `ui` behind a silent `if`
+(`calendarReset`, `metricPageReset`, `drawSpreadView`, `drawSpreadWindow`) are `GYN` actions, and the
+`window` channel is an export (`sourceIndex` from `pages-nav`). `ui.topbarBack` and `ui.eraPageBack` stay in the store: they are state (what Back does now),
 not hooks.
 
 ## Who refreshes what
@@ -414,8 +413,8 @@ Rules that shape the pages:
   which fails on: a chart height set outside `histFrame`; a chart margin set outside it (only the mini chart,
   `colPeek`, owns its own); a `font-size` that is not a `--type-` token; a style aimed
   at one page by id (make it an option of the component, as `goodAbove` is for Productivity's bars); a branch on a
-  reading's name (`ind.bodyTerm === ...`: a reading declares its page in `ind.page` — `bare`, `noHead`, `noMark`,
-  `chartFirst`, `deferHighlights`, `chart`, `after`, `seat` — and `signSubject` only reads it; looking a
+  reading's name (`ind.bodyTerm === ...`: a reading declares its page in `ind.page` — `deferHighlights`, `chart`,
+  `after`, `seat` — and `signSubject` only reads it; looking a
   reading up by name is fine); and anything unused — a function or variable nothing calls, a style class nothing
   carries (classes built at run time are listed in the tool). V662 removed what that found: the Temperature and
   Growth cycle cards (drawn but shown nowhere since V656), the hidden GDP and Valuation summary blocks, eleven dead
@@ -448,7 +447,7 @@ Rules that shape the pages:
   back arrow both call, puts it back. That container shares the tab panel's stack rule (`.tab-panel,
   #calendar-cycle`: a column at `--gap`) and has no wrapper of its own, so a past cycle stacks exactly like
   the current one (V665: a slot inside it once took the gap away; the suite now compares the two frames). In
-  between, `eraShow` sets every history page's cycle picker to it (`pageCycles`, cycles mode; each page's own mode
+  between, `eraShow` sets every history page's cycle picker to it (`page.cycles`, cycles mode; each page's own mode
   is restored on leaving). The reading pages' panels and insights stay today's: they are the page, and the picker
   says which cycle the chart shows. The category cards that showed a closed cycle's figures (`eraCard`, V659 to
   0.8.5) went with the category pages; a cycle's figures are Cycle Statistics' (Keren, 0.8.6: "All the previous
@@ -503,7 +502,7 @@ total returns, Slickcharts' compilation of S&P DJI) partitions the timeline into
 Housing 2003–2008 · Big Tech 2009–2018 · COVID-19 2019–2022 · AI 2023–today. Eras are named for what
 grew; COVID-19 breaks the rule, so no sentence on screen claims it. **Never a second market model beside
 `sp500AnnualReturns`.** Named eras and the season ring are independent objects; never reason from one to
-the other. To close a cycle: set `to`, drop `ongoing`, open the next, add its `cycleEndReadings` entry.
+the other. To close a cycle: set `to`, drop `ongoing`, open the next.
 
 **Growth is YoY only** (quarter against the same quarter a year earlier, the OECD/World Bank headline).
 BEA's annualized print (−28.0 to +34.9 across 2020) is never carried and never feeds the season model.
@@ -853,8 +852,7 @@ paired columns, honest only because its two series are shares of the same income
 width-aware** and measures its host. Temperature's columns are binned by the reading, not by rank, so the
 same CPI is the same colour in any cycle. `unempHistoryChart` copies `cpiHistoryChart` as a **separate
 function on purpose**: folding two subjects into one function behind flags is how a component stops
-being readable. In `drawTemperature`/`drawGrowth` only the marks were rewritten; if a new form is wanted
-there, change the marks, not the function.
+being readable.
 
 **The barometer** (Weather's Insights) reads the GAP between total price change and total real growth
 over a cycle's closed years — Dot-Com −3.6, Housing +1.5, Big Tech +0.2, Stimulus +3.5. They finish close
@@ -890,10 +888,8 @@ Awaiting Keren: the About-the-book paragraph, `seasonReading[season].fromTheBook
   asset-class returns by season.
 - **The growth-direction threshold ±0.025 pp/qtr is not ratified** (Keren ratified the window, not this);
   it is the one number that can flip Autumn–Stagflation vs Summer.
-- **`levelZone`'s 2% lower edge is undefended** (the 4.5% upper edge is); raise it before touching that
-  function.
 - Whether Spring–Deflation's action is "Growing" is not the manuscript's; it has no Content-tab narrative.
-- The other segmented controls (indicators tabs, spread toggle, tab bar) were to be revisited together.
+- The other segmented controls (indicators tabs, tab bar) were to be revisited together.
 - Stacking panels to compare Temperature and
   Growth; older fixed-viewBox charts should move to render-width drawing when touched.
 
@@ -911,7 +907,7 @@ when FRED carries the closed year, never a projection; the FRED histories in `sr
 generated by `backfill.yml`, never hand-edited — since V648 that includes the seven Treasury quarterly
 histories, which `data.js` only names. **If a primary source is unreachable, leave the figure and
 its date and say so — never substitute a secondary.** Fixed and editorial content — every band,
-`wheelMeta`, `seasonRules`, `seasonReading`, `cycleEndReadings`, era names and blurbs, the `*_STOPS`
+`wheelMeta`, `seasonRules`, `seasonReading`, era names and blurbs, the `*_STOPS`
 lists — is never touched by a refresh. **`currentSeason` is computed — never set it.** Productivity growth's figure, quarter and record range are read
 from `productivityHistory` (V667), so the Backfill moves the card, the Diagnosis and the past cycles together;
 its word follows the two BLS lines its note cites (`productivityWord`, V668): at or above 2.1% (the
@@ -983,9 +979,9 @@ Cormorant Garamond italic for the season word, cycle names, reading heads and qu
 never upright for a title. Public Sans for everything else. IBM Plex Mono for figures only, never a
 word-label or prose; a value that is a phrase takes the text face. **Every `font-size` is a token** (V662, from the
 Lovable DSM's type scale): `--type-label` 11 · `--type-meta` 12.5 · `--type-interface` 14 · `--type-reading` 15 ·
-`--type-row` 17 · `--type-section` 20 · `--type-reading-head` 26 · `--type-page-title` 30 · `--type-display` 40. The
-DSM's Type page names seven of its nine steps; 12.5 and 17 are the two it leaves unnamed (12.5 is its own meta
-line; 17 is the list row). Change a size in the tokens, never in a rule. The only literals left are the dial's badge,
+`--type-row` 17 · `--type-section` 20 · `--type-reading-head` 26 · `--type-page-title` 30. The DSM's Type page names
+seven of its nine steps; 12.5 and 17 are the two it leaves unnamed (12.5 is its own meta line; 17 is the list row).
+Its 40 display step has no token, because nothing on screen uses it (0.8.10). Change a size in the tokens, never in a rule. The only literals left are the dial's badge,
 drawn in the dial's own SVG units, and sizes in `em` or `calc(var(--dial))`. When V662 moved every size onto the
 scale, each went to the nearest step and a size exactly between two took the smaller.
 600 is interface bold, 700 figures and pills, 400 body. Before using a weight, check it is in the font

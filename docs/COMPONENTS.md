@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared patterns**.
+Generated from commit `382fe03` on 2026-10-06. **99 components**, **29 shared patterns**.
 
 ## ai-insights.ts
 
@@ -73,7 +73,7 @@ Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:yearByYear` |
+| **`yearRow`** | `.dx-year-lead` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
 
@@ -87,7 +87,7 @@ Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`moreRow`** | `.more-row` | `ai-insights.ts:aiPage`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
+| **`moreRow`** | `.more-row` | `ai-insights.ts:aiPage`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendJump`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
@@ -170,19 +170,17 @@ Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`pulseBlock`** | `.past` `.pt-head` `.pt-k` `.pt-note` `.pt-v` `.pulsetrace` `.spread-history-head` | `readings.ts:deficitBlock` |
+| **`pulseBlock`** | `.past` `.pt-head` `.pt-k` `.pt-note` `.pt-v` `.pulsetrace` `.spread-history-head` `.tag` | `readings.ts:deficitBlock` |
 
 ## render-core.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`cardDetailHtml`** | `.blood-card` `.metric` `.metric-row` `.metric-sub` | `pages-nav.ts:renderSignsList` |
 | **`catCard`** | `.cat-item` `.ci-body` `.ci-head` `.ci-mini` `.ci-name` `.ci-read` `.ci-unit` `.ci-value` `.ci-when` | `quarter-sheet.ts:quarterCards` |
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:foldSec` |
 | **`catList`** | `.cat-list` | `quarter-sheet.ts:quarterCards` |
 | **`dxHead`** | `.dx-sys-head` | `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 | **`econChips`** | `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
-| **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
 | **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:buildAiPage`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
 | **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml` |
@@ -217,7 +215,7 @@ renderer speaks. Listed most-used first.
 | **`need`** | dom.ts | 25 places |
 | **`fmtSigned`** | format.ts | 22 places |
 | **`put`** | dom.ts | 22 places |
-| **`titleCase`** | format.ts | 19 places |
+| **`titleCase`** | format.ts | 18 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`metered`** | format.ts | 12 places |
 | **`findOf`** | cycle-analysis.ts | 11 places |
@@ -232,7 +230,6 @@ renderer speaks. Listed most-used first.
 | **`attachHistory`** | history.ts | 9 places |
 | **`histControls`** | history.ts | 9 places |
 | **`closedCount`** | cycle-analysis.ts | 8 places |
-| **`factsFrom`** | format.ts | 8 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`focusQuiet`** | dom.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
@@ -240,6 +237,7 @@ renderer speaks. Listed most-used first.
 | **`atMonth`** | format.ts | 7 places |
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
+| **`factsFrom`** | format.ts | 7 places |
 | **`fileRow`** | data.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
@@ -280,7 +278,6 @@ renderer speaks. Listed most-used first.
 | **`qPretty`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`seasonGroup`** | model.ts | 4 places |
-| **`tagFor`** | format.ts | 4 places |
 | **`tier`** | cycle-analysis.ts | 4 places |
 | **`visits`** | cycle-analysis.ts | 4 places |
 | **`word`** | cycle-analysis.ts | 4 places |
@@ -316,6 +313,7 @@ renderer speaks. Listed most-used first.
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tabBar`** | history.ts | 3 places |
+| **`tagFor`** | format.ts | 3 places |
 | **`todayFace`** | era.ts | 3 places |
 | **`trendText`** | dom.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
@@ -331,15 +329,15 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.caption` | 19 | `dial-cycle.ts:renderCycleKicker`, `quarter-sheet.ts:quarterPopup`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:dsrInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:savInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `render-core.ts:pressureMaturities`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:renderSpreadHistory`, `render-pages.ts:spreadSeries` |
 | `.follow` | 15 | `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:dsrInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:savInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries` |
 | `.hi-lede` | 10 | `format.ts:lede`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
-| `.page-chart` | 10 | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-core.ts:cardDetailHtml`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
+| `.page-chart` | 9 | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | `.hcol` | 7 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:householdsChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart` |
-| `.marker-sub` | 6 | `format.ts:popHead`, `indicators.ts:splitInfo`, `quarter-sheet.ts:quarterPopup`, `readings.ts:volatilityDetailHtml`, `render-core.ts:cardDetailHtml`, `render-pages.ts:renderValuationTag` |
 | `.highlights` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.hi-head` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
-| `.mono` | 4 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock`, `render-core.ts:cardDetailHtml` |
+| `.marker-sub` | 5 | `format.ts:popHead`, `indicators.ts:splitInfo`, `quarter-sheet.ts:quarterPopup`, `readings.ts:volatilityDetailHtml`, `render-pages.ts:renderValuationTag` |
 | `.insights` | 4 | `format.ts:highlightsHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.pulsebox` | 4 | `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
+| `.mono` | 3 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock` |
 | `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
@@ -355,6 +353,5 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.cycsel-tick` | 2 | `history.ts:cyclePicker`, `history.ts:headPickRow` |
 | `.cycsel-menu` | 2 | `history.ts:cyclePicker`, `history.ts:histHead` |
 | `.cycsel-yr` | 2 | `history.ts:cyclePicker`, `history.ts:headMenuHtml` |
-| `.tag` | 2 | `readings.ts:pulseBlock`, `render-core.ts:headHtml` |
 | `.lag-row` | 2 | `render-pages.ts:deriveUninversionDetail`, `tabs-menu.ts:renderSeasonRows` |
 | `.lag-row-head` | 2 | `render-pages.ts:deriveUninversionDetail`, `tabs-menu.ts:renderSeasonRows` |

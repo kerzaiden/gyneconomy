@@ -1,9 +1,9 @@
 import { fmtAsOf, isoDay } from "./format.ts";
 
-export type StepKind = "check" | "derive" | "render" | "wire" | "build" | "live" | "mixed";
-export type GynStep = { name: string; fn: () => unknown; kind: StepKind };
-export type GynAct = (a: never, b: never) => void;
-export type Gyn = {
+type StepKind = "check" | "derive" | "render" | "wire" | "build" | "live" | "mixed";
+type GynStep = { name: string; fn: () => unknown; kind: StepKind };
+type GynAct = (a: never, b: never) => void;
+type Gyn = {
   steps: GynStep[];
   step<F extends () => unknown>(name: string, fn: F, kind: StepKind): F;
   of(kind: StepKind): GynStep[];

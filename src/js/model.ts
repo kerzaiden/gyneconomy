@@ -10,14 +10,8 @@ export type Mood = { m: string; valuations: number; calm: number; confidence: nu
 import { buffettHistory, capeHistory, gdpSrc, marketCycles, NBER_RECESSIONS, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.ts";
 
 // ---- The season, computed ----
-function slopeOf(vals: number[]){
-  var n = vals.length, mx = (n - 1) / 2, my = vals.reduce(function(a, b){ return a + b; }, 0) / n, num = 0, den = 0;
-  vals.forEach(function(v, i){ num += (i - mx) * (v - my); den += (i - mx) * (i - mx); });
-  return den ? num / den : 0;
-}
 function monthIndex(k: string){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)); }
 function cpiTrend(points: MonthPoint[]){
-  if (!points.every(function(d){ return typeof d.m === "string"; })) return slopeOf(points.map(function(d){ return d.v; }));
   var xs = points.map(function(d){ return monthIndex(d.m); }), n = xs.length;
   var mx = xs.reduce(function(a, b){ return a + b; }, 0) / n, my = points.reduce(function(a, d){ return a + d.v; }, 0) / n, num = 0, den = 0;
   points.forEach(function(d, i){ num += (xs[i] - mx) * (d.v - my); den += (xs[i] - mx) * (xs[i] - mx); });
@@ -240,10 +234,7 @@ export function cycleStory(c: Cycle){
   var now = c.ongoing && moodToday();
   return { first:t[0], last:now && now.word ? now : t[t.length - 1], hi:hi, lo:lo, most:most.map(function(w){ return { word:w, n:count[w] }; }) };
 }
-// ---- Shared SVG chart helpers (used by the GDP, yield-by-maturity, and spread-history charts ----
-export function cycleSpanYears(){
-  return (currentEra && currentEra.from) ? (calendarTodayY - currentEra.from + 1) : 5;
-}
+// ---- Cycles by name ----
 export function cycleByName(nm: string | null | undefined){
   for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].name === nm) return marketCycles[i];
   return null;
@@ -267,14 +258,6 @@ export function totalGrowthYears(y0: number, y1: number){
   if (!years.length) return null;
   var factor = rates.reduce(function(fa, g){ return fa * (1 + g / 100); }, 1);
   return { years:years, total:(factor - 1) * 100 };
-}
-export function cycleMonths(c: Cycle){
-  var to = c.to || calendarTodayY, a = -1, b = -1;
-  inflationHistory.forEach(function(d, i){
-    var y = parseInt(d.m.slice(0, 4), 10);
-    if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
-  });
-  return a === -1 ? null : [a, b];
 }
 export function cycLabel(c: Cycle){
   return { name:c.ongoing ? "Current cycle" : c.name.replace(" Cycle", ""),
