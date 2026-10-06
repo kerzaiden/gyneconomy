@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,885 lines** in 35 files, about 594 KB, roughly **169 thousand tokens**. No session can
+The source is **8,867 lines** in 35 files, about 592 KB, roughly **168 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `dbcfe5f` on 2026-10-06.
+Generated from commit `3290d7f` on 2026-10-06.
 
 ## The page
 
@@ -32,7 +32,7 @@ Counts: **31** modules, **679** top-level functions, **120** top-level vars, **3
 | `js/dom.ts` | 169 | 25 | `format` |
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 42 | 5 | `format`, `history-fred` |
-| `js/data.ts` | 568 | 77 | `format`, `history-fred`, `live` |
+| `js/data.ts` | 550 | 77 | `format`, `history-fred`, `live` |
 | `js/model.ts` | 392 | 58 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 469 | 42 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 804 | 69 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
@@ -73,7 +73,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 2 | `bootDone` | `js/live.ts:198`–200 |
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–41 |
-| 5 | `bootData` | `js/data.ts:516`–567 |
+| 5 | `bootData` | `js/data.ts:498`–549 |
 | 6 | `bootModel` | `js/model.ts:369`–391 |
 | 7 | `bootHistory` | `js/history.ts:445`–468 |
 | 8 | `bootReadings` | `js/readings.ts:627`–695 |
@@ -277,19 +277,19 @@ falls in. **export** marks a name other modules import.
 | 293 | `PCE_SRC` · export | `var PCE_SRC =` |
 | 294 | `GDP_NORM` · export | `var GDP_NORM =` |
 | 295 | `checkMoneyStock` | `function checkMoneyStock(` |
-| 358 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
-| 359 | `dsrHistory` · export | `var dsrHistory =` |
-| 360 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
-| 361 | `savHistory` · export | `var savHistory =` |
-| 362 | `SAV_THIN` · export | `var SAV_THIN =` |
-| 363 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
-| 371 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
-| 372 | `dsrNow` · export | `var dsrNow =` |
-| 373 | `savNow` · export | `var savNow =` |
-| 374 | `DSR_MEAN` · export | `var DSR_MEAN =` |
-| 375 | `curveNoteFull` · export | `var curveNoteFull =` |
-| 386 | `VOL_JOIN` · export | `var VOL_JOIN =` |
-| 508 | `typicalCycleYears` · export | `var typicalCycleYears =` |
+| 340 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
+| 341 | `dsrHistory` · export | `var dsrHistory =` |
+| 342 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
+| 343 | `savHistory` · export | `var savHistory =` |
+| 344 | `SAV_THIN` · export | `var SAV_THIN =` |
+| 345 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
+| 353 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
+| 354 | `dsrNow` · export | `var dsrNow =` |
+| 355 | `savNow` · export | `var savNow =` |
+| 356 | `DSR_MEAN` · export | `var DSR_MEAN =` |
+| 357 | `curveNoteFull` · export | `var curveNoteFull =` |
+| 368 | `VOL_JOIN` · export | `var VOL_JOIN =` |
+| 490 | `typicalCycleYears` · export | `var typicalCycleYears =` |
 
 ### `js/model.ts`
 

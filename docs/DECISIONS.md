@@ -310,8 +310,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The federal side and the household balance sheet are one group, Stress (Federal debt, Interest payments,
   Federal budget, Households); the name Economic power is retired.** Keren: "households should be inside
   economic power… the terminology is stress because debts are stress", then chose Stress. (V688)
-- **Weather's insights carry no "What usually comes next" card.** It read as a forecast; Keren: "drop the forecast".
-  The season's prose behind a dial quarter keeps it, one tap further in. (1.5.0)
+- **No season says what comes next or what to watch for the turn.** Both read as forecasts; Keren: "drop the forecast"
+  (1.5.0). They went with the season pop-up, and the book quotes it never had with them; Keren: "don't need it, we have
+  it in About" (0.8.9).
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
   order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster holds
   the source order and the category sheets and past cycles read it; Cycle analysis and the Diagnosis place the four by

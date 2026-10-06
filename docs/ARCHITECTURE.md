@@ -876,7 +876,7 @@ its page id (`labRow`); the day another gets a series, give its roster row a `hi
 live in the app and nowhere else, and **the generator refuses to write if anything lands in "Other"** — the
 fix is a pattern in the app, not a bucket in the generator.
 
-Awaiting Keren: the About-the-book paragraph, `seasonReading[season].fromTheBook` (all empty),
+Awaiting Keren: the About-the-book paragraph,
 `seasonReading.springdeflation` (empty by her choice), the five era blurbs (an AI first draft),
 `cycleNowNote` (revisit each refresh).
 
