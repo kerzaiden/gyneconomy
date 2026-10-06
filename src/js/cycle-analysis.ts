@@ -135,15 +135,15 @@ function scoreTile(tag: string, cls: string, attrs: string, inner: string){ retu
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
 function foldSec(k: string, title: string, name: string, ls: Lab[], i: number){
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"", name:name,
-    aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + CHEV + '</button>' },
+    aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + countTag(ls.length) + CHEV + '</button>' },
     '<ul>' + ls.map(function(l){ return labItem(l, i); }).join("") + '</ul>');
 }
 function labSec(k: string, ls: Lab[], i: number){
-  var title = catTitle(k), name = catName(k, ls.length);
+  var title = catTitle(k), name = catName(k);
   return foldSec(k, title, k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + '</button>', ls, i);
 }
 function subSec(k: string, sub: string, ls: Lab[], i: number){
-  return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub, ls.length), ls, i);
+  return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub), ls, i);
 }
 function bySub(k: string, ls: Lab[], i: number){
   var subs: string[] = [];
@@ -313,10 +313,11 @@ function statsHome(){
     statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow"));
 }
 function insightSec(k: string, ls: Lab[]){
-  return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b><small>' + ls.length + ' indicators</small>', ""));
+  return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b>', countTag(ls.length)));
 }
-function catName(k: string, n: number){ return markName(CAT_MARK[k], catTitle(k), n); }
-function markName(mark: () => string, name: string, n: number){ return '<span class="lab-mark">' + mark() + '</span>' + name + ' <small>(' + n + ')</small>'; }
+function catName(k: string){ return markName(CAT_MARK[k], catTitle(k)); }
+function markName(mark: () => string, name: string){ return '<span class="lab-mark">' + mark() + '</span>' + name; }
+function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' indicators">' + n + '</small>'; }
 function insightsHome(i: number){
   var j = judged(i), rank = TIERS.map(function(t){ return t.key; });
   return categoriesShown().map(function(c){
@@ -333,7 +334,7 @@ function drawChart(id: string){
   if (!host || !c) return;
   var i = marketCycles.indexOf(c), j = judged(i);
   if (id === HOME_ID){ host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + '</div>'; return; }
-  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j, findOf(id).cat) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
+  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
   narrow(host, id);
 }
 var IND = "sheet-find";

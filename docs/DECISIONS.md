@@ -614,16 +614,22 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Circulation, Energy).** The search box on Analysis opens the same page on All. Keren: "put only the categories
   titles under insights … a universal page for the indicators to be searched, to be filtered … also filtered by
   category", and "indicator page needs some work, but for now it would be fine." (0.8.3, Oct 6, 2026)
-- **On one category, Indicators groups its readings by subcategory: each subcategory is its own white heading (the
-  first member's mark, its name and count) over its beige results, in place of the category's heading, which the bar
-  already names.** All keeps one heading per category. Weather: Season (Temperature, Growth) and Market (S&P 500);
+- **On one category, Indicators groups its readings by subcategory: each subcategory is a quiet heading (the
+  first member's mark and its name, small and grey) over its results, in place of the category's heading, which the
+  bar already names.** All keeps one heading per category. Every heading sits in one white container, divided by a
+  line, with its count in light grey beside its fold chevron. Keren: "I want it all to be some kind of a single
+  container that you have like very delicate titles … the category titles are too big. They need to blend in with
+  the data that they present." Weather: Season (Temperature, Growth) and Market (S&P 500);
   Mood: Valuations, Sentiment (Volatility, Confidence) and Desire; Circulation: Rates (Interest rates, Real interest
   rate, Pressure) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
   names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". (0.8.5, Oct 6, 2026)
 - **Insights is one container built like Cycle Statistics: a purple title with its mark (the chart), then one grey
-  tile per category with its mark, its name, its count of indicators and a chevron.** Keren: "make the insight
+  tile per category with its mark, its name, and its count of indicators in light grey beside the chevron. In every
+  tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the left.** Keren:
+  "I don't need to see indicators four times … maybe next to the chevron in light gray", and "there should be the
+  same gap between the chevron and the right edge … like the icon and the left edge." Keren: "make the insight
   section designed like cycle statistics, meaning you have a dark purple headline with an icon next to it inside a
   container and everything sits below it … I want a consistent design system." (0.8.5, Oct 6, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the

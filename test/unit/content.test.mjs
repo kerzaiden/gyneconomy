@@ -360,5 +360,7 @@ test('Variation is the spread of the three cycles before each one, and is read o
   assert.equal(reg.per[open], Math.max(...three) - Math.min(...three));
   assert.equal(reg.per[2], null);
   assert.ok([...document.querySelectorAll('#sheet-find .cat-cycle .lab-item b')].some(b => b.textContent === 'Variation'));
-  assert.match(document.querySelector('#sheet-find .cat-cycle .lab-head').textContent, /^Regularity \(\d+\)/);
+  const head = document.querySelector('#sheet-find .cat-cycle .lab-head');
+  assert.equal(head.querySelector('.ind-cat-name').textContent, 'Regularity');
+  assert.match(head.querySelector('.lab-n').textContent, /^\d+$/);
 });
