@@ -286,8 +286,8 @@ function lengthPage(){
 function variationPage(){
   var L = lengths(), m = meanOf(L), sd = sdOf(L), vs = closedVisits(), lo = L.indexOf(Math.min.apply(null, L)), hi = L.indexOf(Math.max.apply(null, L));
   var inside = L.filter(function(v){ return Math.abs(v - m) <= sd; }).length, last = marketCycles[closedCount() - 1];
-  return '<h3>Her cycle variation</h3><p>' + (typical(L[L.length - 1]) ? 'Typical' : 'Atypical') + ': her latest closed cycle, the ' + cycLabel(last).name + ', lasted ' + yearsWord(L[L.length - 1]) + ' years, ' + (typical(L[L.length - 1]) ? 'within' : 'outside') + ' the range her record allows.</p>' +
-    '<p><b>Shortest:</b> ' + yearsWord(vs[lo].years) + ' years, the ' + cycLabel(marketCycles[lo]).name + '. <b>Longest:</b> ' + yearsWord(vs[hi].years) + ' years, the ' + cycLabel(marketCycles[hi]).name + '.</p>' +
+  return '<h3>Her cycle variation</h3><p>' + (typical(L[L.length - 1]) ? 'Typical' : 'Atypical') + ': her latest closed cycle, the ' + last.name + ', lasted ' + yearsWord(L[L.length - 1]) + ' years, ' + (typical(L[L.length - 1]) ? 'within' : 'outside') + ' the range her record allows.</p>' +
+    '<p><b>Shortest:</b> ' + yearsWord(vs[lo].years) + ' years, the ' + marketCycles[lo].name + '. <b>Longest:</b> ' + yearsWord(vs[hi].years) + ' years, the ' + marketCycles[hi].name + '.</p>' +
     '<h4>How it’s calculated</h4><p>Variation is the standard deviation of her cycle lengths: how far, on average, a cycle lands from her ' + yearsWord(m) + '-year mean. ' + word(inside) + ' of her ' + L.length + ' cycles fall within one standard deviation of it.</p>' +
     '<p class="len-sum"><b>' + yearsWord(m) + '</b> ± <b>' + yearsWord(sd) + '</b> years</p>';
 }
