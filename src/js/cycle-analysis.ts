@@ -82,7 +82,7 @@ function cycleLabs(){
   return [
     cycleLab("length", "Length", undefined, function(v){ return v.years; }),
     cycleLab("bull", "Bull years", "up", function(v){ return v.bull; }),
-    cycleLab("bleed", "Bleed", "down", function(v){ return v.bleed; }),
+    cycleLab("bleed", "Period flow", "down", function(v){ return v.bleed; }),
     cycleLab("regularity", "Variation", "down", function(_, i){ return regularity(i); }, true)
   ];
 }
@@ -264,7 +264,6 @@ function statRow(name: string, v: number, of: number, side: string, page: string
 }
 function closedVisits(){ return visits().slice(0, closedCount()); }
 function meanOf(vs: number[]){ return vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; }
-function sdOf(vs: number[]){ var m = meanOf(vs); return Math.sqrt(vs.reduce(function(s, v){ return s + (v - m) * (v - m); }, 0) / (vs.length - 1)); }
 function lengths(){ return closedVisits().map(function(v){ return v.years; }); }
 function typical(v: number){ var n = normOf(lengths()) as Norm; return v >= n.floor && v <= n.fence; }
 var INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>';
@@ -280,22 +279,23 @@ function lengthBars(){
 function lengthPage(){
   var n = normOf(lengths()) as Norm, odd = marketCycles.filter(function(c, i){ return !c.ongoing && !typical(visits()[i].years); }).map(function(c){ return cycLabel(c).name; });
   return '<h3>Her cycle length</h3><p>Each bar is one cycle, from its first bull year to the bear year that closes it; the last is the cycle in progress.</p>' +
-    '<p>A typical cycle lasts ' + yearsWord(n.floor) + ' to ' + yearsWord(n.fence) + ' years: inside Tukey’s fences around the middle half of her ' + lengths().length + ' closed cycles, the standard rule for an outlier. ' + listWords(odd) + ' ran longer.</p>' +
+    '<p>Her cycles average ' + yearsWord(meanOf(lengths())) + ' years, across her ' + lengths().length + ' closed cycles since ' + marketCycles[0].from + '. A typical one lasts ' + yearsWord(n.floor) + ' to ' + yearsWord(n.fence) + ' years: inside Tukey’s fences around the middle half of her ' + lengths().length + ' closed cycles, the standard rule for an outlier. ' + listWords(odd) + ' ran longer.</p>' +
     '<p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>' + lengthBars() + srcBlock([FENCE_SRC]);
 }
+function figo(){
+  var reg = labs().find(function(l){ return l.id === "regularity"; }) as Lab, n = reg.norm as Norm, v = reg.per[reg.per.length - 1] as number;
+  return { v:v, n:n, ok:v <= n.fence, top:Math.max.apply(null, present(reg.per)) };
+}
 function variationPage(){
-  var L = lengths(), m = meanOf(L), sd = sdOf(L), vs = closedVisits(), lo = L.indexOf(Math.min.apply(null, L)), hi = L.indexOf(Math.max.apply(null, L));
-  var inside = L.filter(function(v){ return Math.abs(v - m) <= sd; }).length, last = marketCycles[closedCount() - 1];
-  return '<h3>Her cycle variation</h3><p>' + (typical(L[L.length - 1]) ? 'Typical' : 'Atypical') + ': her latest closed cycle, the ' + last.name + ', lasted ' + yearsWord(L[L.length - 1]) + ' years, ' + (typical(L[L.length - 1]) ? 'within' : 'outside') + ' the range her record allows.</p>' +
-    '<p><b>Shortest:</b> ' + yearsWord(vs[lo].years) + ' years, the ' + marketCycles[lo].name + '. <b>Longest:</b> ' + yearsWord(vs[hi].years) + ' years, the ' + marketCycles[hi].name + '.</p>' +
-    '<h4>How it’s calculated</h4><p>Variation is the standard deviation of her cycle lengths: how far, on average, a cycle lands from her ' + yearsWord(m) + '-year mean. ' + word(inside) + ' of her ' + L.length + ' cycles fall within one standard deviation of it.</p>' +
-    '<p class="len-sum"><b>' + yearsWord(m) + '</b> ± <b>' + yearsWord(sd) + '</b> years</p>';
+  var f = figo(), k = closedCount(), three = marketCycles.slice(k - BASELINE, k), ys = closedVisits().slice(k - BASELINE).map(function(v){ return yearsWord(v.years); });
+  return '<h3>Her cycle variation</h3><p>' + (f.ok ? 'Typical' : 'Atypical') + ': her last three cycles, ' + listWords(three.map(function(c){ return cycLabel(c).name; })) + ', ran ' + listWords(ys) + ' years, a spread of ' + yearsWord(f.v) + ' years. Up to ' + yearsWord(f.n.fence) + ' years is typical for her.</p>' +
+    '<h4>How it’s calculated</h4><p>FIGO, the world federation of gynaecologists, calls a cycle regular by the gap between the shortest and longest of the last few. Here it is the gap across her last three cycles, judged against every such gap since ' + marketCycles[0].from + ' with Tukey’s fences.</p>' + srcBlock([FIGO_SRC, FENCE_SRC]);
 }
 function statsHome(){
-  var vs = closedVisits(), L = lengths(), B = vs.map(function(v){ return v.bleed; }), longest = Math.max.apply(null, L), ok = typical(L[L.length - 1]);
-  return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-lede">Averages are based on her ' + L.length + ' closed cycles since ' + marketCycles[0].from + '.</p>' +
+  var vs = closedVisits(), L = lengths(), B = vs.map(function(v){ return v.bleed; }), longest = Math.max.apply(null, L), f = figo(), ok = f.ok;
+  return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") +
     statRow("Cycle length", meanOf(L), longest, INFO + 'More info', lengthPage()) +
-    statRow("Cycle variation", sdOf(L), longest, '<span class="stat-tick' + (ok ? '' : ' odd') + '">' + TICK + '</span>' + (ok ? 'Typical' : 'Atypical'), variationPage()) +
+    statRow("Cycle variation", f.v, f.top, '<span class="stat-tick' + (ok ? '' : ' odd') + '">' + TICK + '</span>' + (ok ? 'Typical' : 'Atypical'), variationPage()) +
     statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow") + '</section>';
 }
 function insightSec(k: string, ls: Lab[], i: number){
