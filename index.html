@@ -37144,40 +37144,10 @@
       return visitOf(cycleModel(c));
     }));
   }
-  function sse(vs) {
-    var m = vs.reduce(function(a, b) {
-      return a + b;
-    }, 0) / vs.length;
-    return vs.reduce(function(s, v) {
-      return s + (v - m) * (v - m);
-    }, 0);
-  }
-  var splitCache = null;
-  function genSplit() {
-    if (splitCache != null) return splitCache;
-    var L = visits().slice(0, closedCount()).map(function(v) {
-      return v.years;
-    }), best = 0, err = Infinity;
-    for (var k = BASELINE; k <= L.length - BASELINE; k++) {
-      var e = sse(L.slice(0, k)) + sse(L.slice(k));
-      if (e < err) {
-        err = e;
-        best = k;
-      }
-    }
-    return splitCache = best;
-  }
-  function generationOf(i) {
-    return i < genSplit() ? 1 : 2;
-  }
   function present(vs) {
     return vs.filter(function(v) {
       return v != null;
     });
-  }
-  function genNorms(per) {
-    var closed = per.slice(0, closedCount()), k = genSplit();
-    return [ normOf(present(closed.slice(0, k))), normOf(present(closed.slice(k))) ];
   }
   function regularity(i) {
     if (i < BASELINE) return null;
@@ -37198,7 +37168,6 @@
       settled: settled,
       per: per,
       norm: normOf(present(per.slice(0, closedCount()))),
-      norms: genNorms(per),
       now: null,
       print: print,
       span: spanOf(print)
@@ -37280,7 +37249,6 @@
   function forgetLabs() {
     labCache = null;
     visitCache = null;
-    splitCache = null;
   }
   function cycleLabs() {
     return [ cycleLab("length", "Length", void 0, function(v) {
@@ -37297,7 +37265,7 @@
     return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab)));
   }
   function normAt(l, i) {
-    return marketCycles[i].ongoing && l.now ? l.now : l.norms ? l.norms[generationOf(i) - 1] : l.norm;
+    return marketCycles[i].ongoing && l.now ? l.now : l.norm;
   }
   function unread(l, i) {
     return l.cat === "cycle" && !!marketCycles[i].ongoing && !l.settled;
@@ -37376,7 +37344,7 @@
   };
   function labSec(k, ls, i) {
     var title = catTitle(k);
-    var name = '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + title + " <small>(" + ls.length + ")" + (k === "cycle" ? " · Generation " + generationOf(i) : "") + "</small>";
+    var name = '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + title + " <small>(" + ls.length + ")</small>";
     return catHeadCard("lab-sec plain", k, {
       tag: "div",
       cls: "lab-head ",
@@ -37542,19 +37510,8 @@
       return listWords(by[k]) + " on " + word(k);
     }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
   }
-  function genWords() {
-    var k = genSplit(), L = visits().slice(0, closedCount()).map(function(v) {
-      return v.years;
-    });
-    var avg = function(vs) {
-      return (vs.reduce(function(a, b) {
-        return a + b;
-      }, 0) / vs.length).toFixed(1);
-    };
-    return "<b>Generations:</b> her cycles changed in " + marketCycles[k].from + ", where splitting her closed cycles by length leaves the least spread on either side: Generation 1 ran " + avg(L.slice(0, k)) + " years on average, Generation 2 " + avg(L.slice(k)) + ". Cycle results are judged against the closed cycles of their own generation, as a cycle tracker compares a woman with others her age.";
-  }
   function methodFacts() {
-    return [ genWords(), "<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are; " + word(BASELINE) + " is the fewest Clue builds a baseline on.", "<b>As a cycle tracker reads her:</b> each range is her own record’s, as Clue and Natural Cycles judge a woman against her own cycles; Normal is a percentile band, as FIGO’s normal cycle length is; a season turns only past a margin for noise, as the temperature method waits for a sustained rise; and a peak is confirmed after the fact, never forecast." ];
+    return [ "<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are; " + word(BASELINE) + " is the fewest Clue builds a baseline on.", "<b>As a cycle tracker reads her:</b> each range is her own record’s, as Clue and Natural Cycles judge a woman against her own cycles; Normal is a percentile band, as FIGO’s normal cycle length is; a season turns only past a margin for noise, as the temperature method waits for a sustained rise; and a peak is confirmed after the fact, never forecast." ];
   }
   function chartDetail() {
     return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC ].concat(TRACKER_SRC));

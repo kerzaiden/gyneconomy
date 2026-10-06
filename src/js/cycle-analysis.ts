@@ -12,7 +12,7 @@ import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
 type Norm = { lo: number; hi: number; fence: number; floor: number };
-export type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; soFar?: boolean; per: (number | null)[]; norm: Norm | null; norms?: (Norm | null)[]; settled?: boolean; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
+export type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; soFar?: boolean; per: (number | null)[]; norm: Norm | null; settled?: boolean; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
@@ -43,26 +43,7 @@ function visitOf(m: CycleModel): Visit {
 }
 var visitCache: Visit[] | null = null;
 function visits(){ return visitCache || (visitCache = marketCycles.map(function(c){ return visitOf(cycleModel(c)); })); }
-function sse(vs: number[]){
-  var m = vs.reduce(function(a, b){ return a + b; }, 0) / vs.length;
-  return vs.reduce(function(s, v){ return s + (v - m) * (v - m); }, 0);
-}
-var splitCache: number | null = null;
-export function genSplit(){
-  if (splitCache != null) return splitCache;
-  var L = visits().slice(0, closedCount()).map(function(v){ return v.years; }), best = 0, err = Infinity;
-  for (var k = BASELINE; k <= L.length - BASELINE; k++){
-    var e = sse(L.slice(0, k)) + sse(L.slice(k));
-    if (e < err){ err = e; best = k; }
-  }
-  return splitCache = best;
-}
-export function generationOf(i: number){ return i < genSplit() ? 1 : 2; }
 function present(vs: (number | null)[]){ return vs.filter(function(v): v is number { return v != null; }); }
-function genNorms(per: (number | null)[]){
-  var closed = per.slice(0, closedCount()), k = genSplit();
-  return [normOf(present(closed.slice(0, k))), normOf(present(closed.slice(k)))];
-}
 function regularity(i: number){
   if (i < BASELINE) return null;
   var ys = visits().slice(i - BASELINE, i).map(function(v){ return v.years; });
@@ -70,7 +51,7 @@ function regularity(i: number){
 }
 function cycleLab(id: string, name: string, good: "up" | "down" | undefined, f: (v: Visit, i: number) => number | null, settled?: boolean): Lab {
   var per = visits().map(f), print = function(v: number){ return yearsWord(v) + " yr"; };
-  return { id:id, name:name, cat:"cycle", good:good, settled:settled, per:per, norm:normOf(present(per.slice(0, closedCount()))), norms:genNorms(per), now:null, print:print, span:spanOf(print) };
+  return { id:id, name:name, cat:"cycle", good:good, settled:settled, per:per, norm:normOf(present(per.slice(0, closedCount()))), now:null, print:print, span:spanOf(print) };
 }
 function cycleReadings(R: RosterRow){
   var h = keyed(R.hist).filter(function(d){ return d.v != null; }), first = +h[0].k.slice(0, 4);
@@ -100,7 +81,7 @@ function readingLab(R: RosterRow): Lab {
     norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
 }
 var labCache: Lab[] | null = null;
-export function forgetLabs(){ labCache = null; visitCache = null; splitCache = null; }
+export function forgetLabs(){ labCache = null; visitCache = null; }
 function cycleLabs(){
   return [
     cycleLab("length", "Length", undefined, function(v){ return v.years; }),
@@ -110,7 +91,7 @@ function cycleLabs(){
   ];
 }
 export function labs(){ return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab))); }
-function normAt(l: Lab, i: number){ return marketCycles[i].ongoing && l.now ? l.now : l.norms ? l.norms[generationOf(i) - 1] : l.norm; }
+function normAt(l: Lab, i: number){ return marketCycles[i].ongoing && l.now ? l.now : l.norm; }
 function unread(l: Lab, i: number){ return l.cat === "cycle" && !!marketCycles[i].ongoing && !l.settled; }
 function state(l: Lab, i: number){
   var v = l.per[i], n = normAt(l, i);
@@ -155,7 +136,7 @@ function scoreBox(i: number){
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
 function labSec(k: string, ls: Lab[], i: number){
   var title = catTitle(k);
-  var name = '<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + title + ' <small>(' + ls.length + ')' + (k === "cycle" ? ' · Generation ' + generationOf(i) : '') + '</small>';
+  var name = '<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + title + ' <small>(' + ls.length + ')</small>';
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"",
     name:k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + '</button>',
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + CHEV + '</button>' },
@@ -260,13 +241,8 @@ function depthWords(){
   var ks = Object.keys(by).map(Number).sort(function(a, b){ return a - b; });
   return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
 }
-function genWords(){
-  var k = genSplit(), L = visits().slice(0, closedCount()).map(function(v){ return v.years; });
-  var avg = function(vs: number[]){ return (vs.reduce(function(a, b){ return a + b; }, 0) / vs.length).toFixed(1); };
-  return "<b>Generations:</b> her cycles changed in " + marketCycles[k].from + ", where splitting her closed cycles by length leaves the least spread on either side: Generation 1 ran " + avg(L.slice(0, k)) + " years on average, Generation 2 " + avg(L.slice(k)) + ". Cycle results are judged against the closed cycles of their own generation, as a cycle tracker compares a woman with others her age.";
-}
 function methodFacts(){
-  return [genWords(), "<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are; " + word(BASELINE) + " is the fewest Clue builds a baseline on.",
+  return ["<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are; " + word(BASELINE) + " is the fewest Clue builds a baseline on.",
     "<b>As a cycle tracker reads her:</b> each range is her own record’s, as Clue and Natural Cycles judge a woman against her own cycles; Normal is a percentile band, as FIGO’s normal cycle length is; a season turns only past a margin for noise, as the temperature method waits for a sustained rise; and a peak is confirmed after the fact, never forecast."];
 }
 function chartDetail(){

@@ -12,7 +12,7 @@ import { HIST_NOTE } from '../../src/js/history.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
 import { fmtSigned } from '../../src/js/format.ts';
-import { genSplit, generationOf, labs } from '../../src/js/cycle-analysis.ts';
+import { labs } from '../../src/js/cycle-analysis.ts';
 import { marketCycles } from '../../src/js/data.ts';
 
 const card = sheet => document.querySelector('[data-open="' + sheet + '"]');
@@ -354,16 +354,10 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });
 
-test('her cycles split into two generations where length changes most, and the cycle results are judged within each', () => {
-  const closed = marketCycles.filter(c => !c.ongoing), k = genSplit();
-  const sse = a => { const m = a.reduce((x, y) => x + y, 0) / a.length; return a.reduce((t, v) => t + (v - m) ** 2, 0); };
-  const L = closed.map(c => c.to - c.from + 1), err = j => sse(L.slice(0, j)) + sse(L.slice(j));
-  for (let j = 3; j <= L.length - 3; j++) assert.ok(err(k) <= err(j), 'split at ' + j);
-  assert.equal(marketCycles[k].from, 1982);
-  const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity');
-  assert.equal(generationOf(open), 2);
-  const three = L.slice(-3);
+test('Regularity is the spread of the three cycles before each one, and is read on the open cycle too', () => {
+  const L = marketCycles.filter(c => !c.ongoing).map(c => c.to - c.from + 1);
+  const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity'), three = L.slice(-3);
   assert.equal(reg.per[open], Math.max(...three) - Math.min(...three));
-  assert.ok(document.querySelector('#chart-home .cat-cycle .lab-head').textContent.includes('Generation 2'));
+  assert.equal(reg.per[2], null);
   assert.ok([...document.querySelectorAll('#chart-home .cat-cycle .lab-item b')].some(b => b.textContent === 'Regularity'));
 });

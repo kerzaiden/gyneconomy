@@ -570,19 +570,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   payments, Households (debt service), the Unemployment rate and the Bleed. No side is good on its own for Temperature
   (the Fed aims at 2%, and deflation is a strain too), Interest rates, Pressure, Pulse, Volume or a cycle's Length, so
   those are flagged either way. (0.6.1)
-- **Her cycles come in generations, like an iPhone's: Generation 1 and Generation 2, and a cycle's Length, Bull
-  years, Bleed and Regularity are judged against the closed cycles of its own generation.** Cycle trackers never
-  judge a woman against other ages' cycles (the Apple Women's Health Study and Natural Cycles report cycle length
-  and variability by age), and her cycles aged too: about 4 years before 1982, about 8 since. Keren: "I agree with
-  your idea about an era baseline. Maybe we can call it generation. You know, like an iPhone." The split is the
-  record's, not set by hand: the year that leaves the least squared spread in closed-cycle length on either side,
-  with at least three cycles a side (Clue's minimum for a baseline). It falls at 1982 and cuts that spread in half; a
-  second split would cut it by only a further 4%, so there are two generations until the record shows a third. The
-  readings (Growth, CAPE and the rest) are still judged against every closed cycle. The Cycle drawer's heading names
-  the generation, "Cycle (4) · Generation 2". (0.8.3, Oct 5, 2026)
+- **No generations: every cycle result is judged against all her closed cycles.** Claude proposed judging Length,
+  Bull years and Bleed within an era (before and after 1982, split by length), as trackers judge a woman by age; it
+  was built as "Generation 1 and 2" and then dropped. Keren: "I think we are overcomplicating things with
+  generation. I think the generational question is more about nations", on Ray Dalio's scale of empires rising and
+  declining over some 250 years, which the app does not cover. Don't re-propose. (0.8.3, Oct 6, 2026)
 - **Regularity is a cycle result: the spread from the shortest to the longest of the three cycles before it.** FIGO
   measures how regular cycles are by the gap between the shortest and the longest (Munro, Critchley and Fraser,
-  2018); three is the fewest cycles Clue builds a baseline on. Lower is its good side. It is the one cycle result
+  2018); three is the fewest cycles Clue builds a baseline on. Lower is its good side, and its range is the middle
+  half of all her closed cycles, like every other result. It is the one cycle result
   read on the open cycle, since the three cycles before it have closed. Keren: "I think we should show track
   regularity." (0.8.3, Oct 5, 2026)
 - **Cycle Statistics' (i) says how its statistics compare with a cycle tracker's, with the trackers' published
