@@ -1586,7 +1586,7 @@
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-sentiment"></div>
       <div class="subject-text">
-        <div class="subject-label">Volatility</div>
+        <div class="subject-label">Fear</div>
         <div class="subject-value" id="subj-value-sentiment"></div>
         <p class="subject-say" id="subj-say-sentiment"></p>
         <div id="subj-spark-sentiment"></div>
@@ -33901,7 +33901,7 @@
   }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
-    return '<h4>Volatility</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
+    return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
   }
   function marketWord(v) {
     if (v >= 0) return {
@@ -34902,7 +34902,7 @@
       live: [ "valuation" ]
     }, {
       id: "sheet-sign-sentiment",
-      name: "Volatility",
+      name: "Fear",
       cat: "mood",
       sub: "Sentiment",
       good: "down",
@@ -37108,7 +37108,7 @@
       return d.v > v;
     }).length;
     var r = fearCurve(), shape = curveVerdict(r);
-    var lede2 = '<p class="hi-lede">Volatility is how hard the market is shaking. The VIX prices the next thirty days of it, so it climbs with fear and sinks with calm — read it the other way round, because panic gathers near bottoms and complacency near tops.</p>';
+    var lede2 = '<p class="hi-lede">Fear is how hard the market is shaking. The VIX, the market’s fear gauge, prices the next thirty days of it, so it climbs with fear and sinks with calm — read it the other way round, because panic gathers near bottoms and complacency near tops.</p>';
     var nowTxt = "At " + v.toFixed(2) + " the VIX reads " + tag.text.toLowerCase() + ": by convention below " + VIX_CALM + " is calm, " + VIX_CALM + " to " + VIX_FEAR + " elevated and above " + VIX_FEAR + " fearful. Its daily record low is " + m.min + " and its high " + m.max + ".";
     var recTxt = higher + " of the " + volatilityHistory.length + " months since " + y0 + " averaged higher than today. The most shaken month was " + atMonth(top) + " at " + top.v.toFixed(1) + (top.m < VOL_JOIN ? " on the VXO" + (vixTop ? ", and on the VIX itself " + atMonth(vixTop) + " at " + vixTop.v.toFixed(1) : "") : "") + ".";
     var shapeTxt = r == null ? "No reading today — the three-month leg is missing, so the shape cannot be computed." : "The next month is priced at " + v.toFixed(2) + " against " + now.vix3mClose.toFixed(2) + " three months out, a ratio of " + r.toFixed(2) + ". " + (r >= 1 ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like — and inversions cluster near bottoms." : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");

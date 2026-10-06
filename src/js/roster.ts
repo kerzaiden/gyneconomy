@@ -104,7 +104,7 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-metric-buffett", name:"Buffett indicator", cat:"mood", sub:"Valuations", good:"down", group:"Valuations", timing:"structural", mark:diamondSvg, door:"split",
       head:"Buffett Indicator, Market Value ÷ GDP", hist:{ s:buffettHistory, k:"q" }, mid:BUFFETT_LINE, when:lastDate,
       cardUnit:"of GDP", live:["valuation"] },
-    { id:"sheet-sign-sentiment", name:"Volatility", cat:"mood", sub:"Sentiment", good:"down", timing:"leading", mark:volatilitySvg, door:"subject", hk:"fear-range",
+    { id:"sheet-sign-sentiment", name:"Fear", cat:"mood", sub:"Sentiment", good:"down", timing:"leading", mark:volatilitySvg, door:"subject", hk:"fear-range",
       head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, ring:vixPct, miniSel:".subject-ring > svg",
       when:function(){ return isoLabel(liveIsoOf("vixClose")) || compiledDay(); }, live:["sentiment", "vixClose", "vix3mClose"] },
     { id:"sheet-sign-desire", name:"Consumer demand", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"coincident", mark:flameSvg, door:"row", term:"Desire",

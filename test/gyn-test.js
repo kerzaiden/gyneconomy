@@ -550,7 +550,7 @@ async function openPage(p, url, sheet) {
           st.webkitTapHighlightColor === 'rgba(0, 0, 0, 0)'; }, cat);
       await p.click('#topbar-back'); await settle(p);
     }
-    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Valuations+Volatility+Desire+Confidence' &&
+    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Valuations+Fear+Desire+Confidence' &&
      lists.energy.names === 'Stress+Unemployment rate+Productivity growth' &&
      lists.mood.lead === 'sheet-grp-valuations<sheet-metric-valuation:true' && lists.energy.lead === 'sheet-grp-stress<sheet-metric-debt:true')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)

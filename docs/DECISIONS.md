@@ -32,8 +32,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)
-- **The VIX reading is Volatility, never Fear.** Keren: "I just realized that the VIX is the volatility index.
-  So instead of fear, call the indicator volatility." (V663)
+- **The VIX reading is Fear, after its market name, the fear gauge, so Sentiment reads Confidence beside Fear.**
+  Keren: "the opposite of confidence is fear. So if I would see confidence and fear, I would say, oh, she's not
+  confident and she's fearful", chosen on the card over keeping Volatility. This overturns V663 ("instead of fear,
+  call the indicator volatility"). (V663, 0.8.5)
 - **The household reading is Households, never Debt service; "Debt service" names only the Households bill.**
   Keren: "debt service is too general — there is government debt service and household debt service." (V463,
   V660)
@@ -623,7 +625,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Mood: Valuations, Sentiment (Volatility, Confidence) and Desire; Circulation: Rates (Interest rates, Real interest
+  Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Rates (Interest rates, Real interest
   rate, Pressure) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
   names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
