@@ -370,9 +370,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The outer ring is four seasons, one round-ended shape per run of quarters, with a hair of track where the
   season changed; the two Springs are one season and the two Autumns one.** Keren: "divide the outer wheel by
   season, not by year". (V177, V180)
-- **The ring wears the temperature's own colours: periwinkle below the range (Winter deep, Spring a tint),
-  orange above it (Summer deep, Autumn a yellow-orange tint).** Keren's choice, so a season's colour says
-  where prices sat. (V180)
+- **The seasons wear the growth regime's colours: the expansion seasons warm (Spring yellow, Summer red-orange),
+  the contraction seasons cool (Winter blue, Autumn light blue).** Keren: "spring is a hotter season than
+  autumn"; "it's pretty much a convention to put warm colours in warm seasons and cold colours in cold seasons".
+  Read off the Season Model's table, the warm row is expansion and the cool row contraction, so the blue half of
+  the ring is where recessions fall, and Spring's yellow is the gold Growth already wears in expansion. Autumn
+  stays light blue against the calendar's orange: in the model it is the contraction season. Summer keeps its
+  red-orange; a true red would read as Risk or a bear year. Replaces the price-temperature colours of V180.
+  (V180, 0.8.7)
 - **The dial's legend states each range in plain mathematical signs: Winter CPI < 1%, Spring CPI ≤ 3%, Summer
   CPI > 3%, Autumn CPI ≥ 1%; a bull year's return ≥ 0%, a bear year's < 0%.** The signs are the model's own tests
   (`readSeason`, `TEMP_BAND_LO`/`TEMP_BAND_HI`). Keren: "all ranges should use some kind of mathematical signaling,
@@ -662,9 +667,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   from the book on screen, and none is invented for the others until the manuscript supplies one. Summer's
   (Ovulation) stays in the book: Keren, "I don't think we should say ovulation in this app" (0.6.12). (undated,
   Sep 16–19, 2026; 0.8.6)
-- **The Season Model table runs in colour order: the blues first (Winter, then the two Springs), then the
-  oranges (Summer, then the two Autumns).** Keren's order; the lists keep the cycle's order above, and she
-  confirmed both at V668. (V193, V668)
+- **The Season Model table runs in colour order, the blues together, then the warm colours: the two Autumns,
+  Winter, the two Springs, then Summer.** Keren: "you can put winter deflation below autumn stagflation because it's
+  the same colour palette". Keren's order; the lists keep the cycle's order above, and she confirmed both at V668. Its price bars
+  wear the season's pastel (`--season-wash`, the shade of the info page's season table) with no gradient. Keren:
+  "I like the pastel colours that you used in the info … I don't think we need to see the transition".
+  (V193, V668, 0.8.7)
 - **The season is computed and never set by hand; `seasonOverride` stays null.** It follows Keren's rule:
   inflation rising while growth falls is stagflation. (undated)
 - **Growth's side is real GDP against a year earlier set beside the economy's potential growth: at or above
@@ -1193,7 +1201,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   miniature, and its history is bars like every other.** Keren: "if we're talking about the pulse, I kinda want
   to see a pulse"; "I want it to look like a real heartbeat"; confirmed at V668. (V297, V298, V496, V668)
 - **Pressure's maturity history is columns, each coloured by what the curve was doing that quarter (inverted,
-  or normal, from the one `pressureZone()` lookup), in `--critical` and `--season-autumn` at full weight: colour
+  or normal, from the one `pressureZone()` lookup), in `--critical` and `--gold` at full weight: colour
   shows the curve, height the yield.** "Steep" went at 1.2.0 (no source). Keren: "a colour that represents the pressure like
   we do"; the pale zone tones failed to separate under protanopia. (V394)
 - **Pressure's history keeps quarterly averages, but the column for the quarter still running is the latest
@@ -1313,7 +1321,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   tracker's luteal phase). Green and red keep their market meaning: easing is the bullish side. (0.6.7)
 - **The seasons' colours are one token each, read by the legend, the Season Model table and the ring alike.**
   Keren: "one change fixes the entire app". (V182)
-- **Growth's phase takes the dial's seasons, not the severity palette: expanding in Autumn's gold, contracting
+- **Growth's phase takes the dial's seasons, not the severity palette: expanding in Spring's yellow, contracting
   in Winter's periwinkle, two steps of one blue for the two degrees of contraction; it is coloured by the
   season model's regime, never by the sign of growth.** Keren: "blue for contraction, yellow for expansion";
   green above zero contradicted the word on the panel, which names the direction, not the level. Since V668
@@ -1339,8 +1347,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   (0.8.5). It is the one grey in the app; containers stay white ("I don't like the gray. It's too gray. Let's use
   white"). (0.6.2, 0.8.5, replacing V579)
 - **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a white
-  page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer salmon-orange and Autumn
-  marigold; Winter and Spring stay periwinkle (V180).** Keren: "I really like the dark purple in this reference
+  page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer salmon-orange, Spring
+  marigold, Winter periwinkle and Autumn its light tint (0.8.7).** Keren: "I really like the dark purple in this reference
   and the light pink background with orange shades to yellow … really appropriate for a cycle tracking app";
   "let's use white and let's use splashes of apricot". Text and greys are tinted toward plum. Every text pair
   holds 4.5:1 in both themes except `--text-muted` on `--track` (4.4:1 in light). (0.6.2)
@@ -1392,7 +1400,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Buttons' and highlights' wash (`--accent-wash`) is the reference's blush (`--blush` #f6c4be at 40% on
   white), not a tint of the plum.** Keren: "the more details button is in the old purple"; plum at 10% on white
   read as lilac. Dark keeps the rose tint. (0.6.3)
-- **Cycle analysis's tiers are Normal apricot (`--normal`), Attention marigold (`--season-autumn`) and Risk
+- **Cycle analysis's tiers are Normal apricot (`--normal`), Attention marigold (`--gold`) and Risk
   red (`--critical`).** Keren chose apricot over teal: "the apricot looks much more, much better". Apricot and
   marigold are close in lightness, so the mark's shape ("=" or a triangle) carries the difference. (0.6.2)
 - **The app icon's lotus sits on the plum, not the old purple.** Keren: "make sure the icon is not purple anymore,

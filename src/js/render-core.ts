@@ -396,7 +396,7 @@ function renderPressurePage(){
                      n:ylmCount(), at:function(d: unknown, i: number){ return colLabel(ylmFrom + i); },
                      fmt:function(v: number){ return v.toFixed(2) + "%"; },
                      refs:[{ label:"Inverted", swatch:"var(--critical)" },
-                           { label:"Normal",   swatch:"var(--season-autumn)" }],
+                           { label:"Normal",   swatch:"var(--gold)" }],
                      vals:(picked ? picked.data.slice(ylmFrom, ylmTo).map(function(d){
                             return d.v == null ? null : { v:d.v }; }) : []) });
 
