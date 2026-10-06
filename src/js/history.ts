@@ -411,27 +411,18 @@ function cyclePicker(id: string, picked: string | null | undefined, minYear?: nu
     .filter(function(c){ return minYear == null || c.from >= minYear; });
   var cur = cycleByName(picked) || openCycle();
   if (rows.indexOf(cur) === -1) cur = rows[0] || cur;
-  return pickList(id, rows.map(function(c){ var L = cycLabel(c); return { attr:"data-cycle", key:c.name, name:L.name, aside:L.years, on:c.name === cur.name }; }));
-}
-type PickRow = { attr: string; key: string; name: string; aside: string; on: boolean };
-function pickList(id: string, rows: PickRow[]){
-  var cur = rows.filter(function(r){ return r.on; })[0] || rows[0], open = !!pickerOpen[id];
+  var CL = cycLabel(cur), open = !!pickerOpen[id];
   return '<div class="cycsel' + (open ? " open" : "") + '" data-cycles-for="' + id + '">' +
     '<button type="button" class="cycsel-btn" data-picker-toggle="1" aria-haspopup="listbox" aria-expanded="' +
-      (open ? "true" : "false") + '"><span class="cycsel-nm">' + cur.name + '</span>' +
-      '<span class="cycsel-yr">' + cur.aside + '</span>' + CHEV + '</button>' +
+      (open ? "true" : "false") + '">' + nameAside(CL.name, CL.years) + CHEV + '</button>' +
     '<div class="cycsel-menu" role="listbox"' + (open ? "" : " hidden") + '>' +
-    rows.map(function(r){
-      return '<button type="button" class="cycsel-opt' + (r.on ? " on" : "") + '" role="option" aria-selected="' +
-        (r.on ? "true" : "false") + '" ' + r.attr + '="' + r.key + '">' +
-        '<span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + r.name +
-        '</span><span class="cycsel-yr">' + r.aside + '</span></button>';
-    }).join("") + '</div></div>';
+    rows.map(function(c){ var L = cycLabel(c); return pickRow(c.name === cur.name, "data-cycle", c.name, L.name, L.years); }).join("") + '</div></div>';
 }
-export function periodControls(id: string, rows: { key: string; name: string; cycle: Cycle }[], picked: string){
-  return controlsBox(modeBar(id, page.mode[id], [["quarters", "Quarters"]]) + (page.mode[id] === "cycles" ? cyclePicker(id, page.cycles[id]) :
-    pickList(id, rows.slice().reverse().map(function(d){ return { attr:"data-when", key:d.key, name:d.name, aside:cycLabel(d.cycle).name, on:d.key === picked }; }))));
+export function pickRow(on: boolean, attr: string, key: string, name: string, aside: string){
+  return '<button type="button" class="cycsel-opt' + (on ? " on" : "") + '" role="option" aria-selected="' + on + '" ' + attr + '="' + key + '">' +
+    '<span class="cycsel-tick" aria-hidden="true"></span>' + nameAside(name, aside) + '</button>';
 }
+function nameAside(name: string, aside: string){ return '<span class="cycsel-nm">' + name + '</span><span class="cycsel-yr">' + aside + '</span>'; }
 export function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
   if (!ranges || ranges.length < 2) return "";
   return tabBar('data-range-for="' + id + '"', ranges.map(function(r){ return [r.key, r.label]; }), active, "data-range");

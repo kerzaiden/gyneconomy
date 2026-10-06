@@ -464,16 +464,17 @@ Rules that shape the pages:
   fences beyond it mark Risk, and between is Attention, except that a result on the reading's `good` side is Normal.
   The cycle's length, bull years and bleed are judged only once it has closed; Regularity (`settled`) is read on the
   open cycle too, since it measures the three cycles before it. The health score is the share of judged
-  readings that are Normal. On top of the Indicators page sits the history pages' own Cycles | Years bar (`periodControls`
-  in `history.ts`, the same `modeBar` and picker as every history, 0.8.9): Cycles reads a cycle as above, Years and Quarters
+  readings that are Normal. On top of the Indicators page sits the period stepper (`stepper`, 0.8.9): the period in the serif, its place
+  in its cycle under it, and arrows to the period before and after. Cycles reads a cycle as above; Years and Quarters
   read one calendar year or quarter (`page.when`, keyed "2024" or "2024 Q3"), each reading averaged over it (while it
   is open: today's figure) and judged against `Lab.now`, the range the open cycle uses, so a period adds no band of its
-  own. A reading kept only by the year (`k` "y" or "yi") shows its year's figure in a quarter and names the year. The
-  picker's period and cycle follow each other (`syncPeriod`); each year in Year by Year and the dial's centre open
-  Indicators on their period (`data-ind-when`, `openWhen`), and an Insights door on Analysis returns it to Cycles. Under the bar sits
-  the search box, the filter button inside it opening a small menu of tiers
-  (`.lab-menu`, closed by Escape through `layer` or a tap outside); `narrow` hides the rows that fail either and any
-  category left empty. A tier pick redraws (the counts and the button's label change); typing only narrows, so the
+  own. A reading kept only by the year (`k` "y" or "yi") shows its year's figure in a quarter and names the year. Under
+  the stepper sits the search box with one filter button; it and the stepper's period open the filter sheet
+  (`filterSheet`, in the detail modal): Period (Cycles | Years | Quarters and the list), Category, and Range (All, Risk,
+  Attention, Normal with their counts). Every pick is a `data-pick-*` button handled once (`wirePicks`), which redraws
+  the page and the open sheet. Each year in Year by Year and the dial's centre open Indicators on their period
+  (`data-ind-when`, `openWhen`), and an Insights door on Analysis returns it to Cycles. `narrow` hides the rows that fail the search, the category or the range, and any
+  category left empty. A pick redraws (the counts and the button's label change); typing only narrows, so the
   box keeps its focus. A reading's row is a button that opens its page and a category's name filters Indicators to it,
   through the panels' one `[data-open]` handler; the heading's count and chevron are a separate button that folds it.
 - **The category pages are gone (0.8.6).** Indicators replaced them in 0.8.5; each category's insights sit behind

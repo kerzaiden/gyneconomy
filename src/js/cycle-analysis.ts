@@ -1,7 +1,7 @@
 import { CHEV, facts, qLabel, srcBlock } from "./format.ts";
-import { byId, detailSlot, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
-import { page, pageCycle, periodControls, tabBar } from "./history.ts";
-import { histBar, histFrame } from "./charts.ts";
+import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText } from "./dom.ts";
+import { page, pageCycle, pickRow, tabBar } from "./history.ts";
+import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
@@ -121,10 +121,13 @@ function whenMeans(R: RosterRow){
   Object.keys(by).forEach(function(k){ out[k] = meanOf(by[k]); });
   return out;
 }
-function periodRows(quarter: boolean){
-  var out: { key: string; name: string; cycle: Cycle }[] = [], last = nowWhen(quarter);
-  for (var y = marketCycles[0].from; y <= calendarTodayY; y++) (quarter ? [1, 2, 3, 4].map(function(n){ return y + " Q" + n; }) : [String(y)]).forEach(function(w){
-    if (w <= last && judged(atWhen(w)).length) out.push({ key:w, name:quarter ? qLabel(w) : w, cycle:cycleOfYear(y) as Cycle });
+type PeriodRow = { key: string; name: string; aside: string; caption: string };
+function periodRows(id: string): PeriodRow[] {
+  var mode = page.mode[id], out: PeriodRow[] = [], last = nowWhen(mode === "quarters");
+  if (mode === "cycles") return marketCycles.map(function(c){ var L = cycLabel(c); return { key:c.name, name:c.name, aside:L.years, caption:L.years }; });
+  for (var y = marketCycles[0].from; y <= calendarTodayY; y++) (mode === "quarters" ? [1, 2, 3, 4].map(function(n){ return y + " Q" + n; }) : [String(y)]).forEach(function(w){
+    var c = cycleOfYear(+w.slice(0, 4)) as Cycle;
+    if (w <= last && judged(atWhen(w)).length) out.push({ key:w, name:w.length > 4 ? qLabel(w) : w, aside:c.name.replace(" Cycle", ""), caption:"Year " + (+w.slice(0, 4) - c.from + 1) + " of the " + c.name });
   });
   return out;
 }
@@ -209,22 +212,39 @@ var LENS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 function tierOpts(at: At, j: Lab[]){
   return [["all", "All", j.length]].concat(TIERS.map(function(t){ return [t.key, t.title, j.filter(function(l){ return tier(l, at) === t.key; }).length]; }));
 }
-function menuRows(id: string, at: At, j: Lab[]){
-  var f = findOf(id);
-  return tierOpts(at, j).map(function(o){
-    return '<button type="button" role="menuitemradio" aria-checked="' + (o[0] === f.tier) + '" data-lab-tier="' + o[0] + '"><span>' + o[1] + '</span><small>' + o[2] + '</small></button>';
-  }).join("");
+function filterTag(id: string){
+  var f = findOf(id), tags = (f.cat ? [catTitle(f.cat)] : []).concat(f.tier === "all" ? [] : [TIERS.filter(function(t){ return t.key === f.tier; })[0].title]);
+  return tags.length ? '<span>' + tags.join(" \u00b7 ") + '</span>' : "";
 }
-function filterTag(id: string, at: At, j: Lab[]){
-  var f = findOf(id), on = tierOpts(at, j).filter(function(o){ return o[0] === f.tier; })[0];
-  return f.tier === "all" ? "" : '<span>' + on[1] + '</span>';
-}
-function finder(id: string, at: At, j: Lab[]){
+function finder(id: string, slot: number){
   var f = findOf(id);
   return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search indicators" aria-label="Search indicators" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
-    '<button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + filterTag(id, at, j) + '</button>') +
-    '<div class="lab-menu" role="menu" hidden>' + menuRows(id, at, j) + '</div></div>';
+    filterDoor("lab-filter", slot, ' aria-label="Filter"', slidersSvg() + filterTag(id))) + '</div>';
 }
+function stepBtn(row: PeriodRow | undefined, cls: string, label: string){
+  return '<button type="button" class="period-arrow' + cls + '" data-pick-period="' + (row ? row.key : "") + '" aria-label="' + label + (row ? ", " + row.name : "") + '"' + (row ? "" : " disabled") + '>' + CHEV + '</button>';
+}
+function stepper(id: string, rows: PeriodRow[], slot: number){
+  var keys = rows.map(function(r){ return r.key; }), i = keys.indexOf(pickedKey(id)), r = rows[i] || rows[rows.length - 1];
+  return '<div class="period-step">' + stepBtn(rows[i - 1], " back", "Earlier") +
+    filterDoor("period-now", slot, "", '<b>' + r.name + '</b><small>' + r.caption + '</small>') +
+    stepBtn(rows[i + 1], "", "Later") + '</div>';
+}
+function filterDoor(cls: string, slot: number, attrs: string, inner: string){
+  return '<button type="button" class="' + cls + ' details-link" data-detail-idx="' + slot + '"' + attrs + '>' + inner + '</button>';
+}
+function sheetSec(title: string, inner: string){ return '<div class="ind-sec"><h5>' + title + '</h5>' + inner + '</div>'; }
+function periodList(rows: PeriodRow[], key: string){
+  return '<div class="period-list" role="listbox" aria-label="Period">' + rows.slice().reverse().map(function(r){ return pickRow(r.key === key, "data-pick-period", r.key, r.name, r.aside); }).join("") + '</div>';
+}
+function filterSheet(id: string, at: At, j: Lab[], rows: PeriodRow[]){
+  var f = findOf(id), keys = categoriesShown().map(function(c){ return c.key; }).filter(function(k){ return j.some(function(l){ return l.cat === k; }); });
+  return '<div class="ind-filter"><h4>Filter</h4>' +
+    sheetSec("Period", tabBar('aria-label="Period"', [["cycles", "Cycles"], ["calendar", "Years"], ["quarters", "Quarters"]], page.mode[id], "data-pick-mode") + periodList(rows, pickedKey(id))) +
+    sheetSec("Category", tabBar('aria-label="Category"', [["", "All"]].concat(keys.map(function(k){ return [k, catTitle(k)]; })), f.cat, "data-pick-cat", "ind-cats")) +
+    sheetSec(RANGE, tabBar('aria-label="' + RANGE + '"', tierOpts(at, j).map(function(o){ return [String(o[0]), o[1] + ' <small>' + o[2] + '</small>']; }), f.tier, "data-pick-tier")) + '</div>';
+}
+var RANGE = "Range", sheetHtml: Record<string, string> = {};
 function narrow(host: HTMLElement, id: string){
   var f = findOf(id), any = false;
   Array.prototype.forEach.call(host.querySelectorAll(".lab-sec"), function(sec: HTMLElement){
@@ -236,24 +256,6 @@ function narrow(host: HTMLElement, id: string){
     sec.hidden = !seen; any = any || seen;
   });
   var none = host.querySelector<HTMLElement>(".search-none"); if (none) none.hidden = any;
-}
-function menuOf(host: Element){ return host.querySelector<HTMLElement>(".lab-menu"); }
-function showMenu(host: Element, open: boolean){
-  var menu = menuOf(host), btn = host.querySelector<HTMLElement>(".lab-filter"); if (!menu || !btn) return;
-  menu.hidden = !open; btn.setAttribute("aria-expanded", String(open));
-}
-function redraw(host: HTMLElement, id: string){
-  var draw = sheetRenderers[id]; if (draw) draw();
-  var btn = host.querySelector<HTMLElement>(".lab-filter"); if (btn) btn.focus();
-}
-function pickTier(host: HTMLElement, id: string, seg: Element){
-  findOf(id).tier = seg.getAttribute("data-lab-tier") || "all";
-  redraw(host, id);
-}
-function toggleMenu(host: HTMLElement, id: string){
-  var menu = menuOf(host), at = periodAt(id); if (!menu || !at) return;
-  if (menu.hidden) menu.innerHTML = menuRows(id, at, judged(at).filter(function(l){ return l.cat !== "cycle"; }));
-  showMenu(host, menu.hidden);
 }
 export function riskLabs(i: number){ var at = atCycle(i); return judged(at).filter(function(l){ return tier(l, at) === "abnormal"; }); }
 function judged(at: At){ return labs().filter(function(l){ return at.v(l) != null && at.n(l) && !at.skip(l); }); }
@@ -360,25 +362,22 @@ function whenPicked(id: string){
   var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
   return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
 }
+function pickedKey(id: string){ var c = pageCycle(id); return page.mode[id] === "cycles" ? (c as Cycle).name : whenPicked(id); }
 function periodAt(id: string){
   var c = pageCycle(id);
   return page.mode[id] !== "cycles" ? atWhen(whenPicked(id)) : c ? atCycle(marketCycles.indexOf(c)) : null;
 }
 function drawChart(id: string){
-  var host = byId(id), c = pageCycle(id);
+  var host = byId(id), c = pageCycle(id), at = periodAt(id);
   if (host && c && id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(marketCycles.indexOf(c)) + '</div>'; return; }
-  var at = periodAt(id); if (!host || !at) return;
-  var j = judged(at).filter(function(l){ return l.cat !== "cycle"; });
-  host.innerHTML = histBar(periodControls(id, page.mode[id] === "cycles" ? [] : periodRows(page.mode[id] === "quarters"), whenPicked(id))) + finder(id, at, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
+  if (!host || !at) return;
+  var j = judged(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
+  host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
 export var IND = "sheet-find";
 var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
 function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
-function catBar(j: Lab[]){
-  var keys = categoriesShown().map(function(c){ return c.key; }).filter(function(k){ return j.some(function(l){ return l.cat === k; }); });
-  return tabBar('aria-label="Category"', [["", "All"]].concat(keys.map(function(k){ return [k, catTitle(k)]; })), findOf(IND).cat, "data-ind-cat", "ind-cats");
-}
 function pickCat(t: Element, id: string){
   var b = t.closest && t.closest("[data-ind-cat]"); if (!b) return false;
   findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
@@ -395,21 +394,41 @@ function wireFinder(host: HTMLElement, id: string){
   page.cycles[id] = null;
   sheetRenderers[id] = function(){ drawChart(id); };
   host.addEventListener("click", function(e){
-    var t = e.target as Element, seg = t.closest && t.closest("[data-lab-tier]"), opt = t.closest && t.closest(".cycsel-opt");
-    if (opt) syncPeriod(id, opt);
-    else if (seg) pickTier(host, id, seg);
-    else if (t.closest && t.closest(".lab-filter")) toggleMenu(host, id);
-    else if (!pickCat(t, id)) fold(t);
+    var t = e.target as Element;
+    if (!pickCat(t, id)) fold(t);
   });
   host.addEventListener("input", function(e){
     var q = e.target as HTMLInputElement; if (!q.classList.contains("lab-q")) return;
     var f = findOf(id); f.raw = q.value; f.q = q.value.trim().toLowerCase(); narrow(host, id);
   });
 }
-function syncPeriod(id: string, opt: Element){
-  var w = opt.getAttribute("data-when");
-  if (w) page.cycles[id] = page.cycles[HOME_ID] = (cycleOfYear(+w.slice(0, 4)) as Cycle).name;
-  else { page.cycles[HOME_ID] = opt.getAttribute("data-cycle"); page.when[id] = undefined; }
+function setPeriod(id: string, k: string){
+  if (page.mode[id] === "cycles"){ page.cycles[id] = page.cycles[HOME_ID] = k; page.when[id] = undefined; return; }
+  page.when[id] = k; page.cycles[id] = page.cycles[HOME_ID] = (cycleOfYear(+k.slice(0, 4)) as Cycle).name;
+}
+function pick(id: string, b: Element){
+  var mode = b.getAttribute("data-pick-mode"), cat = b.getAttribute("data-pick-cat"), tr = b.getAttribute("data-pick-tier");
+  if (mode != null) page.mode[id] = mode; else if (cat != null) findOf(id).cat = cat; else if (tr != null) findOf(id).tier = tr;
+  else setPeriod(id, b.getAttribute("data-pick-period") || "");
+}
+function refreshSheet(id: string, sel: string){
+  var body = byId("detail-modal-body"); if (!body || !body.querySelector(".ind-filter")) return;
+  body.innerHTML = sheetHtml[id]; centreList(body);
+  focusQuiet(body.querySelector<HTMLElement>(sel));
+}
+var PICKS = ["data-pick-mode", "data-pick-period", "data-pick-cat", "data-pick-tier"];
+function centreList(body: HTMLElement){
+  var list = body.querySelector<HTMLElement>(".period-list"), on = list && list.querySelector<HTMLElement>(".on");
+  if (list && on) list.scrollTop = on.offsetTop - list.offsetTop - (list.clientHeight - on.offsetHeight) / 2;
+}
+function wirePicks(){
+  document.addEventListener("click", function(e){
+    var t = e.target as Element, on = t.closest && t.closest(PICKS.map(function(a){ return "[" + a + "]"; }).join(", "));
+    if (t.closest && t.closest(".lab-filter, .period-now")) centreList(need("detail-modal-body"));
+    if (!on) return;
+    var attr = PICKS.filter(function(a){ return (on as Element).hasAttribute(a); })[0];
+    pick(IND, on); drawChart(IND); refreshSheet(IND, "[" + attr + '="' + on.getAttribute(attr) + '"]');
+  });
 }
 function openWhen(w: string, cat: string){
   page.mode[IND] = w.length > 4 ? "quarters" : "calendar"; page.when[IND] = w; page.cycles[IND] = (cycleOfYear(+w.slice(0, 4)) as Cycle).name;
@@ -422,12 +441,8 @@ function wireCatDoors(){
     if (at) openWhen(at.getAttribute("data-ind-when") || "", at.getAttribute("data-ind-cat") || ""); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
   });
 }
-function openMenus(){ return Array.prototype.filter.call(document.querySelectorAll(".lab-menu"), function(m: HTMLElement){ return !m.hidden; }) as HTMLElement[]; }
-function shutMenus(){ openMenus().forEach(function(m){ var host = m.closest(".lab-find"); if (host) showMenu(host, false); }); }
 export function buildCycleChart(){
-  wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors();
-  layer(0, { open:function(){ return openMenus().length > 0; }, close:shutMenus });
-  document.addEventListener("click", function(e){ var t = e.target as Element; if (t.isConnected && !(t.closest && t.closest(".lab-find"))) shutMenus(); });
+  wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
   document.addEventListener("click", function(e){
     var door = (e.target as Element).closest && (e.target as Element).closest("[data-chart-cycle]"); if (!door) return;
     need("tab-chart").click();
