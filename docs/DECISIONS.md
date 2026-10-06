@@ -935,6 +935,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   average) it is Above trend, at or above 1.3% (the slowdown-era average) Above the slowdown, below that Below
   the slowdown; the captions and the note follow the word.** Keren chose a rule from the BLS lines over setting
   the word each quarter. (V668)
+- **The real interest rate (the Fed funds rate less inflation, CPI before 2000 and PCE since) is a Circulation
+  card right after Interest rates, read against a 2% neutral rate: at or above it Restrictive, below it
+  Accommodative.** Keren chose the real rate line over a nominal neutral line. The 2% is Taylor's (1993)
+  equilibrium real rate, cited in the (i); it is a published convention, not a band the app set. (0.8.2)
 
 ## History charts
 

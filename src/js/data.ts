@@ -287,6 +287,11 @@ export var CPI_TARGET = 2;
 export var CLOCK_SRC: Src[] = [
   {t:"Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public", u:"https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"}
 ];
+export var NEUTRAL_RATE = 2;
+export var NEUTRAL_SRC: Src[] = [
+  {t:"John B. Taylor — Discretion versus Policy Rules in Practice, Carnegie-Rochester Conference Series on Public Policy 39 (1993): the 2% equilibrium real rate", u:"https://web.stanford.edu/~johntayl/Papers/Discretion.PDF"},
+  {t:"Federal Reserve H.15 via FRED — Federal Funds Effective Rate (FEDFUNDS), monthly", u:"https://fred.stlouisfed.org/series/FEDFUNDS"}
+];
 export var FED_TARGET_SRC = {t:"Federal Reserve — 2025 Statement on Longer-Run Goals and Monetary Policy Strategy", u:"https://www.federalreserve.gov/monetarypolicy/monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2025.htm"};
 export var TEMP_BAND_LO = 1, TEMP_BAND_HI = 3;
 export var PCE_SWITCH_SRC = {t:"Federal Reserve — Monetary Policy Report to the Congress, February 17, 2000: the FOMC frames its inflation projections on the PCE chain-type price index rather than the CPI", u:"https://www.federalreserve.gov/boarddocs/hh/2000/february/ReportSection1.htm"};

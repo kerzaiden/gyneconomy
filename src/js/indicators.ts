@@ -3,10 +3,10 @@ import { addSources, byId, need, put } from "./dom.ts";
 import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.ts";
 import { fiscalHistory, grossDebtQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { buffettHistory, CONFIDENCE_SRC, DESIRE_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
+import { buffettHistory, CONFIDENCE_SRC, DESIRE_SRC, NEUTRAL_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
 import { currentEra, cycleSlice } from "./model.ts";
 import { attachHistory, histControls, histHead, histNote, page, pageCycle, refitHistory, timelineWindow } from "./history.ts";
-import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, premiumReading, premiumRecord, productivityReading } from "./readings.ts";
+import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, premiumReading, premiumRecord, productivityReading, realRateReading, realRateRecord } from "./readings.ts";
 import { GROUP_MARK, keyed, peekOf, periodOf, ROSTER } from "./roster.ts";
 import { catItem, catList, metricSheet, openOf, sheetRenderers, timingPill } from "./render-core.ts";
 
@@ -41,7 +41,7 @@ function splitPages(): Record<string, SplitPage> {
       fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
     "sheet-sign-productivity-growth": productivityPage(tenth),
     "sheet-sign-desire": desirePage(), "sheet-sign-premium": premiumPage(), "sheet-sign-confidence": confidencePage(),
-    "sheet-sign-market": marketPage()
+    "sheet-sign-market": marketPage(), "sheet-sign-real-rate": realRatePage()
   };
 }
 function confidencePage(): SplitPage {
@@ -60,6 +60,12 @@ function premiumPage(): SplitPage {
   var r = premiumReading, pct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
   return { goodAbove:true, line:"No premium", fmt:pct, tick:function(v){ return Math.round(v) + "%"; },
     src:PREMIUM_SRC, insight:premiumInsight, info:r.info,
+    row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
+}
+function realRatePage(): SplitPage {
+  var r = realRateReading, pct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
+  return { line:"Neutral rate", fmt:pct, tick:function(v){ return Math.round(v) + "%"; },
+    src:NEUTRAL_SRC, insight:realRateInsight, info:r.info,
     row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
 }
 function marketPage(): SplitPage {
@@ -251,6 +257,16 @@ function premiumInsight(s: SplitSpec){
     hiCard("Against the Record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " +
       fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " +
       above + " sat at or above zero.")];
+}
+function realRateInsight(s: SplitSpec){
+  var h = s.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
+  var side = function(d: SeriesPt){ return d.v >= s.mid; }, cross: SeriesPt | null = null;
+  for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
+  return [lede('The policy rate after inflation, the rate that actually bites. Above the ' + s.mid + '% neutral rate policy is restrictive; below it, accommodative.'),
+    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " read " + fmtSigned(last.v, 1) + "%, " +
+      (side(last) ? "restrictive" : "accommodative") + (cross ? ", as it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
+    hiCard("Against the Record", "", "The series runs from " + fmtSigned(realRateRecord.lo.v, 1) + "% (" + atMonth(realRateRecord.lo) + ") to " +
+      fmtSigned(realRateRecord.hi.v, 1) + "% (" + atMonth(realRateRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above neutral.")];
 }
 var ORDINAL = ["", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth"];
 function marketInsight(s: SplitSpec){
