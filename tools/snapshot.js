@@ -74,7 +74,7 @@ async function capture(file, out) {
     for (const sheet of sheets) {
       await p.goto('file://' + file); await p.waitForTimeout(1100);
       await click(p, '.tab-btn[data-tab="chart"]'); await p.waitForTimeout(300);
-      await click(p, '.lab-door'); await p.waitForTimeout(380);
+      await click(p, '#chart-home button.dx-sys-head[data-open="sheet-find"]'); await p.waitForTimeout(380);
       const opened = await click(p, '.lab-row[data-open="' + sheet + '"]');
       if (opened) {
         await p.waitForTimeout(800);

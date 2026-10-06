@@ -61,9 +61,9 @@ export function fitYearDots(){
     var box = d.closest(".dx-sys"), cs = getComputedStyle(row || box || d);
     var pitch = box ? (box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) / span : 0;
     if (!d.clientWidth || !(pitch > 5)) return;
-    d.style.justifyContent = "flex-end";
+    d.style.justifyContent = "flex-start";
     d.style.gap = (pitch - 5) + "px";
-    d.innerHTML = new Array(Math.max(1, Math.floor((d.clientWidth - 8) / pitch) + 1) + 1).join("<i></i>");
+    d.innerHTML = '<i style="margin-left:' + (pitch - 5) + 'px"></i>' + new Array(Math.max(1, Math.floor(d.clientWidth / pitch))).join("<i></i>");
   });
 }
 function diagnosisHost(home: HTMLElement){
