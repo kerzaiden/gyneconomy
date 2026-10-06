@@ -1114,6 +1114,24 @@
   .stat-row{ justify-content:flex-start; gap:16px; margin-top:10px; }
   .stat-row b{ font-family:"Public Sans",sans-serif; font-size:var(--type-reading-head); font-weight:700; }
   .stat-row.flow .lab-ring circle.on{ stroke:var(--bleed-mid); }
+  button.stat-row{ width:100%; font:inherit; color:inherit; text-align:left; border:0; cursor:pointer; }
+  .stat-main{ flex:1; padding-right:12px; }
+  .stat-main b{ white-space:nowrap; }
+  button.stat-row .stat-main{ border-right:1px solid var(--border); }
+  .stat-side{ display:flex; align-items:center; gap:6px; flex:none; font-size:var(--type-meta); color:var(--text-primary); }
+  .stat-side svg{ width:18px; height:18px; }
+  .stat-tick{ display:inline-flex; color:var(--normal); }
+  .stat-tick.odd{ color:var(--critical); }
+  .len-bars{ display:block; width:100%; margin:8px 0; }
+  .len-bars rect.ok{ fill:var(--normal); }
+  .len-bars rect.odd{ fill:var(--critical); }
+  .len-bars rect.now{ fill:var(--normal); opacity:0.45; }
+  .len-bars text{ font-size:9px; fill:var(--text-muted); text-anchor:middle; }
+  .len-key i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 12px; vertical-align:-1px; }
+  .len-key i:first-child{ margin-left:0; }
+  .len-key i.ok{ background:var(--normal); }
+  .len-key i.odd{ background:var(--critical); }
+  .len-sum{ text-align:center; font-size:var(--type-reading-head); padding:14px; border:1px solid var(--border); border-radius:var(--radius-inner); }
   .plain .lab-cat.cat-head{ width:100%; justify-content:space-between; padding:23px 16px; }
   .lab-cat.cat-head:hover{ text-decoration:none; }
   .stat-lede{ margin:0; font-size:var(--type-interface); color:var(--text-secondary); }
@@ -37727,32 +37745,64 @@
   function homeHead(mark, title) {
     return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + title + "</div>";
   }
-  function statRow(name, v, of, note, cls) {
-    return '<span class="lab-score stat-row' + (cls ? " " + cls : "") + '"><span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + "</span><span><small>" + name + "</small><b>" + yearsWord(v) + " years</b>" + (note ? "<small>" + note + "</small>" : "") + "</span></span>";
+  function statRow(name, v, of, side2, page2, cls) {
+    var inner = '<span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + '</span><span class="stat-main"><small>' + name + "</small><b>" + yearsWord(v) + " years</b></span>";
+    return page2 ? '<button type="button" class="lab-score stat-row details-link' + (cls ? " " + cls : "") + '" data-detail-idx="' + detailSlot(page2) + '">' + inner + '<span class="stat-side">' + side2 + CHEV + "</span></button>" : '<span class="lab-score stat-row' + (cls ? " " + cls : "") + '">' + inner + "</span>";
   }
   function closedVisits() {
     return visits().slice(0, closedCount());
-  }
-  function sdOf(vs) {
-    var m = vs.reduce(function(a, b) {
-      return a + b;
-    }, 0) / vs.length;
-    return Math.sqrt(vs.reduce(function(s, v) {
-      return s + (v - m) * (v - m);
-    }, 0) / (vs.length - 1));
   }
   function meanOf(vs) {
     return vs.reduce(function(a, b) {
       return a + b;
     }, 0) / vs.length;
   }
-  function statsHome() {
-    var vs = closedVisits(), L = vs.map(function(v) {
+  function sdOf(vs) {
+    var m = meanOf(vs);
+    return Math.sqrt(vs.reduce(function(s, v) {
+      return s + (v - m) * (v - m);
+    }, 0) / (vs.length - 1));
+  }
+  function lengths() {
+    return closedVisits().map(function(v) {
       return v.years;
-    }), B = vs.map(function(v) {
+    });
+  }
+  function typical(v) {
+    var n = normOf(lengths());
+    return v >= n.floor && v <= n.fence;
+  }
+  var INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>';
+  var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function lengthBars() {
+    var vs = visits(), W = 340, H = 150, top = Math.max.apply(null, vs.map(function(v) {
+      return v.years;
+    })), bw = W / vs.length;
+    return '<svg class="len-bars" viewBox="0 0 ' + W + " " + (H + 22) + '" role="img" aria-label="Each cycle’s length in years">' + vs.map(function(v, i) {
+      var h = H * v.years / top, x = i * bw + 2, c = marketCycles[i], cls = c.ongoing ? "now" : typical(v.years) ? "ok" : "odd";
+      return '<rect class="' + cls + '" x="' + x.toFixed(1) + '" y="' + (H - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/><text x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (H + 14) + '">' + String(c.from).slice(2) + "</text>";
+    }).join("") + "</svg>";
+  }
+  function lengthPage() {
+    var n = normOf(lengths()), odd = marketCycles.filter(function(c, i) {
+      return !c.ongoing && !typical(visits()[i].years);
+    }).map(function(c) {
+      return cycLabel(c).name;
+    });
+    return "<h3>Her cycle length</h3><p>Each bar is one cycle, from its first bull year to the bear year that closes it; the last is the cycle in progress.</p><p>A typical cycle lasts " + yearsWord(n.floor) + " to " + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of her " + lengths().length + " closed cycles, the standard rule for an outlier. " + listWords(odd) + ' ran longer.</p><p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>' + lengthBars() + srcBlock([ FENCE_SRC ]);
+  }
+  function variationPage() {
+    var L = lengths(), m = meanOf(L), sd = sdOf(L), vs = closedVisits(), lo = L.indexOf(Math.min.apply(null, L)), hi = L.indexOf(Math.max.apply(null, L));
+    var inside = L.filter(function(v) {
+      return Math.abs(v - m) <= sd;
+    }).length, last = marketCycles[closedCount() - 1];
+    return "<h3>Her cycle variation</h3><p>" + (typical(L[L.length - 1]) ? "Typical" : "Atypical") + ": her latest closed cycle, the " + cycLabel(last).name + ", lasted " + yearsWord(L[L.length - 1]) + " years, " + (typical(L[L.length - 1]) ? "within" : "outside") + " the range her record allows.</p><p><b>Shortest:</b> " + yearsWord(vs[lo].years) + " years, the " + cycLabel(marketCycles[lo]).name + ". <b>Longest:</b> " + yearsWord(vs[hi].years) + " years, the " + cycLabel(marketCycles[hi]).name + ".</p><h4>How it’s calculated</h4><p>Variation is the standard deviation of her cycle lengths: how far, on average, a cycle lands from her " + yearsWord(m) + "-year mean. " + word(inside) + " of her " + L.length + ' cycles fall within one standard deviation of it.</p><p class="len-sum"><b>' + yearsWord(m) + "</b> ± <b>" + yearsWord(sd) + "</b> years</p>";
+  }
+  function statsHome() {
+    var vs = closedVisits(), L = lengths(), B = vs.map(function(v) {
       return v.bleed;
-    }), longest = Math.max.apply(null, L);
-    return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-lede">Averages are based on her ' + L.length + " closed cycles since " + marketCycles[0].from + ".</p>" + statRow("Cycle length", meanOf(L), longest, "This cycle: " + yearsWord(visits()[marketCycles.length - 1].years) + " years so far") + statRow("Cycle variation", sdOf(L), longest, "Standard deviation of her cycle lengths") + statRow("Period flow", meanOf(B), Math.max.apply(null, B), "Average bear years that close a cycle", "flow") + "</section>";
+    }), longest = Math.max.apply(null, L), ok = typical(L[L.length - 1]);
+    return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-lede">Averages are based on her ' + L.length + " closed cycles since " + marketCycles[0].from + ".</p>" + statRow("Cycle length", meanOf(L), longest, INFO + "More info", lengthPage()) + statRow("Cycle variation", sdOf(L), longest, '<span class="stat-tick' + (ok ? "" : " odd") + '">' + TICK + "</span>" + (ok ? "Typical" : "Atypical"), variationPage()) + statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow") + "</section>";
   }
   function insightSec(k, ls, i) {
     var title = catTitle(k);

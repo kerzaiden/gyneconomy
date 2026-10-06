@@ -1,5 +1,5 @@
 import { CHEV, facts, srcBlock } from "./format.ts";
-import { byId, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
+import { byId, detailSlot, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle } from "./history.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, sheetRenderers } from "./render-core.ts";
@@ -257,18 +257,46 @@ export function chartDoor(m: CycleModel){
 }
 var HOME_ID = "chart-home";
 function homeHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + title + '</div>'; }
-function statRow(name: string, v: number, of: number, note: string, cls?: string){
-  return '<span class="lab-score stat-row' + (cls ? " " + cls : "") + '"><span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + '</span><span><small>' + name + '</small><b>' + yearsWord(v) + ' years</b>' + (note ? '<small>' + note + '</small>' : '') + '</span></span>';
+function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string){
+  var inner = '<span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + '</span><span class="stat-main"><small>' + name + '</small><b>' + yearsWord(v) + ' years</b></span>';
+  return page ? '<button type="button" class="lab-score stat-row details-link' + (cls ? " " + cls : "") + '" data-detail-idx="' + detailSlot(page) + '">' + inner + '<span class="stat-side">' + side + CHEV + '</span></button>'
+    : '<span class="lab-score stat-row' + (cls ? " " + cls : "") + '">' + inner + '</span>';
 }
 function closedVisits(){ return visits().slice(0, closedCount()); }
-function sdOf(vs: number[]){ var m = vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; return Math.sqrt(vs.reduce(function(s, v){ return s + (v - m) * (v - m); }, 0) / (vs.length - 1)); }
 function meanOf(vs: number[]){ return vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; }
+function sdOf(vs: number[]){ var m = meanOf(vs); return Math.sqrt(vs.reduce(function(s, v){ return s + (v - m) * (v - m); }, 0) / (vs.length - 1)); }
+function lengths(){ return closedVisits().map(function(v){ return v.years; }); }
+function typical(v: number){ var n = normOf(lengths()) as Norm; return v >= n.floor && v <= n.fence; }
+var INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>';
+var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function lengthBars(){
+  var vs = visits(), W = 340, H = 150, top = Math.max.apply(null, vs.map(function(v){ return v.years; })), bw = W / vs.length;
+  return '<svg class="len-bars" viewBox="0 0 ' + W + ' ' + (H + 22) + '" role="img" aria-label="Each cycle\u2019s length in years">' + vs.map(function(v, i){
+    var h = H * v.years / top, x = i * bw + 2, c = marketCycles[i], cls = c.ongoing ? "now" : typical(v.years) ? "ok" : "odd";
+    return '<rect class="' + cls + '" x="' + x.toFixed(1) + '" y="' + (H - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/>' +
+      '<text x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (H + 14) + '">' + String(c.from).slice(2) + '</text>';
+  }).join("") + '</svg>';
+}
+function lengthPage(){
+  var n = normOf(lengths()) as Norm, odd = marketCycles.filter(function(c, i){ return !c.ongoing && !typical(visits()[i].years); }).map(function(c){ return cycLabel(c).name; });
+  return '<h3>Her cycle length</h3><p>Each bar is one cycle, from its first bull year to the bear year that closes it; the last is the cycle in progress.</p>' +
+    '<p>A typical cycle lasts ' + yearsWord(n.floor) + ' to ' + yearsWord(n.fence) + ' years: inside Tukey’s fences around the middle half of her ' + lengths().length + ' closed cycles, the standard rule for an outlier. ' + listWords(odd) + ' ran longer.</p>' +
+    '<p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>' + lengthBars() + srcBlock([FENCE_SRC]);
+}
+function variationPage(){
+  var L = lengths(), m = meanOf(L), sd = sdOf(L), vs = closedVisits(), lo = L.indexOf(Math.min.apply(null, L)), hi = L.indexOf(Math.max.apply(null, L));
+  var inside = L.filter(function(v){ return Math.abs(v - m) <= sd; }).length, last = marketCycles[closedCount() - 1];
+  return '<h3>Her cycle variation</h3><p>' + (typical(L[L.length - 1]) ? 'Typical' : 'Atypical') + ': her latest closed cycle, the ' + cycLabel(last).name + ', lasted ' + yearsWord(L[L.length - 1]) + ' years, ' + (typical(L[L.length - 1]) ? 'within' : 'outside') + ' the range her record allows.</p>' +
+    '<p><b>Shortest:</b> ' + yearsWord(vs[lo].years) + ' years, the ' + cycLabel(marketCycles[lo]).name + '. <b>Longest:</b> ' + yearsWord(vs[hi].years) + ' years, the ' + cycLabel(marketCycles[hi]).name + '.</p>' +
+    '<h4>How it’s calculated</h4><p>Variation is the standard deviation of her cycle lengths: how far, on average, a cycle lands from her ' + yearsWord(m) + '-year mean. ' + word(inside) + ' of her ' + L.length + ' cycles fall within one standard deviation of it.</p>' +
+    '<p class="len-sum"><b>' + yearsWord(m) + '</b> ± <b>' + yearsWord(sd) + '</b> years</p>';
+}
 function statsHome(){
-  var vs = closedVisits(), L = vs.map(function(v){ return v.years; }), B = vs.map(function(v){ return v.bleed; }), longest = Math.max.apply(null, L);
+  var vs = closedVisits(), L = lengths(), B = vs.map(function(v){ return v.bleed; }), longest = Math.max.apply(null, L), ok = typical(L[L.length - 1]);
   return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-lede">Averages are based on her ' + L.length + ' closed cycles since ' + marketCycles[0].from + '.</p>' +
-    statRow("Cycle length", meanOf(L), longest, "This cycle: " + yearsWord(visits()[marketCycles.length - 1].years) + " years so far") +
-    statRow("Cycle variation", sdOf(L), longest, "Standard deviation of her cycle lengths") +
-    statRow("Period flow", meanOf(B), Math.max.apply(null, B), "Average bear years that close a cycle", "flow") + '</section>';
+    statRow("Cycle length", meanOf(L), longest, INFO + 'More info', lengthPage()) +
+    statRow("Cycle variation", sdOf(L), longest, '<span class="stat-tick' + (ok ? '' : ' odd') + '">' + TICK + '</span>' + (ok ? 'Typical' : 'Atypical'), variationPage()) +
+    statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow") + '</section>';
 }
 function insightSec(k: string, ls: Lab[], i: number){
   var title = catTitle(k);
