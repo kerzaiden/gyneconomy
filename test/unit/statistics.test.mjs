@@ -12,7 +12,7 @@ import { labs } from '../../src/js/cycle-analysis.ts';
 const open = marketCycles.findIndex(c => c.ongoing);
 const lab = id => labs().find(l => l.id === id);
 const cardText = id => document.querySelector('#today-analysis .cat-item[data-open="' + id + '"] .ci-value').firstChild.nodeValue.trim().replace('≈', '');
-const row = id => document.querySelector('#chart-home .lab-row[data-open="' + id + '"]');
+const row = id => document.querySelector('#sheet-find .lab-row[data-open="' + id + '"]');
 
 test('the open cycle’s results are its cards’ figures, printed as the cards print them', () => {
   ROSTER.filter(R => !R.flip && !R.pair).forEach(R => {
@@ -40,6 +40,7 @@ test('a live reading moves Cycle Statistics and AI Insights with its card', asyn
   for (let i = 0; i < 5; i++) await new Promise(r => setTimeout(r, 0));
   delete window.claude;
   assert.equal(cardText('sheet-metric-valuation'), '33.3×');
+  sheetRenderers['sheet-find']();
   assert.equal(row('sheet-metric-valuation').querySelector('.lab-res b').textContent, '33.3×');
   sheetRenderers['sheet-ai-insights']();
   assert.match(document.getElementById('sheet-ai-insights').textContent, /CAPE stands at 33\.3×/);
