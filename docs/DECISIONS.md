@@ -289,6 +289,22 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.6.1, 0.8.6)
   **The search box lives only in Indicators; Analysis has none, and the Insights head is its way in.** Keren: "in the
   analysis page, I don't need the search indicators because I already have this in the insight page." (0.8.8)
+- **Each year in Year by Year opens Indicators on that year, and Indicators moves between cycles, years and quarters
+  with a stepper under its title: the period large, its place in its cycle under it, arrows either side.** Keren: "what
+  I would want is to be referred to the indicators page under that date … so that we would have the ability to
+  navigate between dates and cycles inside the indicators page"; of the stepper, "I love the design … it's really
+  elegant." **Every filter lives in one filter, a sheet from the bottom, like an advanced search: Period, Category and
+  Result** (All, Risk, Attention, Normal; "Result" after Keren's "the test result"), with Reset and a "Show N readings"
+  button that closes it. Keren: "they should all live under the same filter. And if I click on the
+  filter, then it would be like a pop-up that pops from the bottom." The filter button sits in the search box and
+  the stepper's period opens the same sheet; the category bar left the page. A year is each reading's average over that calendar year (this year: today's figure), judged
+  against the range the open cycle uses, so it adds no band. **The dial's centre does the same for its quarter**
+  (Keren: "the same behavior to go to the indicators page under that period of time"). **The Period is one season
+  calendar** (Keren: "it should be in a calendar view"; she chose it over a year grid): each cycle a band, each year a
+  row, each quarter a tile washed in its season; tapping the band, the year or the tile picks that period, so there is
+  no Cycles/Years/Quarters switch. A reading kept only by the year shows its year's figure in a quarter and says which year. The
+  quarter pop-up of category cards is gone everywhere, with its card design and the season prose it held (What
+  Usually Comes Next, What to Watch, From the Book). (0.8.9)
 - **The category pages and their group pages are gone, with every design that came before Indicators; Indicators
   holds every reading, by category and subcategory, and each category's insights behind its More details.** Keren:
   "All the previous designs we made, we can throw them out." A closed cycle's figures are Cycle Statistics'. This
@@ -297,8 +313,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The federal side and the household balance sheet are one group, Stress (Federal debt, Interest payments,
   Federal budget, Households); the name Economic power is retired.** Keren: "households should be inside
   economic power… the terminology is stress because debts are stress", then chose Stress. (V688)
-- **Weather's insights carry no "What usually comes next" card.** It read as a forecast; Keren: "drop the forecast".
-  The season's prose behind a dial quarter keeps it, one tap further in. (1.5.0)
+- **No season says what comes next or what to watch for the turn.** Both read as forecasts; Keren: "drop the forecast"
+  (1.5.0). They went with the season pop-up, and the book quotes it never had with them; Keren: "don't need it, we have
+  it in About" (0.8.9).
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
   order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster holds
   the source order and the category sheets and past cycles read it; Cycle analysis and the Diagnosis place the four by
@@ -441,18 +458,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   with two rings"; "remove the emotions from the preview … only present the data that is relevant for the dial";
   "there's no hover effect anywhere in the app"; "drop the gray circle … just put the chevron next to autumn".
   (V181, V693)
-- **The whole centre is one button. Today it opens Weather; a tapped quarter, or a closed cycle's close, opens that
-  quarter's sheet.** Tapping a moon selects it and moves the year badge there, so the centre can be tapped next;
+- **The whole centre is one button. Today it opens Indicators on Weather; a tapped quarter, or a closed cycle's
+  close, opens Indicators on that quarter (0.8.9; it opened the quarter's sheet from V693).** Tapping a moon selects it and moves the year badge there, so the centre can be tapped next;
   tapping the centre never resets the dial. Keren: "when I go to each quarter and I click on whatever is in the
   middle of the cycle, how can I see all the data for the cycle in that specific quarter?" (V693)
-- **A quarter's sheet is the app's own cards at that quarter: Temperature, Growth and that year's S&P 500, each
-  with its small bars running up to it, then "About <season>, <theme>" opening the season's prose (in the
-  economy, in the body, what usually comes next, what to watch).** No gradient, no mood, no list of every
-  reading. Keren: "simplify it only to the basics"; "give up on the gradient in the pop-up"; "we don't need the
-  mood". This replaces V165/V505's "a quarter reads as prose, never as a data popup of its figures"; the prose
-  is one tap further in. (V165, V505, V693)
-- **The season popup's title carries the theme and its sub-line the season's name and body term, so the two
-  lines never repeat each other.** Keren: "Summer, Inflation, Inflation — it repeats." (V505)
+- **A quarter opens Indicators on that quarter; the quarter's sheet (its cards, then the season's prose) is
+  gone (0.8.9).** It had replaced V165/V505's prose popup with "only the basics" (V693); Indicators now holds every
+  reading at the quarter. (V165, V505, V693, 0.8.9)
 - **In the hub a year reads "Bull year" or "Bear year" as dark ink in a soft pill washed in the band's
   colour; a year opens nothing.** Keren asked for "a lighter shade of that same color" behind the word; the inks are darker cuts so
   the text stays readable (5.0:1 teal, 4.6:1 coral on their 18% washes). (undated, Sep 19, 2026)
@@ -844,7 +856,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   growth, and S&P 500", its Insights saying "what it means" for the season and "in terms of bull bear market … the
   S&P 500 history basically during the cycle". The card reads the dial's own yearly total returns, so a bull year
   is a positive year and a bear year a negative one, with no band of ours. A past quarter or a closed cycle in the
-  dial opens its own quarter sheet instead, since Weather is today's. (V680, V693)
+  dial opens Indicators on that quarter instead. (V680, V693, 0.8.9)
 - **Weather is not in the Diagnosis's Analysis.** Keren: "this means that we don't need weather under analysis.
   Because we already have this in the cycle." The season stays in the Diagnosis's subtitle. (V680)
 
@@ -1290,8 +1302,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   22–24% of the card), 42 high on every item, and an item keeps that height even with no picture.** Keren,
   measuring Apple Health: the infographic is small, and the white space sits in one place; she asked for them
   20% shorter than 52. (V449, V459, V507)
-- **A miniature is a grey picture with a single coloured mark, the newest reading, never a state colour; on
-  the quarter sheet's cards that mark takes the category's colour.** Twelve coloured pictures read as twelve things to
+- **A miniature is a grey picture with a single coloured mark, the newest reading, never a state colour.** Twelve coloured pictures read as twelve things to
   press; one mark in grey shows the reading the row is about. (V504, V506, V661)
 - **On a card the verdict word is one quiet neutral, a step below the figure; severity speaks in the inner
   pages' tags.** "Highly overvalued" is not made more alarming by being red. (V251, V309)
@@ -1534,7 +1545,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   in the search or in the cycle itself … Yes, drop this circulation and energy." Don't re-add the systems or the
   Symptoms; Indicators holds the readings. (V665, V672, V674, V682, V686, 1.8.0)
 - **The cycle reads year by year under its story, one row a year, the years parted by hairlines, and each year
-  opens its quarter's sheet.** Keren: "I need to turn the dial all the way back and click on the button … what I
+  opens Indicators on that year (0.8.9; its quarter's sheet before).** Keren: "I need to turn the dial all the way back and click on the button … what I
   would want is some kind of a very brief summary of the cycle by years … it correlates pretty well with the story
   of the cycle", then "Make the separation between years through lines or something. Make it beautiful." The year
   stands in the serif on the left; beside it the year's seasons in order, and under them Mrs. Market's emotion at

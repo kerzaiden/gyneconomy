@@ -1,13 +1,13 @@
-import { CHEV, facts, srcBlock } from "./format.ts";
-import { byId, detailSlot, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
+import { CHEV, facts, qLabel, srcBlock } from "./format.ts";
+import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayFace, todayValue } from "./era.ts";
-import { calendarTodayY } from "./refresh-season.ts";
-import { cycLabel, cycleModel, nowModel, openCycle } from "./model.ts";
+import { calendarTodayY, DATA_COMPILED } from "./refresh-season.ts";
+import { currentSeason, cycLabel, cycleByName, cycleModel, cycleOfYear, nowModel, openCycle, seasonGroup, seasonOfQ } from "./model.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
 import { catInsight } from "./insights.ts";
 import { categoriesShown, GROUP_MARK, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
@@ -80,7 +80,7 @@ function readingLab(R: RosterRow): Lab {
     norm:pin(normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; }))) };
 }
 var labCache: Lab[] | null = null;
-export function forgetLabs(){ labCache = null; visitCache = null; }
+export function forgetLabs(){ labCache = null; visitCache = null; whenCache = {}; }
 function cycleLabs(){
   return [
     cycleLab("length", "Length", undefined, function(v){ return v.years; }),
@@ -92,33 +92,74 @@ function cycleLabs(){
 export function labs(){ return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab))); }
 function normAt(l: Lab, i: number){ return marketCycles[i].ongoing && l.now ? l.now : l.norm; }
 function unread(l: Lab, i: number){ return l.cat === "cycle" && !!marketCycles[i].ongoing && !l.settled; }
-function state(l: Lab, i: number){
-  var v = l.per[i], n = normAt(l, i);
-  if (v == null || !n || unread(l, i)) return "";
+type At = { v: (l: Lab) => number | null; n: (l: Lab) => Norm | null; open: boolean; skip: (l: Lab) => boolean; tag: (l: Lab) => string };
+function atCycle(i: number): At {
+  return { v:function(l){ return l.per[i]; }, n:function(l){ return normAt(l, i); }, open:!!marketCycles[i].ongoing, skip:function(l){ return unread(l, i); }, tag:function(){ return ""; } };
+}
+function atWhen(w: string): At {
+  var open = w === nowWhen(w.length > 4);
+  return { v:function(l){ return whenValue(l, w, open); }, n:function(l){ return l.cat === "cycle" ? null : l.now; }, open:open, skip:function(){ return false; },
+    tag:function(l){ return !open && w.length > 4 && yearly(l) ? " \u00b7 " + w.slice(0, 4) : ""; } };
+}
+export function nowWhen(quarter: boolean){ return calendarTodayY + (quarter ? " Q" + (Math.floor(DATA_COMPILED.getMonth() / 3) + 1) : ""); }
+function yearly(l: Lab){ var R = ROSTER_BY[l.id]; return !!R && (R.hist.k === "y" || R.hist.k === "yi"); }
+var whenCache: Record<string, Record<string, number>> = {};
+function whenValue(l: Lab, w: string, open: boolean){
+  var R = ROSTER_BY[l.id];
+  if (!R) return null;
+  if (open) return todayValue(R);
+  var by = whenCache[l.id] || (whenCache[l.id] = whenMeans(R));
+  return by[w] ?? (yearly(l) ? by[w.slice(0, 4)] ?? null : null);
+}
+function quarterKey(k: string){ return k.indexOf("Q") !== -1 ? k : k.length === 7 ? k.slice(0, 4) + " Q" + Math.ceil(+k.slice(5) / 3) : ""; }
+function whenMeans(R: RosterRow){
+  var by: Record<string, number[]> = {}, out: Record<string, number> = {};
+  keyed(R.hist).forEach(function(d){
+    if (d.v == null) return;
+    [d.k.slice(0, 4), quarterKey(d.k)].forEach(function(k){ if (k) (by[k] = by[k] || []).push(d.v as number); });
+  });
+  Object.keys(by).forEach(function(k){ out[k] = meanOf(by[k]); });
+  return out;
+}
+type PeriodRow = { key: string; name: string; aside: string; caption: string };
+var whenOk: Record<string, boolean> = {};
+function hasWhen(w: string){ return whenOk[w] ?? (whenOk[w] = w <= nowWhen(w.length > 4) && judged(atWhen(w)).length > 0); }
+function periodRows(id: string): PeriodRow[] {
+  var mode = page.mode[id], out: PeriodRow[] = [];
+  if (mode === "cycles") return marketCycles.map(function(c){ var L = cycLabel(c); return { key:c.name, name:c.name, aside:L.years, caption:L.years }; });
+  for (var y = marketCycles[0].from; y <= calendarTodayY; y++) (mode === "quarters" ? [1, 2, 3, 4].map(function(n){ return y + " Q" + n; }) : [String(y)]).forEach(function(w){
+    var c = cycleOfYear(+w.slice(0, 4)) as Cycle;
+    if (hasWhen(w)) out.push({ key:w, name:w.length > 4 ? qLabel(w) : w, aside:c.name.replace(" Cycle", ""), caption:"Year " + (+w.slice(0, 4) - c.from + 1) + " of the " + c.name });
+  });
+  return out;
+}
+function state(l: Lab, at: At){
+  var v = at.v(l), n = at.n(l);
+  if (v == null || !n || at.skip(l)) return "";
   return v > n.fence ? "high" : v < n.floor ? "low" : "";
 }
 export function yearsWord(v: number){ var q = Math.round(v * 4); return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + ["", "¼", "½", "¾"][q % 4]; }
 export function fmt(l: Lab, v: number){ return l.print(v); }
 var TIERS = [{ key:"abnormal", title:"Risk", cls:"t-abnormal" }, { key:"borderline", title:"Attention", cls:"t-borderline" }, { key:"optimal", title:"Normal", cls:"t-optimal" }];
-function tier(l: Lab, i: number){
-  var v = l.per[i] as number, n = normAt(l, i) as Norm, up = v > n.hi, down = v < n.lo;
-  return !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, i) ? "abnormal" : "borderline";
+function tier(l: Lab, at: At){
+  var v = at.v(l) as number, n = at.n(l) as Norm, up = v > n.hi, down = v < n.lo;
+  return !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, at) ? "abnormal" : "borderline";
 }
 function catTitle(key: string){ return categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
-function side(l: Lab, i: number){ var v = l.per[i] as number, n = normAt(l, i) as Norm; return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
+function side(l: Lab, at: At){ var v = at.v(l) as number, n = at.n(l) as Norm; return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
 function findWords(l: Lab){
   var R = ROSTER_BY[l.id];
   return [l.name, catTitle(l.cat)].concat(R ? [R.head, R.group || "", R.sub, R.term || "", R.cardUnit || ""] : []).join(" ").toLowerCase().replace(/"/g, "");
 }
 function rowTag(l: Lab){ return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"'; }
-function cardWord(l: Lab, i: number){
-  var R = ROSTER_BY[l.id], t = R && marketCycles[i].ongoing ? todayFace(R).word : "";
+function cardWord(l: Lab, at: At){
+  var R = ROSTER_BY[l.id], t = R && at.open ? todayFace(R).word : "";
   return t ? t + " \u00b7 " : "";
 }
-function labItem(l: Lab, i: number){
-  var n = normAt(l, i) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t){ return t.key === tier(l, i); })[0];
-  return '<li class="lab-item ' + side(l, i) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + cardWord(l, i) + t.title + '</small></div>' +
-    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
+function labItem(l: Lab, at: At){
+  var n = at.n(l) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t){ return t.key === tier(l, at); })[0];
+  return '<li class="lab-item ' + side(l, at) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + cardWord(l, at) + t.title + at.tag(l) + '</small></div>' +
+    '<div class="lab-res"><b>' + fmt(l, at.v(l) as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
     '<small>' + l.span(n.lo, n.hi) + '</small></div></' + tag + '></li>';
 }
 function ring(v: number){
@@ -139,62 +180,93 @@ function scoreRing(v: number, label: string){ return '<span class="lab-score-v">
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
 }
 var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
-function foldSec(k: string, title: string, name: string, ls: Lab[], i: number){
+function foldSec(k: string, title: string, name: string, ls: Lab[], at: At){
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"", name:name,
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + countTag(ls.length) + CHEV + '</button>' },
-    '<ul>' + ls.map(function(l){ return labItem(l, i); }).join("") + '</ul>');
+    '<ul>' + ls.map(function(l){ return labItem(l, at); }).join("") + '</ul>');
 }
-function labSec(k: string, ls: Lab[], i: number){
+function labSec(k: string, ls: Lab[], at: At){
   var title = catTitle(k), name = catName(k);
-  return foldSec(k, title, '<button type="button" class="lab-cat" data-ind-cat="' + k + '">' + name + '</button>', ls, i);
+  return foldSec(k, title, '<button type="button" class="lab-cat" data-ind-cat="' + k + '">' + name + '</button>', ls, at);
 }
-function subSec(k: string, sub: string, ls: Lab[], i: number){
-  return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub), ls, i);
+function subSec(k: string, sub: string, ls: Lab[], at: At){
+  return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub), ls, at);
 }
-function bySub(k: string, ls: Lab[], i: number){
+function bySub(k: string, ls: Lab[], at: At){
   var subs: string[] = [];
   ROSTER.forEach(function(R){ if (R.cat === k && subs.indexOf(R.sub) === -1) subs.push(R.sub); });
   return subs.map(function(sub){
     var own = ls.filter(function(l){ return ROSTER_BY[l.id].sub === sub; });
-    return own.length ? subSec(k, sub, own, i) : "";
+    return own.length ? subSec(k, sub, own, at) : "";
   }).join("");
 }
-function bySystem(i: number, j: Lab[], cat: string){
+function bySystem(at: At, j: Lab[], cat: string){
   var rank = TIERS.map(function(t){ return t.key; });
   return categoriesShown().map(function(c){ return c.key; }).map(function(k){
-    var ls = j.filter(function(l){ return l.cat === k; }).sort(function(a, b){ return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i)); });
-    return !ls.length ? "" : k === cat ? bySub(k, ls, i) : labSec(k, ls, i);
+    var ls = j.filter(function(l){ return l.cat === k; }).sort(function(a, b){ return rank.indexOf(tier(a, at)) - rank.indexOf(tier(b, at)); });
+    return !ls.length ? "" : k === cat ? bySub(k, ls, at) : labSec(k, ls, at);
   }).join("");
 }
-type Find = { tier: string; q: string; raw: string; sub: string; cat: string };
+type Find = { tier: string; q: string; raw: string; cat: string };
 var finds: Record<string, Find> = {};
-function findOf(id: string){ return finds[id] || (finds[id] = { tier:"all", q:"", raw:"", sub:"", cat:"" }); }
+function findOf(id: string){ return finds[id] || (finds[id] = { tier:"all", q:"", raw:"", cat:"" }); }
 var LENS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg>';
-function tierOpts(i: number, j: Lab[]){
-  return [["all", "All", j.length]].concat(TIERS.map(function(t){ return [t.key, t.title, j.filter(function(l){ return tier(l, i) === t.key; }).length]; }));
+function tierOpts(at: At, j: Lab[]){
+  return [["all", "All", j.length]].concat(TIERS.map(function(t){ return [t.key, t.title, j.filter(function(l){ return tier(l, at) === t.key; }).length]; }));
 }
-function menuRows(id: string, i: number, j: Lab[]){
-  var f = findOf(id), cur = marketCycles[i];
-  if (f.sub === "cycle") return '<button type="button" class="lab-back" data-lab-sub="">' + CHEV + '<span>Cycle</span></button><div class="lab-sep"></div>' +
-    marketCycles.slice().reverse().map(function(c){
-      var L = cycLabel(c);
-      return '<button type="button" role="menuitemradio" aria-checked="' + (c === cur) + '" data-lab-cycle="' + c.name + '"><span>' + L.name + '</span><small>' + L.years + '</small></button>';
-    }).join("");
-  return tierOpts(i, j).map(function(o){
-    return '<button type="button" role="menuitemradio" aria-checked="' + (o[0] === f.tier) + '" data-lab-tier="' + o[0] + '"><span>' + o[1] + '</span><small>' + o[2] + '</small></button>';
-  }).join("") + '<div class="lab-sep"></div><button type="button" class="lab-sub" data-lab-sub="cycle"><span>Cycle</span><small>' + cycLabel(cur).name + '</small>' + CHEV + '</button>';
+function filterTag(id: string){
+  var f = findOf(id), tags = (f.cat ? [catTitle(f.cat)] : []).concat(f.tier === "all" ? [] : [TIERS.filter(function(t){ return t.key === f.tier; })[0].title]);
+  return tags.length ? '<span>' + tags.join(" \u00b7 ") + '</span>' : "";
 }
-function filterTags(id: string, i: number, j: Lab[]){
-  var f = findOf(id), c = marketCycles[i], on = tierOpts(i, j).filter(function(o){ return o[0] === f.tier; })[0];
-  var tags = (c === openCycle() ? [] : [cycLabel(c).name]).concat(f.tier === "all" ? [] : [String(on[1])]);
-  return tags.length ? '<span>' + tags.join(" · ") + '</span>' : "";
-}
-function finder(id: string, i: number, j: Lab[]){
+function finder(id: string, slot: number){
   var f = findOf(id);
   return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search indicators" aria-label="Search indicators" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
-    '<button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + filterTags(id, i, j) + '</button>') +
-    '<div class="lab-menu" role="menu" hidden>' + menuRows(id, i, j) + '</div></div>';
+    filterDoor("lab-filter", slot, ' aria-label="Filter"', slidersSvg() + filterTag(id))) + '</div>';
 }
+function stepBtn(row: PeriodRow | undefined, cls: string, label: string){
+  return '<button type="button" class="period-arrow' + cls + '" data-pick-period="' + (row ? row.key : "") + '" aria-label="' + label + (row ? ", " + row.name : "") + '"' + (row ? "" : " disabled") + '>' + CHEV + '</button>';
+}
+function stepper(id: string, rows: PeriodRow[], slot: number){
+  var keys = rows.map(function(r){ return r.key; }), i = keys.indexOf(pickedKey(id)), r = rows[i] || rows[rows.length - 1];
+  return '<div class="period-step">' + stepBtn(rows[i - 1], " back", "Earlier") +
+    filterDoor("period-now", slot, "", '<b>' + r.name + '</b><small>' + r.caption + '</small>') +
+    stepBtn(rows[i + 1], "", "Later") + '</div>';
+}
+function filterDoor(cls: string, slot: number, attrs: string, inner: string){
+  return '<button type="button" class="' + cls + ' details-link" data-detail-idx="' + slot + '"' + attrs + '>' + inner + '</button>';
+}
+function sheetSec(title: string, inner: string, aside?: string){ return '<div class="ind-sec"><h5>' + title + (aside ? '<em>' + aside + '</em>' : "") + '</h5>' + inner + '</div>'; }
+function calBtn(k: string, key: string, cls: string, label: string, inner: string){
+  return '<button type="button" class="' + cls + (k === key ? " on" : "") + '" data-pick-period="' + k + '" aria-pressed="' + (k === key) + '" aria-label="' + label + '">' + inner + '</button>';
+}
+function calOff(cls: string, inner: string){ return '<span class="' + cls + ' is-off">' + inner + '</span>'; }
+function calQuarter(q: string, key: string){
+  var g = seasonOfQ(q) || (q === nowWhen(true) ? seasonGroup(currentSeason) : "");
+  return hasWhen(q) ? calBtn(q, key, "cal-q " + g, qLabel(q) + ", " + cap(g), q.slice(5)) : calOff("cal-q", "");
+}
+function calYear(y: number, key: string){
+  var w = String(y), qs = [1, 2, 3, 4].map(function(n){ return calQuarter(w + " Q" + n, key); }).join("");
+  return '<div class="cal-year' + (key === w ? " in" : "") + '">' + (hasWhen(w) ? calBtn(w, key, "cal-y", w, w) : calOff("cal-y", w)) + qs + '</div>';
+}
+function calCycle(c: Cycle, key: string){
+  var years = cycLabel(c).years, rows = "";
+  for (var y = c.to || calendarTodayY; y >= c.from; y--) rows += calYear(y, key);
+  return calBtn(c.name, key, "cal-band", c.name + ", " + years, '<b>' + c.name + '</b><small>' + years + '</small>') + rows;
+}
+function periodCal(key: string){
+  return '<div class="period-cal">' + marketCycles.slice().reverse().map(function(c){ return calCycle(c, key); }).join("") + '</div>' +
+    '<p class="cal-key">' + ["winter", "spring", "summer", "autumn"].map(function(g){ return '<span class="' + g + '"><i></i>' + cap(g) + '</span>'; }).join("") + '</p>';
+}
+function shown(id: string, at: At, j: Lab[]){ var f = findOf(id); return j.filter(function(l){ return (!f.cat || l.cat === f.cat) && (f.tier === "all" || tier(l, at) === f.tier); }).length; }
+function filterSheet(id: string, at: At, j: Lab[], rows: PeriodRow[]){
+  var f = findOf(id), key = pickedKey(id), n = shown(id, at, j), keys = categoriesShown().map(function(c){ return c.key; }).filter(function(k){ return j.some(function(l){ return l.cat === k; }); });
+  return '<div class="ind-filter"><div class="ind-filter-head"><h4>Filter</h4><button type="button" class="ind-reset" data-pick-reset="">Reset</button></div>' +
+    sheetSec("Period", periodCal(key), (rows.filter(function(r){ return r.key === key; })[0] || { name:key }).name) +
+    sheetSec("Category", tabBar('aria-label="Category"', [["", "All"]].concat(keys.map(function(k){ return [k, catTitle(k)]; })), f.cat, "data-pick-cat", "ind-cats")) +
+    sheetSec(RESULT, tabBar('aria-label="' + RESULT + '"', tierOpts(at, j).map(function(o){ return [String(o[0]), o[1] + ' <small>' + o[2] + '</small>']; }), f.tier, "data-pick-tier")) +
+    '<button type="button" class="ind-show" data-ind-show="">Show ' + n + ' reading' + (n === 1 ? "" : "s") + '</button></div>';
+}
+var RESULT = "Result", sheetHtml: Record<string, string> = {};
 function narrow(host: HTMLElement, id: string){
   var f = findOf(id), any = false;
   Array.prototype.forEach.call(host.querySelectorAll(".lab-sec"), function(sec: HTMLElement){
@@ -207,43 +279,9 @@ function narrow(host: HTMLElement, id: string){
   });
   var none = host.querySelector<HTMLElement>(".search-none"); if (none) none.hidden = any;
 }
-function menuOf(host: Element){ return host.querySelector<HTMLElement>(".lab-menu"); }
-function showMenu(host: Element, open: boolean){
-  var menu = menuOf(host), btn = host.querySelector<HTMLElement>(".lab-filter"); if (!menu || !btn) return;
-  menu.hidden = !open; btn.setAttribute("aria-expanded", String(open));
-}
-function redraw(host: HTMLElement, id: string){
-  findOf(id).sub = "";
-  var draw = sheetRenderers[id]; if (draw) draw();
-  var btn = host.querySelector<HTMLElement>(".lab-filter"); if (btn) btn.focus();
-}
-function pickTier(host: HTMLElement, id: string, seg: Element){
-  findOf(id).tier = seg.getAttribute("data-lab-tier") || "all";
-  redraw(host, id);
-}
-function pickCycle(host: HTMLElement, id: string, seg: Element){
-  page.cycles[id] = page.cycles[HOME_ID] = seg.getAttribute("data-lab-cycle");
-  redraw(host, id);
-}
-function fillMenu(host: HTMLElement, id: string, sub: string){
-  var c = pageCycle(id), menu = menuOf(host); if (!c || !menu) return null;
-  var i = marketCycles.indexOf(c);
-  findOf(id).sub = sub;
-  menu.innerHTML = menuRows(id, i, judged(i));
-  return menu;
-}
-function openSub(host: HTMLElement, id: string, seg: Element){
-  var menu = fillMenu(host, id, seg.getAttribute("data-lab-sub") || "");
-  var first = menu && menu.querySelector<HTMLElement>('[aria-checked="true"], button'); if (first) first.focus();
-}
-function toggleMenu(host: HTMLElement, id: string){
-  var menu = menuOf(host); if (!menu) return;
-  if (menu.hidden) fillMenu(host, id, "");
-  showMenu(host, menu.hidden);
-}
-export function riskLabs(i: number){ return judged(i).filter(function(l){ return tier(l, i) === "abnormal"; }); }
-function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !unread(l, i); }); }
-function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
+export function riskLabs(i: number){ var at = atCycle(i); return judged(at).filter(function(l){ return tier(l, at) === "abnormal"; }); }
+function judged(at: At){ return labs().filter(function(l){ return at.v(l) != null && at.n(l) && !at.skip(l); }); }
+function score(i: number){ var at = atCycle(i), j = judged(at), ok = j.filter(function(l){ return tier(l, at) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
 export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 function word(n: number){ return NUM[n] || String(n); }
 function cap(t: string){ return t.charAt(0).toUpperCase() + t.slice(1); }
@@ -268,7 +306,7 @@ function methodFacts(){
 }
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
-    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(),
+    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(),
     "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
     pinnedFacts(),
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
@@ -332,9 +370,9 @@ function catName(k: string){ return markName(CAT_MARK[k], catTitle(k)); }
 function markName(mark: () => string, name: string){ return '<span class="lab-mark">' + mark() + '</span>' + name; }
 function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' indicators">' + n + '</small>'; }
 function insightsHome(i: number){
-  var j = judged(i), rank = TIERS.map(function(t){ return t.key; });
+  var at = atCycle(i), j = judged(at), rank = TIERS.map(function(t){ return t.key; });
   return categoriesShown().map(function(c){
-    var ls = j.filter(function(l){ return l.cat === c.key; }).sort(function(a, b){ return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i)); });
+    var ls = j.filter(function(l){ return l.cat === c.key; }).sort(function(a, b){ return rank.indexOf(tier(a, at)) - rank.indexOf(tier(b, at)); });
     return ls.length ? insightSec(c.key, ls) : "";
   }).join("");
 }
@@ -342,25 +380,30 @@ function homeSections(i: number){
   return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
     dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
 }
+function whenPicked(id: string){
+  var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
+  return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
+}
+function pickedKey(id: string){ var c = pageCycle(id); return page.mode[id] === "cycles" ? (c as Cycle).name : whenPicked(id); }
+function periodAt(id: string){
+  var c = pageCycle(id);
+  return page.mode[id] !== "cycles" ? atWhen(whenPicked(id)) : c ? atCycle(marketCycles.indexOf(c)) : null;
+}
 function drawChart(id: string){
-  var host = byId(id), c = pageCycle(id);
-  if (!host || !c) return;
-  var i = marketCycles.indexOf(c), j = judged(i).filter(function(l){ return l.cat !== "cycle"; });
-  if (id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(i) + '</div>'; return; }
-  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
+  var host = byId(id), c = pageCycle(id), at = periodAt(id);
+  if (host && c && id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(marketCycles.indexOf(c)) + '</div>'; return; }
+  if (!host || !at) return;
+  var j = judged(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
+  host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
 export var IND = "sheet-find";
 var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
 function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
-function catBar(j: Lab[]){
-  var keys = categoriesShown().map(function(c){ return c.key; }).filter(function(k){ return j.some(function(l){ return l.cat === k; }); });
-  return tabBar('aria-label="Category"', [["", "All"]].concat(keys.map(function(k){ return [k, catTitle(k)]; })), findOf(IND).cat, "data-ind-cat", "ind-cats");
-}
 function pickCat(t: Element, id: string){
   var b = t.closest && t.closest("[data-ind-cat]"); if (!b) return false;
   findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
-  if (id === IND) drawChart(IND);
+  if (id === IND) drawChart(IND); else if (id === HOME_ID) page.mode[IND] = "cycles";
   return true;
 }
 function buildFind(){ var sheet = metricSheet(IND); need("panel-chart").appendChild(sheet); wireFinder(sheet, IND); drawChart(IND); }
@@ -373,30 +416,58 @@ function wireFinder(host: HTMLElement, id: string){
   page.cycles[id] = null;
   sheetRenderers[id] = function(){ drawChart(id); };
   host.addEventListener("click", function(e){
-    var t = e.target as Element, seg = t.closest && t.closest("[data-lab-tier]"), cyc = t.closest && t.closest("[data-lab-cycle]"), sub = t.closest && t.closest("[data-lab-sub]");
-    if (seg) pickTier(host, id, seg);
-    else if (cyc) pickCycle(host, id, cyc);
-    else if (sub) openSub(host, id, sub);
-    else if (t.closest && t.closest(".lab-filter")) toggleMenu(host, id);
-    else if (!pickCat(t, id)) fold(t);
+    var t = e.target as Element;
+    if (!pickCat(t, id)) fold(t);
   });
   host.addEventListener("input", function(e){
     var q = e.target as HTMLInputElement; if (!q.classList.contains("lab-q")) return;
     var f = findOf(id); f.raw = q.value; f.q = q.value.trim().toLowerCase(); narrow(host, id);
   });
 }
-function wireCatDoors(){
+function setPeriod(id: string, k: string){
+  page.mode[id] = cycleByName(k) ? "cycles" : k.length > 4 ? "quarters" : "calendar";
+  if (page.mode[id] === "cycles"){ page.cycles[id] = page.cycles[HOME_ID] = k; page.when[id] = undefined; return; }
+  page.when[id] = k; page.cycles[id] = page.cycles[HOME_ID] = (cycleOfYear(+k.slice(0, 4)) as Cycle).name;
+}
+function pick(id: string, b: Element){
+  var cat = b.getAttribute("data-pick-cat"), tr = b.getAttribute("data-pick-tier"), f = findOf(id);
+  if (b.hasAttribute("data-pick-reset")){ page.mode[id] = "cycles"; page.cycles[id] = null; page.when[id] = undefined; f.cat = ""; f.tier = "all"; }
+  else if (cat != null) f.cat = cat; else if (tr != null) f.tier = tr;
+  else setPeriod(id, b.getAttribute("data-pick-period") || "");
+}
+function refreshSheet(id: string, sel: string){
+  var body = byId("detail-modal-body"); if (!body || !body.querySelector(".ind-filter")) return;
+  body.innerHTML = sheetHtml[id]; centreList(body);
+  focusQuiet(body.querySelector<HTMLElement>(sel));
+}
+var PICKS = ["data-pick-reset", "data-pick-period", "data-pick-cat", "data-pick-tier"];
+function centreList(body: HTMLElement){
+  var list = body.querySelector<HTMLElement>(".period-cal"), on = list && list.querySelector<HTMLElement>(".on");
+  if (list && on) list.scrollTop += on.getBoundingClientRect().top - list.getBoundingClientRect().top - (list.clientHeight - on.offsetHeight) / 2;
+}
+function wirePicks(){
   document.addEventListener("click", function(e){
-    var t = e.target as Element, door = t.closest && t.closest('[data-open="' + IND + '"][data-ind-cat]');
-    if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
+    var t = e.target as Element, on = t.closest && t.closest(PICKS.map(function(a){ return "[" + a + "]"; }).join(", "));
+    if (t.closest && t.closest(".lab-filter, .period-now")) centreList(need("detail-modal-body"));
+    if (t.closest && t.closest("[data-ind-show]")) need("detail-modal-close").click();
+    if (!on) return;
+    var attr = PICKS.filter(function(a){ return (on as Element).hasAttribute(a); })[0];
+    pick(IND, on); drawChart(IND); refreshSheet(IND, "[" + attr + '="' + on.getAttribute(attr) + '"]');
   });
 }
-function openMenus(){ return Array.prototype.filter.call(document.querySelectorAll(".lab-menu"), function(m: HTMLElement){ return !m.hidden; }) as HTMLElement[]; }
-function shutMenus(){ openMenus().forEach(function(m){ var host = m.closest(".lab-find"); if (host) showMenu(host, false); }); }
+function openWhen(w: string, cat: string){
+  page.mode[IND] = w.length > 4 ? "quarters" : "calendar"; page.when[IND] = w; page.cycles[IND] = (cycleOfYear(+w.slice(0, 4)) as Cycle).name;
+  findOf(IND).cat = cat;
+  drawChart(IND);
+}
+function wireCatDoors(){
+  document.addEventListener("click", function(e){
+    var t = e.target as Element, door = t.closest && t.closest('[data-open="' + IND + '"][data-ind-cat]'), at = t.closest && t.closest("[data-ind-when]");
+    if (at) openWhen(at.getAttribute("data-ind-when") || "", at.getAttribute("data-ind-cat") || ""); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
+  });
+}
 export function buildCycleChart(){
-  wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors();
-  layer(0, { open:function(){ return openMenus().length > 0; }, close:shutMenus });
-  document.addEventListener("click", function(e){ var t = e.target as Element; if (t.isConnected && !(t.closest && t.closest(".lab-find"))) shutMenus(); });
+  wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
   document.addEventListener("click", function(e){
     var door = (e.target as Element).closest && (e.target as Element).closest("[data-chart-cycle]"); if (!door) return;
     need("tab-chart").click();

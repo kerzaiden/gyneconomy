@@ -7,7 +7,7 @@ import { cycLabel, cycleByName, cycleSpanYears, openCycle } from "./model.ts";
 
 export type HeadGroup = { key: string; label: string; on: boolean; value: string; rows: string };
 export type HistHeadSpec = { mark?: () => string; title?: string | (() => string); menu?: () => HeadGroup[] };
-export type PageStore = { mode: Record<string, string | undefined>; cycles: Record<string, string | null | undefined>; range: Record<string, string>; stops: Record<string, string[]>; head: Record<string, HistHeadSpec>; y0: Record<string, number | undefined> };
+export type PageStore = { mode: Record<string, string | undefined>; cycles: Record<string, string | null | undefined>; range: Record<string, string>; stops: Record<string, string[]>; head: Record<string, HistHeadSpec>; y0: Record<string, number | undefined>; when: Record<string, string | undefined> };
 type GeomVal = ChartGeom["vals"][number];
 type TimelineSource = { series?: Point[]; depth?: number | null };
 export var page = {
@@ -16,7 +16,8 @@ export var page = {
   range: undefined,
   stops: undefined,
   head: undefined,
-  y0: undefined
+  y0: undefined,
+  when: {}
 } as unknown as PageStore;
 // ---- the history card's head ----
 export var HIST_NOTE: Record<string, string | (() => string)> = {};
@@ -413,17 +414,15 @@ function cyclePicker(id: string, picked: string | null | undefined, minYear?: nu
   var CL = cycLabel(cur), open = !!pickerOpen[id];
   return '<div class="cycsel' + (open ? " open" : "") + '" data-cycles-for="' + id + '">' +
     '<button type="button" class="cycsel-btn" data-picker-toggle="1" aria-haspopup="listbox" aria-expanded="' +
-      (open ? "true" : "false") + '"><span class="cycsel-nm">' + CL.name + '</span>' +
-      '<span class="cycsel-yr">' + CL.years + '</span>' + CHEV + '</button>' +
+      (open ? "true" : "false") + '">' + nameAside(CL.name, CL.years) + CHEV + '</button>' +
     '<div class="cycsel-menu" role="listbox"' + (open ? "" : " hidden") + '>' +
-    rows.map(function(c){
-      var sel = c.name === cur.name, L = cycLabel(c);
-      return '<button type="button" class="cycsel-opt' + (sel ? " on" : "") + '" role="option" aria-selected="' +
-        (sel ? "true" : "false") + '" data-cycle="' + c.name + '">' +
-        '<span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + L.name +
-        '</span><span class="cycsel-yr">' + L.years + '</span></button>';
-    }).join("") + '</div></div>';
+    rows.map(function(c){ var L = cycLabel(c); return pickRow(c.name === cur.name, "data-cycle", c.name, L.name, L.years); }).join("") + '</div></div>';
 }
+export function pickRow(on: boolean, attr: string, key: string, name: string, aside: string){
+  return '<button type="button" class="cycsel-opt' + (on ? " on" : "") + '" role="option" aria-selected="' + on + '" ' + attr + '="' + key + '">' +
+    '<span class="cycsel-tick" aria-hidden="true"></span>' + nameAside(name, aside) + '</button>';
+}
+function nameAside(name: string, aside: string){ return '<span class="cycsel-nm">' + name + '</span><span class="cycsel-yr">' + aside + '</span>'; }
 export function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
   if (!ranges || ranges.length < 2) return "";
   return tabBar('data-range-for="' + id + '"', ranges.map(function(r){ return [r.key, r.label]; }), active, "data-range");

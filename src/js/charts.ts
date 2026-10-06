@@ -1,4 +1,3 @@
-import { CHEV } from "./format.ts";
 
 export type Fit = { slope: number; intercept: number; n: number };
 export type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
@@ -250,18 +249,4 @@ export function pulseTraceSvg(rate: number | null, ref: number | null | undefine
   return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
     '<defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs>' +
     '<g clip-path="url(#' + id + ')">' + paths + '</g></svg>';
-}
-export function peekCard(o: PeekCardOpts){
-  var art = o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
-  return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target +
-    '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ', ' + o.value + ' ' + o.unit + ' \u2014 open">' +
-    '<span class="peek-text">' +
-      '<span class="peek-kicker">' +
-        (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + '</span>' : '') +
-        o.kicker + CHEV + '</span>' +
-      art +
-      '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span>' +
-      '<span class="peek-word">' + o.word + '</span>' +
-    '</span>' +
-  '</button>';
 }
