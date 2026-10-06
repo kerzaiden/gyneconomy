@@ -271,10 +271,10 @@ async function openPage(p, url, sheet) {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
       return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('[data-chart-cycle] .trend-text').length,
                    story: [...d.querySelectorAll('[data-chart-cycle] .trend-text')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
-                   doors: d.querySelectorAll('[data-open]:not([data-ind-year]), [data-chart-cycle]').length,
+                   doors: d.querySelectorAll('[data-open]:not([data-ind-when]), [data-chart-cycle]').length,
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
-                   opens: yrs ? yrs.querySelectorAll('button.dx-year[data-open="sheet-find"][data-ind-year]').length : 0,
+                   opens: yrs ? yrs.querySelectorAll('button.dx-year[data-open="sheet-find"][data-ind-when]').length : 0,
                    score: !!d.querySelector('[data-open="sheet-ai-insights"] .lab-score'),
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
                    boxes: [...d.children].map(c => c.matches('[data-open="sheet-ai-insights"]') ? 'ai' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-band') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
@@ -299,7 +299,7 @@ async function openPage(p, url, sheet) {
      yearRun(past.years) && past.opens === past.years.length)
       ? ok('the cycle reads year by year, newest first, each year opening Indicators, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening Indicators, today and at a close', JSON.stringify([today, past]));
-    await p.evaluate(() => [...document.querySelectorAll('#diagnosis .dx-year')].find(b => b.dataset.indYear === '2010').click()); await settle(p);
+    await p.evaluate(() => [...document.querySelectorAll('#diagnosis .dx-year')].find(b => b.dataset.indWhen === '2010').click()); await settle(p);
     const yearInd = await p.evaluate(() => { const h = document.getElementById('sheet-find');
       return { title: document.getElementById('topbar-title').textContent, shown: !!h.offsetParent, mode: (h.querySelector('[data-mode-for] .range-seg.on') || {}).textContent,
         year: h.querySelector('.cycsel-btn .cycsel-nm').textContent, cycle: h.querySelector('.cycsel-btn .cycsel-yr').textContent, items: h.querySelectorAll('.lab-item').length,
@@ -498,18 +498,20 @@ async function openPage(p, url, sheet) {
     await p.click('#sheet-find [data-cycle="Dot-Com Cycle"]'); await settle(p);
     const dot = await p.evaluate(() => ({ label: document.querySelector('#sheet-find .cycsel-btn .cycsel-nm').textContent, cycle: !!document.querySelector('#sheet-find .lab-item') }));
     await p.click('#sheet-find [data-mode="calendar"]'); await settle(p);
-    const yr = await p.evaluate(() => ({ label: document.querySelector('#sheet-find .cycsel-btn .cycsel-nm').textContent, years: document.querySelectorAll('#sheet-find [data-year]').length,
+    const yr = await p.evaluate(() => ({ label: document.querySelector('#sheet-find .cycsel-btn .cycsel-nm').textContent, years: document.querySelectorAll('#sheet-find [data-when]').length,
       items: document.querySelectorAll('#sheet-find .lab-item').length }));
-    await p.click('#sheet-find .cycsel-btn'); await p.click('#sheet-find [data-year="1999"]'); await settle(p);
+    await p.click('#sheet-find .cycsel-btn'); await p.click('#sheet-find [data-when="1999"]'); await settle(p);
     const y99 = await p.evaluate(() => ({ label: document.querySelector('#sheet-find .cycsel-btn .cycsel-nm').textContent, aside: document.querySelector('#sheet-find .cycsel-btn .cycsel-yr').textContent,
       sp: (document.querySelector('#sheet-find .lab-row[data-open="sheet-sign-market"] .lab-res b') || {}).textContent }));
+    await p.click('#sheet-find [data-mode="quarters"]'); await settle(p);
+    const q99 = await p.evaluate(() => ({ label: document.querySelector('#sheet-find .cycsel-btn .cycsel-nm').textContent, quarters: document.querySelectorAll('#sheet-find [data-when]').length }));
     await p.click('#sheet-find [data-mode="cycles"]'); await settle(p);
     const backTo = await p.evaluate(() => document.querySelector('#sheet-find .cycsel-btn .cycsel-nm').textContent);
     await p.click('#sheet-find .cycsel-btn'); await p.click('#sheet-find [data-cycle="AI Cycle"]'); await settle(p);
     (sub.open && sub.cycles > 15 && dot.label === 'Dot-Com' && dot.cycle && yr.label === '2002' && yr.years > 90 && yr.items > 10 &&
-     y99.label === '1999' && y99.aside === 'Dot-Com' && /^\+21\.0%/.test(y99.sp || '') && backTo === 'Dot-Com')
-      ? ok('Indicators picks a cycle, or a year of it, from the Cycles | Years bar', sub.cycles + ' cycles, ' + yr.years + ' years; 1999 S&P 500 ' + y99.sp)
-      : bad('Indicators picks a cycle, or a year of it, from the Cycles | Years bar', JSON.stringify({ sub, dot, yr, y99, backTo }));
+     y99.label === '1999' && y99.aside === 'Dot-Com' && /^\+21\.0%/.test(y99.sp || '') && q99.label === 'Q4 1999' && q99.quarters > 350 && backTo === 'Dot-Com')
+      ? ok('Indicators picks a cycle, a year or a quarter from the Cycles | Years | Quarters bar', sub.cycles + ' cycles, ' + yr.years + ' years, ' + q99.quarters + ' quarters; 1999 S&P 500 ' + y99.sp)
+      : bad('Indicators picks a cycle, a year or a quarter from the Cycles | Years | Quarters bar', JSON.stringify({ sub, dot, yr, y99, q99, backTo }));
     await p.click('#sheet-find .cat-mood .lab-fold'); await settle(p);
     const folded = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       hid: !document.querySelector('#sheet-find .cat-mood .lab-item').offsetParent }));
@@ -579,22 +581,17 @@ async function openPage(p, url, sheet) {
     const qhub = await p.evaluate(() => ({ date: document.getElementById('season-wheel-hub-date').textContent.trim(),
       ret: (document.querySelector('#season-wheel-hub-detail .hub-line b') || {}).textContent }));
     await click(p, '#season-wheel-hub-open'); await settle(p);
-    const qs = await p.evaluate(() => {
-      const body = document.getElementById('detail-modal-body');
-      return { shown: document.getElementById('detail-backdrop').classList.contains('show'),
-        sub: (body.querySelector('.marker-sub') || {}).textContent || '',
-        names: [...body.querySelectorAll('.cat-item .ci-name')].map(n => n.textContent.trim()).join('+'),
-        market: (body.querySelector('.cat-item[data-open="sheet-sign-market"] .ci-value') || {}).textContent || '',
-        about: !!body.querySelector('.more-row') };
-    });
-    await click(p, '#detail-modal-body .cat-item[data-open="sheet-metric-gdp"]'); await settle(p);
-    const qpage = await p.evaluate(() => ({ bar: document.getElementById('topbar-title').textContent.trim(),
-      shown: document.getElementById('detail-backdrop').classList.contains('show') }));
+    const qs = await p.evaluate(() => { const h = document.getElementById('sheet-find');
+      return { bar: document.getElementById('topbar-title').textContent.trim(), shown: !!h.offsetParent,
+        mode: (h.querySelector('[data-mode-for] .range-seg.on') || {}).textContent, label: h.querySelector('.cycsel-btn .cycsel-nm').textContent,
+        market: (h.querySelector('.lab-row[data-open="sheet-sign-market"] .lab-res b') || {}).textContent || '',
+        where: (h.querySelector('.lab-row[data-open="sheet-sign-market"] .lab-where') || {}).textContent || '',
+        modal: document.getElementById('detail-backdrop').classList.contains('show') }; });
     await p.click('#topbar-back'); await settle(p);
-    (qs.shown && qs.sub.indexOf(qhub.date) === 0 && qs.names === 'Temperature+Growth+S&P 500' && qhub.ret && qs.market.indexOf(qhub.ret) === 0 &&
-     qs.about && qpage.bar === 'Growth' && !qpage.shown)
-      ? ok('a tapped quarter opens its sheet: Temperature, Growth and that year\u2019s S&P 500, one number with the dial', qhub.date + ' \u00b7 ' + qhub.ret)
-      : bad('a tapped quarter opens its sheet: Temperature, Growth and that year\u2019s S&P 500, one number with the dial', JSON.stringify({ qhub, qs, qpage }));
+    (qs.bar === 'Indicators' && qs.shown && qs.mode === 'Quarters' && qs.label === qhub.date && qhub.ret && qs.market.indexOf(qhub.ret) === 0 &&
+     qs.where.endsWith(qhub.date.slice(-4)) && !qs.modal)
+      ? ok('a tapped quarter opens Indicators on that quarter, the year\u2019s S&P 500 one number with the dial', qhub.date + ' \u00b7 ' + qhub.ret)
+      : bad('a tapped quarter opens Indicators on that quarter, the year\u2019s S&P 500 one number with the dial', JSON.stringify({ qhub, qs }));
     await p.goto('file://' + url); await ready(p);
     await openPage(p, url, 'sheet-metric-valuation');
     const headCol = await p.evaluate(() => {

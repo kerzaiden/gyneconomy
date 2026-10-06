@@ -1,4 +1,4 @@
-import { CHEV, facts, srcBlock } from "./format.ts";
+import { CHEV, facts, qLabel, srcBlock } from "./format.ts";
 import { byId, detailSlot, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle, periodControls, tabBar } from "./history.ts";
 import { histBar, histFrame } from "./charts.ts";
@@ -6,7 +6,7 @@ import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slid
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayFace, todayValue } from "./era.ts";
-import { calendarTodayY } from "./refresh-season.ts";
+import { calendarTodayY, DATA_COMPILED } from "./refresh-season.ts";
 import { cycLabel, cycleByName, cycleModel, cycleOfYear, nowModel, openCycle } from "./model.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
 import { catInsight } from "./insights.ts";
@@ -80,7 +80,7 @@ function readingLab(R: RosterRow): Lab {
     norm:pin(normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; }))) };
 }
 var labCache: Lab[] | null = null;
-export function forgetLabs(){ labCache = null; visitCache = null; yearCache = {}; }
+export function forgetLabs(){ labCache = null; visitCache = null; whenCache = {}; }
 function cycleLabs(){
   return [
     cycleLab("length", "Length", undefined, function(v){ return v.years; }),
@@ -92,29 +92,40 @@ function cycleLabs(){
 export function labs(){ return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab))); }
 function normAt(l: Lab, i: number){ return marketCycles[i].ongoing && l.now ? l.now : l.norm; }
 function unread(l: Lab, i: number){ return l.cat === "cycle" && !!marketCycles[i].ongoing && !l.settled; }
-type At = { v: (l: Lab) => number | null; n: (l: Lab) => Norm | null; open: boolean; skip: (l: Lab) => boolean };
+type At = { v: (l: Lab) => number | null; n: (l: Lab) => Norm | null; open: boolean; skip: (l: Lab) => boolean; tag: (l: Lab) => string };
 function atCycle(i: number): At {
-  return { v:function(l){ return l.per[i]; }, n:function(l){ return normAt(l, i); }, open:!!marketCycles[i].ongoing, skip:function(l){ return unread(l, i); } };
+  return { v:function(l){ return l.per[i]; }, n:function(l){ return normAt(l, i); }, open:!!marketCycles[i].ongoing, skip:function(l){ return unread(l, i); }, tag:function(){ return ""; } };
 }
-function atYear(y: number): At {
-  return { v:function(l){ return yearValue(l, y); }, n:function(l){ return l.cat === "cycle" ? null : l.now; }, open:y === calendarTodayY, skip:function(){ return false; } };
+function atWhen(w: string): At {
+  var open = w === nowWhen(w.length > 4);
+  return { v:function(l){ return whenValue(l, w, open); }, n:function(l){ return l.cat === "cycle" ? null : l.now; }, open:open, skip:function(){ return false; },
+    tag:function(l){ return !open && w.length > 4 && yearly(l) ? " \u00b7 " + w.slice(0, 4) : ""; } };
 }
-var yearCache: Record<string, Record<number, number>> = {};
-function yearValue(l: Lab, y: number){
+export function nowWhen(quarter: boolean){ return calendarTodayY + (quarter ? " Q" + (Math.floor(DATA_COMPILED.getMonth() / 3) + 1) : ""); }
+function yearly(l: Lab){ var R = ROSTER_BY[l.id]; return !!R && (R.hist.k === "y" || R.hist.k === "yi"); }
+var whenCache: Record<string, Record<string, number>> = {};
+function whenValue(l: Lab, w: string, open: boolean){
   var R = ROSTER_BY[l.id];
   if (!R) return null;
-  if (y === calendarTodayY) return todayValue(R);
-  return (yearCache[l.id] || (yearCache[l.id] = yearMeans(R)))[y] ?? null;
+  if (open) return todayValue(R);
+  var by = whenCache[l.id] || (whenCache[l.id] = whenMeans(R));
+  return by[w] ?? (yearly(l) ? by[w.slice(0, 4)] ?? null : null);
 }
-function yearMeans(R: RosterRow){
-  var by: Record<number, number[]> = {}, out: Record<number, number> = {};
-  keyed(R.hist).forEach(function(d){ var y = +d.k.slice(0, 4); if (d.v != null) (by[y] = by[y] || []).push(d.v); });
-  Object.keys(by).forEach(function(y){ out[+y] = meanOf(by[+y]); });
+function quarterKey(k: string){ return k.indexOf("Q") !== -1 ? k : k.length === 7 ? k.slice(0, 4) + " Q" + Math.ceil(+k.slice(5) / 3) : ""; }
+function whenMeans(R: RosterRow){
+  var by: Record<string, number[]> = {}, out: Record<string, number> = {};
+  keyed(R.hist).forEach(function(d){
+    if (d.v == null) return;
+    [d.k.slice(0, 4), quarterKey(d.k)].forEach(function(k){ if (k) (by[k] = by[k] || []).push(d.v as number); });
+  });
+  Object.keys(by).forEach(function(k){ out[k] = meanOf(by[k]); });
   return out;
 }
-function periodYears(){
-  var out: { y: number; cycle: Cycle }[] = [];
-  for (var y = marketCycles[0].from; y <= calendarTodayY; y++) if (judged(atYear(y)).length) out.push({ y:y, cycle:cycleOfYear(y) as Cycle });
+function periodRows(quarter: boolean){
+  var out: { key: string; name: string; cycle: Cycle }[] = [], last = nowWhen(quarter);
+  for (var y = marketCycles[0].from; y <= calendarTodayY; y++) (quarter ? [1, 2, 3, 4].map(function(n){ return y + " Q" + n; }) : [String(y)]).forEach(function(w){
+    if (w <= last && judged(atWhen(w)).length) out.push({ key:w, name:quarter ? qLabel(w) : w, cycle:cycleOfYear(y) as Cycle });
+  });
   return out;
 }
 function state(l: Lab, at: At){
@@ -142,7 +153,7 @@ function cardWord(l: Lab, at: At){
 }
 function labItem(l: Lab, at: At){
   var n = at.n(l) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t){ return t.key === tier(l, at); })[0];
-  return '<li class="lab-item ' + side(l, at) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + cardWord(l, at) + t.title + '</small></div>' +
+  return '<li class="lab-item ' + side(l, at) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + cardWord(l, at) + t.title + at.tag(l) + '</small></div>' +
     '<div class="lab-res"><b>' + fmt(l, at.v(l) as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
     '<small>' + l.span(n.lo, n.hi) + '</small></div></' + tag + '></li>';
 }
@@ -271,7 +282,7 @@ function methodFacts(){
 }
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
-    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year</b> is that calendar year’s average, or this year’s latest reading, judged as the open cycle is: against the middle half of every reading her closed cycles hold.", depthWords(),
+    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(),
     "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
     pinnedFacts(),
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
@@ -345,20 +356,20 @@ function homeSections(i: number){
   return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
     dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
 }
-function yearPicked(id: string){
-  var c = cycleByName(page.cycles[id]) || openCycle();
-  return page.year[id] ?? (c.ongoing ? calendarTodayY : c.to);
+function whenPicked(id: string){
+  var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
+  return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
 }
 function periodAt(id: string){
   var c = pageCycle(id);
-  return page.mode[id] === "calendar" ? atYear(yearPicked(id)) : c ? atCycle(marketCycles.indexOf(c)) : null;
+  return page.mode[id] !== "cycles" ? atWhen(whenPicked(id)) : c ? atCycle(marketCycles.indexOf(c)) : null;
 }
 function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
   if (host && c && id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(marketCycles.indexOf(c)) + '</div>'; return; }
   var at = periodAt(id); if (!host || !at) return;
   var j = judged(at).filter(function(l){ return l.cat !== "cycle"; });
-  host.innerHTML = histBar(periodControls(id, periodYears(), yearPicked(id))) + finder(id, at, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
+  host.innerHTML = histBar(periodControls(id, page.mode[id] === "cycles" ? [] : periodRows(page.mode[id] === "quarters"), whenPicked(id))) + finder(id, at, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
 export var IND = "sheet-find";
@@ -371,7 +382,7 @@ function catBar(j: Lab[]){
 function pickCat(t: Element, id: string){
   var b = t.closest && t.closest("[data-ind-cat]"); if (!b) return false;
   findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
-  if (id === IND) drawChart(IND);
+  if (id === IND) drawChart(IND); else if (id === HOME_ID) page.mode[IND] = "cycles";
   return true;
 }
 function buildFind(){ var sheet = metricSheet(IND); need("panel-chart").appendChild(sheet); wireFinder(sheet, IND); drawChart(IND); }
@@ -396,19 +407,19 @@ function wireFinder(host: HTMLElement, id: string){
   });
 }
 function syncPeriod(id: string, opt: Element){
-  var y = opt.getAttribute("data-year");
-  if (y) page.cycles[id] = page.cycles[HOME_ID] = (cycleOfYear(+y) as Cycle).name;
-  else { page.cycles[HOME_ID] = opt.getAttribute("data-cycle"); page.year[id] = undefined; }
+  var w = opt.getAttribute("data-when");
+  if (w) page.cycles[id] = page.cycles[HOME_ID] = (cycleOfYear(+w.slice(0, 4)) as Cycle).name;
+  else { page.cycles[HOME_ID] = opt.getAttribute("data-cycle"); page.when[id] = undefined; }
 }
-function openYear(y: number){
-  page.mode[IND] = "calendar"; page.year[IND] = y; page.cycles[IND] = (cycleOfYear(y) as Cycle).name;
-  findOf(IND).cat = "";
+function openWhen(w: string, cat: string){
+  page.mode[IND] = w.length > 4 ? "quarters" : "calendar"; page.when[IND] = w; page.cycles[IND] = (cycleOfYear(+w.slice(0, 4)) as Cycle).name;
+  findOf(IND).cat = cat;
   drawChart(IND);
 }
 function wireCatDoors(){
   document.addEventListener("click", function(e){
-    var t = e.target as Element, door = t.closest && t.closest('[data-open="' + IND + '"][data-ind-cat]'), yr = t.closest && t.closest("[data-ind-year]");
-    if (yr) openYear(+(yr.getAttribute("data-ind-year") || "")); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
+    var t = e.target as Element, door = t.closest && t.closest('[data-open="' + IND + '"][data-ind-cat]'), at = t.closest && t.closest("[data-ind-when]");
+    if (at) openWhen(at.getAttribute("data-ind-when") || "", at.getAttribute("data-ind-cat") || ""); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
   });
 }
 function openMenus(){ return Array.prototype.filter.call(document.querySelectorAll(".lab-menu"), function(m: HTMLElement){ return !m.hidden; }) as HTMLElement[]; }

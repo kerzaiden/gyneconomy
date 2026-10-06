@@ -372,7 +372,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `quarter-sheet` (a quarter's sheet, opened from the dial), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -438,8 +438,6 @@ Rules that shape the pages:
   its category class, so the page head disc and the history head take `--cat`. Group rows keep a mark
   of their own (`GROUP_MARK`: Stress the bolt; Valuations its first member's).
   The two Treasury spreads (one view of Pressure) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
-  The quarter sheet's cards (`.cat-sheet`, built by `catCard`) follow Apple Health's spacing: the title in the
-  category colour, the date on the right, one large figure with the verdict as a quiet label above it.
 - **Analysis shows every cycle as one `.era-row`** (V631), opening the cycle's page.
   Don't split it into list + overview.
 - **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
@@ -467,10 +465,12 @@ Rules that shape the pages:
   The cycle's length, bull years and bleed are judged only once it has closed; Regularity (`settled`) is read on the
   open cycle too, since it measures the three cycles before it. The health score is the share of judged
   readings that are Normal. On top of the Indicators page sits the history pages' own Cycles | Years bar (`periodControls`
-  in `history.ts`, the same `modeBar` and picker as every history, 0.8.9): Cycles reads a cycle as above, Years reads one
-  calendar year, each reading averaged over it (this year: today's figure) and judged against `Lab.now`, the range the
-  open cycle uses, so a year adds no band of its own. The picker's year and cycle follow each other (`syncPeriod`), and
-  each year in the Diagnosis's Year by Year opens Indicators on it (`data-ind-year`, `openYear`). Under the bar sits
+  in `history.ts`, the same `modeBar` and picker as every history, 0.8.9): Cycles reads a cycle as above, Years and Quarters
+  read one calendar year or quarter (`page.when`, keyed "2024" or "2024 Q3"), each reading averaged over it (while it
+  is open: today's figure) and judged against `Lab.now`, the range the open cycle uses, so a period adds no band of its
+  own. A reading kept only by the year (`k` "y" or "yi") shows its year's figure in a quarter and names the year. The
+  picker's period and cycle follow each other (`syncPeriod`); each year in Year by Year and the dial's centre open
+  Indicators on their period (`data-ind-when`, `openWhen`), and an Insights door on Analysis returns it to Cycles. Under the bar sits
   the search box, the filter button inside it opening a small menu of tiers
   (`.lab-menu`, closed by Escape through `layer` or a tap outside); `narrow` hides the rows that fail either and any
   category left empty. A tier pick redraws (the counts and the button's label change); typing only narrows, so the
@@ -596,9 +596,8 @@ cards' own figures; the bar's blank end says the year is not done, so the row ca
 fit on a phone. Its grey dots are laid out after layout, not in the markup (`fitYearDots`, run by `renderDiagnosis` and
 `settleAll` on every tab switch and resize): their pitch is one quarter of the open cycle's Herstory row, a width
 only the page knows, so they sit exactly as far apart as Herstory's (Keren, 0.6.18), the first one gap from the market bar, so the
-gaps read even (0.8.8). The emotions and the season names left the row in 0.4.1. A row is a
-`details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
-sits below both so neither imports the other. A closed cycle's card opened on **After** (the S&P 500 the year after
+gaps read even (0.8.8). The emotions and the season names left the row in 0.4.1. A row opens
+Indicators on its year (`data-ind-when`, 0.8.9); the quarter sheet it opened before is gone. A closed cycle's card opened on **After** (the S&P 500 the year after
 the close, `yearAfter`) from 1.8.0 until 0.6.17, when Keren dropped it for the next cycle's own page. The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)
 left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 **A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`): the
@@ -684,8 +683,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   set to that cycle. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
   hub opens on Indicators (Weather).
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
-  The hub's button opens it (`hubOpen`'s `cat`) while the dial shows today; a parked quarter or a closed
-  cycle opens its quarter sheet (`quarterSheet`), since the Weather page is today's. The Diagnosis's Analysis leaves out
+  The hub's button opens it (`hubOpen`'s `cat`, on the current quarter) while the dial shows today; a parked
+  quarter or a closed cycle's close opens Indicators on that quarter (`hubOpen`'s `when`, 0.8.9). The Diagnosis's Analysis leaves out
   every `onDial` category. Weather's Insights (behind Weather analysis's More details since 1.5.0) open with `cycleNowNote` (the note the popup used to open with), then
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   barometer. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
@@ -837,11 +836,9 @@ year by annual total return, **per year, never the compounded high** (Keren's ru
 is "Peak year". Press and hold the year badge to scrub; it stays where it is let go; tapping a moon parks the
 badge there too. The hub is one button (`#season-wheel-hub-open`): date, season with a grey ›, theme, and the
 year's S&P 500 return from `sp500AnnualReturns`, the band's own number. `hubOpen` points it at Indicators on Weather (today),
-at a quarter's sheet (a detail slot), or at nothing (a year). **The quarter sheet** (V693, `quarterSheet`) is
-the Weather page's own cards at that quarter, built by the same `tempPeek`, `gdpPeek` and `marketPeek` the
-pages use and turned into cards by `catCard`; its "About" row opens the season's prose (`quarterPopup`). The cards sit
-in a `.cat-sheet`, the one place that card design is left. A card in the sheet opens its page from whichever tab holds the dial (the
-`detail-modal-body` handler in `buildNav`). Sheets are cached per quarter in `dialState.sheets`.
+at Indicators on a quarter (`data-ind-when`), or at nothing (a year). The quarter sheet (V693) and its card design
+(`catCard`, `peekCard`, `.cat-sheet`, the season's prose in `quarterPopup`) went in 0.8.9; `git show v0.8.8:src/js/quarter-sheet.ts`
+is its last copy.
 
 **The date line always reads "Today, <the reader's date>"**, never `DATA_COMPILED`. Provenance lives on
 the figures: every card names the day its number derives from, and a card that doesn't is the bug.

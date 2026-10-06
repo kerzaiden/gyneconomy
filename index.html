@@ -338,7 +338,6 @@
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
     --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --summer-ink:#b04f24;
 
-    --mini-w:80px;
     --mini-h:42px;
     --pad:10px;
     --gap:10px;
@@ -453,9 +452,6 @@
   .menu-btn[hidden]{ display:none; }
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--good); }
   .growth-col.down{ stroke:var(--season-summer); }
-  .gdp-col{ fill:none; stroke-linecap:round; stroke:var(--season-spring); opacity:0.95; }
-  .gdp-col.neg{ stroke:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); opacity:1; }
-  .gdp-col.below{ stroke:var(--season-winter); opacity:1; }
 
   .temp-col{ fill:none; stroke-linecap:round; }
   .temp-col.s0{ stroke:var(--cold); }
@@ -476,14 +472,6 @@
   .chart-label-plate{ fill:var(--surface); }
   .hl-lab{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); fill:var(--text-muted); }
 
-  .reading-block h5{ font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-weight:500; font-size:var(--type-section); color:var(--text-primary); margin:0 0 6px; }
-  .reading-block p{ margin:0; font-size:var(--type-reading); line-height:1.6; }
-  .detail-modal .reading-block, .metric-sheet .reading-block, .sign-detail .reading-block{ margin-top:14px; } .detail-modal .reading-block p{ color:var(--text-secondary); }
-  .reading-watch{ margin:0; padding:0; list-style:none; }
-  .reading-watch li{ font-size:var(--type-reading); color:var(--text-secondary); padding:4px 0 4px 14px; position:relative; line-height:1.5; }
-  .reading-watch li::before{ content:""; position:absolute; left:0; top:11px; width:6px; height:6px; border-radius:50%; background:var(--text-muted); }
-  .reading-book{ grid-column:1 / -1; border-top:1px dashed var(--border-strong); padding-top:14px; }
-  .reading-book blockquote{ margin:8px 0 0; padding-left:14px; border-left:3px solid var(--border-strong); font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-size:var(--type-section); line-height:1.4; color:var(--text-primary); }
   .model-card > .menu-section{ margin:0; padding:16px 12px 12px; border-bottom:1px solid var(--border); }
   .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px; border-bottom:1px solid var(--border); }
   .model-card > p:last-child{ border-bottom:0; }
@@ -647,39 +635,9 @@
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
-  .cat-list{ display:flex; flex-direction:column; gap:var(--gap); margin-top:var(--gap-top); }
-  .cat-item{ display:block; width:100%; text-align:left; box-sizing:border-box; cursor:pointer;
-    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    padding:12px 14px 13px; font-family:"Public Sans",sans-serif; -webkit-tap-highlight-color:transparent; }
-  .cat-item:hover{ border-color:var(--border-strong); }
-  .cat-item:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .ci-head{ display:flex; align-items:center; gap:8px; }
-  .ci-head .peek-mark{ flex:none; }
-  .ci-name{ font-size:var(--type-meta); font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
-    color:var(--text-secondary); }
-  .ci-when{ margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); color:var(--text-muted); }
-  .ci-head .peek-chev{ flex:none; margin-left:3px; }
-  .ci-body{ display:flex; align-items:center; gap:14px; margin-top:9px; min-height:52px; }
-  .ci-read{ flex:1 1 auto; min-width:0; }
-  .ci-value{ display:block; font-family:"IBM Plex Mono",monospace; font-size:var(--type-section); font-weight:700;
-             line-height:1; color:var(--text-primary); margin:0; letter-spacing:0; }
-  .ci-unit{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; letter-spacing:0.01em;
-            color:var(--text-muted); margin-left:4px; }
-  .ci-mini{ flex:0 0 var(--mini-w); width:var(--mini-w); min-width:0;
-    display:flex; align-items:center; justify-content:flex-end; }
-  .ci-mini > *{ flex:1 1 auto; min-width:0; max-height:var(--mini-h); }
-  .ci-mini > .peek-chart{ width:100%; margin:0; }
-  .ci-mini > svg{ flex:none; height:var(--mini-h); width:auto; display:block; }
-  .ci-mini .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.5; }
-  .ci-mini .peek-chart.heat .now{ stroke:var(--accent-ink) !important; opacity:1; }
-  .ci-mini .peek-base{ stroke:var(--border-strong) !important; opacity:0.6; }
-  .peek-mark{ flex:none; width:15px; height:15px; color:var(--text-secondary); }
-  .peek-mark svg{ display:block; width:100%; height:100%; }
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .peek-word{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; margin-top:6px;
-    letter-spacing:0.01em; color:var(--text-secondary); }
   .hh-bill{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .hh-kept{ fill:none; stroke:var(--text-secondary); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .hh-col{ fill:none; stroke-linecap:round; }
@@ -688,7 +646,7 @@
   .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
   .pv-col.over{ stroke:var(--good); }
   .peek-chart{ width:100%; margin-top:12px; }
-  .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .gdp-col, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
+  .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
   .peek-base{ stroke:var(--accent); stroke-width:1.1; fill:none; opacity:0.8; vector-effect:non-scaling-stroke; }
   .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.42; }
@@ -853,7 +811,8 @@
   .range-seg::after{ content:""; position:absolute; left:0; right:0; top:-4px; bottom:-4px; }
   .hist-bar .cycsel-btn{ padding-top:0; padding-bottom:0; }
   .hist-bar .cycsel-btn{ padding-left:12px; padding-right:12px; gap:8px; white-space:nowrap; }
-  .hist-controls .cycsel-nm{ min-width:0; overflow:hidden; text-overflow:ellipsis; }
+  .hist-controls .cycsel-btn .cycsel-nm{ flex:none; }
+  .hist-controls .cycsel-btn .cycsel-yr{ min-width:0; overflow:hidden; text-overflow:ellipsis; }
   .cycsel{ position:relative; }
   .cycsel-btn .cycsel-yr{ margin-left:auto; }
   .cycsel-btn{ width:100%; display:flex; align-items:center; gap:10px; min-height:var(--ctl-h); box-sizing:border-box;
@@ -975,8 +934,7 @@
 
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-energy{ --cat:var(--good); }
-  .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
-  .cat-sheet .cat-item, .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
+  .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
   .aux-stat + .method-say{ margin-top:24px; }
@@ -1082,21 +1040,6 @@
   .lab-res small{ padding-right:17px; }
   .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .lab-item.t-abnormal .lab-res b{ color:var(--critical-ink); }
-  .cat-sheet .ci-head{ gap:7px; }
-  .cat-sheet .ci-head .peek-mark{ color:var(--cat); }
-  .cat-sheet .ci-head .peek-mark svg{ width:20px; height:20px; }
-  .cat-sheet .ci-name{ font-size:var(--type-reading); font-weight:600; letter-spacing:0; text-transform:none; color:var(--cat); }
-  .cat-sheet .ci-when{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface); }
-  .cat-sheet .ci-body{ margin-top:26px; align-items:flex-end; min-height:0; }
-  .cat-sheet .ci-read{ display:flex; flex-direction:column-reverse; gap:3px; }
-  .cat-sheet .ci-value{ display:flex; flex-wrap:nowrap; align-items:baseline; column-gap:6px; white-space:nowrap; font-family:"Public Sans",sans-serif;
-    font-size:var(--type-page-title); font-weight:600; letter-spacing:-0.01em; line-height:1.05; }
-  .cat-sheet .ci-unit{ min-width:0; overflow:hidden; text-overflow:ellipsis; line-height:1.3; font-size:var(--type-interface); font-weight:500; color:var(--text-muted); }
-  .cat-sheet .ci-word{ padding:0; background:none; color:var(--text-muted); font-size:var(--type-interface); font-weight:500;
-    letter-spacing:0; text-transform:none; }
-  .cat-sheet .ci-word:empty::before{ content:"\00a0"; }
-  .cat-sheet .ci-mini{ flex:0 0 64px; width:64px; }
-  .cat-sheet .ci-mini .peek-chart.heat .now{ stroke:var(--cat) !important; }
   .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }
@@ -1199,9 +1142,6 @@
   .tag.serious{ background:var(--serious-wash); color:var(--serious-ink); }
   .tag.critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .tag.norm{ background:var(--track); color:var(--text-secondary); }
-  .cat-item .tag{ background:none; border:0; padding:0; border-radius:0; color:inherit;
-    letter-spacing:inherit; text-transform:none; }
-  .cat-item .ci-word{ margin:3px 0 0; font-size:var(--type-meta); font-weight:600; color:var(--text-secondary); }
   .tag.phase-up{ background:var(--phase-up-wash); color:var(--phase-up-ink); }
   .tag.phase-down{ background:var(--phase-down-wash); color:var(--phase-down-ink); }
   .hi-name.phase-up{ color:var(--phase-up-ink); } .hi-name.phase-down{ color:var(--phase-down-ink); }
@@ -1300,7 +1240,6 @@
   .card .details-link:hover{ text-decoration:underline; }
 
   .card .caption{ font-size:var(--type-interface); color:var(--text-secondary); line-height:1.55; margin: 6px 0 10px; flex:1; }
-  .caption.era-blurb{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-size:var(--type-section); line-height:1.4; color:var(--text-primary); }
   .card .aux-stat{
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
     padding-top:10px; border-top:1px solid var(--border); margin-top:auto;
@@ -1789,9 +1728,6 @@
     var a = Math.abs(v).toFixed(dp);
     return (+a === 0 ? "" : v > 0 ? "+" : "−") + a;
   }
-  function popHead(title, sub) {
-    return "<h4>" + titleCase(title) + '</h4><span class="marker-sub">' + sub + "</span>";
-  }
   function hubLine(html) {
     return '<span class="hub-line">' + html + "</span>";
   }
@@ -1831,11 +1767,6 @@
     var n = typeof target === "string" ? byId(target) : target;
     if (n) n.innerHTML = html;
     return n;
-  }
-  function elFrom(html) {
-    var t = document.createElement("template");
-    t.innerHTML = html;
-    return t.content.firstElementChild;
   }
   var LAYERS = [];
   function layer(rank, o) {
@@ -32474,10 +32405,6 @@
     }).join("");
     return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs><g clip-path="url(#' + id + ')">' + paths + "</g></svg>";
   }
-  function peekCard(o) {
-    var art = o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
-    return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
-  }
   var page = {
     mode: void 0,
     cycles: void 0,
@@ -32485,7 +32412,7 @@
     stops: void 0,
     head: void 0,
     y0: void 0,
-    year: {}
+    when: {}
   };
   var HIST_NOTE = {};
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
@@ -33012,15 +32939,14 @@
       return '<button type="button" class="cycsel-opt' + (r.on ? " on" : "") + '" role="option" aria-selected="' + (r.on ? "true" : "false") + '" ' + r.attr + '="' + r.key + '"><span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + r.name + '</span><span class="cycsel-yr">' + r.aside + "</span></button>";
     }).join("") + "</div></div>";
   }
-  function periodControls(id, years, year) {
-    var on = page.mode[id] === "cycles";
-    return controlsBox(modeBar(id, page.mode[id]) + (on ? cyclePicker(id, page.cycles[id]) : pickList(id, years.slice().reverse().map(function(d) {
+  function periodControls(id, rows, picked) {
+    return controlsBox(modeBar(id, page.mode[id], [ [ "quarters", "Quarters" ] ]) + (page.mode[id] === "cycles" ? cyclePicker(id, page.cycles[id]) : pickList(id, rows.slice().reverse().map(function(d) {
       return {
-        attr: "data-year",
-        key: String(d.y),
-        name: String(d.y),
+        attr: "data-when",
+        key: d.key,
+        name: d.name,
         aside: cycLabel(d.cycle).name,
-        on: d.y === year
+        on: d.key === picked
       };
     }))));
   }
@@ -34372,14 +34298,6 @@
       return R.term === ind.bodyTerm;
     })[0];
   }
-  function peekOf(id, o) {
-    var R = ROSTER_BY[id];
-    o.kicker = R.name;
-    o.mark = R.mark();
-    o.unit = R.cardUnit;
-    o.target = id;
-    return peekCard(o);
-  }
   function checkRoster() {
     var bad = [], seen = {}, live = {}, groups = [];
     ROSTER.forEach(function(R, i) {
@@ -35509,11 +35427,6 @@
     if (!ind) throw new Error("no reading for " + id);
     return ind;
   }
-  function openOf(src) {
-    var o = src.getAttribute("data-open");
-    if (o == null) throw new Error("a card with no data-open");
-    return o;
-  }
   function levelHeadings(body) {
     var box = body.closest(".detail-modal");
     if (!box) return;
@@ -36162,25 +36075,6 @@
     cards.push(hiCard("Level, Not Slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
-  function catList(html) {
-    return '<div class="cat-list">' + html + "</div>";
-  }
-  function marketPeek(y, from) {
-    var v = sp500AnnualReturns[y], w = v == null ? null : marketWord(v);
-    return w && peekOf("sheet-sign-market", {
-      value: fmtSigned(v, 1) + "%",
-      word: w.text,
-      state: w.state,
-      colBase: 0,
-      colRule: true,
-      cols: sp500Years.filter(function(d) {
-        return d.y >= from && d.y <= y;
-      }).map(function(d) {
-        return d.v;
-      }),
-      colClass: marketCol
-    });
-  }
   var spreadPick = "3m";
   var pressureView = "yield";
   var HZN_SPREADS = [ {
@@ -36196,99 +36090,11 @@
     })[0];
     return r ? r.label : HZN_SPREADS[0].label;
   }
-  function peekArt(src) {
-    return src.querySelector(".peek-chart");
-  }
-  function catCard(src, when) {
-    var open = openOf(src), item = document.createElement("button");
-    item.type = "button";
-    item.className = "cat-item";
-    item.setAttribute("data-open", open);
-    item.setAttribute("data-title", src.getAttribute("data-title") || "");
-    var head = document.createElement("div");
-    head.className = "ci-head";
-    var glyph = src.querySelector(".peek-mark svg"), holder = document.createElement("span");
-    holder.className = "peek-mark";
-    if (glyph) holder.appendChild(glyph);
-    head.appendChild(holder);
-    var nm = document.createElement("span");
-    nm.className = "ci-name";
-    var kick = src.querySelector(".peek-kicker");
-    nm.textContent = kick ? kick.textContent.replace(/\s+/g, " ").trim() : src.getAttribute("data-title") || "";
-    head.appendChild(nm);
-    var body = document.createElement("div");
-    body.className = "ci-body";
-    var read = document.createElement("div");
-    read.className = "ci-read";
-    var val = src.querySelector(".peek-value");
-    if (val) {
-      var unit = val.querySelector(".peek-unit, .unit");
-      if (unit) {
-        var m = DATED_UNIT.exec(unit.textContent.trim());
-        if (m) {
-          unit.textContent = m[1];
-          if (!when) when = m[2];
-        }
-      }
-      val.className = "ci-value";
-      if (unit) unit.className = "ci-unit";
-      read.appendChild(val);
-    }
-    var word2 = src.querySelector(".peek-word");
-    if (!word2 || !word2.textContent.trim()) word2 = val && val.querySelector(".tag") || document.createElement("span");
-    word2.classList.add("ci-word");
-    read.appendChild(word2);
-    body.appendChild(read);
-    var mini = peekArt(src);
-    if (mini) {
-      var slot = document.createElement("div");
-      slot.className = "ci-mini";
-      slot.appendChild(mini);
-      body.appendChild(slot);
-    }
-    var wh = document.createElement("span");
-    wh.className = "ci-when";
-    wh.textContent = when;
-    head.appendChild(wh);
-    var chev = document.createElement("span");
-    chev.innerHTML = CHEV;
-    var mark = chev.firstChild;
-    if (mark) head.appendChild(mark);
-    item.appendChild(head);
-    item.appendChild(body);
-    return item;
-  }
   function tempWord(r) {
     return (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
   }
   function gdpFigure(r) {
     return fmtSigned(r.gdpLatest.v, 1) + "%";
-  }
-  function tempPeek(r, value, cpi) {
-    return peekOf("sheet-metric-temp", {
-      value: value,
-      word: tempWord(r),
-      state: heatStep(r.cpiNow),
-      cols: cpi.map(function(d) {
-        return d.v;
-      }),
-      colClass: function(v) {
-        return "temp-col " + heatStep(v);
-      }
-    });
-  }
-  function gdpPeek(r, gq) {
-    return peekOf("sheet-metric-gdp", {
-      value: gdpFigure(r),
-      word: growthShownCap(r),
-      state: phaseClass(r.regime),
-      cols: gq.map(function(d) {
-        return d.v;
-      }),
-      colClass: function(v, i) {
-        return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
-      }
-    });
   }
   function bootRenderCore() {
     GYN.step("wireDetailModal", wireDetailModal, "wire");
@@ -37729,7 +37535,7 @@
   function forgetLabs() {
     labCache = null;
     visitCache = null;
-    yearCache = {};
+    whenCache = {};
   }
   function cycleLabs() {
     return [ cycleLab("length", "Length", void 0, function(v) {
@@ -37762,47 +37568,72 @@
       open: !!marketCycles[i].ongoing,
       skip: function(l) {
         return unread(l, i);
+      },
+      tag: function() {
+        return "";
       }
     };
   }
-  function atYear(y) {
+  function atWhen(w) {
+    var open = w === nowWhen(w.length > 4);
     return {
       v: function(l) {
-        return yearValue(l, y);
+        return whenValue(l, w, open);
       },
       n: function(l) {
         return l.cat === "cycle" ? null : l.now;
       },
-      open: y === calendarTodayY,
+      open: open,
       skip: function() {
         return false;
+      },
+      tag: function(l) {
+        return !open && w.length > 4 && yearly(l) ? " · " + w.slice(0, 4) : "";
       }
     };
   }
-  var yearCache = {};
-  function yearValue(l, y) {
-    var _a;
+  function nowWhen(quarter) {
+    return calendarTodayY + (quarter ? " Q" + (Math.floor(DATA_COMPILED.getMonth() / 3) + 1) : "");
+  }
+  function yearly(l) {
+    var R = ROSTER_BY[l.id];
+    return !!R && (R.hist.k === "y" || R.hist.k === "yi");
+  }
+  var whenCache = {};
+  function whenValue(l, w, open) {
+    var _a, _b;
     var R = ROSTER_BY[l.id];
     if (!R) return null;
-    if (y === calendarTodayY) return todayValue(R);
-    return (_a = (yearCache[l.id] || (yearCache[l.id] = yearMeans(R)))[y]) != null ? _a : null;
+    if (open) return todayValue(R);
+    var by = whenCache[l.id] || (whenCache[l.id] = whenMeans(R));
+    return (_b = by[w]) != null ? _b : yearly(l) ? (_a = by[w.slice(0, 4)]) != null ? _a : null : null;
   }
-  function yearMeans(R) {
+  function quarterKey(k) {
+    return k.indexOf("Q") !== -1 ? k : k.length === 7 ? k.slice(0, 4) + " Q" + Math.ceil(+k.slice(5) / 3) : "";
+  }
+  function whenMeans(R) {
     var by = {}, out = {};
     keyed(R.hist).forEach(function(d) {
-      var y = +d.k.slice(0, 4);
-      if (d.v != null) (by[y] = by[y] || []).push(d.v);
+      if (d.v == null) return;
+      [ d.k.slice(0, 4), quarterKey(d.k) ].forEach(function(k) {
+        if (k) (by[k] = by[k] || []).push(d.v);
+      });
     });
-    Object.keys(by).forEach(function(y) {
-      out[+y] = meanOf(by[+y]);
+    Object.keys(by).forEach(function(k) {
+      out[k] = meanOf(by[k]);
     });
     return out;
   }
-  function periodYears() {
-    var out = [];
-    for (var y = marketCycles[0].from; y <= calendarTodayY; y++) if (judged(atYear(y)).length) out.push({
-      y: y,
-      cycle: cycleOfYear(y)
+  function periodRows(quarter) {
+    var out = [], last = nowWhen(quarter);
+    for (var y = marketCycles[0].from; y <= calendarTodayY; y++) (quarter ? [ 1, 2, 3, 4 ].map(function(n) {
+      return y + " Q" + n;
+    }) : [ String(y) ]).forEach(function(w) {
+      if (w <= last && judged(atWhen(w)).length) out.push({
+        key: w,
+        name: quarter ? qLabel(w) : w,
+        cycle: cycleOfYear(y)
+      });
     });
     return out;
   }
@@ -37859,7 +37690,7 @@
     var n = at.n(l), tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t2) {
       return t2.key === tier(l, at);
     })[0];
-    return '<li class="lab-item ' + side(l, at) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + cardWord(l, at) + t.title + '</small></div><div class="lab-res"><b>' + fmt(l, at.v(l)) + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
+    return '<li class="lab-item ' + side(l, at) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + cardWord(l, at) + t.title + at.tag(l) + '</small></div><div class="lab-res"><b>' + fmt(l, at.v(l)) + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
@@ -38064,7 +37895,7 @@
     return [ "<b>Regularity</b> follows FIGO’s two measures of a regular cycle: its length, and its variation, the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it." ];
   }
   function chartDetail() {
-    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year</b> is that calendar year’s average, or this year’s latest reading, judged as the open cycle is: against the middle half of every reading her closed cycles hold.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, FIGO_SRC ]);
+    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, FIGO_SRC ]);
   }
   function cycleScore(m) {
     var i = marketCycles.indexOf(m.era);
@@ -38172,14 +38003,13 @@
   function homeSections(i) {
     return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
   }
-  function yearPicked(id) {
-    var _a;
-    var c = cycleByName(page.cycles[id]) || openCycle();
-    return (_a = page.year[id]) != null ? _a : c.ongoing ? calendarTodayY : c.to;
+  function whenPicked(id) {
+    var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
+    return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
   }
   function periodAt(id) {
     var c = pageCycle(id);
-    return page.mode[id] === "calendar" ? atYear(yearPicked(id)) : c ? atCycle(marketCycles.indexOf(c)) : null;
+    return page.mode[id] !== "cycles" ? atWhen(whenPicked(id)) : c ? atCycle(marketCycles.indexOf(c)) : null;
   }
   function drawChart(id) {
     var host = byId(id), c = pageCycle(id);
@@ -38192,7 +38022,7 @@
     var j = judged(at).filter(function(l) {
       return l.cat !== "cycle";
     });
-    host.innerHTML = histBar(periodControls(id, periodYears(), yearPicked(id))) + finder(id, at, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
+    host.innerHTML = histBar(periodControls(id, page.mode[id] === "cycles" ? [] : periodRows(page.mode[id] === "quarters"), whenPicked(id))) + finder(id, at, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
     narrow(host, id);
   }
   var IND = "sheet-find";
@@ -38216,7 +38046,7 @@
     var b = t.closest && t.closest("[data-ind-cat]");
     if (!b) return false;
     findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
-    if (id === IND) drawChart(IND);
+    if (id === IND) drawChart(IND); else if (id === HOME_ID) page.mode[IND] = "cycles";
     return true;
   }
   function buildFind() {
@@ -38249,23 +38079,23 @@
     });
   }
   function syncPeriod(id, opt) {
-    var y = opt.getAttribute("data-year");
-    if (y) page.cycles[id] = page.cycles[HOME_ID] = cycleOfYear(+y).name; else {
+    var w = opt.getAttribute("data-when");
+    if (w) page.cycles[id] = page.cycles[HOME_ID] = cycleOfYear(+w.slice(0, 4)).name; else {
       page.cycles[HOME_ID] = opt.getAttribute("data-cycle");
-      page.year[id] = void 0;
+      page.when[id] = void 0;
     }
   }
-  function openYear(y) {
-    page.mode[IND] = "calendar";
-    page.year[IND] = y;
-    page.cycles[IND] = cycleOfYear(y).name;
-    findOf(IND).cat = "";
+  function openWhen(w, cat) {
+    page.mode[IND] = w.length > 4 ? "quarters" : "calendar";
+    page.when[IND] = w;
+    page.cycles[IND] = cycleOfYear(+w.slice(0, 4)).name;
+    findOf(IND).cat = cat;
     drawChart(IND);
   }
   function wireCatDoors() {
     document.addEventListener("click", function(e) {
-      var t = e.target, door = t.closest && t.closest('[data-open="' + IND + '"][data-ind-cat]'), yr = t.closest && t.closest("[data-ind-year]");
-      if (yr) openYear(+(yr.getAttribute("data-ind-year") || "")); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
+      var t = e.target, door = t.closest && t.closest('[data-open="' + IND + '"][data-ind-cat]'), at = t.closest && t.closest("[data-ind-when]");
+      if (at) openWhen(at.getAttribute("data-ind-when") || "", at.getAttribute("data-ind-cat") || ""); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
     });
   }
   function openMenus() {
@@ -38660,7 +38490,7 @@
     return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
   }
   function yearRow(year, lead, foot) {
-    return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Indicators" data-ind-year="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
+    return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Indicators" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
   }
   function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
@@ -38720,39 +38550,6 @@
   function bootDiagnosis() {
     GYN.step("buildDiagnosis", buildDiagnosis, "build");
     buildDiagnosis();
-  }
-  function quarterCards(m, seg) {
-    var r = seg.reading, y = parseInt(seg.q, 10), qEnd = y + "-" + (r.annual ? "12" : QUARTER_END_MONTH[String(seg.q).slice(5)]);
-    var gq = gdpQuarterlyYoY.filter(function(d) {
-      return parseInt(d.q, 10) >= m.era.from && d.q <= seg.q;
-    });
-    var cards = [ [ tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c) {
-      return c.m <= qEnd;
-    })), monthLabel(qEnd) ], [ gdpPeek(r, gq), (r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q)) + " · potential " + r.potential.toFixed(1) + "%" ], [ marketPeek(y, m.era.from), String(y) ] ];
-    return '<div class="cat-sheet cat-weather">' + catList(cards.map(function(c) {
-      return c[0] ? catCard(peekEl(c[0]), c[1]).outerHTML : "";
-    }).join("")) + "</div>";
-  }
-  function quarterSheet(m, seg, isPresent) {
-    var meta = wheelMeta[seg.season], about = meta.name + (meta.theme ? ", " + meta.theme : "");
-    return popHead(meta.name + (meta.theme ? " · " + meta.theme : ""), qLabel(seg.q) + " · year " + (Math.floor(seg.from) + 1) + " of the " + m.era.name) + quarterCards(m, seg) + moreRow(quarterPopup(m, seg, isPresent), "About " + about);
-  }
-  function quarterPopup(m, seg, isPresent) {
-    var meta = wheelMeta[seg.season], era = m.era;
-    var yearN = Math.floor(seg.from) + 1;
-    var when = isPresent ? m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth) : qLabel(seg.q);
-    var head = popHead(when + " · " + (meta.theme || meta.name), meta.name + (meta.altName ? " · " + meta.altName : "") + " · year " + yearN + " of the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
-    var reading = seasonReading[seg.season] || {};
-    return head + (isPresent ? '<p class="caption era-blurb">' + era.blurb + "</p>" : "") + (reading.economy ? '<div class="reading-block"><h5>In the Economy</h5><p>' + reading.economy + "</p></div>" : "") + (reading.body ? '<div class="reading-block"><h5>In the Body</h5><p>' + reading.body + "</p></div>" : "") + (reading.next ? '<div class="reading-block"><h5>What Usually Comes Next</h5><p>' + reading.next + "</p></div>" : "") + (reading.watch && reading.watch.length ? '<div class="reading-block"><h5>What to Watch for the Turn</h5><ul class="reading-watch">' + reading.watch.map(function(w) {
-      return "<li>" + w + "</li>";
-    }).join("") + "</ul></div>" : "") + (reading.fromTheBook && reading.fromTheBook.length ? '<div class="reading-book"><h5>From the Book</h5>' + reading.fromTheBook.map(function(x) {
-      return "<blockquote>" + x.text + (x.title ? '<br><span class="marker-sub">— ' + x.title + "</span>" : "") + "</blockquote>";
-    }).join("") + "</div>" : "");
-  }
-  function peekEl(html) {
-    var n = elFrom(html);
-    if (!n) throw new Error("a peek drew nothing");
-    return n;
   }
   function drawDial(m) {
     var era = m.era;
@@ -38857,8 +38654,7 @@
       badgeDeg: badgeDeg,
       badgeAt: BADGE_AT,
       polar: polar,
-      parked: null,
-      sheets: {}
+      parked: null
     };
     hubShowDefault();
   }
@@ -38906,20 +38702,12 @@
   }
   function hubOpen(open) {
     var b = byId("season-wheel-hub-open");
-    [ "data-open", "data-title", "data-ind-cat", "data-detail-idx" ].forEach(function(a) {
-      b.removeAttribute(a);
-    });
+    b.removeAttribute("data-ind-cat");
     b.disabled = !open;
-    b.classList.toggle("details-link", !!(open && open.html));
-    if (open && open.cat) {
-      b.setAttribute("data-open", IND);
-      b.setAttribute("data-title", "Indicators");
-      b.setAttribute("data-ind-cat", open.cat.key);
-    }
-    if (open && open.html) {
-      detailTexts[hubDetailIdx] = open.html;
-      b.setAttribute("data-detail-idx", hubDetailIdx);
-    }
+    b.setAttribute("data-open", IND);
+    b.setAttribute("data-title", "Indicators");
+    b.setAttribute("data-ind-when", open ? open.when : "");
+    if (open && open.cat) b.setAttribute("data-ind-cat", open.cat.key);
   }
   function hubShowDefault() {
     if (dialState.parked != null) {
@@ -38931,25 +38719,20 @@
       hubSet(hubTodayHtml(), meta, calendarTodayY, {
         cat: CATEGORIES.filter(function(c) {
           return c.onDial;
-        })[0]
+        })[0],
+        when: nowWhen(true)
       });
       return;
     }
-    var presentSeg = {
-      q: last ? last.seg.q : m.reading.gdpLatest.q,
-      from: last ? last.seg.from : 0,
-      season: m.season,
-      reading: m.reading
-    };
     hubSet("<b>Closed,</b> " + monthLabel(m.endMonth), meta, m.endYear, {
-      html: quarterSheet(m, presentSeg, true)
+      when: last ? last.seg.q : m.reading.gdpLatest.q
     });
   }
   function hubShowQuarter(i) {
-    var q = dialState.quarters[i], cache = dialState.sheets;
+    var q = dialState.quarters[i];
     if (!q) return;
     hubSet("<b>" + qLabel(q.seg.q) + "</b>", wheelMeta[q.seg.season], parseInt(q.seg.q, 10), {
-      html: cache[i] || (cache[i] = quarterSheet(dialState.m, q.seg, false))
+      when: q.seg.q
     });
   }
   function hubShowYear(y) {
@@ -39225,14 +39008,11 @@
   }
   var growthDetail;
   var dialState;
-  var hubDetailIdx;
   function bootDialCycle() {
     GYN.step("wireThemeChoice", wireThemeChoice, "wire");
     wireThemeChoice();
     GYN.step("renderCycleKicker", renderCycleKicker, "render");
     renderCycleKicker();
-    hubDetailIdx = detailTexts.length;
-    detailTexts.push("");
     GYN.step("renderCycleDial", renderCycleDial, "wire");
     renderCycleDial();
     growthDetail = "<h4>Growth per Cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading: growth at or above the economy’s potential is expansion, below it is contraction, the same colours as everywhere Growth appears.", "Within " + HOLD_BAND + " points of potential a quarter keeps the colour before it, so a column can stay periwinkle while growth edges past potential. A quarter below zero is far below potential, so it is always contraction.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
@@ -39780,7 +39560,7 @@
       }
       var opt = e.target.closest(".cycsel-opt");
       if (id && opt && id in page.cycles) {
-        if (opt.hasAttribute("data-year")) page.year[id] = +(opt.getAttribute("data-year") || ""); else page.cycles[id] = opt.getAttribute("data-cycle");
+        if (opt.hasAttribute("data-when")) page.when[id] = opt.getAttribute("data-when") || void 0; else page.cycles[id] = opt.getAttribute("data-cycle");
         pickerOpen[id] = false;
         redrawSheet(id);
         return;

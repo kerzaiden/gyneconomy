@@ -7,7 +7,7 @@ import { cycLabel, cycleByName, cycleSpanYears, openCycle } from "./model.ts";
 
 export type HeadGroup = { key: string; label: string; on: boolean; value: string; rows: string };
 export type HistHeadSpec = { mark?: () => string; title?: string | (() => string); menu?: () => HeadGroup[] };
-export type PageStore = { mode: Record<string, string | undefined>; cycles: Record<string, string | null | undefined>; range: Record<string, string>; stops: Record<string, string[]>; head: Record<string, HistHeadSpec>; y0: Record<string, number | undefined>; year: Record<string, number | undefined> };
+export type PageStore = { mode: Record<string, string | undefined>; cycles: Record<string, string | null | undefined>; range: Record<string, string>; stops: Record<string, string[]>; head: Record<string, HistHeadSpec>; y0: Record<string, number | undefined>; when: Record<string, string | undefined> };
 type GeomVal = ChartGeom["vals"][number];
 type TimelineSource = { series?: Point[]; depth?: number | null };
 export var page = {
@@ -17,7 +17,7 @@ export var page = {
   stops: undefined,
   head: undefined,
   y0: undefined,
-  year: {}
+  when: {}
 } as unknown as PageStore;
 // ---- the history card's head ----
 export var HIST_NOTE: Record<string, string | (() => string)> = {};
@@ -428,10 +428,9 @@ function pickList(id: string, rows: PickRow[]){
         '</span><span class="cycsel-yr">' + r.aside + '</span></button>';
     }).join("") + '</div></div>';
 }
-export function periodControls(id: string, years: { y: number; cycle: Cycle }[], year: number){
-  var on = page.mode[id] === "cycles";
-  return controlsBox(modeBar(id, page.mode[id]) + (on ? cyclePicker(id, page.cycles[id]) :
-    pickList(id, years.slice().reverse().map(function(d){ return { attr:"data-year", key:String(d.y), name:String(d.y), aside:cycLabel(d.cycle).name, on:d.y === year }; }))));
+export function periodControls(id: string, rows: { key: string; name: string; cycle: Cycle }[], picked: string){
+  return controlsBox(modeBar(id, page.mode[id], [["quarters", "Quarters"]]) + (page.mode[id] === "cycles" ? cyclePicker(id, page.cycles[id]) :
+    pickList(id, rows.slice().reverse().map(function(d){ return { attr:"data-when", key:d.key, name:d.name, aside:cycLabel(d.cycle).name, on:d.key === picked }; }))));
 }
 export function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
   if (!ranges || ranges.length < 2) return "";

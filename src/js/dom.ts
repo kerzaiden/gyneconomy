@@ -39,7 +39,6 @@ export function put(target: string | Element | null, html: string){
   if (n) n.innerHTML = html;
   return n;
 }
-export function elFrom(html: string){ var t = document.createElement("template"); t.innerHTML = html; return t.content.firstElementChild; }
 var LAYERS: (Layer & { rank: number })[] = [];
 export function layer(rank: number, o: Layer){ LAYERS.push(Object.assign(o, { rank: rank })); LAYERS.sort(function(a, b){ return a.rank - b.rank; }); }
 export function onScreen(el: Element | null | undefined): boolean { return !!el && el.isConnected && el.getClientRects().length > 0; }
