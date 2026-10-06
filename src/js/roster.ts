@@ -20,7 +20,7 @@ export var CATEGORIES: Category[] = [
   { key:"weather", title:"Weather", shown:0, onDial:true },
   { key:"circulation", title:"Circulation", shown:2 },
   { key:"mood", title:"Mood", shown:1, inTrend:true },
-  { key:"energy", title:"Energy", shown:3 }
+  { key:"energy", title:"Activity", shown:3 }
 ];
 export var GROUP_MARK: Record<string, () => string> = { "Stress":boltSvg };
 export var ROSTER_BY: Record<string, RosterRow> = {};
@@ -84,7 +84,7 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-metric-gdp", name:"Growth", cat:"weather", sub:"Economic Season", good:"up", timing:"coincident", mark:sproutSvg, door:"peek", slot:"gdp",
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, when:lastDate, cardUnit:"YoY" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",
-      head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return", soFar:true },
+      head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return" },
     { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", sub:"Rates", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate",
       when:function(){ return now.fedFunds.asOf; }, live:["fedFunds"] },

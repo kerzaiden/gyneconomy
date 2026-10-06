@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `63b3d21` on 2026-10-06. **109 components**, **35 shared patterns**.
+Generated from commit `cdc24f0` on 2026-10-06. **109 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -56,7 +56,7 @@ Generated from commit `63b3d21` on 2026-10-06. **109 components**, **35 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`countTag`** | `.lab-n` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:insightSec` |
-| **`drawChart`** | `.home-secs` `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder` |
+| **`drawChart`** | `.home-secs` `.lab-box` `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder` |
 | **`finder`** | `.lab-filter` `.lab-find` `.lab-menu` | `cycle-analysis.ts:drawChart` |
 | **`foldSec`** | `.lab-fold` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:subSec` |
 | **`homeSections`** | `.lab-score-box` | `cycle-analysis.ts:drawChart` |

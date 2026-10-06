@@ -15,7 +15,7 @@ import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
 type Norm = { lo: number; hi: number; fence: number; floor: number };
-export type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; soFar?: boolean; per: (number | null)[]; norm: Norm | null; settled?: boolean; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
+export type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; per: (number | null)[]; norm: Norm | null; settled?: boolean; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
@@ -75,7 +75,7 @@ function cardPrint(R: RosterRow){
 function readingLab(R: RosterRow): Lab {
   var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; }, p = cardPrint(R);
   var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? cardValue(R) : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
-  return { id:R.id, name:R.name, cat:R.cat, good:R.good, soFar:R.soFar, per:per, now:readingsNorm(seen), print:p.print, span:p.span,
+  return { id:R.id, name:R.name, cat:R.cat, good:R.good, per:per, now:readingsNorm(seen), print:p.print, span:p.span,
     norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
 }
 var labCache: Lab[] | null = null;
@@ -112,12 +112,12 @@ function findWords(l: Lab){
 function rowTag(l: Lab){ return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"'; }
 function cardWord(l: Lab, i: number){
   var w = marketCycles[i].ongoing ? document.querySelector('.cat-item[data-open="' + l.id + '"] .ci-word') : null, t = w ? (w.textContent || "").trim() : "";
-  return t ? " \u00b7 " + t : "";
+  return t ? t + " \u00b7 " : "";
 }
 function labItem(l: Lab, i: number){
   var n = normAt(l, i) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t){ return t.key === tier(l, i); })[0];
-  return '<li class="lab-item ' + side(l, i) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + t.title + cardWord(l, i) + '</small></div>' +
-    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (l.soFar && marketCycles[i].ongoing ? " so far" : "") + '<i class="lab-to" aria-hidden="true"></i></b>' +
+  return '<li class="lab-item ' + side(l, i) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + cardWord(l, i) + t.title + '</small></div>' +
+    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
     '<small>' + l.span(n.lo, n.hi) + '</small></div></' + tag + '></li>';
 }
 function ring(v: number){
@@ -339,7 +339,7 @@ function drawChart(id: string){
   if (!host || !c) return;
   var i = marketCycles.indexOf(c), j = judged(i).filter(function(l){ return l.cat !== "cycle"; });
   if (id === HOME_ID){ host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + '</div>'; return; }
-  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j, findOf(id).cat) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
+  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
 export var IND = "sheet-find";

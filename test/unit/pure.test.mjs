@@ -32,11 +32,11 @@ test('the curve is inverted from a ratio of one', () => {
 
 test('the CAPE verdict turns at its stated ratios to fair value', () => {
   const at = r => valuationVerdict(CAPE_FAIR * r).text;
-  assert.equal(at(0.74), 'Highly undervalued');
-  assert.equal(at(0.75), 'Undervalued');
-  assert.equal(at(0.95), 'Fairly valued');
-  assert.equal(at(1.15), 'Overvalued');
-  assert.equal(at(1.6), 'Highly overvalued');
+  assert.equal(at(0.74), 'Very cheap');
+  assert.equal(at(0.75), 'Cheap');
+  assert.equal(at(0.95), 'Fair');
+  assert.equal(at(1.15), 'Expensive');
+  assert.equal(at(1.6), 'Rich');
 });
 
 test('histFrame is the one frame: two heights, a floor on width, the pinned axis', () => {

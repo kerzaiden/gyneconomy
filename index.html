@@ -270,7 +270,7 @@
   .contact-hint{ font-size:var(--type-meta); color:var(--text-muted); }
   .contact-hint.err{ color:var(--critical-ink); }
   .contact-send{
-    border:0; border-radius:var(--radius); padding:11px 22px; cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600;
+    border:0; border-radius:var(--round); padding:11px 22px; cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600;
     background:var(--accent); color:var(--on-accent); transition:background 0.12s;
   }
   .contact-send:hover{ background:var(--accent-ink); }
@@ -345,6 +345,7 @@
     --gap-top:20px;
     --topbar-gap:calc(var(--gap-top) - 2px);
     --radius:16px;
+    --round:999px;
     --radius-inner:13px;
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
     --type-section:20px; --type-reading-head:26px; --type-page-title:30px; --type-display:40px;
@@ -403,12 +404,12 @@
 
   .tabbar{
     position:fixed; left:0; right:0; bottom:var(--tabbar-lift); z-index:40; margin:0 auto; width:min(calc(100% - 32px), 480px);
-    display:flex; border-radius:999px; padding:5px; gap:2px;
+    display:flex; border-radius:var(--round); padding:5px; gap:2px;
     background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
     border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
   }
   .tab-btn{
-    flex:1; border:none; background:transparent; padding:7px 0 6px; border-radius:999px; cursor:pointer;
+    flex:1; border:none; background:transparent; padding:7px 0 6px; border-radius:var(--round); cursor:pointer;
     display:flex; flex-direction:column; align-items:center; gap:3px;
     font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; color:var(--text-secondary);
     transition:background 0.15s ease, color 0.15s ease;
@@ -442,7 +443,7 @@
   .cv-kicker{ font-size:var(--type-meta); text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-weight:600; display:inline-flex; align-items:center; gap:2px; }
 
   .search-field{ display:flex; align-items:center; gap:8px; height:44px; margin:0 0 12px; padding:0 14px; border:1px solid var(--border);
-    border-radius:var(--radius); background:var(--surface); color:var(--text-muted); cursor:text; }
+    border-radius:var(--round); background:var(--surface); color:var(--text-muted); cursor:text; }
   .search-field svg{ width:19px; height:19px; flex:none; }
   .search-field input{ flex:1; min-width:0; height:100%; border:0; background:none; font-family:"Public Sans",sans-serif; font-size:var(--type-row);
     color:var(--text-primary); outline:none; }
@@ -456,7 +457,7 @@
   .ind-cat-name{ flex:1; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-weight:500;
     font-size:var(--type-reading-head); line-height:1.1; letter-spacing:0; text-transform:none; color:color-mix(in srgb, var(--cat) 70%, var(--text-primary)); }
   .ind-cat-name small{ font-family:"Public Sans",sans-serif; font-style:normal; font-weight:400; font-size:var(--type-label); color:var(--text-muted); }
-  .ind-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .ind-card, .lab-box{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
 
   #cycle-view, #calendar-list{ display:flex; flex-direction:column; gap:16px; }
   .era-row{ cursor:pointer; }
@@ -865,9 +866,9 @@
   .metric-sheet .sign-detail > .card{ border:0; background:transparent; padding:0; box-shadow:none; }
   :root{ --ctl-h:40px; --btn-h:40px; }
   .rangebar{ display:flex; gap:3px; background:var(--seg-track); border:1px solid transparent;
-    border-radius:999px; padding:4px; margin:14px 0 2px;
+    border-radius:var(--round); padding:4px; margin:14px 0 2px;
     min-height:var(--ctl-h); box-sizing:border-box; }
-  .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:999px; padding:8px 10px; cursor:pointer; white-space:nowrap;
+  .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--round); padding:8px 10px; cursor:pointer; white-space:nowrap;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:500; color:var(--text-primary); }
   .range-seg.on{ background:var(--seg-on); color:var(--text-primary); font-weight:600; box-shadow:0 1px 3px rgba(124,40,68,0.10); }
   .range-seg:hover:not(.on){ color:var(--text-primary); }
@@ -885,7 +886,7 @@
   .trend-on .dv-mid{ opacity:0.4; }
 
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:15px 0 0;
+    border:0; background:var(--accent-wash); border-radius:var(--round); padding:12px 22px; margin:15px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;
     width:100%; text-align:left; font:inherit; }
   .trendpill.none{ background:transparent; box-shadow:inset 0 0 0 1px var(--border); }
@@ -949,7 +950,6 @@
   .hist-bar .cycsel-btn{ background:var(--surface); border:1px solid var(--border); }
   .hist-bar .rangebar,
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
-  .hist-bar .cycsel-btn{ border-radius:999px; }
   .hist-bar .range-seg{ display:flex; align-items:center; justify-content:center;
     padding-top:0; padding-bottom:0; }
   .range-seg{ position:relative; }
@@ -960,7 +960,7 @@
   .cycsel{ position:relative; }
   .cycsel-btn .cycsel-yr{ margin-left:auto; }
   .cycsel-btn{ width:100%; display:flex; align-items:center; gap:10px; min-height:var(--ctl-h); box-sizing:border-box;
-    background:var(--track); border:0; border-radius:var(--radius); padding:9px 15px; cursor:pointer;
+    background:var(--track); border:0; border-radius:var(--round); padding:9px 15px; cursor:pointer;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:600; color:var(--text-primary); }
   .cycsel-btn .peek-chev{ transform:rotate(90deg); transition:transform 0.16s ease; }
   .cycsel.open .cycsel-btn .peek-chev{ transform:rotate(-90deg); }
@@ -1037,14 +1037,14 @@
 
   @media (max-width:400px){ .rangebar{ flex-wrap:wrap; } .rangebar .range-seg{ flex:1 1 auto; } }
   .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
-    border:1px solid var(--border); background:var(--surface); border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--surface); border-radius:var(--round);
     padding:12px 22px; min-height:var(--btn-h); box-sizing:border-box; margin-top:var(--gap);
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:700;
     color:var(--accent-ink); }
   .hi-card + .more-row, .aux-stat + .more-row{ margin-top:12px; }
   .metric-sheet .highlights .more-row{ margin-bottom:7px; }
   .more-row:hover{ border-color:var(--border-strong); }
-  .more-row:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--radius); }
+  .more-row:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--round); }
   .more-row .peek-chev{ color:inherit; opacity:0.9; }
   .more-row .peek-chev svg{ width:8px; height:13px; stroke-width:1.9; }
   .sign-detail > .page-chart,
@@ -1099,6 +1099,8 @@
   .aux-stat + .method-say{ margin-top:24px; }
   .method-card .more-row{ margin-top:20px; }
   .labs .more-row{ margin-top:0; }
+  .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
+  .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .cat-more:empty{ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
   .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:color-mix(in srgb, var(--border) 40%, transparent); border-radius:var(--radius-inner); }
@@ -1142,7 +1144,7 @@
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
   button.insight-row .stat-main{ border-right:0; }
   button.insight-row .stat-side{ width:auto; }
-  .lab-door{ width:100%; border-radius:999px; font:inherit; font-size:var(--type-row); text-align:left; cursor:pointer; }
+  .lab-door{ width:100%; font:inherit; font-size:var(--type-row); text-align:left; cursor:pointer; }
   .lab-door span{ flex:1; }
   .rangebar.ind-cats{ margin:0 0 var(--gap); flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
   .ind-cats .range-seg{ flex:1 0 auto; }
@@ -1160,8 +1162,8 @@
   :is(.lab-cat, .lab-fold, .lab-row, .lab-filter, .lab-menu button):focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .lab-sec[hidden], .lab-item[hidden]{ display:none; }
   .lab-find{ position:relative; }
-  .lab-find .search-field{ padding-right:4px; border-radius:999px; }
-  .lab-filter{ display:flex; align-items:center; gap:6px; height:36px; padding:0 10px; border:0; border-radius:999px; background:none;
+  .lab-find .search-field{ padding-right:4px; }
+  .lab-filter{ display:flex; align-items:center; gap:6px; height:36px; padding:0 10px; border:0; border-radius:var(--round); background:none;
     font:inherit; font-size:var(--type-meta); font-weight:600; color:var(--accent); cursor:pointer; }
   .lab-filter:hover, .lab-filter[aria-expanded="true"]{ background:var(--surface-2); }
   .lab-menu{ position:absolute; right:0; top:48px; z-index:5; min-width:200px; padding:6px; border:1px solid var(--border); border-radius:var(--radius-inner);
@@ -1291,7 +1293,7 @@
   .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }
 
   .spread-toggle-btn{
-    border:none; background:transparent; padding:6px 11px; border-radius:var(--radius-inner); cursor:pointer;
+    border:none; background:transparent; padding:6px 11px; border-radius:var(--round); cursor:pointer;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:600; color:var(--text-secondary);
     transition:background 0.15s ease, color 0.15s ease;
   }
@@ -1687,12 +1689,12 @@
       <h3 class="menu-section">Sentiment and Rates</h3>
       <div class="menu-card menu-prose">
         <p>Market sentiment has a drawer of its own, <b>Sentiment</b>, carrying the fear curve — the shape of expected volatility — and the market it is read beside: the VIX. The <b>Fed funds rate</b> sits where it belongs, inside <b>Temperature</b> under the Lagging signs: that card is inflation and monetary policy together, and the rate is the lever pulled after her temperature, not ahead of it.</p>
-        <p>Her energy is a category of its own, <b>Energy</b>: the federal debt, the interest payments and the federal budget, each read on its own page, beside the households and the labour market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse.</p>
+        <p>Her economic activity is a category of its own, <b>Activity</b>: the federal debt, the interest payments and the federal budget, each read on its own page, beside the households and the labour market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse.</p>
       </div>
 
       <h3 class="menu-section">The Tabs</h3>
       <div class="menu-card menu-prose">
-        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Statistics</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Search</b> lists every reading by category — Weather, Mood, Circulation and Energy — with a filter by timing; the season model and the manuscript's framework table are under About Gyneconomy.</p>
+        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Statistics</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Search</b> lists every reading by category — Weather, Mood, Circulation and Activity — with a filter by timing; the season model and the manuscript's framework table are under About Gyneconomy.</p>
       </div>
     </div>
   </div>
@@ -33759,19 +33761,19 @@
   function valuationVerdict(v) {
     var r = v / CAPE_FAIR;
     return r < .75 ? {
-      text: "Highly undervalued",
+      text: "Very cheap",
       state: "warning"
     } : r < .95 ? {
-      text: "Undervalued",
+      text: "Cheap",
       state: "good"
     } : r < 1.15 ? {
-      text: "Fairly valued",
+      text: "Fair",
       state: "good"
     } : r < 1.6 ? {
-      text: "Overvalued",
+      text: "Expensive",
       state: "warning"
     } : {
-      text: "Highly overvalued",
+      text: "Rich",
       state: "serious"
     };
   }
@@ -34605,7 +34607,7 @@
     inTrend: true
   }, {
     key: "energy",
-    title: "Energy",
+    title: "Activity",
     shown: 3
   } ];
   var GROUP_MARK = {
@@ -34757,8 +34759,7 @@
       },
       mid: 0,
       when: lastDate,
-      cardUnit: "total return",
-      soFar: true
+      cardUnit: "total return"
     }, {
       id: "sheet-sign-hormones",
       name: "Interest rates",
@@ -36511,7 +36512,7 @@
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
     cards.push(hiCard("The Risk-Free Loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
-    cards.push(hiCard("Pressure on the Borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("Pressure on the Borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments reading, under Activity. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, Not Slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
@@ -37804,7 +37805,6 @@
       name: R.name,
       cat: R.cat,
       good: R.good,
-      soFar: R.soFar,
       per: per,
       now: readingsNorm(seen),
       print: p.print,
@@ -37886,13 +37886,13 @@
   }
   function cardWord(l, i) {
     var w = marketCycles[i].ongoing ? document.querySelector('.cat-item[data-open="' + l.id + '"] .ci-word') : null, t = w ? (w.textContent || "").trim() : "";
-    return t ? " · " + t : "";
+    return t ? t + " · " : "";
   }
   function labItem(l, i) {
     var n = normAt(l, i), tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t2) {
       return t2.key === tier(l, i);
     })[0];
-    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + t.title + cardWord(l, i) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (l.soFar && marketCycles[i].ongoing ? " so far" : "") + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
+    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + cardWord(l, i) + t.title + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
@@ -38228,7 +38228,7 @@
       host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + "</div>";
       return;
     }
-    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j, findOf(id).cat) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
+    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
     narrow(host, id);
   }
   var IND = "sheet-find";

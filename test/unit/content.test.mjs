@@ -243,9 +243,9 @@ test('a good boot clears the one-reload guard', () => {
 test('a live CAPE reaches every Valuations door with its verdict word', async () => {
   const doors = () => [...document.querySelectorAll('[data-open="sheet-metric-valuation"]:not(.lab-row)')].map(d => (d.querySelector('.ci-value, .subject-value') || {}).firstChild?.nodeValue.trim());
   await deliver({ capeValue: { kind: 'scalar', value: 18, asOf: '2026-10-05' } });
-  assert.equal(word('sheet-metric-valuation'), 'Fairly valued');
+  assert.equal(word('sheet-metric-valuation'), 'Fair');
   await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-06' } });
-  assert.equal(word('sheet-metric-valuation'), 'Highly overvalued');
+  assert.equal(word('sheet-metric-valuation'), 'Rich');
   assert.ok(doors().length >= 1 && doors().every(t => /^35\.2/.test(t)), JSON.stringify(doors()));
 });
 
@@ -347,7 +347,7 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
     const normal = li.classList.contains('t-optimal');
     assert.equal(normal, !way || way === R.good, R.name + ' ' + way + ' ' + li.className);
     const word = { 't-optimal': 'Normal', 't-borderline': 'Attention', 't-abnormal': 'Risk' }[[...li.classList].find(c => c.startsWith('t-'))];
-    assert.equal(li.querySelector('.lab-where').textContent.split(' \u00b7 ')[0], word, R.name);
+    assert.equal(li.querySelector('.lab-where').textContent.split(' \u00b7 ').pop(), word, R.name);
   });
   assert.match(document.querySelector('#diagnosis .lab-score small').textContent, /^(Normal|Attention|Risk) against \d+ closed cycles$/);
   assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');

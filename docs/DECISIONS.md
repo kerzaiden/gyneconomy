@@ -111,7 +111,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   1.7.0, Oct 3, 2026)
 - **A verdict is said in one family of words on one axis, never a hand-set word that belongs to no scale.**
   Keren: "use overvalued or undervalued, and for the range in between choose words from the same family, maybe
-  fairly valued"; the same pattern gave Pulse a fast/slow scale. (V290, V298)
+  fairly valued" (CAPE's family is now cheap to rich, 0.8.5); the same pattern gave Pulse a fast/slow scale. (V290, V298)
 - **Where a reading has a published convention, its word follows the convention rather than vocabulary of our
   own.** Keren: "we don't want to overcomplicate things, they are already so complicated"; and for Volatility,
   "set the rules per convention". (V236, V663)
@@ -616,11 +616,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   category", and "indicator page needs some work, but for now it would be fine." (0.8.3, Oct 6, 2026)
 - **On one category, Indicators groups its readings by subcategory: each subcategory is a quiet heading (the
   first member's mark and its name, small and grey) over its results, in place of the category's heading, which the
-  bar already names.** All keeps one heading per category. Each heading and its results is its own container, the
-  standard gap (`--gap`) from the next and from More details below; the heading is white over the apricot-tinted
-  results with an apricot line between, its mark in apricot and its count in light grey beside its fold chevron.
-  Keren: "let's separate them … with the predetermined gap", "the gap between the containers and the more details is
-  not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
+  bar already names.** All keeps one heading per category. Every heading sits in one container, the standard gap
+  (`--gap`) below the bar and above More details; each heading is white over its apricot-tinted results with an
+  apricot line between, its mark in apricot and its count in light grey beside its fold chevron. Keren: "the
+  current design of the results without spacing is good … It's all one container", "the gap between the containers
+  and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
   Mood: Valuations, Sentiment (Volatility, Confidence) and Desire; Circulation: Rates (Interest rates, Real interest
@@ -628,10 +628,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". (0.8.5, Oct 6, 2026)
+- **The fourth category is Activity, not Energy** (its key stays `energy`). Keren: "the market convention is economic
+  activity." An open year's figure carries no "so far" on Indicators: every figure there is so far. (0.8.5, Oct 6, 2026)
 - **A category opens in Indicators, never on its old page of chart cards.** Its heading on Indicators and the
   dial's season both open Indicators on that category, and its More details is that category's insights. Each
-  result on the open cycle carries its card's verdict word beside its tier ("Attention · Highly overvalued",
-  "Normal · Calm"). Regularity is not an indicator: it belongs to Cycle Statistics on Analysis. The old category
+  result on the open cycle leads with its card's verdict word, then its tier ("Rich · Risk", "Calm · Normal"):
+  Keren, "I want to see the result first and then what it means." Regularity is not an indicator: it belongs to Cycle Statistics on Analysis. The old category
   pages are still built, unreached, as the home of the reading cards the words, the quarter sheet and the reading
   pages draw on, until a release retires them. Keren: "we should get rid of the old design … but we should keep the
   conclusions … these are words that can integrate well next to risk, attention, normal", and "in terms of
@@ -879,9 +881,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Growth's band is computed from its own series: the 10th to 90th percentile of the quarters from 1988 Q1
   (0.96% and 4.34%, rounded to a tenth).** There is no published normal range for how fast an economy grows,
   so the percentile construction is the only honest one. (V492)
-- **CAPE's verdict is computed from the reading against fair value in five bands: Highly undervalued,
-  Undervalued, Fairly valued, Overvalued, Highly overvalued.** "Richly priced" was hand-set and belonged to no
-  scale. (V290)
+- **CAPE's verdict is computed from the reading against fair value in five bands of one family: Very cheap, Cheap,
+  Fair, Expensive, Rich.** Its top word is the Buffett indicator's, so the two valuations agree. Keren: "both of them
+  should use the word rich … many analysts and economists say richly priced when they talk about highly
+  overvalued stocks." This replaces the overvalued/undervalued family of V290. (V290, 0.8.5)
 - **The Buffett indicator's 80% line is cited to Buffett's Fortune article of Dec 10, 2001.** (V658)
 - **Pulse's Steady band is the 10th–90th percentile of 1959–2007 (1.70–2.14×), and Very slow and Very fast lie
   beyond that era's own extremes (1.652× and 2.192×).** Computed under Keren's rule; it was 0.95–1.10 and 0.75 /
@@ -1334,6 +1337,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   for the insights across the inner pages." (V379)
 - **A mark's badge uses its own wash, `--mark-wash`, one step deeper than `--track`.** Keren: "I want this
   background to be a little less pale"; a badge has to read as a shape. (V503)
+- **Every selection bar, search field and button is fully round (`--round`).** Containers keep `--radius`. The
+  browser suite fails on a control whose corners are less than half its height. Keren: "make a rule that every
+  selection bar or search indicator or button should have rounded corners." (0.8.5, Oct 6, 2026)
 - **A segmented control is a light grey track (`--seg-track`) with no border, and its chosen segment is a white
   pill (`--seg-on`); track and pill are fully round, the choices spread evenly in dark text, the chosen one a
   touch bolder on a softly lifted pill.** Keren, from Clair: "I like the way they did the selection bar in gray and

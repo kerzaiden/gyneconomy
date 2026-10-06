@@ -655,6 +655,16 @@ async function openPage(p, url, sheet) {
     icons.every(i => i.same && i.shapes > 1) && icons[3].cards === lists.energy.names.split('+').length && headCol
       ? ok('every reading keeps its icon in its category colour', icons.map(i => i.k + ' ' + i.shapes + ' shapes').join(', '))
       : bad('every reading keeps its icon in its category colour', JSON.stringify({ icons, headCol }));
+    const square = () => p.evaluate(() => [...document.querySelectorAll('.rangebar, .range-seg.on, .search-field, .cycsel-btn, .more-row, .contact-send, .spread-toggle-btn.active, .trendpill, .lab-filter')]
+      .filter(e => e.offsetParent && e.getBoundingClientRect().height).map(e => ({ c: e.className.split(' ')[0], ok: parseFloat(getComputedStyle(e).borderTopLeftRadius) >= e.getBoundingClientRect().height / 2 - 0.5 })));
+    const seen = [...await square()];
+    await goHome(p, url); await p.click('.tab-btn[data-tab="chart"]'); await settle(p); seen.push(...await square());
+    await openFind(p); seen.push(...await square());
+    await goHome(p, url);
+    const kinds = [...new Set(seen.map(s => s.c))], sharp = [...new Set(seen.filter(s => !s.ok).map(s => s.c))];
+    (kinds.length >= 5 && !sharp.length)
+      ? ok('every selection bar, search field and button is fully rounded', kinds.join(', ') + ' (Keren, 0.8.5)')
+      : bad('every selection bar, search field and button is fully rounded', JSON.stringify({ kinds, sharp }));
     const about = await p.evaluate(() => {
       const sheet = document.getElementById('sheet-book');
       return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,

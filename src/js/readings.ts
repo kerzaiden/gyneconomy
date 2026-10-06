@@ -417,11 +417,11 @@ export function curveVerdict(r: number | null): Tag {
 }
 export function valuationVerdict(v: number): Tag {
   var r = v / CAPE_FAIR;
-  return r < 0.75 ? { text:"Highly undervalued", state:"warning" }
-       : r < 0.95 ? { text:"Undervalued",        state:"good" }
-       : r < 1.15 ? { text:"Fairly valued",      state:"good" }
-       : r < 1.60 ? { text:"Overvalued",         state:"warning" }
-                  : { text:"Highly overvalued",  state:"serious" };
+  return r < 0.75 ? { text:"Very cheap", state:"warning" }
+       : r < 0.95 ? { text:"Cheap",      state:"good" }
+       : r < 1.15 ? { text:"Fair",       state:"good" }
+       : r < 1.60 ? { text:"Expensive",  state:"warning" }
+                  : { text:"Rich",       state:"serious" };
 }
 export var tempCaptionFull = "", tempLeadShown = "";
 var PRESSURE_ZONES = [
