@@ -1157,7 +1157,7 @@
   .lab-ring circle{ fill:none; stroke:var(--surface); stroke-width:5; }
   .lab-ring circle.on{ stroke:var(--normal); stroke-linecap:round; }
   :where(.lab-sec){ --cat:var(--text-muted); }
-  .lab-sec + .lab-sec{ margin-top:14px; }
+  .lab-sec + .lab-sec{ margin-top:var(--gap); }
   .lab-cat, .lab-fold, .lab-row{ font:inherit; color:inherit; text-align:left; background:none; border:0; padding:0; cursor:pointer; }
   .lab-cat:hover{ text-decoration:underline; text-underline-offset:3px; }
   .lab-fold{ display:flex; align-items:center; gap:8px; margin:-10px -6px -10px 0; padding:10px 6px; }

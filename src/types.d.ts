@@ -122,6 +122,7 @@ type RosterRow = {
   term?: string;
   hk?: string;
   group?: string;
+  sub: string;
   cardUnit?: string;
   eraUnit?: string;
   live?: string[];

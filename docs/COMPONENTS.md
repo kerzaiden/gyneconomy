@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `c61e67e` on 2026-10-06. **106 components**, **35 shared patterns**.
+Generated from commit `09e7e86` on 2026-10-06. **107 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -55,14 +55,15 @@ Generated from commit `c61e67e` on 2026-10-06. **106 components**, **35 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`catName`** | `.lab-mark` | `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:labSec` |
 | **`drawChart`** | `.home-secs` `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder` |
 | **`finder`** | `.lab-filter` `.lab-find` `.lab-menu` | `cycle-analysis.ts:drawChart` |
+| **`foldSec`** | `.lab-fold` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:subSec` |
 | **`homeSections`** | `.lab-score-box` `.stat-title` | `cycle-analysis.ts:drawChart` |
-| **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:labSec` |
-| **`labSec`** | `.lab-cat` `.lab-fold` | `cycle-analysis.ts:bySystem` |
+| **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:foldSec` |
+| **`labSec`** | `.lab-cat` | `cycle-analysis.ts:bySystem` |
 | **`lengthBars`** | `.len-bars` | `cycle-analysis.ts:lengthPage` |
 | **`lengthPage`** | `.len-key` `.odd` `.ok` | `cycle-analysis.ts:statsHome` |
+| **`markName`** | `.lab-mark` | `cycle-analysis.ts:subSec` |
 | **`menuRows`** | `.lab-back` `.lab-sep` `.lab-sub` | `cycle-analysis.ts:fillMenu`, `cycle-analysis.ts:finder` |
 | **`ring`** | `.lab-ring` | — |
 | **`rowTag`** | `.lab-row` | `cycle-analysis.ts:labItem` |
@@ -192,7 +193,7 @@ Generated from commit `c61e67e` on 2026-10-06. **106 components**, **35 shared p
 |---|---|---|
 | **`cardDetailHtml`** | `.blood-card` `.metric` `.metric-row` `.metric-sub` | `pages-nav.ts:renderSignsList` |
 | **`catCard`** | `.cat-item` `.ci-body` `.ci-head` `.ci-mini` `.ci-name` `.ci-read` `.ci-unit` `.ci-value` `.ci-when` | `quarter-sheet.ts:quarterCards`, `render-core.ts:catItem` |
-| **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:labSec` |
+| **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:insightSec` |
 | **`dxHead`** | `.dx-sys-head` | `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 | **`econChips`** | `.chip` `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
@@ -235,6 +236,7 @@ renderer speaks. Listed most-used first.
 | **`titleCase`** | format.ts | 19 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 12 places |
+| **`findOf`** | cycle-analysis.ts | 11 places |
 | **`lede`** | format.ts | 11 places |
 | **`monthLabel`** | format.ts | 11 places |
 | **`pageCycle`** | history.ts | 11 places |
@@ -242,7 +244,6 @@ renderer speaks. Listed most-used first.
 | **`addSources`** | dom.ts | 10 places |
 | **`colPath`** | charts.ts | 10 places |
 | **`colWidth`** | charts.ts | 10 places |
-| **`findOf`** | cycle-analysis.ts | 10 places |
 | **`qLabel`** | format.ts | 10 places |
 | **`attachHistory`** | history.ts | 9 places |
 | **`histControls`** | history.ts | 9 places |

@@ -614,6 +614,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Circulation, Energy).** The search box on Analysis opens the same page on All. Keren: "put only the categories
   titles under insights … a universal page for the indicators to be searched, to be filtered … also filtered by
   category", and "indicator page needs some work, but for now it would be fine." (0.8.3, Oct 6, 2026)
+- **On one category, Indicators groups its readings by subcategory: each subcategory is its own white heading (the
+  first member's mark, its name and count) over its beige results, in place of the category's heading, which the bar
+  already names.** All keeps one heading per category. Weather: Season (Temperature, Growth) and Market (S&P 500);
+  Mood: Valuations, Sentiment (Volatility, Confidence) and Desire; Circulation: Rates (Interest rates, Real interest
+  rate, Pressure) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
+  names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
+  bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
+  subcategorize each indicator", and "temperature and growth is the season, S&P is the market". (0.8.5, Oct 6, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
@@ -1669,8 +1677,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   integration with controllers and services." (V629)
 - **The subject row, the one row the app opens pages from, is built once in `subjectRow`; callers pass only
   what differs.** Keren: "make it a 10." (V631)
-- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.ts`): its page, name, category, group,
-  timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
+- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.ts`): its page, name, category, subcategory,
+  group, timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
   heads and every page's state read it, and a new reading is one row.** Keren: “make the app as consolidated as possible so we won't have to write the same code twice, meaning dry code and as efficient components as possible.” (V670)
 - **Rows are addressed by name (`valRow`), never by array index, so the display order is free to follow the
   page.** Reordering by index would silently swap one reading for another. (V494)

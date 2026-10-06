@@ -470,10 +470,12 @@ async function openPage(p, url, sheet) {
       rows: [...document.querySelectorAll('#chart-home .insight-row')].map(b => b.dataset.indCat).join() }));
     await p.click('#chart-home .cat-weather .insight-row'); await settle(p);
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
-      shown: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]).join() }));
-    (door.first === 'search-field lab-door' && door.rows === 'weather,mood,circulation,energy' && weather.title === 'Indicators' && weather.shown === 'weather')
-      ? ok('Insights lists the categories, each opening Indicators on its own', door.rows)
-      : bad('Insights lists the categories, each opening Indicators on its own', JSON.stringify({ door, weather }));
+      shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
+      subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.textContent.trim()).join() }));
+    (door.first === 'search-field lab-door' && door.rows === 'weather,mood,circulation,energy' && weather.title === 'Indicators' && weather.shown === 'weather' &&
+     weather.subs === 'Season (2),Market (1)')
+      ? ok('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
+      : bad('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', JSON.stringify({ door, weather }));
     await p.click('#sheet-find [data-ind-cat=""]'); await settle(p);
     const tab = await p.evaluate(() => {
       const h = document.getElementById('sheet-find'), rows = [...h.querySelectorAll('.lab-row[data-open]')];

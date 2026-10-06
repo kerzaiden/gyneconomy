@@ -1148,7 +1148,7 @@
   .lab-ring circle{ fill:none; stroke:var(--surface); stroke-width:5; }
   .lab-ring circle.on{ stroke:var(--normal); stroke-linecap:round; }
   :where(.lab-sec){ --cat:var(--text-muted); }
-  .lab-sec + .lab-sec{ margin-top:14px; }
+  .lab-sec + .lab-sec{ margin-top:var(--gap); }
   .lab-cat, .lab-fold, .lab-row{ font:inherit; color:inherit; text-align:left; background:none; border:0; padding:0; cursor:pointer; }
   .lab-cat:hover{ text-decoration:underline; text-underline-offset:3px; }
   .lab-fold{ display:flex; align-items:center; gap:8px; margin:-10px -6px -10px 0; padding:10px 6px; }
@@ -1650,7 +1650,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.4 (762)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.5 (763)</span></p>
     </div>
   </div>
 
@@ -34710,6 +34710,7 @@
       id: "sheet-metric-temp",
       name: "Temperature",
       cat: "weather",
+      sub: "Season",
       timing: "lagging",
       mark: thermoSvg,
       door: "peek",
@@ -34726,6 +34727,7 @@
       id: "sheet-metric-gdp",
       name: "Growth",
       cat: "weather",
+      sub: "Season",
       good: "up",
       timing: "coincident",
       mark: sproutSvg,
@@ -34742,6 +34744,7 @@
       id: "sheet-sign-market",
       name: "S&P 500",
       cat: "weather",
+      sub: "Market",
       good: "up",
       timing: "leading",
       mark: marketSvg,
@@ -34760,6 +34763,7 @@
       id: "sheet-sign-hormones",
       name: "Interest rates",
       cat: "circulation",
+      sub: "Rates",
       timing: "leading",
       mark: heartSvg,
       door: "subject",
@@ -34779,6 +34783,7 @@
       id: "sheet-sign-real-rate",
       name: "Real interest rate",
       cat: "circulation",
+      sub: "Rates",
       timing: "leading",
       mark: heartSvg,
       door: "row",
@@ -34795,6 +34800,7 @@
       id: "sheet-sign-pressure",
       name: "Pressure",
       cat: "circulation",
+      sub: "Rates",
       timing: "leading",
       mark: gaugeSvg,
       door: "subject",
@@ -34814,6 +34820,7 @@
       id: "sheet-sign-pulse",
       name: "Pulse",
       cat: "circulation",
+      sub: "Money",
       timing: "coincident",
       mark: ecgSvg,
       door: "pair",
@@ -34833,6 +34840,7 @@
       id: "sheet-sign-volume",
       name: "Volume",
       cat: "circulation",
+      sub: "Money",
       timing: "leading",
       mark: circulationSvg,
       door: "pair",
@@ -34854,6 +34862,7 @@
       id: "sheet-metric-valuation",
       name: "Shiller CAPE",
       cat: "mood",
+      sub: "Valuations",
       good: "down",
       group: "Valuations",
       timing: "structural",
@@ -34875,6 +34884,7 @@
       id: "sheet-metric-buffett",
       name: "Buffett indicator",
       cat: "mood",
+      sub: "Valuations",
       good: "down",
       group: "Valuations",
       timing: "structural",
@@ -34893,6 +34903,7 @@
       id: "sheet-sign-sentiment",
       name: "Volatility",
       cat: "mood",
+      sub: "Sentiment",
       good: "down",
       timing: "leading",
       mark: volatilitySvg,
@@ -34913,6 +34924,7 @@
       id: "sheet-sign-desire",
       name: "Consumer demand",
       cat: "mood",
+      sub: "Desire",
       good: "up",
       group: "Desire",
       timing: "coincident",
@@ -34931,6 +34943,7 @@
       id: "sheet-sign-premium",
       name: "Equity risk premium",
       cat: "mood",
+      sub: "Desire",
       good: "up",
       group: "Desire",
       timing: "structural",
@@ -34949,6 +34962,7 @@
       id: "sheet-sign-confidence",
       name: "Confidence",
       cat: "mood",
+      sub: "Sentiment",
       good: "up",
       timing: "leading",
       mark: bagSvg,
@@ -34966,6 +34980,7 @@
       id: "sheet-metric-debt",
       name: "Federal debt",
       cat: "energy",
+      sub: "Stress",
       good: "down",
       group: "Stress",
       timing: "structural",
@@ -34983,6 +34998,7 @@
       id: "sheet-metric-interest",
       name: "Interest payments",
       cat: "energy",
+      sub: "Stress",
       good: "down",
       group: "Stress",
       timing: "structural",
@@ -35000,6 +35016,7 @@
       id: "sheet-marker-deficit",
       name: "Federal budget",
       cat: "energy",
+      sub: "Stress",
       good: "up",
       group: "Stress",
       timing: "structural",
@@ -35021,6 +35038,7 @@
       id: "sheet-metric-households",
       name: "Households",
       cat: "energy",
+      sub: "Stress",
       good: "down",
       group: "Stress",
       timing: "structural",
@@ -35046,6 +35064,7 @@
       id: "sheet-sign-activity",
       name: "Unemployment rate",
       cat: "energy",
+      sub: "Work",
       good: "down",
       timing: "lagging",
       mark: personSvg,
@@ -35060,6 +35079,7 @@
       id: "sheet-sign-productivity-growth",
       name: "Productivity growth",
       cat: "energy",
+      sub: "Work",
       good: "up",
       timing: "structural",
       mark: clockSvg,
@@ -37656,7 +37676,7 @@
   }
   function findWords(l) {
     var R = ROSTER_BY[l.id];
-    return [ l.name, catTitle(l.cat) ].concat(R ? [ R.head, R.group || "", R.term || "", R.cardUnit || "" ] : []).join(" ").toLowerCase().replace(/"/g, "");
+    return [ l.name, catTitle(l.cat) ].concat(R ? [ R.head, R.group || "", R.sub, R.term || "", R.cardUnit || "" ] : []).join(" ").toLowerCase().replace(/"/g, "");
   }
   function rowTag(l) {
     return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"';
@@ -37694,20 +37714,37 @@
     circulation: circulationSvg,
     energy: boltSvg
   };
-  function labSec(k, ls, i) {
-    var title = catTitle(k);
-    var name = catName(k, ls.length);
+  function foldSec(k, title, name, ls, i) {
     return catHeadCard("lab-sec plain", k, {
       tag: "div",
       cls: "lab-head ",
       attrs: "",
-      name: k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + "</button>",
+      name: name,
       aside: '<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + CHEV + "</button>"
     }, "<ul>" + ls.map(function(l) {
       return labItem(l, i);
     }).join("") + "</ul>");
   }
-  function bySystem(i, j) {
+  function labSec(k, ls, i) {
+    var title = catTitle(k), name = catName(k, ls.length);
+    return foldSec(k, title, k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + "</button>", ls, i);
+  }
+  function subSec(k, sub, ls, i) {
+    return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub, ls.length), ls, i);
+  }
+  function bySub(k, ls, i) {
+    var subs = [];
+    ROSTER.forEach(function(R) {
+      if (R.cat === k && subs.indexOf(R.sub) === -1) subs.push(R.sub);
+    });
+    return subs.map(function(sub) {
+      var own = ls.filter(function(l) {
+        return ROSTER_BY[l.id].sub === sub;
+      });
+      return own.length ? subSec(k, sub, own, i) : "";
+    }).join("");
+  }
+  function bySystem(i, j, cat) {
     var rank = TIERS.map(function(t) {
       return t.key;
     });
@@ -37719,7 +37756,7 @@
       }).sort(function(a, b) {
         return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i));
       });
-      return ls.length ? labSec(k, ls, i) : "";
+      return !ls.length ? "" : k === cat && k !== "cycle" ? bySub(k, ls, i) : labSec(k, ls, i);
     }).join("");
   }
   var finds = {};
@@ -37954,7 +37991,10 @@
     }, "");
   }
   function catName(k, n) {
-    return '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + catTitle(k) + " <small>(" + n + ")</small>";
+    return markName(CAT_MARK[k], catTitle(k), n);
+  }
+  function markName(mark, name, n) {
+    return '<span class="lab-mark">' + mark() + "</span>" + name + " <small>(" + n + ")</small>";
   }
   function insightsHome(i) {
     var j = judged(i), rank = TIERS.map(function(t) {
@@ -37980,7 +38020,7 @@
       host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + "</div>";
       return;
     }
-    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
+    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j, findOf(id).cat) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
     narrow(host, id);
   }
   var IND = "sheet-find";

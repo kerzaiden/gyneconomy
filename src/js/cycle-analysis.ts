@@ -9,7 +9,7 @@ import { cardFace, cardValue, eraFig } from "./era.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { cycLabel, cycleModel, nowModel, openCycle } from "./model.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
-import { categoriesShown, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
+import { categoriesShown, GROUP_MARK, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
@@ -106,7 +106,7 @@ function catTitle(key: string){ return key === "cycle" ? "Regularity" : categori
 function side(l: Lab, i: number){ var v = l.per[i] as number, n = normAt(l, i) as Norm; return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
 function findWords(l: Lab){
   var R = ROSTER_BY[l.id];
-  return [l.name, catTitle(l.cat)].concat(R ? [R.head, R.group || "", R.term || "", R.cardUnit || ""] : []).join(" ").toLowerCase().replace(/"/g, "");
+  return [l.name, catTitle(l.cat)].concat(R ? [R.head, R.group || "", R.sub, R.term || "", R.cardUnit || ""] : []).join(" ").toLowerCase().replace(/"/g, "");
 }
 function rowTag(l: Lab){ return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"'; }
 function labItem(l: Lab, i: number){
@@ -133,19 +133,31 @@ function scoreRing(v: number, label: string){ return '<span class="lab-score-v">
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
 }
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
-function labSec(k: string, ls: Lab[], i: number){
-  var title = catTitle(k);
-  var name = catName(k, ls.length);
-  return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"",
-    name:k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + '</button>',
+function foldSec(k: string, title: string, name: string, ls: Lab[], i: number){
+  return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"", name:name,
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + CHEV + '</button>' },
     '<ul>' + ls.map(function(l){ return labItem(l, i); }).join("") + '</ul>');
 }
-function bySystem(i: number, j: Lab[]){
+function labSec(k: string, ls: Lab[], i: number){
+  var title = catTitle(k), name = catName(k, ls.length);
+  return foldSec(k, title, k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + '</button>', ls, i);
+}
+function subSec(k: string, sub: string, ls: Lab[], i: number){
+  return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub, ls.length), ls, i);
+}
+function bySub(k: string, ls: Lab[], i: number){
+  var subs: string[] = [];
+  ROSTER.forEach(function(R){ if (R.cat === k && subs.indexOf(R.sub) === -1) subs.push(R.sub); });
+  return subs.map(function(sub){
+    var own = ls.filter(function(l){ return ROSTER_BY[l.id].sub === sub; });
+    return own.length ? subSec(k, sub, own, i) : "";
+  }).join("");
+}
+function bySystem(i: number, j: Lab[], cat: string){
   var rank = TIERS.map(function(t){ return t.key; });
   return ["cycle"].concat(categoriesShown().map(function(c){ return c.key; })).map(function(k){
     var ls = j.filter(function(l){ return l.cat === k; }).sort(function(a, b){ return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i)); });
-    return ls.length ? labSec(k, ls, i) : "";
+    return !ls.length ? "" : k === cat && k !== "cycle" ? bySub(k, ls, i) : labSec(k, ls, i);
   }).join("");
 }
 type Find = { tier: string; q: string; raw: string; sub: string; cat: string };
@@ -300,7 +312,8 @@ function statsHome(){
 function insightSec(k: string, ls: Lab[]){
   return catHeadCard("lab-sec plain", k, { tag:"button", cls:"insight-row ", attrs:' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', name:catName(k, ls.length), aside:CHEV }, "");
 }
-function catName(k: string, n: number){ return '<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + catTitle(k) + ' <small>(' + n + ')</small>'; }
+function catName(k: string, n: number){ return markName(CAT_MARK[k], catTitle(k), n); }
+function markName(mark: () => string, name: string, n: number){ return '<span class="lab-mark">' + mark() + '</span>' + name + ' <small>(' + n + ')</small>'; }
 function insightsHome(i: number){
   var j = judged(i), rank = TIERS.map(function(t){ return t.key; });
   return categoriesShown().map(function(c){
@@ -317,7 +330,7 @@ function drawChart(id: string){
   if (!host || !c) return;
   var i = marketCycles.indexOf(c), j = judged(i);
   if (id === HOME_ID){ host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + '</div>'; return; }
-  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
+  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j, findOf(id).cat) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
   narrow(host, id);
 }
 var IND = "sheet-find";
