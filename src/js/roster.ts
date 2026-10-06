@@ -4,9 +4,9 @@ import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondS
 import { peekCard } from "./charts.ts";
 import { confidenceHistory, durablesHistory, fedFundsHistory, premiumHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
+import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, NEUTRAL_RATE, m2vHistory, m2Yoy, now, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
 import { page } from "./history.ts";
-import { indPeriod, vixPct } from "./readings.ts";
+import { indPeriod, realRateHistory, vixPct } from "./readings.ts";
 
 // ---- The roster: every reading, declared once ----
 export type Category = { key: string; title: string; shown: number; onDial?: boolean; inTrend?: boolean };
@@ -88,6 +88,8 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate",
       when:function(){ return now.fedFunds.asOf; }, live:["fedFunds"] },
+    { id:"sheet-sign-real-rate", name:"Real interest rate", cat:"circulation", timing:"leading", mark:heartSvg, door:"row", term:"Real interest rate",
+      head:"Real Federal Funds Rate", hist:{ s:realRateHistory, k:"m" }, mid:NEUTRAL_RATE, when:lastDate, cardUnit:"after inflation" },
     { id:"sheet-sign-pressure", name:"Pressure", cat:"circulation", timing:"leading", mark:gaugeSvg, door:"subject", hk:"pressure-range",
       head:"", stops:["5y", "10y", "max"], hist:{ s:t10yYieldHistory, k:"q" }, rule:true, when:function(){ return isoLabel(curveAsOf()); }, live:["yieldCurve"] },
     { id:"sheet-sign-pulse", name:"Pulse", cat:"circulation", timing:"coincident", mark:ecgSvg, door:"pair", term:"Pulse", hk:"pulse-range",

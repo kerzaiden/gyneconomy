@@ -1611,7 +1611,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.1 (759)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.2 (760)</span></p>
     </div>
   </div>
 
@@ -31203,6 +31203,14 @@
     t: "Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public",
     u: "https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"
   } ];
+  var NEUTRAL_RATE = 2;
+  var NEUTRAL_SRC = [ {
+    t: "John B. Taylor — Discretion versus Policy Rules in Practice, Carnegie-Rochester Conference Series on Public Policy 39 (1993): the 2% equilibrium real rate",
+    u: "https://web.stanford.edu/~johntayl/Papers/Discretion.PDF"
+  }, {
+    t: "Federal Reserve H.15 via FRED — Federal Funds Effective Rate (FEDFUNDS), monthly",
+    u: "https://fred.stlouisfed.org/series/FEDFUNDS"
+  } ];
   var FED_TARGET_SRC = {
     t: "Federal Reserve — 2025 Statement on Longer-Run Goals and Monetary Policy Strategy",
     u: "https://www.federalreserve.gov/monetarypolicy/monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2025.htm"
@@ -33226,6 +33234,18 @@
       says: "below the OECD’s long-term average of 100, the side on which households lean towards saving more and spending less"
     };
   }
+  function realRateWord(v) {
+    if (v >= NEUTRAL_RATE) return {
+      state: "norm",
+      text: "Restrictive",
+      says: "at or above the " + NEUTRAL_RATE + "% neutral rate, where policy leans on the economy"
+    };
+    return {
+      state: "norm",
+      text: "Accommodative",
+      says: "below the " + NEUTRAL_RATE + "% neutral rate, where policy leaves the economy room"
+    };
+  }
   function desireWord(v) {
     if (v >= DESIRE_LINE) return {
       state: "good",
@@ -33357,6 +33377,80 @@
   }
   function premiumInfoHtml(f) {
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">' + f.metric + " (" + f.metricSub + "): " + f.side + ". The record, month by month, runs " + f.span + '.</p><p class="caption follow">The equity risk premium is what stocks earn over safe bonds. This is Robert Shiller’s Excess CAPE Yield: the CAPE’s earnings yield (one over the CAPE, ten years of real earnings against today’s price) less the real 10-year Treasury yield (the yield less the inflation of the ten years before). A thin premium is investors asking little for the risk of owning stocks; a wide one is investors asking a lot.</p><p class="caption follow"><b>Zero is the only line</b>, where stocks stop earning more than bonds. No other band is drawn, and the reading carries no word.</p>' + srcBlock(PREMIUM_SRC);
+  }
+  function realRateInfoHtml(f) {
+    return "<h4>" + titleCase(f.econTerm) + "</h4>" + ledeHtml("The Fed funds rate less inflation, against the " + NEUTRAL_RATE + "% neutral rate.") + facts([ "<b>Neutral</b> is the real rate that neither cools nor heats the economy: " + NEUTRAL_RATE + "%, John Taylor’s equilibrium real rate (1993).", "<b>Restrictive</b> above it, <b>accommodative</b> below it. The line is the only one drawn.", "<b>Inflation</b> is the Season Model’s own: CPI before 2000, PCE since.", "<b>Today</b>, " + f.metricSub.replace(/^.*, /, "") + ": " + f.metric + ", " + f.wordSays + ". The record runs " + f.span + "." ]) + srcBlock(NEUTRAL_SRC);
+  }
+  function deriveRealRate() {
+    var inf = {};
+    inflationHistory.forEach(function(d) {
+      inf[d.m] = d.v;
+    });
+    realRateHistory = fedFundsHistory.filter(function(d) {
+      return inf[d.m] != null;
+    }).map(function(d) {
+      return {
+        m: d.m,
+        v: Math.round((d.v - inf[d.m]) * 100) / 100
+      };
+    });
+    var h = realRateHistory;
+    realRateRecord = {
+      now: h[h.length - 1],
+      lo: h.reduce(function(a, d) {
+        return d.v < a.v ? d : a;
+      }),
+      hi: h.reduce(function(a, d) {
+        return d.v > a.v ? d : a;
+      })
+    };
+    realRateReading = function(R) {
+      var word2 = realRateWord(R.now.v), at = monthLabel(R.now.m);
+      var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
+      return {
+        bodyTerm: "Real interest rate",
+        info: function() {
+          return realRateInfoHtml(realRateReading);
+        },
+        page: {
+          bare: true,
+          chart: function() {
+            return '<div id="sheet-sign-real-rate-chart"></div><div id="sheet-sign-real-rate-highlights"></div>';
+          }
+        },
+        econTerm: "Real interest rate",
+        metricSub: "Fed funds less inflation, " + at,
+        metric: fmtSigned(R.now.v, 1) + "%",
+        tag: {
+          state: word2.state,
+          text: word2.text
+        },
+        wordSays: word2.says,
+        meter: {
+          min: R.lo.v,
+          max: R.hi.v,
+          value: R.now.v,
+          optimal: {
+            lte: NEUTRAL_RATE,
+            label: "≤ " + NEUTRAL_RATE + "%"
+          },
+          ends: {
+            zone: "Accommodative",
+            high: "Restrictive"
+          }
+        },
+        span: span,
+        get peek() {
+          return colPeek(realRateHistory.map(function(d) {
+            return d.v - NEUTRAL_RATE;
+          }), function(v) {
+            return "dv-bar " + (v > 0 ? "over" : "under");
+          }, 0, true);
+        },
+        lead: "",
+        caption: at + ", the Fed funds rate less inflation at " + fmtSigned(R.now.v, 1) + "%, " + word2.says + ". The track runs over the monthly record since " + monthLabel(h[0].m) + ": " + span + "."
+      };
+    }(realRateRecord);
   }
   function productivityInfoHtml(f) {
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>. Output per hour worked in the nonfarm business sector, against the same quarter a year earlier (" + f.metricSub + "). The record for that series, quarter by quarter, runs " + f.span + '.</p><p class="caption follow"><b>The 1.3% line is the BLS’s own figure for the slowdown era</b> — since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year across 1947–2018. So the band says something narrower than it looks: above the line is <i>better than the slowdown</i>, not <i>at trend</i>. Today’s ' + f.metric + " " + f.wordWhy + '.</p><p class="caption follow">This is the reading that says whether capacity is being rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from each one, and only the second kind compounds.</p>' + srcBlock(PRODUCTIVITY_SRC);
@@ -33782,7 +33876,7 @@
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + " in " + f.now.y + (f.open ? " so far" : "") + ", " + f.wordSays + ". The record, year by year, runs " + f.span + '.</p><p class="caption follow"><b>The zero line is the definition, not a band</b>: a year the index ends higher, dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial’s inner band colours, so the card, this chart and the cycle read one number.' + (f.open ? " " + f.now.y + " is still open, so its bar is the year so far." : "") + "</p>" + srcBlock(sp500AnnualReturnSource);
   }
   function rowReadings() {
-    return [].concat(coincident, lagging, [ productivityReading, desireReading, premiumReading, confidenceReading, marketReading ]);
+    return [].concat(coincident, lagging, [ productivityReading, desireReading, premiumReading, confidenceReading, marketReading, realRateReading ]);
   }
   function indOf(R) {
     return rowReadings().filter(function(x) {
@@ -33840,6 +33934,9 @@
   var desireReading;
   var premiumRecord;
   var premiumReading;
+  var realRateHistory;
+  var realRateRecord;
+  var realRateReading;
   var tempInfo;
   var horizonRead;
   var householdsNow;
@@ -34074,6 +34171,7 @@
       };
     }(productivityRecord);
     deriveFeelingReadings();
+    deriveRealRate();
     now.valuation.tag = valuationVerdict(metered(fileRow("cape").meter));
     liveInto("capeValue");
     liveInto("coincident");
@@ -34633,6 +34731,22 @@
         return now.fedFunds.asOf;
       },
       live: [ "fedFunds" ]
+    }, {
+      id: "sheet-sign-real-rate",
+      name: "Real interest rate",
+      cat: "circulation",
+      timing: "leading",
+      mark: heartSvg,
+      door: "row",
+      term: "Real interest rate",
+      head: "Real Federal Funds Rate",
+      hist: {
+        s: realRateHistory,
+        k: "m"
+      },
+      mid: NEUTRAL_RATE,
+      when: lastDate,
+      cardUnit: "after inflation"
     }, {
       id: "sheet-sign-pressure",
       name: "Pressure",
@@ -39685,7 +39799,8 @@
       "sheet-sign-desire": desirePage(),
       "sheet-sign-premium": premiumPage(),
       "sheet-sign-confidence": confidencePage(),
-      "sheet-sign-market": marketPage()
+      "sheet-sign-market": marketPage(),
+      "sheet-sign-real-rate": realRatePage()
     };
   }
   function confidencePage() {
@@ -39747,6 +39862,28 @@
       },
       src: PREMIUM_SRC,
       insight: premiumInsight,
+      info: r.info,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    };
+  }
+  function realRatePage() {
+    var r = realRateReading, pct2 = function(v) {
+      return v ? fmtSigned(v, 1) + "%" : "0%";
+    };
+    return {
+      line: "Neutral rate",
+      fmt: pct2,
+      tick: function(v) {
+        return Math.round(v) + "%";
+      },
+      src: NEUTRAL_SRC,
+      insight: realRateInsight,
       info: r.info,
       row: {
         sub: r.metricSub,
@@ -40025,6 +40162,16 @@
       return d.v < last.v;
     }).length;
     return [ lede("What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " + fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero.") ];
+  }
+  function realRateInsight(s) {
+    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
+      return d.v >= s.mid;
+    }).length;
+    var side2 = function(d) {
+      return d.v >= s.mid;
+    }, cross = null;
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
+    return [ lede("The policy rate after inflation, the rate that actually bites. Above the " + s.mid + "% neutral rate policy is restrictive; below it, accommodative."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "restrictive" : "accommodative") + (cross ? ", as it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(realRateRecord.lo.v, 1) + "% (" + atMonth(realRateRecord.lo) + ") to " + fmtSigned(realRateRecord.hi.v, 1) + "% (" + atMonth(realRateRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above neutral.") ];
   }
   var ORDINAL = [ "", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth" ];
   function marketInsight(s) {
@@ -40758,7 +40905,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {
