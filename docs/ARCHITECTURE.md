@@ -968,8 +968,10 @@ on top). **Never text in paint**; a new ink is the same hue darkened and measure
 hierarchy comes from borders and surface steps, never shadows. **The dark theme is designed, not
 inverted** — its own inks, washes and ramps. Every token is read somewhere: `npm run hygiene` fails on one that is not (V668).
 
-Seasons: Winter periwinkle, Spring a quieter step of Winter's hue, Summer orange, Autumn a lighter,
-yellower Summer; declared in `:root` and both dark blocks. No fifth ring colour, no green/red season, no
+Seasons: Winter periwinkle, Autumn a quieter step of Winter's hue, Summer orange, Spring marigold;
+declared in `:root` and both dark blocks. `--gold` holds the marigold for what is gold but not a season (the
+in-range heat steps, Attention, Gold in the portfolio); `--season-wash` is a season's pastel, one mix for the
+info table and the Season Model's bars. No fifth ring colour, no green/red season, no
 colour dot before a season name. Ordered categories take one hue in steps, never several (the heat ramp,
 the M2 "blood" ramp); a phase is a category and takes season colours; severity stays proportionate.
 Validate every three-plus-colour set and prove ramp monotonicity by luminance per step per theme.

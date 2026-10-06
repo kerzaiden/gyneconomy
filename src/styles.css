@@ -23,7 +23,7 @@
     --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 8%, var(--surface));
     --cold: var(--season-winter);
     --cold-ink: #4a54a6;
-    --phase-up-ink: #7a5709; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 16%, var(--surface));
+    --phase-up-ink: #7a5709; --phase-up-wash: color-mix(in srgb, var(--season-spring) 16%, var(--surface));
     --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 16%, var(--surface));
     --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
     --critical: #d0383b;
@@ -74,7 +74,7 @@
       --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 10%, var(--surface));
       --cold: var(--season-winter);
       --cold-ink: #b4bdeb;
-      --phase-up-ink: #f2c24d; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 20%, var(--surface));
+      --phase-up-ink: #f2c24d; --phase-up-wash: color-mix(in srgb, var(--season-spring) 20%, var(--surface));
       --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
       --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
       --critical: #f05a55; --m2-deep: #ffd2c8;
@@ -123,7 +123,7 @@
     --warning-wash: rgba(237,161,0,0.16);
     --cold: var(--season-winter);
     --cold-ink: #b4bdeb;
-    --phase-up-ink: #f2c24d; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 20%, var(--surface));
+    --phase-up-ink: #f2c24d; --phase-up-wash: color-mix(in srgb, var(--season-spring) 20%, var(--surface));
     --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
     --serious: #ec835a;
     --serious-ink: #f5a385;
@@ -323,6 +323,7 @@
   .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .model-card .legend-row:last-child{ border-bottom:none; }
   .detail-modal .legend-row svg, .metric-sheet .legend-row svg, .sign-detail .legend-row svg{ width:20px; height:20px; flex:none; }
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
+  .winter, .spring, .autumn, .summer{ --season-wash:color-mix(in srgb, var(--season) 40%, var(--surface)); }
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
 
   .strip-run.ytd{ opacity:0.55; }
@@ -335,7 +336,7 @@
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
-    --season-winter:#6a74c2; --season-spring:#aab0d8; --season-summer:#d96d3e; --season-autumn:#f0b04a; --summer-ink:#b04f24;
+    --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --summer-ink:#b04f24;
     /* ---- THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change ---- */
     --mini-w:80px;
     --mini-h:42px;
@@ -349,8 +350,8 @@
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
     --type-section:20px; --type-reading-head:26px; --type-page-title:30px; --type-display:40px;
   }
-  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#b4bdeb; --season-summer:#f29a6e; --season-autumn:#fcc94d; --summer-ink:#f29a6e; }
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#b4bdeb; --season-summer:#f29a6e; --season-autumn:#fcc94d; --summer-ink:#f29a6e; } }
+  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --summer-ink:#f29a6e; }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --summer-ink:#f29a6e; } }
 
   .season-wheel-wrap{ --dial:min(calc(100vw - 76px), calc(100vh - 220px), 560px); width:100%; flex:none; display:flex; flex-direction:column; align-items:center; }
   .season-wheel{ position:relative; width:var(--dial); max-width:100%; height:var(--dial); }
@@ -456,16 +457,16 @@
   .menu-btn[hidden]{ display:none; }
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--good); }
   .growth-col.down{ stroke:var(--season-summer); }
-  .gdp-col{ fill:none; stroke-linecap:round; stroke:var(--season-autumn); opacity:0.95; }
+  .gdp-col{ fill:none; stroke-linecap:round; stroke:var(--season-spring); opacity:0.95; }
   .gdp-col.neg{ stroke:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); opacity:1; }
   .gdp-col.below{ stroke:var(--season-winter); opacity:1; }
 
   .temp-col{ fill:none; stroke-linecap:round; }
   .temp-col.s0{ stroke:var(--cold); }
-  .temp-col.s1{ stroke:color-mix(in srgb, var(--season-autumn) 38%, var(--surface)); }
-  .temp-col.s2{ stroke:color-mix(in srgb, var(--season-autumn) 68%, var(--surface)); }
-  .temp-col.s3{ stroke:var(--season-autumn); }
-  .temp-col.s4{ stroke:color-mix(in srgb, var(--season-summer) 62%, var(--season-autumn)); }
+  .temp-col.s1{ stroke:color-mix(in srgb, var(--gold) 38%, var(--surface)); }
+  .temp-col.s2{ stroke:color-mix(in srgb, var(--gold) 68%, var(--surface)); }
+  .temp-col.s3{ stroke:var(--gold); }
+  .temp-col.s4{ stroke:color-mix(in srgb, var(--season-summer) 62%, var(--gold)); }
   .temp-col.s5{ stroke:var(--season-summer); }
   .temp-avg{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; fill:none; }
 
@@ -511,9 +512,7 @@
     .seasons-rows .range-bar i{ width:14px; height:14px; margin:-7px 0 0 -7px; }
   }
   .seasons-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
-  .seasons-rows .range-bar b.on{ background:var(--season); }
-  .seasons-rows .lag-row.spring .range-bar b.on.below{ background:linear-gradient(90deg, var(--season-winter), var(--season-spring)); }
-  .seasons-rows .lag-row.autumn .range-bar b.on.above{ background:linear-gradient(270deg, var(--season-summer), var(--season-autumn)); }
+  .seasons-rows .range-bar b{ background:color-mix(in srgb, var(--track) 50%, var(--surface)); } .seasons-rows .range-bar b.on{ background:var(--season-wash); }
   .seasons-rows .lag-row span:last-child{ text-align:left; font-family:inherit; }
   .range-cell{ display:flex; align-items:center; gap:6px; }
   .range-cell svg{ width:13px; height:13px; flex:none; }
@@ -530,7 +529,7 @@
   .season-grid small{ display:block; font-size:var(--type-label); color:var(--text-muted); line-height:1.3; margin-top:2px; }
   .sg-head{ align-self:center; font-size:var(--type-meta); color:var(--text-primary); line-height:1.3; padding:2px; }
   .sg-head b{ font-weight:600; }
-  .sg-cell{ display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:64px; padding:10px 6px; border-radius:10px; background:color-mix(in srgb, var(--season) 30%, var(--surface)); }
+  .sg-cell{ display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:64px; padding:10px 6px; border-radius:10px; background:var(--season-wash); }
   .sg-cell b{ font-size:var(--type-interface); font-weight:600; color:var(--text-primary); }
   .sg-cell.wide{ grid-column:span 2; }
   .sg-cell small{ color:var(--text-secondary); }
@@ -764,7 +763,7 @@
   /* ---- the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the ---- */
   .yl-col{ fill:none; stroke-linecap:round; }
   .yl-col.inverted{ stroke:var(--critical); }
-  .yl-col.normal{ stroke:var(--season-autumn); }
+  .yl-col.normal{ stroke:var(--gold); }
   .metric-sheet{ display:flex; flex-direction:column; }
 
   .metric-sheet > .timing-row{ margin-bottom:16px; }
@@ -1089,7 +1088,7 @@
   button.lab-row{ cursor:pointer; }
   button.lab-row:hover{ background:color-mix(in srgb, var(--text-muted) 8%, transparent); }
   .lab-item:last-child{ border-bottom:0; }
-  .lab-item.t-borderline{ --tier:var(--season-autumn); }
+  .lab-item.t-borderline{ --tier:var(--gold); }
   .lab-item.t-abnormal{ --tier:var(--critical); }
   .lab-to{ display:inline-block; width:9px; height:8px; margin-left:8px; vertical-align:1px; background:var(--tier); }
   .to-up .lab-to{ clip-path:polygon(50% 0, 100% 100%, 0 100%); }

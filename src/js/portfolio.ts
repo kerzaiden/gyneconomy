@@ -19,7 +19,7 @@ var ALL_WEATHER = [
   { what:"Stocks", w:30, ink:"--ovulate" },
   { what:"Long-term Treasuries", w:40, ink:"--ff-deep" },
   { what:"Intermediate Treasuries", w:15, ink:"--ff-blue" },
-  { what:"Gold", w:7.5, ink:"--season-autumn" },
+  { what:"Gold", w:7.5, ink:"--gold" },
   { what:"Commodities", w:7.5, ink:"--season-summer" }
 ];
 var WEATHER = [
