@@ -270,7 +270,7 @@
   .contact-hint{ font-size:var(--type-meta); color:var(--text-muted); }
   .contact-hint.err{ color:var(--critical-ink); }
   .contact-send{
-    border:0; border-radius:var(--radius); padding:11px 22px; cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600;
+    border:0; border-radius:var(--round); padding:11px 22px; cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600;
     background:var(--accent); color:var(--on-accent); transition:background 0.12s;
   }
   .contact-send:hover{ background:var(--accent-ink); }
@@ -345,6 +345,7 @@
     --gap-top:20px;
     --topbar-gap:calc(var(--gap-top) - 2px);
     --radius:16px;
+    --round:999px;
     --radius-inner:13px;
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
     --type-section:20px; --type-reading-head:26px; --type-page-title:30px; --type-display:40px;
@@ -403,12 +404,12 @@
 
   .tabbar{
     position:fixed; left:0; right:0; bottom:var(--tabbar-lift); z-index:40; margin:0 auto; width:min(calc(100% - 32px), 480px);
-    display:flex; border-radius:999px; padding:5px; gap:2px;
+    display:flex; border-radius:var(--round); padding:5px; gap:2px;
     background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
     border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
   }
   .tab-btn{
-    flex:1; border:none; background:transparent; padding:7px 0 6px; border-radius:999px; cursor:pointer;
+    flex:1; border:none; background:transparent; padding:7px 0 6px; border-radius:var(--round); cursor:pointer;
     display:flex; flex-direction:column; align-items:center; gap:3px;
     font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; color:var(--text-secondary);
     transition:background 0.15s ease, color 0.15s ease;
@@ -442,7 +443,7 @@
   .cv-kicker{ font-size:var(--type-meta); text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-weight:600; display:inline-flex; align-items:center; gap:2px; }
 
   .search-field{ display:flex; align-items:center; gap:8px; height:44px; margin:0 0 12px; padding:0 14px; border:1px solid var(--border);
-    border-radius:var(--radius); background:var(--surface); color:var(--text-muted); cursor:text; }
+    border-radius:var(--round); background:var(--surface); color:var(--text-muted); cursor:text; }
   .search-field svg{ width:19px; height:19px; flex:none; }
   .search-field input{ flex:1; min-width:0; height:100%; border:0; background:none; font-family:"Public Sans",sans-serif; font-size:var(--type-row);
     color:var(--text-primary); outline:none; }
@@ -456,7 +457,7 @@
   .ind-cat-name{ flex:1; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-weight:500;
     font-size:var(--type-reading-head); line-height:1.1; letter-spacing:0; text-transform:none; color:color-mix(in srgb, var(--cat) 70%, var(--text-primary)); }
   .ind-cat-name small{ font-family:"Public Sans",sans-serif; font-style:normal; font-weight:400; font-size:var(--type-label); color:var(--text-muted); }
-  .ind-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .ind-card, .lab-box{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
 
   #cycle-view, #calendar-list{ display:flex; flex-direction:column; gap:16px; }
   .era-row{ cursor:pointer; }
@@ -865,11 +866,11 @@
   .metric-sheet .sign-detail > .card{ border:0; background:transparent; padding:0; box-shadow:none; }
   :root{ --ctl-h:40px; --btn-h:40px; }
   .rangebar{ display:flex; gap:3px; background:var(--seg-track); border:1px solid transparent;
-    border-radius:var(--radius); padding:3px; margin:14px 0 2px;
+    border-radius:var(--round); padding:4px; margin:14px 0 2px;
     min-height:var(--ctl-h); box-sizing:border-box; }
-  .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--radius-inner); padding:7px 6px; cursor:pointer; white-space:nowrap;
-    font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:600; color:var(--text-secondary); }
-  .range-seg.on{ background:var(--seg-on); color:var(--text-primary); }
+  .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--round); padding:8px 10px; cursor:pointer; white-space:nowrap;
+    font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:500; color:var(--text-primary); }
+  .range-seg.on{ background:var(--seg-on); color:var(--text-primary); font-weight:600; box-shadow:0 1px 3px rgba(124,40,68,0.10); }
   .range-seg:hover:not(.on){ color:var(--text-primary); }
   .fit-line{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; fill:none; }
   .fit-lab{ font-size:var(--type-meta); font-weight:700; fill:var(--accent-ink); }
@@ -885,7 +886,7 @@
   .trend-on .dv-mid{ opacity:0.4; }
 
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:15px 0 0;
+    border:0; background:var(--accent-wash); border-radius:var(--round); padding:12px 22px; margin:15px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;
     width:100%; text-align:left; font:inherit; }
   .trendpill.none{ background:transparent; box-shadow:inset 0 0 0 1px var(--border); }
@@ -949,7 +950,6 @@
   .hist-bar .cycsel-btn{ background:var(--surface); border:1px solid var(--border); }
   .hist-bar .rangebar,
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
-  .hist-bar .rangebar, .hist-bar .range-seg, .hist-bar .cycsel-btn{ border-radius:999px; }
   .hist-bar .range-seg{ display:flex; align-items:center; justify-content:center;
     padding-top:0; padding-bottom:0; }
   .range-seg{ position:relative; }
@@ -960,7 +960,7 @@
   .cycsel{ position:relative; }
   .cycsel-btn .cycsel-yr{ margin-left:auto; }
   .cycsel-btn{ width:100%; display:flex; align-items:center; gap:10px; min-height:var(--ctl-h); box-sizing:border-box;
-    background:var(--track); border:0; border-radius:var(--radius); padding:9px 15px; cursor:pointer;
+    background:var(--track); border:0; border-radius:var(--round); padding:9px 15px; cursor:pointer;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:600; color:var(--text-primary); }
   .cycsel-btn .peek-chev{ transform:rotate(90deg); transition:transform 0.16s ease; }
   .cycsel.open .cycsel-btn .peek-chev{ transform:rotate(-90deg); }
@@ -1037,14 +1037,14 @@
 
   @media (max-width:400px){ .rangebar{ flex-wrap:wrap; } .rangebar .range-seg{ flex:1 1 auto; } }
   .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
-    border:1px solid var(--border); background:var(--surface); border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--surface); border-radius:var(--round);
     padding:12px 22px; min-height:var(--btn-h); box-sizing:border-box; margin-top:var(--gap);
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:700;
     color:var(--accent-ink); }
   .hi-card + .more-row, .aux-stat + .more-row{ margin-top:12px; }
   .metric-sheet .highlights .more-row{ margin-bottom:7px; }
   .more-row:hover{ border-color:var(--border-strong); }
-  .more-row:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--radius); }
+  .more-row:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--round); }
   .more-row .peek-chev{ color:inherit; opacity:0.9; }
   .more-row .peek-chev svg{ width:8px; height:13px; stroke-width:1.9; }
   .sign-detail > .page-chart,
@@ -1097,10 +1097,13 @@
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
   .aux-stat + .method-say{ margin-top:24px; }
-  .method-card .more-row, .labs .more-row{ margin-top:20px; }
+  .method-card .more-row{ margin-top:20px; }
+  .labs .more-row{ margin-top:0; }
+  .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
+  .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .cat-more:empty{ display:none; }
-  .labs{ font-family:"Public Sans",sans-serif; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:color-mix(in srgb, var(--border) 40%, transparent); border-radius:var(--radius-inner); }
+  .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:color-mix(in srgb, var(--border) 40%, transparent); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
   .lab-score b{ display:block; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-size:var(--type-section); font-weight:500; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
@@ -1120,7 +1123,7 @@
   .stat-main b{ white-space:nowrap; }
   button.stat-row .stat-main{ border-right:1px solid var(--border); }
   .stat-side{ display:flex; align-items:center; gap:4px; flex:none; font-size:var(--type-meta); color:var(--text-primary); }
-  .stat-side svg{ width:16px; height:16px; }
+  .stat-side > svg, .stat-tick svg{ width:16px; height:16px; }
   button.stat-row .stat-side{ flex:0 0 auto; width:8em; }
   @media (max-width:380px){ .stat-row b{ font-size:var(--type-row); } }
   .stat-row .lab-score-v{ width:46px; height:46px; }
@@ -1136,19 +1139,19 @@
   .len-key i:first-child{ margin-left:0; }
   .len-key i.ok{ background:var(--normal); }
   .len-key i.odd{ background:var(--critical); }
-  .insight-row{ display:flex; align-items:center; gap:12px; width:100%; padding:23px 16px; font:inherit; color:var(--text-primary); text-align:left; cursor:pointer; }
-  .insight-row .ind-cat-name{ display:flex; align-items:center; gap:10px; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600; }
-  .insight-row .ind-cat-name small{ font-size:var(--type-interface); color:var(--text-muted); }
-  .lab-door{ width:100%; border-radius:999px; font:inherit; font-size:var(--type-row); text-align:left; cursor:pointer; }
+  .insight-mark{ display:flex; flex:none; padding:6px 0; color:var(--text-primary); }
+  .insight-mark svg{ width:24px; height:24px; }
+  small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
+  button.insight-row .stat-main{ border-right:0; }
+  button.insight-row .stat-side{ width:auto; }
+  .lab-door{ width:100%; font:inherit; font-size:var(--type-row); text-align:left; cursor:pointer; }
   .lab-door span{ flex:1; }
-  .rangebar.ind-cats{ margin:0 0 12px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
-  .ind-cats .range-seg{ flex:none; }
+  .rangebar.ind-cats{ margin:0 0 var(--gap); flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+  .ind-cats .range-seg{ flex:1 0 auto; }
   .lab-cat.cat-head:hover{ text-decoration:none; }
-  .home-secs > .stat-title{ margin:12px 4px 0; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-section); color:var(--text-primary); }
   .lab-ring circle{ fill:none; stroke:var(--surface); stroke-width:5; }
   .lab-ring circle.on{ stroke:var(--normal); stroke-linecap:round; }
   :where(.lab-sec){ --cat:var(--text-muted); }
-  .lab-sec + .lab-sec{ margin-top:14px; }
   .lab-cat, .lab-fold, .lab-row{ font:inherit; color:inherit; text-align:left; background:none; border:0; padding:0; cursor:pointer; }
   .lab-cat:hover{ text-decoration:underline; text-underline-offset:3px; }
   .lab-fold{ display:flex; align-items:center; gap:8px; margin:-10px -6px -10px 0; padding:10px 6px; }
@@ -1159,8 +1162,8 @@
   :is(.lab-cat, .lab-fold, .lab-row, .lab-filter, .lab-menu button):focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .lab-sec[hidden], .lab-item[hidden]{ display:none; }
   .lab-find{ position:relative; }
-  .lab-find .search-field{ padding-right:4px; border-radius:999px; }
-  .lab-filter{ display:flex; align-items:center; gap:6px; height:36px; padding:0 10px; border:0; border-radius:999px; background:none;
+  .lab-find .search-field{ padding-right:4px; }
+  .lab-filter{ display:flex; align-items:center; gap:6px; height:36px; padding:0 10px; border:0; border-radius:var(--round); background:none;
     font:inherit; font-size:var(--type-meta); font-weight:600; color:var(--accent); cursor:pointer; }
   .lab-filter:hover, .lab-filter[aria-expanded="true"]{ background:var(--surface-2); }
   .lab-menu{ position:absolute; right:0; top:48px; z-index:5; min-width:200px; padding:6px; border:1px solid var(--border); border-radius:var(--radius-inner);
@@ -1180,12 +1183,11 @@
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
   .plain{ --cat:var(--text-muted); }
-  .plain .cat-head{ padding:23px 16px; background:var(--surface); border-bottom-color:var(--border); }
+  .plain .cat-head{ padding:12px 16px; background:var(--surface); border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); }
   .plain ul{ background:var(--surface-2); }
-  .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-interface); color:var(--text-primary); }
-  .plain .ind-cat-name small{ font-size:var(--type-interface); font-weight:600; color:var(--text-primary); }
-  .plain .lab-mark{ vertical-align:-5px; }
-  .plain .lab-mark svg{ width:20px; height:20px; }
+  .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); }
+  .plain .lab-mark{ vertical-align:-3px; margin-right:6px; color:var(--normal); }
+  .plain .lab-mark svg{ width:16px; height:16px; }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--normal); border-bottom:1px solid var(--border); }
   .lab-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; padding:11px 16px; cursor:default; }
@@ -1291,7 +1293,7 @@
   .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }
 
   .spread-toggle-btn{
-    border:none; background:transparent; padding:6px 11px; border-radius:var(--radius-inner); cursor:pointer;
+    border:none; background:transparent; padding:6px 11px; border-radius:var(--round); cursor:pointer;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:600; color:var(--text-secondary);
     transition:background 0.15s ease, color 0.15s ease;
   }
@@ -1584,7 +1586,7 @@
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-sentiment"></div>
       <div class="subject-text">
-        <div class="subject-label">Volatility</div>
+        <div class="subject-label">Fear</div>
         <div class="subject-value" id="subj-value-sentiment"></div>
         <p class="subject-say" id="subj-say-sentiment"></p>
         <div id="subj-spark-sentiment"></div>
@@ -1650,7 +1652,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.4 (762)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.5 (763)</span></p>
     </div>
   </div>
 
@@ -1687,12 +1689,12 @@
       <h3 class="menu-section">Sentiment and Rates</h3>
       <div class="menu-card menu-prose">
         <p>Market sentiment has a drawer of its own, <b>Sentiment</b>, carrying the fear curve — the shape of expected volatility — and the market it is read beside: the VIX. The <b>Fed funds rate</b> sits where it belongs, inside <b>Temperature</b> under the Lagging signs: that card is inflation and monetary policy together, and the rate is the lever pulled after her temperature, not ahead of it.</p>
-        <p>Her energy is a category of its own, <b>Energy</b>: the federal debt, the interest payments and the federal budget, each read on its own page, beside the households and the labour market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse.</p>
+        <p>Her economic activity is a category of its own, <b>Activity</b>: the federal debt, the interest payments and the federal budget, each read on its own page, beside the households and the labour market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse.</p>
       </div>
 
       <h3 class="menu-section">The Tabs</h3>
       <div class="menu-card menu-prose">
-        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Statistics</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Search</b> lists every reading by category — Weather, Mood, Circulation and Energy — with a filter by timing; the season model and the manuscript's framework table are under About Gyneconomy.</p>
+        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Statistics</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Search</b> lists every reading by category — Weather, Mood, Circulation and Activity — with a filter by timing; the season model and the manuscript's framework table are under About Gyneconomy.</p>
       </div>
     </div>
   </div>
@@ -33759,19 +33761,19 @@
   function valuationVerdict(v) {
     var r = v / CAPE_FAIR;
     return r < .75 ? {
-      text: "Highly undervalued",
+      text: "Very cheap",
       state: "warning"
     } : r < .95 ? {
-      text: "Undervalued",
+      text: "Cheap",
       state: "good"
     } : r < 1.15 ? {
-      text: "Fairly valued",
+      text: "Fair",
       state: "good"
     } : r < 1.6 ? {
-      text: "Overvalued",
+      text: "Expensive",
       state: "warning"
     } : {
-      text: "Highly overvalued",
+      text: "Rich",
       state: "serious"
     };
   }
@@ -33899,7 +33901,7 @@
   }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
-    return '<h4>Volatility</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
+    return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
   }
   function marketWord(v) {
     if (v >= 0) return {
@@ -34605,7 +34607,7 @@
     inTrend: true
   }, {
     key: "energy",
-    title: "Energy",
+    title: "Activity",
     shown: 3
   } ];
   var GROUP_MARK = {
@@ -34710,6 +34712,7 @@
       id: "sheet-metric-temp",
       name: "Temperature",
       cat: "weather",
+      sub: "Economic Season",
       timing: "lagging",
       mark: thermoSvg,
       door: "peek",
@@ -34726,6 +34729,7 @@
       id: "sheet-metric-gdp",
       name: "Growth",
       cat: "weather",
+      sub: "Economic Season",
       good: "up",
       timing: "coincident",
       mark: sproutSvg,
@@ -34742,6 +34746,7 @@
       id: "sheet-sign-market",
       name: "S&P 500",
       cat: "weather",
+      sub: "Market",
       good: "up",
       timing: "leading",
       mark: marketSvg,
@@ -34754,12 +34759,12 @@
       },
       mid: 0,
       when: lastDate,
-      cardUnit: "total return",
-      soFar: true
+      cardUnit: "total return"
     }, {
       id: "sheet-sign-hormones",
       name: "Interest rates",
       cat: "circulation",
+      sub: "Rates",
       timing: "leading",
       mark: heartSvg,
       door: "subject",
@@ -34779,6 +34784,7 @@
       id: "sheet-sign-real-rate",
       name: "Real interest rate",
       cat: "circulation",
+      sub: "Rates",
       timing: "leading",
       mark: heartSvg,
       door: "row",
@@ -34795,6 +34801,7 @@
       id: "sheet-sign-pressure",
       name: "Pressure",
       cat: "circulation",
+      sub: "Rates",
       timing: "leading",
       mark: gaugeSvg,
       door: "subject",
@@ -34814,6 +34821,7 @@
       id: "sheet-sign-pulse",
       name: "Pulse",
       cat: "circulation",
+      sub: "Money",
       timing: "coincident",
       mark: ecgSvg,
       door: "pair",
@@ -34833,6 +34841,7 @@
       id: "sheet-sign-volume",
       name: "Volume",
       cat: "circulation",
+      sub: "Money",
       timing: "leading",
       mark: circulationSvg,
       door: "pair",
@@ -34854,6 +34863,7 @@
       id: "sheet-metric-valuation",
       name: "Shiller CAPE",
       cat: "mood",
+      sub: "Valuations",
       good: "down",
       group: "Valuations",
       timing: "structural",
@@ -34875,6 +34885,7 @@
       id: "sheet-metric-buffett",
       name: "Buffett indicator",
       cat: "mood",
+      sub: "Valuations",
       good: "down",
       group: "Valuations",
       timing: "structural",
@@ -34891,8 +34902,9 @@
       live: [ "valuation" ]
     }, {
       id: "sheet-sign-sentiment",
-      name: "Volatility",
+      name: "Fear",
       cat: "mood",
+      sub: "Sentiment",
       good: "down",
       timing: "leading",
       mark: volatilitySvg,
@@ -34913,6 +34925,7 @@
       id: "sheet-sign-desire",
       name: "Consumer demand",
       cat: "mood",
+      sub: "Desire",
       good: "up",
       group: "Desire",
       timing: "coincident",
@@ -34931,6 +34944,7 @@
       id: "sheet-sign-premium",
       name: "Equity risk premium",
       cat: "mood",
+      sub: "Desire",
       good: "up",
       group: "Desire",
       timing: "structural",
@@ -34949,6 +34963,7 @@
       id: "sheet-sign-confidence",
       name: "Confidence",
       cat: "mood",
+      sub: "Sentiment",
       good: "up",
       timing: "leading",
       mark: bagSvg,
@@ -34966,6 +34981,7 @@
       id: "sheet-metric-debt",
       name: "Federal debt",
       cat: "energy",
+      sub: "Stress",
       good: "down",
       group: "Stress",
       timing: "structural",
@@ -34983,6 +34999,7 @@
       id: "sheet-metric-interest",
       name: "Interest payments",
       cat: "energy",
+      sub: "Stress",
       good: "down",
       group: "Stress",
       timing: "structural",
@@ -35000,6 +35017,7 @@
       id: "sheet-marker-deficit",
       name: "Federal budget",
       cat: "energy",
+      sub: "Stress",
       good: "up",
       group: "Stress",
       timing: "structural",
@@ -35021,6 +35039,7 @@
       id: "sheet-metric-households",
       name: "Households",
       cat: "energy",
+      sub: "Stress",
       good: "down",
       group: "Stress",
       timing: "structural",
@@ -35046,6 +35065,7 @@
       id: "sheet-sign-activity",
       name: "Unemployment rate",
       cat: "energy",
+      sub: "Work",
       good: "down",
       timing: "lagging",
       mark: personSvg,
@@ -35060,6 +35080,7 @@
       id: "sheet-sign-productivity-growth",
       name: "Productivity growth",
       cat: "energy",
+      sub: "Work",
       good: "up",
       timing: "structural",
       mark: clockSvg,
@@ -36491,7 +36512,7 @@
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
     cards.push(hiCard("The Risk-Free Loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
-    cards.push(hiCard("Pressure on the Borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("Pressure on the Borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments reading, under Activity. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, Not Slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
@@ -37087,7 +37108,7 @@
       return d.v > v;
     }).length;
     var r = fearCurve(), shape = curveVerdict(r);
-    var lede2 = '<p class="hi-lede">Volatility is how hard the market is shaking. The VIX prices the next thirty days of it, so it climbs with fear and sinks with calm — read it the other way round, because panic gathers near bottoms and complacency near tops.</p>';
+    var lede2 = '<p class="hi-lede">Fear is how hard the market is shaking. The VIX, the market’s fear gauge, prices the next thirty days of it, so it climbs with fear and sinks with calm — read it the other way round, because panic gathers near bottoms and complacency near tops.</p>';
     var nowTxt = "At " + v.toFixed(2) + " the VIX reads " + tag.text.toLowerCase() + ": by convention below " + VIX_CALM + " is calm, " + VIX_CALM + " to " + VIX_FEAR + " elevated and above " + VIX_FEAR + " fearful. Its daily record low is " + m.min + " and its high " + m.max + ".";
     var recTxt = higher + " of the " + volatilityHistory.length + " months since " + y0 + " averaged higher than today. The most shaken month was " + atMonth(top) + " at " + top.v.toFixed(1) + (top.m < VOL_JOIN ? " on the VXO" + (vixTop ? ", and on the VIX itself " + atMonth(vixTop) + " at " + vixTop.v.toFixed(1) : "") : "") + ".";
     var shapeTxt = r == null ? "No reading today — the three-month leg is missing, so the shape cannot be computed." : "The next month is priced at " + v.toFixed(2) + " against " + now.vix3mClose.toFixed(2) + " three months out, a ratio of " + r.toFixed(2) + ". " + (r >= 1 ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like — and inversions cluster near bottoms." : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
@@ -37443,6 +37464,209 @@
     var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > .5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + .5) / (to - from + 1)) + '">' + (m.ongoing ? "Peak so far" : "Peak") + "</span>" : "";
     return (ov ? '<div class="fp-marks">' + ov + "</div>" : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div><div class="fp-phases">' + b.labels + "</div>" + levelsHtml(m, at, peakLevel(m, peak));
   }
+  function insightCirculation() {
+    var vel = m2vHistory, n = vel.length;
+    if (!vel || n < 5) return "";
+    var velChg = (vel[n - 1] / vel[n - 5] - 1) * 100;
+    var run = 0;
+    for (var i = n - 1; i >= 4; i--) {
+      if (vel[i] / vel[i - 4] > 1) run++; else break;
+    }
+    var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
+    var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
+    var offLow = (vel[n - 1] / lo - 1) * 100;
+    var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
+    if (!volInd || !volInd.meter || volInd.meter.value == null) return "";
+    var volPct = volInd.meter.value;
+    var up = volPct > 0, vup = velChg > 0;
+    var name = up && vup ? "Growing and moving faster" : up && !vup ? "Added faster than it is used" : !up && vup ? "Circulating faster on a smaller stock" : "Draining and slowing";
+    var f1 = function(v) {
+      return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
+    };
+    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
+    var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
+    if (run >= 8) {
+      var oc = openCycle();
+      txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
+    }
+    return circLede + hiCard(name, "", txt);
+  }
+  function insightWeather() {
+    var rows = marketCycles.map(function(c) {
+      var to = c.to || calendarTodayY;
+      var g = totalGrowthYears(c.from, to);
+      var sp = cycleSlice(inflationHistory, c);
+      var p = sp ? totalRiseIn(inflationHistory.slice(sp[0], sp[1])) : null;
+      if (!g || !p) return null;
+      return {
+        name: c.name,
+        from: c.from,
+        closed: !c.ongoing,
+        g: g.total,
+        p: p.total,
+        gap: p.total - g.total
+      };
+    }).filter(Boolean);
+    if (rows.length < 3) return "";
+    var now2 = rows[rows.length - 1];
+    var past = rows.slice(0, -1);
+    if (!past.length) return "";
+    var f1 = function(v) {
+      return v.toFixed(1) + "%";
+    };
+    var absGap = function(r) {
+      return Math.abs(r.gap);
+    };
+    var tightest = past.reduce(function(a, b) {
+      return absGap(b) < absGap(a) ? b : a;
+    });
+    var widest = rows.reduce(function(a, b) {
+      return absGap(b) > absGap(a) ? b : a;
+    });
+    var GAP_BAND = 1.5;
+    var run = 0;
+    for (var i = rows.length - 1; i >= 0; i--) {
+      if (rows[i].gap > GAP_BAND) run++; else break;
+    }
+    var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
+    var NUM2 = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
+    var spell = function(n) {
+      return NUM2[n] || String(n);
+    };
+    var lead2 = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
+    var txt = lead2 + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
+      return absGap(r).toFixed(1);
+    }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
+    if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
+    return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The Barometer", "", txt);
+  }
+  function seasonCards(m) {
+    var r = seasonReading[m.season] || {};
+    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") + (r.body ? hiCard("In the Body", "", r.body) : "");
+  }
+  function marketCycleCard(m) {
+    var years = sp500Years.filter(function(d) {
+      return d.y >= m.era.from && d.y <= m.endYear;
+    });
+    if (!years.length) return "";
+    var bear = years.filter(function(d) {
+      return d.v < 0;
+    }), before = sp500Years.filter(function(d) {
+      return d.y < m.era.from && d.v < 0;
+    }).pop();
+    var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d) {
+      return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%";
+    }).join(", ");
+    var n = function(k, what) {
+      return (k ? [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ][k - 1] || k : "no") + " " + what + (k === 1 || !k ? " year" : " years");
+    };
+    var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
+    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."), "", true);
+  }
+  var MOOD_CHART = [ [ "Optimism", 168, 290, "cream", -23, 7, "end" ], [ "Excitement", 211, 221, "amber", -23, 0, "end" ], [ "Thrill", 279, 158, "orange", -21, 0, "end" ], [ "Euphoria", 362, 135, "red", 0, -25, "middle" ], [ "Anxiety", 438, 163, "wine", 24, -3, "start" ], [ "Denial", 500, 222, "slate", -23, 7, "end" ], [ "Fear", 548, 296, "cream", -21, 8, "end" ], [ "Desperation", 594, 374, "amber", -24, 7, "end" ], [ "Panic", 656, 443, "orange", -23, 13, "end" ], [ "Despair", 744, 475, "red", 0, 41, "middle" ], [ "Depression", 838, 458, "wine", 24, 14, "start" ], [ "Hope", 925, 393, "slate", 25, 9, "start" ], [ "Optimism", 978, 310, "cream", -28, -3, "end" ] ];
+  var MOOD_SRC = [ {
+    t: "Yale Center for Emotional Intelligence — the Mood Meter (RULER): feelings placed by pleasantness and energy",
+    u: "https://rulerapproach.org/"
+  }, {
+    t: "CNN Business — Fear &amp; Greed Index: one 0–100 reading from extreme fear to extreme greed",
+    u: "https://www.cnn.com/markets/fear-and-greed"
+  }, {
+    t: "Russell Investments — the cycle of market emotions",
+    u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
+  } ];
+  function curvePath(pts) {
+    var f = function(p) {
+      return p[0].toFixed(1) + "," + p[1].toFixed(1);
+    };
+    return pts.map(function(p, i) {
+      if (!i) return "M" + f(p);
+      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
+      return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
+    }).join("");
+  }
+  function moodCallout(x, y, lines, from, to) {
+    return '<path class="mood-arrow" d="M' + x + "," + from + "V" + to + "M" + (x - 7) + "," + (to + (to < from ? 12 : -12)) + "L" + x + "," + to + "L" + (x + 7) + "," + (to + (to < from ? 12 : -12)) + '"/>' + lines.map(function(t, i) {
+      return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + "</text>";
+    }).join("");
+  }
+  function moodCycleSvg(now2) {
+    var pts = MOOD_CHART.map(function(s) {
+      return [ +s[1], +s[2] ];
+    });
+    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
+    MOOD_CHART.forEach(function(s) {
+      var on = s[0] === now2 ? " now" : "";
+      out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
+      out.push('<text class="mood-lab' + on + '" x="' + (+s[1] + +s[4]) + '" y="' + (+s[2] + +s[5]) + '" text-anchor="' + s[6] + '">' + String(s[0]).toUpperCase() + "</text>");
+    });
+    return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' + (now2 ? ", with today at " + now2 : "") + '.">' + out.join("") + "</svg>";
+  }
+  function isRead(d) {
+    return !!d.word && d.pct != null && d.change != null;
+  }
+  function moodInfo(d) {
+    return "<h4>Her Mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: consumer demand measures what households spend rather than how they feel, the equity risk premium shares its earnings yield with the CAPE the valuations already count, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
+  }
+  function moodFigures(d) {
+    var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
+    return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) + " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
+  }
+  function moodCard(d) {
+    var c = ui.eraOpen || currentEra, s = cycleStory(c);
+    return hiCard("She’s in " + d.word, "", s ? c.name + ", " + c.from + "–" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
+  }
+  function insightMood() {
+    var d = moodToday();
+    var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
+    if (!d || !isRead(d)) return intro;
+    return intro + '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>" + moodCard(d) + moodInfo(d);
+  }
+  function storyBeats(s, open) {
+    var ev = [ {
+      x: s.first,
+      verb: "opened in"
+    }, {
+      x: s.last,
+      verb: open ? "is now in" : "closed in"
+    } ];
+    [ [ s.hi, "her high" ], [ s.lo, "her low" ] ].forEach(function(p) {
+      var same = ev.filter(function(e) {
+        return e.x.m === p[0].m;
+      })[0];
+      if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1]; else ev.push({
+        x: p[0],
+        verb: p[0] === s.hi ? "rose to" : "fell to",
+        tag: p[1]
+      });
+    });
+    ev.sort(function(a, b) {
+      return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0;
+    });
+    var parts = ev.map(function(e) {
+      return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")";
+    });
+    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
+  }
+  function storyText(s, open) {
+    return storyBeats(s, open) + " Most of it she spent in " + s.most.map(function(m) {
+      return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)");
+    }).join(" and ") + ".";
+  }
+  var INSIGHT = {
+    weather: insightWeather,
+    circulation: insightCirculation,
+    mood: insightMood
+  };
+  function catInsight(key) {
+    return INSIGHT[key] ? INSIGHT[key]() : "";
+  }
+  function insightRow(key) {
+    return '<div class="cat-more">' + moreRow(catInsight(key)) + "</div>";
+  }
+  function replaceInsight(c) {
+    var box = document.querySelector("#sheet-cat-" + c.key + " .cat-more");
+    if (box) box.outerHTML = insightRow(c.key);
+  }
   var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
   var FENCE_SRC = {
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
@@ -37581,7 +37805,6 @@
       name: R.name,
       cat: R.cat,
       good: R.good,
-      soFar: R.soFar,
       per: per,
       now: readingsNorm(seen),
       print: p.print,
@@ -37646,7 +37869,7 @@
     return !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, i) ? "abnormal" : "borderline";
   }
   function catTitle(key) {
-    return key === "cycle" ? "Regularity" : categoriesShown().filter(function(c) {
+    return categoriesShown().filter(function(c) {
       return c.key === key;
     })[0].title;
   }
@@ -37656,16 +37879,20 @@
   }
   function findWords(l) {
     var R = ROSTER_BY[l.id];
-    return [ l.name, catTitle(l.cat) ].concat(R ? [ R.head, R.group || "", R.term || "", R.cardUnit || "" ] : []).join(" ").toLowerCase().replace(/"/g, "");
+    return [ l.name, catTitle(l.cat) ].concat(R ? [ R.head, R.group || "", R.sub, R.term || "", R.cardUnit || "" ] : []).join(" ").toLowerCase().replace(/"/g, "");
   }
   function rowTag(l) {
     return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"';
+  }
+  function cardWord(l, i) {
+    var w = marketCycles[i].ongoing ? document.querySelector('.cat-item[data-open="' + l.id + '"] .ci-word') : null, t = w ? (w.textContent || "").trim() : "";
+    return t ? t + " · " : "";
   }
   function labItem(l, i) {
     var n = normAt(l, i), tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t2) {
       return t2.key === tier(l, i);
     })[0];
-    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + t.title + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (l.soFar && marketCycles[i].ongoing ? " so far" : "") + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
+    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + cardWord(l, i) + t.title + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
@@ -37688,38 +37915,54 @@
     return "<" + tag + ' class="lab-score' + cls + '"' + attrs + ">" + inner + "</" + tag + ">";
   }
   var CAT_MARK = {
-    cycle: calendarSvg,
     weather: weatherSvg,
     mood: moodSvg,
     circulation: circulationSvg,
     energy: boltSvg
   };
-  function labSec(k, ls, i) {
-    var title = catTitle(k);
-    var name = catName(k, ls.length);
+  function foldSec(k, title, name, ls, i) {
     return catHeadCard("lab-sec plain", k, {
       tag: "div",
       cls: "lab-head ",
       attrs: "",
-      name: k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + "</button>",
-      aside: '<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + CHEV + "</button>"
+      name: name,
+      aside: '<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + countTag(ls.length) + CHEV + "</button>"
     }, "<ul>" + ls.map(function(l) {
       return labItem(l, i);
     }).join("") + "</ul>");
   }
-  function bySystem(i, j) {
+  function labSec(k, ls, i) {
+    var title = catTitle(k), name = catName(k);
+    return foldSec(k, title, '<button type="button" class="lab-cat" data-ind-cat="' + k + '">' + name + "</button>", ls, i);
+  }
+  function subSec(k, sub, ls, i) {
+    return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub), ls, i);
+  }
+  function bySub(k, ls, i) {
+    var subs = [];
+    ROSTER.forEach(function(R) {
+      if (R.cat === k && subs.indexOf(R.sub) === -1) subs.push(R.sub);
+    });
+    return subs.map(function(sub) {
+      var own = ls.filter(function(l) {
+        return ROSTER_BY[l.id].sub === sub;
+      });
+      return own.length ? subSec(k, sub, own, i) : "";
+    }).join("");
+  }
+  function bySystem(i, j, cat) {
     var rank = TIERS.map(function(t) {
       return t.key;
     });
-    return [ "cycle" ].concat(categoriesShown().map(function(c) {
+    return categoriesShown().map(function(c) {
       return c.key;
-    })).map(function(k) {
+    }).map(function(k) {
       var ls = j.filter(function(l) {
         return l.cat === k;
       }).sort(function(a, b) {
         return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i));
       });
-      return ls.length ? labSec(k, ls, i) : "";
+      return !ls.length ? "" : k === cat ? bySub(k, ls, i) : labSec(k, ls, i);
     }).join("");
   }
   var finds = {};
@@ -37879,9 +38122,12 @@
   }
   var HOME_ID = "chart-home";
   function statRow(name, v, of, side2, page2, cls) {
-    var inner = scoreRing(Math.min(100, 100 * v / of), "") + '<span class="stat-main"><small>' + name + "</small><b>" + yearsWord(v) + " years</b></span>";
+    var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), "<small>" + name + "</small><b>" + yearsWord(v) + " years</b>", page2 ? side2 : null);
     var c = " stat-row" + (cls ? " " + cls : "");
-    return page2 ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page2) + '"', inner + '<span class="stat-side">' + side2 + CHEV + "</span>") : scoreTile("span", c, "", inner);
+    return page2 ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page2) + '"', inner) : scoreTile("span", c, "", inner);
+  }
+  function statBody(lead2, main, side2) {
+    return lead2 + '<span class="stat-main">' + main + "</span>" + (side2 == null ? "" : '<span class="stat-side">' + side2 + CHEV + "</span>");
   }
   function closedVisits() {
     return visits().slice(0, closedCount());
@@ -37945,16 +38191,16 @@
     return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + statRow("Cycle length", meanOf(L), longest, INFO + "More info", lengthPage()) + statRow("Cycle variation", f.v, f.top, '<span class="stat-tick' + (ok ? "" : " odd") + '">' + TICK + "</span>" + (ok ? "Typical" : "Atypical"), variationPage()) + statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow"));
   }
   function insightSec(k, ls) {
-    return catHeadCard("lab-sec plain", k, {
-      tag: "button",
-      cls: "insight-row ",
-      attrs: ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"',
-      name: catName(k, ls.length),
-      aside: CHEV
-    }, "");
+    return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
   }
-  function catName(k, n) {
-    return '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + catTitle(k) + " <small>(" + n + ")</small>";
+  function catName(k) {
+    return markName(CAT_MARK[k], catTitle(k));
+  }
+  function markName(mark, name) {
+    return '<span class="lab-mark">' + mark() + "</span>" + name;
+  }
+  function countTag(n) {
+    return '<small class="lab-n" aria-label="' + n + ' indicators">' + n + "</small>";
   }
   function insightsHome(i) {
     var j = judged(i), rank = TIERS.map(function(t) {
@@ -37970,17 +38216,19 @@
     }).join("");
   }
   function homeSections(i) {
-    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + '<h2 class="stat-title">Insights</h2>' + insightsHome(i);
+    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights") + insightsHome(i));
   }
   function drawChart(id) {
     var host = byId(id), c = pageCycle(id);
     if (!host || !c) return;
-    var i = marketCycles.indexOf(c), j = judged(i);
+    var i = marketCycles.indexOf(c), j = judged(i).filter(function(l) {
+      return l.cat !== "cycle";
+    });
     if (id === HOME_ID) {
       host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + "</div>";
       return;
     }
-    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
+    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
     narrow(host, id);
   }
   var IND = "sheet-find";
@@ -37991,9 +38239,9 @@
     return "<" + tag + ' class="search-field' + cls + '"' + attrs + ">" + LENS + inner + "</" + tag + ">";
   }
   function catBar(j) {
-    var keys = [ "cycle" ].concat(categoriesShown().map(function(c) {
+    var keys = categoriesShown().map(function(c) {
       return c.key;
-    })).filter(function(k) {
+    }).filter(function(k) {
       return j.some(function(l) {
         return l.cat === k;
       });
@@ -38038,6 +38286,12 @@
       narrow(host, id);
     });
   }
+  function wireCatDoors() {
+    document.addEventListener("click", function(e) {
+      var t = e.target, door = t.closest && t.closest('[data-open="' + IND + '"][data-ind-cat]');
+      if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
+    });
+  }
   function openMenus() {
     return Array.prototype.filter.call(document.querySelectorAll(".lab-menu"), function(m) {
       return !m.hidden;
@@ -38052,6 +38306,7 @@
   function buildCycleChart() {
     wireFinder(need(HOME_ID), HOME_ID);
     buildFind();
+    wireCatDoors();
     layer(0, {
       open: function() {
         return openMenus().length > 0;
@@ -38648,14 +38903,15 @@
   }
   function hubOpen(open) {
     var b = byId("season-wheel-hub-open");
-    [ "data-open", "data-title", "data-detail-idx" ].forEach(function(a) {
+    [ "data-open", "data-title", "data-ind-cat", "data-detail-idx" ].forEach(function(a) {
       b.removeAttribute(a);
     });
     b.disabled = !open;
     b.classList.toggle("details-link", !!(open && open.html));
     if (open && open.cat) {
-      b.setAttribute("data-open", "sheet-cat-" + open.cat.key);
-      b.setAttribute("data-title", open.cat.title);
+      b.setAttribute("data-open", IND);
+      b.setAttribute("data-title", "Indicators");
+      b.setAttribute("data-ind-cat", open.cat.key);
     }
     if (open && open.html) {
       detailTexts[hubDetailIdx] = open.html;
@@ -38987,206 +39243,6 @@
         t = setTimeout(settleAll, 120);
       };
     }());
-  }
-  function insightCirculation() {
-    var vel = m2vHistory, n = vel.length;
-    if (!vel || n < 5) return "";
-    var velChg = (vel[n - 1] / vel[n - 5] - 1) * 100;
-    var run = 0;
-    for (var i = n - 1; i >= 4; i--) {
-      if (vel[i] / vel[i - 4] > 1) run++; else break;
-    }
-    var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
-    var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
-    var offLow = (vel[n - 1] / lo - 1) * 100;
-    var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
-    if (!volInd || !volInd.meter || volInd.meter.value == null) return "";
-    var volPct = volInd.meter.value;
-    var up = volPct > 0, vup = velChg > 0;
-    var name = up && vup ? "Growing and moving faster" : up && !vup ? "Added faster than it is used" : !up && vup ? "Circulating faster on a smaller stock" : "Draining and slowing";
-    var f1 = function(v) {
-      return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
-    };
-    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
-    var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
-    if (run >= 8) {
-      var oc = openCycle();
-      txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
-    }
-    return circLede + hiCard(name, "", txt);
-  }
-  function insightWeather() {
-    var rows = marketCycles.map(function(c) {
-      var to = c.to || calendarTodayY;
-      var g = totalGrowthYears(c.from, to);
-      var sp = cycleSlice(inflationHistory, c);
-      var p = sp ? totalRiseIn(inflationHistory.slice(sp[0], sp[1])) : null;
-      if (!g || !p) return null;
-      return {
-        name: c.name,
-        from: c.from,
-        closed: !c.ongoing,
-        g: g.total,
-        p: p.total,
-        gap: p.total - g.total
-      };
-    }).filter(Boolean);
-    if (rows.length < 3) return "";
-    var now2 = rows[rows.length - 1];
-    var past = rows.slice(0, -1);
-    if (!past.length) return "";
-    var f1 = function(v) {
-      return v.toFixed(1) + "%";
-    };
-    var absGap = function(r) {
-      return Math.abs(r.gap);
-    };
-    var tightest = past.reduce(function(a, b) {
-      return absGap(b) < absGap(a) ? b : a;
-    });
-    var widest = rows.reduce(function(a, b) {
-      return absGap(b) > absGap(a) ? b : a;
-    });
-    var GAP_BAND = 1.5;
-    var run = 0;
-    for (var i = rows.length - 1; i >= 0; i--) {
-      if (rows[i].gap > GAP_BAND) run++; else break;
-    }
-    var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
-    var NUM2 = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
-    var spell = function(n) {
-      return NUM2[n] || String(n);
-    };
-    var lead2 = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
-    var txt = lead2 + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
-      return absGap(r).toFixed(1);
-    }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
-    if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
-    return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The Barometer", "", txt);
-  }
-  function seasonCards(m) {
-    var r = seasonReading[m.season] || {};
-    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") + (r.body ? hiCard("In the Body", "", r.body) : "");
-  }
-  function marketCycleCard(m) {
-    var years = sp500Years.filter(function(d) {
-      return d.y >= m.era.from && d.y <= m.endYear;
-    });
-    if (!years.length) return "";
-    var bear = years.filter(function(d) {
-      return d.v < 0;
-    }), before = sp500Years.filter(function(d) {
-      return d.y < m.era.from && d.v < 0;
-    }).pop();
-    var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d) {
-      return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%";
-    }).join(", ");
-    var n = function(k, what) {
-      return (k ? [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ][k - 1] || k : "no") + " " + what + (k === 1 || !k ? " year" : " years");
-    };
-    var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
-    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."), "", true);
-  }
-  var MOOD_CHART = [ [ "Optimism", 168, 290, "cream", -23, 7, "end" ], [ "Excitement", 211, 221, "amber", -23, 0, "end" ], [ "Thrill", 279, 158, "orange", -21, 0, "end" ], [ "Euphoria", 362, 135, "red", 0, -25, "middle" ], [ "Anxiety", 438, 163, "wine", 24, -3, "start" ], [ "Denial", 500, 222, "slate", -23, 7, "end" ], [ "Fear", 548, 296, "cream", -21, 8, "end" ], [ "Desperation", 594, 374, "amber", -24, 7, "end" ], [ "Panic", 656, 443, "orange", -23, 13, "end" ], [ "Despair", 744, 475, "red", 0, 41, "middle" ], [ "Depression", 838, 458, "wine", 24, 14, "start" ], [ "Hope", 925, 393, "slate", 25, 9, "start" ], [ "Optimism", 978, 310, "cream", -28, -3, "end" ] ];
-  var MOOD_SRC = [ {
-    t: "Yale Center for Emotional Intelligence — the Mood Meter (RULER): feelings placed by pleasantness and energy",
-    u: "https://rulerapproach.org/"
-  }, {
-    t: "CNN Business — Fear &amp; Greed Index: one 0–100 reading from extreme fear to extreme greed",
-    u: "https://www.cnn.com/markets/fear-and-greed"
-  }, {
-    t: "Russell Investments — the cycle of market emotions",
-    u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
-  } ];
-  function curvePath(pts) {
-    var f = function(p) {
-      return p[0].toFixed(1) + "," + p[1].toFixed(1);
-    };
-    return pts.map(function(p, i) {
-      if (!i) return "M" + f(p);
-      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
-      return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
-    }).join("");
-  }
-  function moodCallout(x, y, lines, from, to) {
-    return '<path class="mood-arrow" d="M' + x + "," + from + "V" + to + "M" + (x - 7) + "," + (to + (to < from ? 12 : -12)) + "L" + x + "," + to + "L" + (x + 7) + "," + (to + (to < from ? 12 : -12)) + '"/>' + lines.map(function(t, i) {
-      return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + "</text>";
-    }).join("");
-  }
-  function moodCycleSvg(now2) {
-    var pts = MOOD_CHART.map(function(s) {
-      return [ +s[1], +s[2] ];
-    });
-    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
-    MOOD_CHART.forEach(function(s) {
-      var on = s[0] === now2 ? " now" : "";
-      out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
-      out.push('<text class="mood-lab' + on + '" x="' + (+s[1] + +s[4]) + '" y="' + (+s[2] + +s[5]) + '" text-anchor="' + s[6] + '">' + String(s[0]).toUpperCase() + "</text>");
-    });
-    return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' + (now2 ? ", with today at " + now2 : "") + '.">' + out.join("") + "</svg>";
-  }
-  function isRead(d) {
-    return !!d.word && d.pct != null && d.change != null;
-  }
-  function moodInfo(d) {
-    return "<h4>Her Mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: consumer demand measures what households spend rather than how they feel, the equity risk premium shares its earnings yield with the CAPE the valuations already count, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
-  }
-  function moodFigures(d) {
-    var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
-    return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) + " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
-  }
-  function moodCard(d) {
-    var c = ui.eraOpen || currentEra, s = cycleStory(c);
-    return hiCard("She’s in " + d.word, "", s ? c.name + ", " + c.from + "–" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
-  }
-  function insightMood() {
-    var d = moodToday();
-    var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
-    if (!d || !isRead(d)) return intro;
-    return intro + '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>" + moodCard(d) + moodInfo(d);
-  }
-  function storyBeats(s, open) {
-    var ev = [ {
-      x: s.first,
-      verb: "opened in"
-    }, {
-      x: s.last,
-      verb: open ? "is now in" : "closed in"
-    } ];
-    [ [ s.hi, "her high" ], [ s.lo, "her low" ] ].forEach(function(p) {
-      var same = ev.filter(function(e) {
-        return e.x.m === p[0].m;
-      })[0];
-      if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1]; else ev.push({
-        x: p[0],
-        verb: p[0] === s.hi ? "rose to" : "fell to",
-        tag: p[1]
-      });
-    });
-    ev.sort(function(a, b) {
-      return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0;
-    });
-    var parts = ev.map(function(e) {
-      return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")";
-    });
-    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
-  }
-  function storyText(s, open) {
-    return storyBeats(s, open) + " Most of it she spent in " + s.most.map(function(m) {
-      return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)");
-    }).join(" and ") + ".";
-  }
-  var INSIGHT = {
-    weather: insightWeather,
-    circulation: insightCirculation,
-    mood: insightMood
-  };
-  function insightRow(key) {
-    return '<div class="cat-more">' + moreRow(INSIGHT[key] ? INSIGHT[key]() : "") + "</div>";
-  }
-  function replaceInsight(c) {
-    var box = document.querySelector("#sheet-cat-" + c.key + " .cat-more");
-    if (box) box.outerHTML = insightRow(c.key);
   }
   function cycleRowsHtml() {
     var strips = {};

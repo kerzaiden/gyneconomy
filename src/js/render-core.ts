@@ -502,7 +502,7 @@ function renderPressureInsights(){
   cards.push(hiCard("Pressure on the Borrower", "",
     "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " +
     "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest " +
-    "payments card, on the Energy page. " +
+    "payments reading, under Activity. " +
     (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") +
     "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q +
     " to " + pct(hi.v) + " in " + hi.q + "."));

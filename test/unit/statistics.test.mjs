@@ -20,7 +20,7 @@ test('the open cycle’s results are its cards’ figures, printed as the cards 
     if (l.per[open] != null && !/–/.test(cardText(R.id))) assert.equal(l.print(l.per[open]), cardText(R.id), R.name);
   });
   assert.match(lab('sheet-marker-deficit').print(-5.77), /^5\.8% deficit$/);
-  assert.match(row('sheet-sign-market').querySelector('.lab-res b').textContent, / so far$/);
+  assert.doesNotMatch(row('sheet-sign-market').querySelector('.lab-res b').textContent, /so far/);
 });
 
 test('a cycle counts only its closed years as bull years', () => {

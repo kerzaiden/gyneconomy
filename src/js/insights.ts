@@ -178,7 +178,8 @@ function storyText(s: Story, open: boolean | undefined){
     s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
 }
 var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood };
-export function insightRow(key: string){ return '<div class="cat-more">' + moreRow(INSIGHT[key] ? INSIGHT[key]() : "") + '</div>'; }
+export function catInsight(key: string){ return INSIGHT[key] ? INSIGHT[key]() : ""; }
+export function insightRow(key: string){ return '<div class="cat-more">' + moreRow(catInsight(key)) + '</div>'; }
 export function replaceInsight(c: { key: string }){
   var box = document.querySelector("#sheet-cat-" + c.key + " .cat-more");
   if (box) box.outerHTML = insightRow(c.key);

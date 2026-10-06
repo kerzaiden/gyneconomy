@@ -383,7 +383,7 @@ function volatilityHighlights(y0: number){
   var vixTop = vixOnly.reduce(function(a, d){ return d.v > a.v ? d : a; }, vixOnly[0]);
   var higher = volatilityHistory.filter(function(d){ return d.v > v; }).length;
   var r = fearCurve(), shape = curveVerdict(r);
-  var lede = '<p class="hi-lede">Volatility is how hard the market is shaking. The VIX prices the next thirty ' +
+  var lede = '<p class="hi-lede">Fear is how hard the market is shaking. The VIX, the market\u2019s fear gauge, prices the next thirty ' +
     'days of it, so it climbs with fear and sinks with calm \u2014 read it the other way round, because panic ' +
     'gathers near bottoms and complacency near tops.</p>';
   var nowTxt = "At " + v.toFixed(2) + " the VIX reads " + tag.text.toLowerCase() + ": by convention below " + VIX_CALM +

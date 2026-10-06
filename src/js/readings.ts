@@ -417,11 +417,11 @@ export function curveVerdict(r: number | null): Tag {
 }
 export function valuationVerdict(v: number): Tag {
   var r = v / CAPE_FAIR;
-  return r < 0.75 ? { text:"Highly undervalued", state:"warning" }
-       : r < 0.95 ? { text:"Undervalued",        state:"good" }
-       : r < 1.15 ? { text:"Fairly valued",      state:"good" }
-       : r < 1.60 ? { text:"Overvalued",         state:"warning" }
-                  : { text:"Highly overvalued",  state:"serious" };
+  return r < 0.75 ? { text:"Very cheap", state:"warning" }
+       : r < 0.95 ? { text:"Cheap",      state:"good" }
+       : r < 1.15 ? { text:"Fair",       state:"good" }
+       : r < 1.60 ? { text:"Expensive",  state:"warning" }
+                  : { text:"Rich",       state:"serious" };
 }
 export var tempCaptionFull = "", tempLeadShown = "";
 var PRESSURE_ZONES = [
@@ -537,7 +537,7 @@ export function volatilityRing(){
 }
 export function volatilityDetailHtml(){
   var m = now.vixRow.meter;
-  return '<h4>Volatility</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + '</div>' + facts([
+  return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + '</div>' + facts([
     'The <b>VIX</b> is Cboe\u2019s volatility index: what options traders pay to insure the S&amp;P 500 against a fall ' +
       'over the next thirty days, as an annual rate.',
     'It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near ' +

@@ -32,8 +32,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)
-- **The VIX reading is Volatility, never Fear.** Keren: "I just realized that the VIX is the volatility index.
-  So instead of fear, call the indicator volatility." (V663)
+- **The VIX reading is Fear, after its market name, the fear gauge, so Sentiment reads Confidence beside Fear.**
+  Keren: "the opposite of confidence is fear. So if I would see confidence and fear, I would say, oh, she's not
+  confident and she's fearful", chosen on the card over keeping Volatility. This overturns V663 ("instead of fear,
+  call the indicator volatility"). (V663, 0.8.5)
 - **The household reading is Households, never Debt service; "Debt service" names only the Households bill.**
   Keren: "debt service is too general — there is government debt service and household debt service." (V463,
   V660)
@@ -111,7 +113,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   1.7.0, Oct 3, 2026)
 - **A verdict is said in one family of words on one axis, never a hand-set word that belongs to no scale.**
   Keren: "use overvalued or undervalued, and for the range in between choose words from the same family, maybe
-  fairly valued"; the same pattern gave Pulse a fast/slow scale. (V290, V298)
+  fairly valued" (CAPE's family is now cheap to rich, 0.8.5); the same pattern gave Pulse a fast/slow scale. (V290, V298)
 - **Where a reading has a published convention, its word follows the convention rather than vocabulary of our
   own.** Keren: "we don't want to overcomplicate things, they are already so complicated"; and for Volatility,
   "set the rules per convention". (V236, V663)
@@ -614,6 +616,37 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Circulation, Energy).** The search box on Analysis opens the same page on All. Keren: "put only the categories
   titles under insights … a universal page for the indicators to be searched, to be filtered … also filtered by
   category", and "indicator page needs some work, but for now it would be fine." (0.8.3, Oct 6, 2026)
+- **On one category, Indicators groups its readings by subcategory: each subcategory is a quiet heading (the
+  first member's mark and its name, small and grey) over its results, in place of the category's heading, which the
+  bar already names.** All keeps one heading per category. Every heading sits in one container, the standard gap
+  (`--gap`) below the bar and above More details; each heading is white over its apricot-tinted results with an
+  apricot line between, its mark in apricot and its count in light grey beside its fold chevron. Keren: "the
+  current design of the results without spacing is good … It's all one container", "the gap between the containers
+  and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
+  me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
+  stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
+  Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Rates (Interest rates, Real interest
+  rate, Pressure) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
+  names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
+  bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
+  subcategorize each indicator", and "temperature and growth is the season, S&P is the market". (0.8.5, Oct 6, 2026)
+- **The fourth category is Activity, not Energy** (its key stays `energy`). Keren: "the market convention is economic
+  activity." An open year's figure carries no "so far" on Indicators: every figure there is so far. (0.8.5, Oct 6, 2026)
+- **A category opens in Indicators, never on its old page of chart cards.** Its heading on Indicators and the
+  dial's season both open Indicators on that category, and its More details is that category's insights. Each
+  result on the open cycle leads with its card's verdict word, then its tier ("Rich · Risk", "Calm · Normal"):
+  Keren, "I want to see the result first and then what it means." Regularity is not an indicator: it belongs to Cycle Statistics on Analysis. The old category
+  pages are still built, unreached, as the home of the reading cards the words, the quarter sheet and the reading
+  pages draw on, until a release retires them. Keren: "we should get rid of the old design … but we should keep the
+  conclusions … these are words that can integrate well next to risk, attention, normal", and "in terms of
+  regularity, we don't need it. We have it in the analysis page." (0.8.5, Oct 6, 2026)
+- **Insights is one container built like Cycle Statistics: a purple title with its mark (the chart), then one grey
+  tile per category with its mark, its name, and its count of indicators in light grey beside the chevron. In every
+  tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the left.** Keren:
+  "I don't need to see indicators four times … maybe next to the chevron in light gray", and "there should be the
+  same gap between the chevron and the right edge … like the icon and the left edge." Keren: "make the insight
+  section designed like cycle statistics, meaning you have a dark purple headline with an icon next to it inside a
+  container and everything sits below it … I want a consistent design system." (0.8.5, Oct 6, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
@@ -850,9 +883,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Growth's band is computed from its own series: the 10th to 90th percentile of the quarters from 1988 Q1
   (0.96% and 4.34%, rounded to a tenth).** There is no published normal range for how fast an economy grows,
   so the percentile construction is the only honest one. (V492)
-- **CAPE's verdict is computed from the reading against fair value in five bands: Highly undervalued,
-  Undervalued, Fairly valued, Overvalued, Highly overvalued.** "Richly priced" was hand-set and belonged to no
-  scale. (V290)
+- **CAPE's verdict is computed from the reading against fair value in five bands of one family: Very cheap, Cheap,
+  Fair, Expensive, Rich.** Its top word is the Buffett indicator's, so the two valuations agree. Keren: "both of them
+  should use the word rich … many analysts and economists say richly priced when they talk about highly
+  overvalued stocks." This replaces the overvalued/undervalued family of V290. (V290, 0.8.5)
 - **The Buffett indicator's 80% line is cited to Buffett's Fortune article of Dec 10, 2001.** (V658)
 - **Pulse's Steady band is the 10th–90th percentile of 1959–2007 (1.70–2.14×), and Very slow and Very fast lie
   beyond that era's own extremes (1.652× and 2.192×).** Computed under Keren's rule; it was 0.95–1.10 and 0.75 /
@@ -1305,10 +1339,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   for the insights across the inner pages." (V379)
 - **A mark's badge uses its own wash, `--mark-wash`, one step deeper than `--track`.** Keren: "I want this
   background to be a little less pale"; a badge has to read as a shape. (V503)
+- **Every selection bar, search field and button is fully round (`--round`).** Containers keep `--radius`. The
+  browser suite fails on a control whose corners are less than half its height. Keren: "make a rule that every
+  selection bar or search indicator or button should have rounded corners." (0.8.5, Oct 6, 2026)
 - **A segmented control is a light grey track (`--seg-track`) with no border, and its chosen segment is a white
-  pill (`--seg-on`).** Keren, from Clair: "I like the way they did the selection bar in gray and white". It is the
-  one grey in the app; containers stay white ("I don't like the gray. It's too gray. Let's use white"). (0.6.2,
-  replacing V579)
+  pill (`--seg-on`); track and pill are fully round, the choices spread evenly in dark text, the chosen one a
+  touch bolder on a softly lifted pill.** Keren, from Clair: "I like the way they did the selection bar in gray and
+  white"; and, from a hormone-app reference, "make the selection bar like the reference … it looks much prettier"
+  (0.8.5). It is the one grey in the app; containers stay white ("I don't like the gray. It's too gray. Let's use
+  white"). (0.6.2, 0.8.5, replacing V579)
 - **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a white
   page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer salmon-orange and Autumn
   marigold; Winter and Spring stay periwinkle (V180).** Keren: "I really like the dark purple in this reference
@@ -1669,8 +1708,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   integration with controllers and services." (V629)
 - **The subject row, the one row the app opens pages from, is built once in `subjectRow`; callers pass only
   what differs.** Keren: "make it a 10." (V631)
-- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.ts`): its page, name, category, group,
-  timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
+- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.ts`): its page, name, category, subcategory,
+  group, timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
   heads and every page's state read it, and a new reading is one row.** Keren: “make the app as consolidated as possible so we won't have to write the same code twice, meaning dry code and as efficient components as possible.” (V670)
 - **Rows are addressed by name (`valRow`), never by array index, so the display order is free to follow the
   page.** Reordering by index would silently swap one reading for another. (V494)
