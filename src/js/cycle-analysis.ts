@@ -82,7 +82,7 @@ function cycleLabs(){
     cycleLab("length", "Length", undefined, function(v){ return v.years; }),
     cycleLab("bull", "Bull years", "up", function(v){ return v.bull; }),
     cycleLab("bleed", "Bleed", "down", function(v){ return v.bleed; }),
-    cycleLab("regularity", "Regularity", "down", function(_, i){ return regularity(i); }, true)
+    cycleLab("regularity", "Variation", "down", function(_, i){ return regularity(i); }, true)
   ];
 }
 export function labs(){ return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab))); }
@@ -100,7 +100,7 @@ function tier(l: Lab, i: number){
   var v = l.per[i] as number, n = normAt(l, i) as Norm, up = v > n.hi, down = v < n.lo;
   return !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, i) ? "abnormal" : "borderline";
 }
-function catTitle(key: string){ return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
+function catTitle(key: string){ return key === "cycle" ? "Regularity" : categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
 function side(l: Lab, i: number){ var v = l.per[i] as number, n = normAt(l, i) as Norm; return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
 function findWords(l: Lab){
   var R = ROSTER_BY[l.id];
@@ -237,7 +237,7 @@ function depthWords(){
   return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
 }
 function methodFacts(){
-  return ["<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are."];
+  return ["<b>Regularity</b> follows FIGO’s two measures of a regular cycle: its length, and its variation, the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it."];
 }
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([

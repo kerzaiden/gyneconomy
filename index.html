@@ -37248,7 +37248,7 @@
       return v.bull;
     }), cycleLab("bleed", "Bleed", "down", function(v) {
       return v.bleed;
-    }), cycleLab("regularity", "Regularity", "down", function(_, i) {
+    }), cycleLab("regularity", "Variation", "down", function(_, i) {
       return regularity(i);
     }, true) ];
   }
@@ -37291,7 +37291,7 @@
     return !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, i) ? "abnormal" : "borderline";
   }
   function catTitle(key) {
-    return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c) {
+    return key === "cycle" ? "Regularity" : categoriesShown().filter(function(c) {
       return c.key === key;
     })[0].title;
   }
@@ -37502,7 +37502,7 @@
     }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
   }
   function methodFacts() {
-    return [ "<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are." ];
+    return [ "<b>Regularity</b> follows FIGO’s two measures of a regular cycle: its length, and its variation, the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it." ];
   }
   function chartDetail() {
     return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, FIGO_SRC ]);

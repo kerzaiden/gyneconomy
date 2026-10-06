@@ -575,7 +575,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   was built as "Generation 1 and 2" and then dropped. Keren: "I think we are overcomplicating things with
   generation. I think the generational question is more about nations", on Ray Dalio's scale of empires rising and
   declining over some 250 years, which the app does not cover. Don't re-propose. (0.8.3, Oct 6, 2026)
-- **Regularity is a cycle result: the spread from the shortest to the longest of the three cycles before it.** FIGO
+- **The cycle results' drawer is titled Regularity, after FIGO's two measures of a regular cycle, length and
+  variation; it holds Length, Variation, Bull years and Bleed.** Keren: "I would think that the title would be
+  regularity and length would be the parameters that we're looking in terms of regular cycles." (0.8.3, Oct 6, 2026)
+- **Variation (named Regularity until the drawer took that name) is a cycle result: the spread from the shortest to the longest of the three cycles before it.** FIGO
   measures how regular cycles are by the gap between the shortest and the longest (Munro, Critchley and Fraser,
   2018). FIGO looks over a year of cycles; hers last years, so three is the app's choice. Lower
   is its good side, and its range is the middle

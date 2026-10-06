@@ -354,10 +354,11 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });
 
-test('Regularity is the spread of the three cycles before each one, and is read on the open cycle too', () => {
+test('Variation is the spread of the three cycles before each one, and is read on the open cycle too', () => {
   const L = marketCycles.filter(c => !c.ongoing).map(c => c.to - c.from + 1);
   const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity'), three = L.slice(-3);
   assert.equal(reg.per[open], Math.max(...three) - Math.min(...three));
   assert.equal(reg.per[2], null);
-  assert.ok([...document.querySelectorAll('#chart-home .cat-cycle .lab-item b')].some(b => b.textContent === 'Regularity'));
+  assert.ok([...document.querySelectorAll('#chart-home .cat-cycle .lab-item b')].some(b => b.textContent === 'Variation'));
+  assert.match(document.querySelector('#chart-home .cat-cycle .lab-head').textContent, /^Regularity \(\d+\)/);
 });
