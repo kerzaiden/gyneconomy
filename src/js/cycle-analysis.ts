@@ -1,12 +1,13 @@
 import { CHEV, facts, srcBlock } from "./format.ts";
-import { byId, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
+import { byId, layer, moreRow, need, trendDoor, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle } from "./history.ts";
-import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, slidersSvg, weatherSvg } from "./marks.ts";
+import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { cardFace, cardValue, eraFig } from "./era.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { cycLabel, cycleModel, openCycle } from "./model.ts";
+import { cycLabel, cycleModel, nowModel, openCycle } from "./model.ts";
+import { fedPhasesCard } from "./fed-phases.ts";
 import { categoriesShown, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
@@ -185,6 +186,8 @@ function narrow(host: HTMLElement, id: string){
     sec.hidden = !seen; any = any || seen;
   });
   var none = host.querySelector<HTMLElement>(".search-none"); if (none) none.hidden = any;
+  var secs = host.querySelector<HTMLElement>(".home-secs"), labsBox = host.querySelector<HTMLElement>(".labs"), idle = !f.q && f.tier === "all";
+  if (secs && labsBox){ secs.hidden = !idle; labsBox.hidden = idle; }
 }
 function menuOf(host: Element){ return host.querySelector<HTMLElement>(".lab-menu"); }
 function showMenu(host: Element, open: boolean){
@@ -253,12 +256,44 @@ export function chartDoor(m: CycleModel){
   return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(m.era.story, "ai-clamp") + scoreBox(i));
 }
 var HOME_ID = "chart-home";
+function homeHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + title + '</div>'; }
+function statRow(name: string, v: number, of: number, note: string){
+  return '<span class="lab-score stat-row"><span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + '</span><span><small>' + name + '</small><b>' + yearsWord(v) + ' years</b>' + (note ? '<small>' + note + '</small>' : '') + '</span></span>';
+}
+function closedVisits(){ return visits().slice(0, closedCount()); }
+function sdOf(vs: number[]){ var m = vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; return Math.sqrt(vs.reduce(function(s, v){ return s + (v - m) * (v - m); }, 0) / (vs.length - 1)); }
+function statsHome(){
+  var L = closedVisits().map(function(v){ return v.years; }), longest = Math.max.apply(null, L), avg = L.reduce(function(a, b){ return a + b; }, 0) / L.length;
+  var open = visits()[marketCycles.length - 1];
+  return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-lede">Averages are based on her ' + L.length + ' closed cycles since ' + marketCycles[0].from + '.</p>' +
+    statRow("Cycle length", avg, longest, "This cycle: " + yearsWord(open.years) + " years so far") +
+    statRow("Cycle variation", sdOf(L), longest, "Standard deviation of her cycle lengths") + '</section>';
+}
+function flowCells(c: Cycle, n: number, worst: number){
+  var end = c.to as number;
+  var out = "";
+  for (var y = end - n + 1; y <= end; y++){ var r = sp500AnnualReturns[y] || 0; out += '<i style="opacity:' + (0.35 + 0.65 * Math.min(1, -r / worst)).toFixed(2) + '" title="' + y + ' ' + r.toFixed(1) + '%"></i>'; }
+  return out;
+}
+function flowHome(){
+  var vs = closedVisits(), avg = vs.reduce(function(a, v){ return a + v.bleed; }, 0) / vs.length, worst = 0;
+  Object.keys(sp500AnnualReturns).forEach(function(k){ worst = Math.max(worst, -(sp500AnnualReturns[+k] || 0)); });
+  var rows = vs.map(function(v, i){ var c = marketCycles[i]; return '<li><span>' + cycLabel(c).name.replace(/ Cycle$/, "") + '</span><span class="flow-bar">' + flowCells(c, v.bleed, worst) + '</span></li>'; }).reverse().join("");
+  return '<section class="dx-sys">' + homeHead(circulationSvg(), "Period Flow") + statRow("Average period length", avg, Math.max.apply(null, vs.map(function(v){ return v.bleed; })), "Bear years that close a cycle") +
+    '<ul class="flow-rows">' + rows + '</ul></section>';
+}
+function insightsHome(){
+  return '<h3 class="stat-title">Insights</h3>' + categoriesShown().map(function(c){ return trendDoor("sheet-cat-" + c.key, c.title, CAT_MARK[c.key](), c.title, ""); }).join("");
+}
+function homeSections(){
+  return statsHome() + flowHome() + '<section class="dx-sys fp">' + homeHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel) + '</section>' + insightsHome();
+}
 function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
   if (!host || !c) return;
   var i = marketCycles.indexOf(c), j = judged(i);
-  host.innerHTML = finder(id, i, j) +
-    '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
+  host.innerHTML = finder(id, i, j) + (id === HOME_ID ? '<div class="home-secs">' + scoreBox(i) + homeSections() + '</div>' : '') +
+    '<div class="labs"' + (id === HOME_ID ? ' hidden' : '') + '>' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
   narrow(host, id);
 }
 function fold(t: Element){
