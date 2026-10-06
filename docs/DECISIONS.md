@@ -577,17 +577,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   declining over some 250 years, which the app does not cover. Don't re-propose. (0.8.3, Oct 6, 2026)
 - **Regularity is a cycle result: the spread from the shortest to the longest of the three cycles before it.** FIGO
   measures how regular cycles are by the gap between the shortest and the longest (Munro, Critchley and Fraser,
-  2018). FIGO looks over a year of cycles; hers last years, so three is the app's choice, and the (i) says so. Lower
+  2018). FIGO looks over a year of cycles; hers last years, so three is the app's choice. Lower
   is its good side, and its range is the middle
   half of all her closed cycles, like every other result. It is the one cycle result
   read on the open cycle, since the three cycles before it have closed. Keren: "I think we should show track
   regularity." (0.8.3, Oct 5, 2026)
-- **Cycle Statistics' (i) explains FIGO and nothing else from the cycle trackers: FIGO's clinical definition of a
-  normal cycle (24 to 38 days, the 5th to 95th percentile; regular when the shortest and the longest are within 7 to
-  9 days, Munro, Critchley and Fraser, 2018), and that the app reads her the same way against her own record.**
-  Keren: "Let's use only FIGO. Explain FIGO. We don't have to explain how we compare to other menstrual cycle app."
-  FIGO here is its system for normal menstrual bleeding (System 1), not its cancer staging models. The ±0.47 band
-  stays "Sensitivity" (Keren: "I think sensitivity is a better word", after "margin for noise" was tried). (0.8.3, Oct 6, 2026)
+- **Cycle Statistics' (i) names FIGO only as the source of Regularity's measure, one line and one link; it does not
+  explain FIGO or compare the app with cycle-tracking apps.** Keren: "I think we overcomplicated things with the FIGO
+  thing." The ±0.47 band stays "Sensitivity" (Keren: "I think sensitivity is a better word", after "margin for
+  noise" was tried). (0.8.3, Oct 6, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the

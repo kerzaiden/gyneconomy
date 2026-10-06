@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,451 lines** in 36 files, about 624 KB, roughly **177 thousand tokens**. No session can
+The source is **9,450 lines** in 36 files, about 624 KB, roughly **177 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `2a2e768` on 2026-10-06.
+Generated from commit `d9814b4` on 2026-10-06.
 
 ## The page
 
@@ -48,7 +48,7 @@ Counts: **32** modules, **701** top-level functions, **115** top-level vars, **3
 | `js/repaint.ts` | 89 | 11 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/ai-insights.ts` | 182 | 39 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
-| `js/cycle-analysis.ts` | 301 | 68 | `data`, `dom`, `era`, `format`, `history`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/cycle-analysis.ts` | 300 | 68 | `data`, `dom`, `era`, `format`, `history`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `data`, `dom`, `format`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 55 | 8 | `format`, `roster` |
 | `js/fed-phases.ts` | 126 | 21 | `data`, `format`, `history-fred`, `model`, `refresh-season` |
@@ -1030,16 +1030,16 @@ falls in. **export** marks a name other modules import.
 | 228 | `cap` | `function cap(` |
 | 230 | `depthWords` | `function depthWords(` |
 | 239 | `methodFacts` | `function methodFacts(` |
-| 243 | `chartDetail` | `function chartDetail(` |
-| 251 | `cycleScore` · export | `function cycleScore(` |
-| 252 | `chartDoor` · export | `function chartDoor(` |
-| 256 | `HOME_ID` | `var HOME_ID =` |
-| 257 | `drawChart` | `function drawChart(` |
-| 265 | `fold` | `function fold(` |
-| 269 | `wireFinder` | `function wireFinder(` |
-| 286 | `openMenus` | `function openMenus(` |
-| 287 | `shutMenus` | `function shutMenus(` |
-| 288 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 242 | `chartDetail` | `function chartDetail(` |
+| 250 | `cycleScore` · export | `function cycleScore(` |
+| 251 | `chartDoor` · export | `function chartDoor(` |
+| 255 | `HOME_ID` | `var HOME_ID =` |
+| 256 | `drawChart` | `function drawChart(` |
+| 264 | `fold` | `function fold(` |
+| 268 | `wireFinder` | `function wireFinder(` |
+| 285 | `openMenus` | `function openMenus(` |
+| 286 | `shutMenus` | `function shutMenus(` |
+| 287 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/cycle-tab.ts`
 

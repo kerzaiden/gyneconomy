@@ -237,8 +237,7 @@ function depthWords(){
   return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
 }
 function methodFacts(){
-  return ["<b>FIGO</b>, the International Federation of Gynecology and Obstetrics, sets the clinical definition of a normal cycle: a normal length is the middle of a large population’s cycles (24 to 38 days, the 5th to 95th percentile), and cycles are regular when the shortest and the longest are close (within 7 to 9 days). Cycle Statistics reads her the same way, against her own record rather than a body’s days.",
-    "<b>Regularity</b> is FIGO’s spread, from the shortest to the longest of the " + word(BASELINE) + " cycles before it. FIGO looks over a year of cycles; hers last years, so " + word(BASELINE) + " is the app’s choice."];
+  return ["<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are."];
 }
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
