@@ -1131,7 +1131,13 @@
   .len-key i:first-child{ margin-left:0; }
   .len-key i.ok{ background:var(--normal); }
   .len-key i.odd{ background:var(--critical); }
-  .plain .lab-cat.cat-head{ width:100%; justify-content:space-between; padding:23px 16px; }
+  .insight-row{ display:flex; align-items:center; gap:12px; width:100%; padding:23px 16px; font:inherit; color:var(--text-primary); text-align:left; cursor:pointer; }
+  .insight-row .ind-cat-name{ display:flex; align-items:center; gap:10px; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600; }
+  .insight-row .ind-cat-name small{ font-size:var(--type-interface); color:var(--text-muted); }
+  .lab-door{ width:100%; border-radius:999px; font:inherit; font-size:var(--type-row); text-align:left; cursor:pointer; }
+  .lab-door span{ flex:1; color:var(--placeholder); }
+  .rangebar.ind-cats{ margin:0 0 12px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+  .ind-cats .range-seg{ flex:none; }
   .lab-cat.cat-head:hover{ text-decoration:none; }
   .home-secs > .stat-title{ margin:12px 4px 0; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-section); color:var(--text-primary); }
   .lab-ring circle{ fill:none; stroke:var(--surface); stroke-width:5; }
@@ -37586,7 +37592,8 @@
       tier: "all",
       q: "",
       raw: "",
-      sub: ""
+      sub: "",
+      cat: ""
     });
   }
   var LENS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg>';
@@ -37627,16 +37634,12 @@
         li.hidden = !ok;
         seen = seen || ok;
       });
+      seen = seen && (!f.cat || sec.classList.contains("cat-" + f.cat));
       sec.hidden = !seen;
       any = any || seen;
     });
     var none = host.querySelector(".search-none");
     if (none) none.hidden = any;
-    var secs = host.querySelector(".home-secs"), labsBox = host.querySelector(".labs"), idle = !f.q && f.tier === "all";
-    if (secs && labsBox) {
-      secs.hidden = !idle;
-      labsBox.hidden = idle;
-    }
   }
   function menuOf(host) {
     return host.querySelector(".lab-menu");
@@ -37659,7 +37662,7 @@
     redraw(host, id);
   }
   function pickCycle(host, id, seg) {
-    page.cycles[id] = seg.getAttribute("data-lab-cycle");
+    page.cycles[id] = page.cycles[HOME_ID] = seg.getAttribute("data-lab-cycle");
     redraw(host, id);
   }
   function fillMenu(host, id, sub) {
@@ -37808,17 +37811,8 @@
     }), longest = Math.max.apply(null, L), f = figo(), ok = f.ok;
     return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + statRow("Cycle length", meanOf(L), longest, INFO + "More info", lengthPage()) + statRow("Cycle variation", f.v, f.top, '<span class="stat-tick' + (ok ? "" : " odd") + '">' + TICK + "</span>" + (ok ? "Typical" : "Atypical"), variationPage()) + statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow") + "</section>";
   }
-  function insightSec(k, ls, i) {
-    var title = catTitle(k);
-    return catHeadCard("lab-sec plain", k, {
-      tag: "button",
-      cls: "lab-head lab-cat ",
-      attrs: ' type="button" data-open="sheet-cat-' + k + '" data-title="' + title + '"',
-      name: '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + title + " <small>(" + ls.length + ")</small>",
-      aside: CHEV
-    }, "<ul>" + ls.map(function(l) {
-      return labItem(l, i);
-    }).join("") + "</ul>");
+  function insightSec(k, ls) {
+    return '<button type="button" class="lab-sec ind-card insight-row cat-' + k + '" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"><span class="ind-cat-name"><span class="lab-mark">' + CAT_MARK[k]() + "</span>" + catTitle(k) + " <small>(" + ls.length + ")</small></span>" + CHEV + "</button>";
   }
   function insightsHome(i) {
     var j = judged(i), rank = TIERS.map(function(t) {
@@ -37830,7 +37824,7 @@
       }).sort(function(a, b) {
         return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i));
       });
-      return ls.length ? insightSec(c.key, ls, i) : "";
+      return ls.length ? insightSec(c.key, ls) : "";
     }).join("");
   }
   function homeSections(i) {
@@ -37840,8 +37834,35 @@
     var host = byId(id), c = pageCycle(id);
     if (!host || !c) return;
     var i = marketCycles.indexOf(c), j = judged(i);
-    host.innerHTML = finder(id, i, j) + (id === HOME_ID ? '<div class="home-secs">' + homeSections(i) + "</div>" : "") + '<div class="labs"' + (id === HOME_ID ? " hidden" : "") + ">" + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
+    if (id === HOME_ID) {
+      host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + "</div>";
+      return;
+    }
+    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
     narrow(host, id);
+  }
+  var IND = "sheet-indicators";
+  function searchDoor(i, j) {
+    return '<button type="button" class="search-field lab-door" data-open="' + IND + '" data-title="Indicators" data-ind-cat="">' + LENS + "<span>Search indicators</span>" + filterTags(HOME_ID, i, j) + "</button>";
+  }
+  function catBar(j) {
+    var keys = [ "cycle" ].concat(categoriesShown().map(function(c) {
+      return c.key;
+    })).filter(function(k) {
+      return j.some(function(l) {
+        return l.cat === k;
+      });
+    });
+    return tabBar('aria-label="Category"', [ [ "", "All" ] ].concat(keys.map(function(k) {
+      return [ k, catTitle(k) ];
+    })), findOf(IND).cat, "data-ind-cat", "ind-cats");
+  }
+  function pickCat(t, id) {
+    var b = t.closest && t.closest("[data-ind-cat]");
+    if (!b) return false;
+    findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
+    if (id === IND) drawChart(IND);
+    return true;
   }
   function fold(t) {
     var btn = t.closest && t.closest(".lab-fold");
@@ -37855,7 +37876,7 @@
     };
     host.addEventListener("click", function(e) {
       var t = e.target, seg = t.closest && t.closest("[data-lab-tier]"), cyc = t.closest && t.closest("[data-lab-cycle]"), sub = t.closest && t.closest("[data-lab-sub]");
-      if (seg) pickTier(host, id, seg); else if (cyc) pickCycle(host, id, cyc); else if (sub) openSub(host, id, sub); else if (t.closest && t.closest(".lab-filter")) toggleMenu(host, id); else fold(t);
+      if (seg) pickTier(host, id, seg); else if (cyc) pickCycle(host, id, cyc); else if (sub) openSub(host, id, sub); else if (t.closest && t.closest(".lab-filter")) toggleMenu(host, id); else if (!pickCat(t, id)) fold(t);
     });
     host.addEventListener("input", function(e) {
       var q = e.target;
@@ -37878,7 +37899,9 @@
     });
   }
   function buildCycleChart() {
+    need("panel-chart").appendChild(metricSheet(IND));
     wireFinder(need(HOME_ID), HOME_ID);
+    wireFinder(need(IND), IND);
     layer(0, {
       open: function() {
         return openMenus().length > 0;
@@ -37893,7 +37916,7 @@
       var door = e.target.closest && e.target.closest("[data-chart-cycle]");
       if (!door) return;
       need("tab-chart").click();
-      page.cycles[HOME_ID] = door.getAttribute("data-chart-cycle");
+      page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
       drawChart(HOME_ID);
     });
     need("tab-chart").addEventListener("click", function() {
