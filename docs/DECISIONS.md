@@ -567,7 +567,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Consumer demand, the Equity risk premium (stocks cheap against bonds), Confidence, the Federal budget (a smaller
   deficit), Productivity growth and Bull years; lower is good for Shiller CAPE and the Buffett indicator (Shiller's and
   Buffett's own reading of a rich market), Volatility (the VIX is the market's fear gauge), Federal debt, Interest
-  payments, Households (debt service), the Unemployment rate and the Bleed. No side is good on its own for Temperature
+  payments, Households (debt service), the Unemployment rate and Period flow (the Bleed until 0.8.3). No side is good on its own for Temperature
   (the Fed aims at 2%, and deflation is a strain too), Interest rates, Pressure, Pulse, Volume or a cycle's Length, so
   those are flagged either way. (0.6.1)
 - **No generations: every cycle result is judged against all her closed cycles.** Claude proposed judging Length,
@@ -576,7 +576,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   generation. I think the generational question is more about nations", on Ray Dalio's scale of empires rising and
   declining over some 250 years, which the app does not cover. Don't re-propose. (0.8.3, Oct 6, 2026)
 - **The cycle results' drawer is titled Regularity, after FIGO's two measures of a regular cycle, length and
-  variation; it holds Length, Variation, Bull years and Bleed.** Keren: "I would think that the title would be
+  variation; it holds Length, Variation, Bull years and Period flow.** Keren: "I would think that the title would be
   regularity and length would be the parameters that we're looking in terms of regular cycles." (0.8.3, Oct 6, 2026)
 - **Variation (named Regularity until the drawer took that name) is a cycle result: the spread from the shortest to the longest of the three cycles before it.** FIGO
   measures how regular cycles are by the gap between the shortest and the longest (Munro, Critchley and Fraser,
@@ -589,6 +589,31 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   explain FIGO or compare the app with cycle-tracking apps.** Keren: "I think we overcomplicated things with the FIGO
   thing." The ±0.47 band stays "Sensitivity" (Keren: "I think sensitivity is a better word", after "margin for
   noise" was tried). (0.8.3, Oct 6, 2026)
+- **The Analysis tab reads in Clue's order, one container after another at the app's one gap: the search box, the
+  Health Score (white), Cycle Statistics, Interest Environment, then Insights.** Keren, from Clue's analysis screen:
+  "cycle statistics, period flow … insights divided according to categories", the health score and search "stay in
+  the main analysis page", the health score "should have a white background", and "the spacing is always equal to the
+  spacing that we determined in the app". Bleed is called Period flow everywhere ("Bleed should be called period
+  flow"). (0.8.3, Oct 6, 2026)
+- **Cycle Statistics holds three cards, Cycle length, Cycle variation and Period flow, each a ring and a figure in
+  years; the first two carry a dividing line, aligned across both, and open a page explaining their figure.** Every
+  average is over all her closed cycles since 1928, never the last six as Clue takes (Keren: "I don't like the
+  arbitrary 6 cycles. If we have a scientific model, let's use it"); that line sits on Cycle length's page, not on
+  the card. Cycle length's page draws every cycle as a bar, Typical or Atypical. Cycle variation is FIGO's measure,
+  the gap between the shortest and longest of her last three cycles, the same number as the Variation result (one
+  figure, one number), so it reads her recent cycles (Keren: "maybe we should regard more recent cycles"). Period
+  flow's ring is red and has no page. Keren: "they have like a dividing line … I want the dividing line to align
+  between cycle length and cycle variation … to look like basically the same component." (0.8.3, Oct 6, 2026)
+- **Cycle Statistics says Typical or Atypical; Normal stays the word for readings.** Typical is within Tukey's fences
+  of her closed cycles, the app's outlier rule; a page says how in a line or two, because the model is new. Keren:
+  "typical is the right word … because normal is something that we use for parameters … regular cycles are
+  typical", and "we should explain how it's calculated … in a line or two … because this is a novelty, this model."
+  (0.8.3, Oct 6, 2026)
+- **Insights lists only the categories; each opens one Indicators page on that category, where every reading is
+  searched, filtered by tier and cycle, and switched between categories by a bar (All, Regularity, Weather, Mood,
+  Circulation, Energy).** The search box on Analysis opens the same page on All. Keren: "put only the categories
+  titles under insights … a universal page for the indicators to be searched, to be filtered … also filtered by
+  category", and "indicator page needs some work, but for now it would be fine." (0.8.3, Oct 6, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the

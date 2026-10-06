@@ -1,8 +1,9 @@
 import { CHEV, facts, srcBlock } from "./format.ts";
 import { byId, detailSlot, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
+import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
-import { catHeadCard, metricSheet, sheetRenderers } from "./render-core.ts";
+import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { cardFace, cardValue, eraFig } from "./era.ts";
 import { calendarTodayY } from "./refresh-season.ts";
@@ -126,13 +127,15 @@ function scoreTier(v: number){
 }
 function scoreBox(i: number){
   var s = score(i);
-  return '<span class="lab-score"><span><b>Health Score</b><small>' + scoreTier(s.v) + ' against ' + word(closedCount()) + ' closed cycles</small></span>' +
-    '<span class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></span></span>';
+  return scoreTile("span", "", "", '<span><b>Health Score</b><small>' + scoreTier(s.v) + ' against ' + word(closedCount()) + ' closed cycles</small></span>' + scoreRing(s.v, '<span>' + s.v + '</span>'));
+}
+function scoreRing(v: number, label: string){ return '<span class="lab-score-v">' + ring(v) + label + '</span>'; }
+function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
 }
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
 function labSec(k: string, ls: Lab[], i: number){
   var title = catTitle(k);
-  var name = '<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + title + ' <small>(' + ls.length + ')</small>';
+  var name = catName(k, ls.length);
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"",
     name:k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + '</button>',
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + CHEV + '</button>' },
@@ -170,20 +173,18 @@ function filterTags(id: string, i: number, j: Lab[]){
 }
 function finder(id: string, i: number, j: Lab[]){
   var f = findOf(id);
-  return '<div class="lab-find"><div class="search-field">' + LENS +
-    '<input type="search" class="lab-q" placeholder="Search indicators" aria-label="Search indicators" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
-    '<button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + filterTags(id, i, j) + '</button></div>' +
+  return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search indicators" aria-label="Search indicators" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
+    '<button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + filterTags(id, i, j) + '</button>') +
     '<div class="lab-menu" role="menu" hidden>' + menuRows(id, i, j) + '</div></div>';
 }
 function narrow(host: HTMLElement, id: string){
   var f = findOf(id), any = false;
   Array.prototype.forEach.call(host.querySelectorAll(".lab-sec"), function(sec: HTMLElement){
-    var seen = false;
+    var seen = false, inCat = !f.cat || sec.classList.contains("cat-" + f.cat);
     Array.prototype.forEach.call(sec.querySelectorAll(".lab-item"), function(li: HTMLElement){
-      var ok = (f.tier === "all" || li.classList.contains("t-" + f.tier)) && (li.getAttribute("data-find") || "").indexOf(f.q) !== -1;
+      var ok = inCat && (f.tier === "all" || li.classList.contains("t-" + f.tier)) && (li.getAttribute("data-find") || "").indexOf(f.q) !== -1;
       li.hidden = !ok; seen = seen || ok;
     });
-    seen = seen && (!f.cat || sec.classList.contains("cat-" + f.cat));
     sec.hidden = !seen; any = any || seen;
   });
   var none = host.querySelector<HTMLElement>(".search-none"); if (none) none.hidden = any;
@@ -255,11 +256,10 @@ export function chartDoor(m: CycleModel){
   return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(m.era.story, "ai-clamp") + scoreBox(i));
 }
 var HOME_ID = "chart-home";
-function homeHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + title + '</div>'; }
 function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string){
-  var inner = '<span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + '</span><span class="stat-main"><small>' + name + '</small><b>' + yearsWord(v) + ' years</b></span>';
-  return page ? '<button type="button" class="lab-score stat-row details-link' + (cls ? " " + cls : "") + '" data-detail-idx="' + detailSlot(page) + '">' + inner + '<span class="stat-side">' + side + CHEV + '</span></button>'
-    : '<span class="lab-score stat-row' + (cls ? " " + cls : "") + '">' + inner + '</span>';
+  var inner = scoreRing(Math.min(100, 100 * v / of), "") + '<span class="stat-main"><small>' + name + '</small><b>' + yearsWord(v) + ' years</b></span>';
+  var c = " stat-row" + (cls ? " " + cls : "");
+  return page ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page) + '"', inner + '<span class="stat-side">' + side + CHEV + '</span>') : scoreTile("span", c, "", inner);
 }
 function closedVisits(){ return visits().slice(0, closedCount()); }
 function meanOf(vs: number[]){ return vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; }
@@ -268,11 +268,11 @@ function typical(v: number){ var n = normOf(lengths()) as Norm; return v >= n.fl
 var INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>';
 var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function lengthBars(){
-  var vs = visits(), W = 340, H = 150, top = Math.max.apply(null, vs.map(function(v){ return v.years; })), bw = W / vs.length;
-  return '<svg class="len-bars" viewBox="0 0 ' + W + ' ' + (H + 22) + '" role="img" aria-label="Each cycle\u2019s length in years">' + vs.map(function(v, i){
+  var vs = visits(), F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, vs.map(function(v){ return v.years; })), bw = W / vs.length;
+  return '<svg class="len-bars" viewBox="0 ' + F.T + ' ' + W + ' ' + (H + 22) + '" role="img" aria-label="Each cycle\u2019s length in years">' + vs.map(function(v, i){
     var h = H * v.years / top, x = i * bw + 2, c = marketCycles[i], cls = c.ongoing ? "now" : typical(v.years) ? "ok" : "odd";
-    return '<rect class="' + cls + '" x="' + x.toFixed(1) + '" y="' + (H - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/>' +
-      '<text x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (H + 14) + '">' + String(c.from).slice(2) + '</text>';
+    return '<rect class="' + cls + '" x="' + x.toFixed(1) + '" y="' + (F.B - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/>' +
+      '<text x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (F.B + 14) + '">' + String(c.from).slice(2) + '</text>';
   }).join("") + '</svg>';
 }
 function lengthPage(){
@@ -292,15 +292,15 @@ function variationPage(){
 }
 function statsHome(){
   var vs = closedVisits(), L = lengths(), B = vs.map(function(v){ return v.bleed; }), longest = Math.max.apply(null, L), f = figo(), ok = f.ok;
-  return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") +
+  return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") +
     statRow("Cycle length", meanOf(L), longest, INFO + 'More info', lengthPage()) +
     statRow("Cycle variation", f.v, f.top, '<span class="stat-tick' + (ok ? '' : ' odd') + '">' + TICK + '</span>' + (ok ? 'Typical' : 'Atypical'), variationPage()) +
-    statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow") + '</section>';
+    statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow"));
 }
 function insightSec(k: string, ls: Lab[]){
-  return '<button type="button" class="lab-sec ind-card insight-row cat-' + k + '" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '">' +
-    '<span class="ind-cat-name"><span class="lab-mark">' + CAT_MARK[k]() + '</span>' + catTitle(k) + ' <small>(' + ls.length + ')</small></span>' + CHEV + '</button>';
+  return catHeadCard("lab-sec plain", k, { tag:"button", cls:"insight-row ", attrs:' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', name:catName(k, ls.length), aside:CHEV }, "");
 }
+function catName(k: string, n: number){ return '<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + catTitle(k) + ' <small>(' + n + ')</small>'; }
 function insightsHome(i: number){
   var j = judged(i), rank = TIERS.map(function(t){ return t.key; });
   return categoriesShown().map(function(c){
@@ -309,7 +309,7 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + '<section class="dx-sys fp">' + homeHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel) + '</section>' +
+  return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
     '<h3 class="stat-title">Insights</h3>' + insightsHome(i);
 }
 function drawChart(id: string){
@@ -320,10 +320,11 @@ function drawChart(id: string){
   host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
   narrow(host, id);
 }
-var IND = "sheet-indicators";
+var IND = "sheet-find";
 function searchDoor(i: number, j: Lab[]){
-  return '<button type="button" class="search-field lab-door" data-open="' + IND + '" data-title="Indicators" data-ind-cat="">' + LENS + '<span>Search indicators</span>' + filterTags(HOME_ID, i, j) + '</button>';
+  return searchShell("button", " lab-door", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat=""', '<span>Search indicators</span>' + filterTags(HOME_ID, i, j));
 }
+function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
 function catBar(j: Lab[]){
   var keys = ["cycle"].concat(categoriesShown().map(function(c){ return c.key; })).filter(function(k){ return j.some(function(l){ return l.cat === k; }); });
   return tabBar('aria-label="Category"', [["", "All"]].concat(keys.map(function(k){ return [k, catTitle(k)]; })), findOf(IND).cat, "data-ind-cat", "ind-cats");
@@ -334,6 +335,7 @@ function pickCat(t: Element, id: string){
   if (id === IND) drawChart(IND);
   return true;
 }
+function buildFind(){ var sheet = metricSheet(IND); need("panel-chart").appendChild(sheet); wireFinder(sheet, IND); drawChart(IND); }
 function fold(t: Element){
   var btn = t.closest && t.closest(".lab-fold");
   if (btn) btn.setAttribute("aria-expanded", String(btn.getAttribute("aria-expanded") !== "true"));
@@ -358,9 +360,7 @@ function wireFinder(host: HTMLElement, id: string){
 function openMenus(){ return Array.prototype.filter.call(document.querySelectorAll(".lab-menu"), function(m: HTMLElement){ return !m.hidden; }) as HTMLElement[]; }
 function shutMenus(){ openMenus().forEach(function(m){ var host = m.closest(".lab-find"); if (host) showMenu(host, false); }); }
 export function buildCycleChart(){
-  need("panel-chart").appendChild(metricSheet(IND));
-  wireFinder(need(HOME_ID), HOME_ID);
-  wireFinder(need(IND), IND);
+  wireFinder(need(HOME_ID), HOME_ID); buildFind();
   layer(0, { open:function(){ return openMenus().length > 0; }, close:shutMenus });
   document.addEventListener("click", function(e){ var t = e.target as Element; if (t.isConnected && !(t.closest && t.closest(".lab-find"))) shutMenus(); });
   document.addEventListener("click", function(e){

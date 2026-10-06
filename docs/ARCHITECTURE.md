@@ -393,7 +393,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind its page's More details), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `fed-phases` (the Fed's phases under the dial), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind its page's More details), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -499,15 +499,19 @@ Rules that shape the pages:
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
   bands a past value can be read against.
 - **Cycle analysis is a blood test of each cycle** (`cycle-analysis`), and since 0.6.1 the tab where every
-  reading is found (Search's job before it). One renderer, `drawChart(id)`, draws it in one host, `#chart-home`, the
-  tab's home. The Diagnosis's card (under the cycle story, previewing the visit note and score) is not a door to a
+  reading is found (Search's job before it). One renderer, `drawChart(id)`, draws two hosts: `#chart-home`, the
+  tab's home (a search box that is a door, the Health Score, Cycle Statistics, Interest Environment and Insights, the
+  category rows, 0.8.3), and `#sheet-find`, the Indicators page, built at boot by `buildFind` and redrawn when it opens
+  or a live reading lands (`repaint`). Every Insights row and the home's search box open it, setting its category
+  (`finds[IND].cat`, a `tabBar`); the two share one cycle through `page.cycles`. Cycle Statistics' Cycle variation is
+  read from the Variation result (`figo()`), never computed twice. The Diagnosis's card (under the cycle story, previewing the visit note and score) is not a door to a
   page: it carries `data-chart-cycle`, sets `page.cycles` for the tab and presses the Analysis tab (0.6.3).
   `wireFinder` gives the host a `page.cycles` key and its own search state (`finds`). Every roster reading is
   averaged over the cycle's years; its range is the middle half of the closed cycles that reading covers, Tukey's
   fences beyond it mark Risk, and between is Attention, except that a result on the reading's `good` side is Normal.
   The cycle's length, bull years and bleed are judged only once it has closed; Regularity (`settled`) is read on the
   open cycle too, since it measures the three cycles before it. The health score is the share of judged
-  readings that are Normal. On top sits the search box, the filter button inside it opening a small menu of tiers
+  readings that are Normal. On top of the Indicators page sits the search box, the filter button inside it opening a small menu of tiers
   (`.lab-menu`, closed by Escape through `layer` or a tap outside); `narrow` hides the rows that fail either and any
   category left empty. A tier pick redraws (the counts and the button's label change); typing only narrows, so the
   box keeps its focus. A reading's row is a button that opens its page and a category's name opens its category page,

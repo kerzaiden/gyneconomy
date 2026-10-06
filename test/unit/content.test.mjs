@@ -340,7 +340,7 @@ test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
 });
 
 test('a Cycle Statistics result is named by its tier, Normal on its good side and flagged on the other', () => {
-  const rows = [...document.querySelectorAll('#chart-home .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
+  const rows = [...document.querySelectorAll('#sheet-find .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
   assert.equal(rows.length, ROSTER.length);
   rows.forEach(({ R, li }) => {
     const way = li.classList.contains('to-up') ? 'up' : li.classList.contains('to-down') ? 'down' : null;
@@ -359,6 +359,6 @@ test('Variation is the spread of the three cycles before each one, and is read o
   const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity'), three = L.slice(-3);
   assert.equal(reg.per[open], Math.max(...three) - Math.min(...three));
   assert.equal(reg.per[2], null);
-  assert.ok([...document.querySelectorAll('#chart-home .cat-cycle .lab-item b')].some(b => b.textContent === 'Variation'));
-  assert.match(document.querySelector('#chart-home .cat-cycle .lab-head').textContent, /^Regularity \(\d+\)/);
+  assert.ok([...document.querySelectorAll('#sheet-find .cat-cycle .lab-item b')].some(b => b.textContent === 'Variation'));
+  assert.match(document.querySelector('#sheet-find .cat-cycle .lab-head').textContent, /^Regularity \(\d+\)/);
 });
