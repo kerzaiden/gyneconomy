@@ -7,7 +7,7 @@ import { cycLabel, cycleByName, cycleSpanYears, openCycle } from "./model.ts";
 
 export type HeadGroup = { key: string; label: string; on: boolean; value: string; rows: string };
 export type HistHeadSpec = { mark?: () => string; title?: string | (() => string); menu?: () => HeadGroup[] };
-export type PageStore = { mode: Record<string, string | undefined>; cycles: Record<string, string | null | undefined>; range: Record<string, string>; stops: Record<string, string[]>; head: Record<string, HistHeadSpec>; y0: Record<string, number | undefined> };
+export type PageStore = { mode: Record<string, string | undefined>; cycles: Record<string, string | null | undefined>; range: Record<string, string>; stops: Record<string, string[]>; head: Record<string, HistHeadSpec>; y0: Record<string, number | undefined>; year: Record<string, number | undefined> };
 type GeomVal = ChartGeom["vals"][number];
 type TimelineSource = { series?: Point[]; depth?: number | null };
 export var page = {
@@ -16,7 +16,8 @@ export var page = {
   range: undefined,
   stops: undefined,
   head: undefined,
-  y0: undefined
+  y0: undefined,
+  year: {}
 } as unknown as PageStore;
 // ---- the history card's head ----
 export var HIST_NOTE: Record<string, string | (() => string)> = {};
@@ -410,19 +411,27 @@ function cyclePicker(id: string, picked: string | null | undefined, minYear?: nu
     .filter(function(c){ return minYear == null || c.from >= minYear; });
   var cur = cycleByName(picked) || openCycle();
   if (rows.indexOf(cur) === -1) cur = rows[0] || cur;
-  var CL = cycLabel(cur), open = !!pickerOpen[id];
+  return pickList(id, rows.map(function(c){ var L = cycLabel(c); return { attr:"data-cycle", key:c.name, name:L.name, aside:L.years, on:c.name === cur.name }; }));
+}
+type PickRow = { attr: string; key: string; name: string; aside: string; on: boolean };
+function pickList(id: string, rows: PickRow[]){
+  var cur = rows.filter(function(r){ return r.on; })[0] || rows[0], open = !!pickerOpen[id];
   return '<div class="cycsel' + (open ? " open" : "") + '" data-cycles-for="' + id + '">' +
     '<button type="button" class="cycsel-btn" data-picker-toggle="1" aria-haspopup="listbox" aria-expanded="' +
-      (open ? "true" : "false") + '"><span class="cycsel-nm">' + CL.name + '</span>' +
-      '<span class="cycsel-yr">' + CL.years + '</span>' + CHEV + '</button>' +
+      (open ? "true" : "false") + '"><span class="cycsel-nm">' + cur.name + '</span>' +
+      '<span class="cycsel-yr">' + cur.aside + '</span>' + CHEV + '</button>' +
     '<div class="cycsel-menu" role="listbox"' + (open ? "" : " hidden") + '>' +
-    rows.map(function(c){
-      var sel = c.name === cur.name, L = cycLabel(c);
-      return '<button type="button" class="cycsel-opt' + (sel ? " on" : "") + '" role="option" aria-selected="' +
-        (sel ? "true" : "false") + '" data-cycle="' + c.name + '">' +
-        '<span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + L.name +
-        '</span><span class="cycsel-yr">' + L.years + '</span></button>';
+    rows.map(function(r){
+      return '<button type="button" class="cycsel-opt' + (r.on ? " on" : "") + '" role="option" aria-selected="' +
+        (r.on ? "true" : "false") + '" ' + r.attr + '="' + r.key + '">' +
+        '<span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + r.name +
+        '</span><span class="cycsel-yr">' + r.aside + '</span></button>';
     }).join("") + '</div></div>';
+}
+export function periodControls(id: string, years: { y: number; cycle: Cycle }[], year: number){
+  var on = page.mode[id] === "cycles";
+  return controlsBox(modeBar(id, page.mode[id]) + (on ? cyclePicker(id, page.cycles[id]) :
+    pickList(id, years.slice().reverse().map(function(d){ return { attr:"data-year", key:String(d.y), name:String(d.y), aside:cycLabel(d.cycle).name, on:d.y === year }; }))));
 }
 export function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
   if (!ranges || ranges.length < 2) return "";

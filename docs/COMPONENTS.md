@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared patterns**.
+Generated from commit `382fe03` on 2026-10-06. **100 components**, **30 shared patterns**.
 
 ## ai-insights.ts
 
@@ -38,7 +38,7 @@ Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared p
 | **`crossLine`** | `.hist-cross` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:householdsChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart`, `render-core.ts:renderPressurePage` |
 | **`divergeChart`** | `.dchart` `.dv-bar` `.dv-mid` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `render-pages.ts:renderVolatility` |
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.ts:divergeChart`, `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `render-core.ts:ylmFitLine` |
-| **`histBar`** | `.hist-bar` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
+| **`histBar`** | `.hist-bar` | `cycle-analysis.ts:drawChart`, `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | **`histTip`** | `.gdp-tooltip` `.hist-tip` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | **`peekCard`** | `.peek-word` | `roster.ts:peekOf` |
 | **`pulseTraceSvg`** | `.pt-svg` | `readings.ts:pulseBlock` |
@@ -53,7 +53,7 @@ Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`countTag`** | `.lab-n` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:insightSec` |
-| **`drawChart`** | `.home-secs` `.lab-box` `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder` |
+| **`drawChart`** | `.home-secs` `.lab-box` `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:openYear`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder` |
 | **`finder`** | `.lab-filter` `.lab-find` `.lab-menu` | `cycle-analysis.ts:drawChart` |
 | **`foldSec`** | `.lab-fold` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:subSec` |
 | **`homeSections`** | `.lab-score-box` | `cycle-analysis.ts:drawChart` |
@@ -63,7 +63,6 @@ Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared p
 | **`lengthBars`** | `.len-bars` | `cycle-analysis.ts:lengthPage` |
 | **`lengthPage`** | `.len-key` `.odd` `.ok` | `cycle-analysis.ts:statsHome` |
 | **`markName`** | `.lab-mark` | `cycle-analysis.ts:subSec` |
-| **`menuRows`** | `.lab-back` `.lab-sep` `.lab-sub` | `cycle-analysis.ts:fillMenu`, `cycle-analysis.ts:finder` |
 | **`ring`** | `.lab-ring` | — |
 | **`rowTag`** | `.lab-row` | `cycle-analysis.ts:labItem` |
 | **`scoreRing`** | `.lab-score-v` | `cycle-analysis.ts:scoreBox`, `cycle-analysis.ts:statRow` |
@@ -73,7 +72,7 @@ Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:yearByYear` |
+| **`yearRow`** | `.dx-year` `.dx-year-lead` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
 
@@ -130,12 +129,12 @@ Generated from commit `9a3cb49` on 2026-10-06. **101 components**, **30 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`controlsBox`** | `.hist-controls` | `history.ts:histControls` |
-| **`cyclePicker`** | `.cycsel-btn` | `history.ts:histControls` |
+| **`controlsBox`** | `.hist-controls` | `history.ts:histControls`, `history.ts:periodControls` |
 | **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.ts:histHead`, `history.ts:paintHeadMenus` |
 | **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `inner-pages.ts:registerTempGdpPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-core.ts:pressureHead`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | **`histLive`** | `.sr-only` | `history.ts:histKeysWire`, `history.ts:wireHistHover` |
 | **`histReadEnsure`** | `.hist-read` `.hr-label` `.hr-plate` `.hr-value` | `history.ts:histKeysWire`, `history.ts:wireHistHover` |
+| **`pickList`** | `.cycsel-btn` | `history.ts:cyclePicker`, `history.ts:periodControls` |
 
 ## insights.ts
 
@@ -220,12 +219,12 @@ renderer speaks. Listed most-used first.
 | **`titleCase`** | format.ts | 19 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`metered`** | format.ts | 12 places |
-| **`findOf`** | cycle-analysis.ts | 11 places |
 | **`pageCycle`** | history.ts | 11 places |
 | **`publishGeom`** | charts.ts | 11 places |
 | **`addSources`** | dom.ts | 10 places |
 | **`colPath`** | charts.ts | 10 places |
 | **`colWidth`** | charts.ts | 10 places |
+| **`findOf`** | cycle-analysis.ts | 10 places |
 | **`lede`** | format.ts | 10 places |
 | **`monthLabel`** | format.ts | 10 places |
 | **`qLabel`** | format.ts | 10 places |
@@ -244,16 +243,15 @@ renderer speaks. Listed most-used first.
 | **`histNote`** | history.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
-| **`cycLabel`** | model.ts | 6 places |
+| **`keyed`** | roster.ts | 6 places |
 | **`layer`** | dom.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
 | **`qAtIndex`** | format.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
-| **`detailSlot`** | dom.ts | 5 places |
+| **`cycLabel`** | model.ts | 5 places |
 | **`growthWord`** | model.ts | 5 places |
 | **`inflationFigure`** | model.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
-| **`keyed`** | roster.ts | 5 places |
 | **`listWords`** | cycle-analysis.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`normOf`** | cycle-analysis.ts | 5 places |
@@ -267,11 +265,14 @@ renderer speaks. Listed most-used first.
 | **`catTitle`** | cycle-analysis.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
+| **`cycleOfYear`** | model.ts | 4 places |
+| **`detailSlot`** | dom.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`dxSys`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`fill`** | ai-insights.ts | 4 places |
 | **`fmt`** | cycle-analysis.ts | 4 places |
+| **`judged`** | cycle-analysis.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`labRow`** | data.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
@@ -288,23 +289,21 @@ renderer speaks. Listed most-used first.
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`categoriesShown`** | roster.ts | 3 places |
 | **`curveAt`** | data.ts | 3 places |
+| **`cycleByName`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
-| **`judged`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
-| **`menuOf`** | cycle-analysis.ts | 3 places |
+| **`meanOf`** | cycle-analysis.ts | 3 places |
 | **`monthIdx`** | fed-phases.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`needInd`** | render-core.ts | 3 places |
-| **`normAt`** | cycle-analysis.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`peekOf`** | roster.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
-| **`quarterSheet`** | quarter-sheet.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
@@ -340,7 +339,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.insights` | 4 | `format.ts:highlightsHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.pulsebox` | 4 | `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
-| `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
+| `.cycsel-nm` | 3 | `history.ts:headMenuHtml`, `history.ts:headPickRow`, `history.ts:pickList` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
@@ -352,9 +351,9 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.dx-mark` | 2 | `dom.ts:trendHead`, `render-core.ts:dxHead` |
 | `.hi-card` | 2 | `format.ts:hiCard`, `render-core.ts:cardDetailHtml` |
 | `.cycsel-opt` | 2 | `history.ts:headMenuHtml`, `history.ts:headPickRow` |
-| `.cycsel-tick` | 2 | `history.ts:cyclePicker`, `history.ts:headPickRow` |
-| `.cycsel-menu` | 2 | `history.ts:cyclePicker`, `history.ts:histHead` |
-| `.cycsel-yr` | 2 | `history.ts:cyclePicker`, `history.ts:headMenuHtml` |
+| `.cycsel-tick` | 2 | `history.ts:headPickRow`, `history.ts:pickList` |
+| `.cycsel-menu` | 2 | `history.ts:histHead`, `history.ts:pickList` |
+| `.cycsel-yr` | 2 | `history.ts:headMenuHtml`, `history.ts:pickList` |
 | `.tag` | 2 | `readings.ts:pulseBlock`, `render-core.ts:headHtml` |
 | `.lag-row` | 2 | `render-pages.ts:deriveUninversionDetail`, `tabs-menu.ts:renderSeasonRows` |
 | `.lag-row-head` | 2 | `render-pages.ts:deriveUninversionDetail`, `tabs-menu.ts:renderSeasonRows` |

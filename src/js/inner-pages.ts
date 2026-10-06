@@ -184,7 +184,7 @@ function wireMetricPageControls(){
     if (id && (e.target as Element).closest("[data-picker-toggle]")){ pickerOpen[id] = !pickerOpen[id]; redrawSheet(id); return; }
     var opt = (e.target as Element).closest(".cycsel-opt");
     if (id && opt && (id in page.cycles)){
-      page.cycles[id] = opt.getAttribute("data-cycle");
+      if (opt.hasAttribute("data-year")) page.year[id] = +(opt.getAttribute("data-year") || ""); else page.cycles[id] = opt.getAttribute("data-cycle");
       pickerOpen[id] = false;
       redrawSheet(id); return;
     }

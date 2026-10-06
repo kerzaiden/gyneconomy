@@ -1,13 +1,12 @@
 import { CHEV } from "./format.ts";
-import { addSources, byId, detailSlot } from "./dom.ts";
+import { addSources, byId } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { calendarSvg, orbitSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
-import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
-import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
+import { buildCycleChart, chartDoor, IND } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage } from "./ai-insights.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
 import type { CycleModel } from "./model.ts";
@@ -26,16 +25,15 @@ function yearByYear(m: CycleModel){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
   for (var y = m.era.from; y <= m.endYear; y++){
     var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), ytd = m.ongoing && y === calendarTodayY, now = yearSoFar(y);
-    rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
+    rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd),
       econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
   }
   return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
 }
-function yearRow(year: string, lead: string, sheet?: string, foot?: string){
-  var tag = sheet != null ? "button" : "div";
-  return '<' + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '">' +
+function yearRow(year: string, lead: string, foot: string){
+  return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Indicators" data-ind-year="' + year + '">' +
     '<span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + '</span>' : "") +
-    '</span>' + (sheet != null ? CHEV : "") + (foot || "") + '</' + tag + '>';
+    '</span>' + CHEV + foot + '</button>';
 }
 function yearStrip(inYear: CycleModel["track"], y: number, ytd: boolean){
   var runs = seasonRuns(inYear);

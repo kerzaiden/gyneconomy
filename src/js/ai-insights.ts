@@ -3,7 +3,7 @@ import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
 import { metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
 import { clockSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
-import { cycleModel, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
+import { cycleModel, cycleOfYear, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
 import type { TrackSeg } from "./model.ts";
 import { colPeek } from "./charts.ts";
 import { wheelMeta } from "./refresh-season.ts";
@@ -48,7 +48,6 @@ function quarterly(id: string){
 function lastQuarter(id: string){
   return Math.max.apply(null, keyed(ROSTER_BY[id].hist).filter(function(d){ return d.v != null; }).map(function(d){ return d.k.length === 4 ? +d.k * 4 : qIdx(quartersOf(d.k)[0]); }));
 }
-function cycleOfYear(y: number){ return marketCycles.filter(function(c){ return y >= c.from && y <= (c.to || y); })[0]; }
 function qIdx(q: string){ return +q.slice(0, 4) * 4 + +q.slice(6) - 1; }
 function qName(i: number){ return Math.floor(i / 4) + " Q" + (i % 4 + 1); }
 function carried(s: Record<string, number>, to: number){

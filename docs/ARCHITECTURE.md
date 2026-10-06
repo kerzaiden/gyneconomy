@@ -372,7 +372,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `quarter-sheet` (a quarter's sheet, opened from the dial), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -466,7 +466,12 @@ Rules that shape the pages:
   fences beyond it mark Risk, and between is Attention, except that a result on the reading's `good` side is Normal.
   The cycle's length, bull years and bleed are judged only once it has closed; Regularity (`settled`) is read on the
   open cycle too, since it measures the three cycles before it. The health score is the share of judged
-  readings that are Normal. On top of the Indicators page sits the search box, the filter button inside it opening a small menu of tiers
+  readings that are Normal. On top of the Indicators page sits the history pages' own Cycles | Years bar (`periodControls`
+  in `history.ts`, the same `modeBar` and picker as every history, 0.8.9): Cycles reads a cycle as above, Years reads one
+  calendar year, each reading averaged over it (this year: today's figure) and judged against `Lab.now`, the range the
+  open cycle uses, so a year adds no band of its own. The picker's year and cycle follow each other (`syncPeriod`), and
+  each year in the Diagnosis's Year by Year opens Indicators on it (`data-ind-year`, `openYear`). Under the bar sits
+  the search box, the filter button inside it opening a small menu of tiers
   (`.lab-menu`, closed by Escape through `layer` or a tap outside); `narrow` hides the rows that fail either and any
   category left empty. A tier pick redraws (the counts and the button's label change); typing only narrows, so the
   box keeps its focus. A reading's row is a button that opens its page and a category's name filters Indicators to it,

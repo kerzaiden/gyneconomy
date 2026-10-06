@@ -244,6 +244,7 @@ export function cycleStory(c: Cycle){
 export function cycleSpanYears(){
   return (currentEra && currentEra.from) ? (calendarTodayY - currentEra.from + 1) : 5;
 }
+export function cycleOfYear(y: number): Cycle | undefined { return marketCycles.filter(function(c){ return y >= c.from && y <= (c.to || y); })[0]; }
 export function cycleByName(nm: string | null | undefined){
   for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].name === nm) return marketCycles[i];
   return null;

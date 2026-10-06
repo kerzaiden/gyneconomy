@@ -289,6 +289,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.6.1, 0.8.6)
   **The search box lives only in Indicators; Analysis has none, and the Insights head is its way in.** Keren: "in the
   analysis page, I don't need the search indicators because I already have this in the insight page." (0.8.8)
+- **Each year in Year by Year opens Indicators on that year, and Indicators moves between cycles and years with the
+  history pages' own Cycles | Years bar above its search.** Keren: "what I would want is to be referred to the
+  indicators page under that date … the selection bar between cycles and years, so that we would have the ability to
+  navigate between dates and cycles inside the indicators page." The tier filter stays inside the search box, the
+  categories under it. A year is each reading's average over that calendar year (this year: today's figure), judged
+  against the range the open cycle uses, so it adds no band. The quarter pop-up of category cards is gone from Year
+  by Year on every cycle page; a quarter's season still opens from the dial. (0.8.9)
 - **The category pages and their group pages are gone, with every design that came before Indicators; Indicators
   holds every reading, by category and subcategory, and each category's insights behind its More details.** Keren:
   "All the previous designs we made, we can throw them out." A closed cycle's figures are Cycle Statistics'. This
