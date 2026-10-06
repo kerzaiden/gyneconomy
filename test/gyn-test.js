@@ -432,6 +432,13 @@ async function openPage(p, url, sheet) {
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const door = await p.evaluate(() => ({ first: document.getElementById('chart-home').firstElementChild.className,
       rows: [...document.querySelectorAll('#chart-home .insight-row')].map(b => b.dataset.indCat).join() }));
+    await p.click('#chart-home button.dx-sys-head[data-open]'); await settle(p);
+    const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
+      shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
+    (all.title === 'Indicators' && all.shown === 'weather,mood,circulation,energy')
+      ? ok('the Insights head opens Indicators on All', all.shown)
+      : bad('the Insights head opens Indicators on All', JSON.stringify(all));
+    await p.goto('file://' + url); await ready(p); await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
     await p.click('#chart-home .insight-row[data-ind-cat="weather"]'); await settle(p);
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),

@@ -2,9 +2,9 @@ import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MON
 import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg } from "./charts.ts";
-import { confidenceHistory, durablesHistory, fedFundsHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
+import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, NEUTRAL_RATE, NEUTRAL_SRC, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
 import { cpiNow, growthWord, HOLD_BAND, inflationFigure, nowModel, potentialGap } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
@@ -14,7 +14,6 @@ export type ProductivityReading = WordReading & { wordWhy: string };
 export type ConfidenceReading = WordReading & { wordSays: string };
 export type DesireReading = WordReading & { wordSays: string };
 export type PremiumReading = WordReading & { side: string };
-export type RealRateReading = WordReading & { wordSays: string };
 export type MarketReading = WordReading & { wordSays: string; now: YearPoint; lo: YearPoint; hi: YearPoint; open: boolean };
 type HznPoint = { v: number | null; partial?: boolean };
 type HznAt = { i: number; v: number };
@@ -37,12 +36,6 @@ function confidenceWord(v: number): WordOf {
     says:"above the OECD\u2019s long-term average of 100, the side on which households lean towards spending on major purchases" };
   return { state:"warning", text:"Pessimistic",
     says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" };
-}
-function realRateWord(v: number): WordOf {
-  if (v >= NEUTRAL_RATE) return { state:"norm", text:"Restrictive",
-    says:"at or above the " + NEUTRAL_RATE + "% neutral rate, where policy leans on the economy" };
-  return { state:"norm", text:"Accommodative",
-    says:"below the " + NEUTRAL_RATE + "% neutral rate, where policy leaves the economy room" };
 }
 function desireWord(v: number): WordOf {
   if (v >= DESIRE_LINE) return { state:"good", text:"High appetite",
@@ -182,38 +175,6 @@ function premiumInfoHtml(f: PremiumReading){
     '<p class="caption follow"><b>Zero is the only line</b>, where stocks stop earning more than bonds. No other band is drawn, ' +
       'and the reading carries no word.</p>' +
     srcBlock(PREMIUM_SRC);
-}
-function realRateInfoHtml(f: RealRateReading){
-  return '<h4>' + titleCase(f.econTerm) + '</h4>' + ledeHtml("The Fed funds rate less inflation, against the " + NEUTRAL_RATE + "% neutral rate.") + facts([
-    "<b>Neutral</b> is the real rate that neither cools nor heats the economy: " + NEUTRAL_RATE + "%, John Taylor\u2019s equilibrium real rate (1993).",
-    "<b>Restrictive</b> above it, <b>accommodative</b> below it. The line is the only one drawn.",
-    "<b>Inflation</b> is the Season Model\u2019s own: CPI before 2000, PCE since.",
-    "<b>Today</b>, " + f.metricSub.replace(/^.*, /, "") + ": " + f.metric + ", " + f.wordSays + ". The record runs " + f.span + "."
-  ]) + srcBlock(NEUTRAL_SRC);
-}
-function deriveRealRate(){
-  var inf: Record<string, number> = {};
-  inflationHistory.forEach(function(d){ inf[d.m] = d.v; });
-  realRateHistory = fedFundsHistory.filter(function(d){ return inf[d.m] != null; }).map(function(d){ return { m:d.m, v:Math.round((d.v - inf[d.m]) * 100) / 100 }; });
-  var h = realRateHistory;
-  realRateRecord = { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }), hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
-  realRateReading = (function(R){
-    var word = realRateWord(R.now.v), at = monthLabel(R.now.m);
-    var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
-    return {
-      bodyTerm:"Real interest rate", info:function(){ return realRateInfoHtml(realRateReading); },
-      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-real-rate-chart"></div><div id="sheet-sign-real-rate-highlights"></div>'; } },
-      econTerm:"Real interest rate", metricSub:"Fed funds less inflation, " + at,
-      metric:fmtSigned(R.now.v, 1) + "%", tag:{ state:word.state, text:word.text }, wordSays:word.says,
-      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{lte:NEUTRAL_RATE, label:"\u2264 " + NEUTRAL_RATE + "%"}, ends:{ zone:"Accommodative", high:"Restrictive" } },
-      span:span,
-      get peek(){
-        return colPeek(realRateHistory.map(function(d){ return d.v - NEUTRAL_RATE; }), function(v){ return "dv-bar " + (v > 0 ? "over" : "under"); }, 0, true);
-      },
-      lead:"",
-      caption:at + ", the Fed funds rate less inflation at " + fmtSigned(R.now.v, 1) + "%, " + word.says + ". The track runs over the monthly record since " + monthLabel(h[0].m) + ": " + span + "."
-    };
-  })(realRateRecord);
 }
 function productivityInfoHtml(f: ProductivityReading){
   return '<h4>' + titleCase(f.econTerm) + '</h4>' +
@@ -554,7 +515,7 @@ function marketInfoHtml(f: MarketReading){
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
 }
-export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading, realRateReading]); }
+export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading]); }
 export function indOf(R: { term?: string }): Indicator | undefined { return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
 function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },
@@ -588,7 +549,7 @@ function seatTemperature(ind: Indicator, d: HTMLElement){
 }
 export var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
 
-export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, realRateHistory: MonthPoint[], realRateRecord: SeriesRecord<MonthPoint>, realRateReading: RealRateReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
+export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
 var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;
 
 function deriveFeelingReadings(){
@@ -685,7 +646,6 @@ export function bootReadings(){
     };
   })(productivityRecord);
   deriveFeelingReadings();
-  deriveRealRate();
   now.valuation.tag = valuationVerdict(metered(fileRow("cape").meter));
   liveInto("capeValue");
   liveInto("coincident");

@@ -332,7 +332,7 @@ function insightsHome(i: number){
 }
 function homeSections(i: number){
   return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
-    dxSys("", dxHead(chartSvg(), "Insights") + insightsHome(i));
+    dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
 }
 function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
@@ -343,8 +343,9 @@ function drawChart(id: string){
   narrow(host, id);
 }
 export var IND = "sheet-find";
+var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
 function searchDoor(i: number, j: Lab[]){
-  return searchShell("button", " lab-door", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat=""', '<span>Search indicators</span>' + filterTags(HOME_ID, i, j));
+  return searchShell("button", " lab-door", ' type="button"' + IND_ALL, '<span>Search indicators</span>' + filterTags(HOME_ID, i, j));
 }
 function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
 function catBar(j: Lab[]){

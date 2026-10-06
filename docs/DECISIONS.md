@@ -617,8 +617,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Pressure (Interest rates, Real interest
-  rate, US 10-year Treasury) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
+  Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Pressure (Interest rates,
+  US 10-year Treasury) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
   names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". Keren renamed
@@ -964,10 +964,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   average) it is Above trend, at or above 1.3% (the slowdown-era average) Above the slowdown, below that Below
   the slowdown; the captions and the note follow the word.** Keren chose a rule from the BLS lines over setting
   the word each quarter. (V668)
-- **The real interest rate (the Fed funds rate less inflation, CPI before 2000 and PCE since) is a Circulation
-  card right after Interest rates, read against a 2% neutral rate: at or above it Restrictive, below it
-  Accommodative.** Keren chose the real rate line over a nominal neutral line. The 2% is Taylor's (1993)
-  equilibrium real rate, cited in the (i); it is a published convention, not a band the app set. (0.8.2)
+- **No real interest rate card for now.** The real rate (the Fed funds rate less inflation, against Taylor's 2%
+  neutral rate) was a Circulation card from 0.8.2; Keren dropped it: "drop the real interest rate. We don't need
+  it for now." (0.8.6)
 
 ## History charts
 
