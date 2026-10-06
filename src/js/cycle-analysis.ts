@@ -339,7 +339,7 @@ function drawChart(id: string){
   if (!host || !c) return;
   var i = marketCycles.indexOf(c), j = judged(i).filter(function(l){ return l.cat !== "cycle"; });
   if (id === HOME_ID){ host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + '</div>'; return; }
-  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
+  host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs">' + bySystem(i, j, findOf(id).cat) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
 export var IND = "sheet-find";

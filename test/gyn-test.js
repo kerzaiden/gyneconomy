@@ -466,7 +466,7 @@ async function openPage(p, url, sheet) {
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
     (door.first === 'search-field lab-door' && door.rows === 'weather,mood,circulation,energy' && weather.title === 'Indicators' && weather.shown === 'weather' &&
-     weather.subs === 'Season 2,Market 1')
+     weather.subs === 'Economic Season 2,Market 1')
       ? ok('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', JSON.stringify({ door, weather }));
     await p.click('#sheet-find [data-ind-cat=""]'); await settle(p);

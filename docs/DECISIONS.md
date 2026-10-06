@@ -616,13 +616,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   category", and "indicator page needs some work, but for now it would be fine." (0.8.3, Oct 6, 2026)
 - **On one category, Indicators groups its readings by subcategory: each subcategory is a quiet heading (the
   first member's mark and its name, small and grey) over its results, in place of the category's heading, which the
-  bar already names.** All keeps one heading per category. Every heading sits in one container, white over its
-  apricot-tinted results with an apricot line between, its mark in apricot and its count in light grey beside its
-  fold chevron. Keren: "titles … with white background and the indicators have an apricot background … it reminds
+  bar already names.** All keeps one heading per category. Each heading and its results is its own container, the
+  standard gap (`--gap`) from the next and from More details below; the heading is white over the apricot-tinted
+  results with an apricot line between, its mark in apricot and its count in light grey beside its fold chevron.
+  Keren: "let's separate them … with the predetermined gap", "the gap between the containers and the more details is
+  not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
-  stay readable. Keren: "I want it all to be some kind of a single
-  container that you have like very delicate titles … the category titles are too big. They need to blend in with
-  the data that they present." Weather: Season (Temperature, Growth) and Market (S&P 500);
+  stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
   Mood: Valuations, Sentiment (Volatility, Confidence) and Desire; Circulation: Rates (Interest rates, Real interest
   rate, Pressure) and Money (Pulse, Volume); Energy: Stress and Work (Unemployment rate, Productivity growth). The
   names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
@@ -1335,9 +1335,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A mark's badge uses its own wash, `--mark-wash`, one step deeper than `--track`.** Keren: "I want this
   background to be a little less pale"; a badge has to read as a shape. (V503)
 - **A segmented control is a light grey track (`--seg-track`) with no border, and its chosen segment is a white
-  pill (`--seg-on`).** Keren, from Clair: "I like the way they did the selection bar in gray and white". It is the
-  one grey in the app; containers stay white ("I don't like the gray. It's too gray. Let's use white"). (0.6.2,
-  replacing V579)
+  pill (`--seg-on`); track and pill are fully round, the choices spread evenly in dark text, the chosen one a
+  touch bolder on a softly lifted pill.** Keren, from Clair: "I like the way they did the selection bar in gray and
+  white"; and, from a hormone-app reference, "make the selection bar like the reference … it looks much prettier"
+  (0.8.5). It is the one grey in the app; containers stay white ("I don't like the gray. It's too gray. Let's use
+  white"). (0.6.2, 0.8.5, replacing V579)
 - **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a white
   page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer salmon-orange and Autumn
   marigold; Winter and Spring stay periwinkle (V180).** Keren: "I really like the dark purple in this reference

@@ -79,9 +79,9 @@ export var ROSTER: RosterRow[];
 
 function declareRoster(): RosterRow[] {
   return [
-    { id:"sheet-metric-temp", name:"Temperature", cat:"weather", sub:"Season", timing:"lagging", mark:thermoSvg, door:"peek", slot:"temp", term:"Temperature",
+    { id:"sheet-metric-temp", name:"Temperature", cat:"weather", sub:"Economic Season", timing:"lagging", mark:thermoSvg, door:"peek", slot:"temp", term:"Temperature",
       head:"CPI and PCE Inflation", hist:{ s:inflationHistory, k:"m" }, when:lastDate, cardUnit:"PCE, YoY" },
-    { id:"sheet-metric-gdp", name:"Growth", cat:"weather", sub:"Season", good:"up", timing:"coincident", mark:sproutSvg, door:"peek", slot:"gdp",
+    { id:"sheet-metric-gdp", name:"Growth", cat:"weather", sub:"Economic Season", good:"up", timing:"coincident", mark:sproutSvg, door:"peek", slot:"gdp",
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, when:lastDate, cardUnit:"YoY" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return", soFar:true },
