@@ -167,6 +167,7 @@ export function cycleNowNote(m: CycleModel){
     (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
   return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
 }
+export function seasonOfQ(q: string){ return seasonByQ[q] || ""; }
 export function seasonGroup(key: string){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 // ---- The diagnosis: how she feels, and what has followed ----
 export function rankToDate(prior: (number | null)[], v: number | null | undefined){
@@ -235,6 +236,7 @@ export function cycleStory(c: Cycle){
   return { first:t[0], last:now && now.word ? now : t[t.length - 1], hi:hi, lo:lo, most:most.map(function(w){ return { word:w, n:count[w] }; }) };
 }
 // ---- Cycles by name ----
+export function cycleOfYear(y: number): Cycle | undefined { return marketCycles.filter(function(c){ return y >= c.from && y <= (c.to || y); })[0]; }
 export function cycleByName(nm: string | null | undefined){
   for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].name === nm) return marketCycles[i];
   return null;
@@ -323,7 +325,7 @@ export function forgetMood(){ moodLists = null; moodCache = null; }
 
 export type CycleModel = ReturnType<typeof cycleModel>;
 export var cycleYtdFraction: number, nowModel: CycleModel, cpiNow: number, currentSeason: Season, seasonWhy: string, currentEra: Cycle;
-var seasonTrackAll: TrackEntry[], seasonTrackYears: TrackEntry[], seasonTrack: TrackEntry[], regimeByQ: Record<string, string>, readingNow: ModelReading;
+var seasonTrackAll: TrackEntry[], seasonTrackYears: TrackEntry[], seasonTrack: TrackEntry[], regimeByQ: Record<string, string>, seasonByQ: Record<string, string>, readingNow: ModelReading;
 
 function seasonYears(){
   var firstY = parseInt(gdpQuarterlyYoY[0].q, 10), out: TrackEntry[] = [], prevRegime: string | undefined;
@@ -357,6 +359,8 @@ export function bootModel(){
   var lastYear = seasonTrackYears[seasonTrackYears.length - 1];
   seasonTrackAll = seasonQuarters(lastYear && lastYear.reading.regime);
   seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
+  seasonByQ = {};
+  seasonTrack.forEach(function(e){ if (e) seasonByQ[e.q] = seasonGroup(e.reading.season); });
   regimeByQ = (function(){
     var out: Record<string, string> = {};
     seasonTrack.forEach(function(e){ if (e) out[e.q] = e.reading.regime; });

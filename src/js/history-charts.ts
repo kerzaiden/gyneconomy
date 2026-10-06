@@ -399,7 +399,7 @@ function heatEdges(){
   if (!heatTop.length){ var all = inflationHistory.map(function(d){ return d.v; }); heatTop = [pctl(all, 0.9), pctl(all, 0.95)]; }
   return heatTop;
 }
-export function heatStep(v: number){
+function heatStep(v: number){
   var top = heatEdges();
   return v < TEMP_BAND_LO ? "s0" : v < CPI_TARGET ? "s1" : v < TEMP_BAND_HI ? "s2" : v < top[0] ? "s3" : v < top[1] ? "s4" : "s5";
 }

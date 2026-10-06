@@ -74,7 +74,6 @@ export function factsFrom(text: unknown){
 export function srcBlock(list: Src[]){ return '<div class="src">' + srcHtml(list) + '</div>'; }
 function srcHtml(list: Src[]){ return list.map(function(s: Src){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
 export function fmtSigned(v: number, dp: number){ var a = Math.abs(v).toFixed(dp); return (+a === 0 ? "" : v > 0 ? "+" : "\u2212") + a; }
-export function popHead(title: string, sub: string){ return '<h4>' + titleCase(title) + '</h4><span class="marker-sub">' + sub + '</span>'; }
 export function hubLine(html: string){ return '<span class="hub-line">' + html + '</span>'; }
 export function qPretty(q: unknown){ var p = String(q).split(" "); return p.length > 1 ? p[1] + " " + p[0] : String(q); }
 export function capeFmt1(v: number){ return v.toFixed(1) + "\u00d7"; }

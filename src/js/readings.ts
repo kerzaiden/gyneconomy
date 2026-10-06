@@ -498,11 +498,11 @@ export function volatilityDetailHtml(){
     'Daily record on the VIX since 1990: <b>' + m.min + '</b> low, <b>' + m.max + '</b> high.'
   ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
 }
-export function marketWord(v: number): WordOf {
+function marketWord(v: number): WordOf {
   if (v >= 0) return { state:"good", text:"Bull year", says:"a positive total return, which the dial draws as a bull year" };
   return { state:"serious", text:"Bear year", says:"a negative total return, which the dial draws as a bear year" };
 }
-export function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
+function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
 function marketInfoHtml(f: MarketReading){
   return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +

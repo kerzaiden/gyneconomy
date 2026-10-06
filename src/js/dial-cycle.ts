@@ -1,5 +1,5 @@
 import { facts, fmtSigned, hubLine, ledeHtml, monthLabel, qLabel, srcBlock } from "./format.ts";
-import { byId, detailSlot, detailTexts, need, put, rovingKeys, ui } from "./dom.ts";
+import { byId, detailSlot, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
 import { CPI_TARGET, FED_TARGET_SRC, gdpSrc, sp500AnnualReturns, TEMP_BAND_HI, TEMP_BAND_LO, typicalCycleSrc, typicalCycleYears } from "./data.ts";
@@ -8,15 +8,14 @@ import { CATEGORIES } from "./roster.ts";
 import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
 import { fitYearDots, renderDiagnosis } from "./diagnosis.ts";
-import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleViewEl } from "./render-pages.ts";
-import { IND } from "./cycle-analysis.ts";
+import { IND, nowWhen } from "./cycle-analysis.ts";
 import type { TrackSeg } from "./model.ts";
 
 type CycleModel = ReturnType<typeof cycleModel>;
 type DialQuarter = { seg: TrackSeg; a0: number; a1: number; mid: number };
-type DialState = { m: CycleModel; quarters: DialQuarter[]; badgeDeg: number; badgeAt: number; polar: (r: number, deg: number) => string[]; parked: number | null; sheets: Record<number, string> };
-type HubOpen = { cat?: (typeof CATEGORIES)[number]; html?: string } | null;
+type DialState = { m: CycleModel; quarters: DialQuarter[]; badgeDeg: number; badgeAt: number; polar: (r: number, deg: number) => string[]; parked: number | null };
+type HubOpen = { cat?: (typeof CATEGORIES)[number]; when: string } | null;
 
 // ---- the dial: one ring of moons, the market band inside, the year badge, the dots of a typical cycle ahead ----
 function drawDial(m: CycleModel){
@@ -97,7 +96,7 @@ function drawDial(m: CycleModel){
   dialEl.style.setProperty("--track-w", trackW.toFixed(2));
   dialEl.style.setProperty("--moon-w-active", (moonW + 5).toFixed(2));
   dialEl.innerHTML = parts.join("");
-  dialState = { m:m, quarters:quarters, badgeDeg:badgeDeg, badgeAt:BADGE_AT, polar:polar, parked:null, sheets:{} };
+  dialState = { m:m, quarters:quarters, badgeDeg:badgeDeg, badgeAt:BADGE_AT, polar:polar, parked:null };
   hubShowDefault();
 }
 // ---- the Appearance row: System · Light · Dark, kept in localStorage; System clears the choice ----
@@ -149,22 +148,20 @@ function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, o
 }
 function hubOpen(open: HubOpen){
   var b = byId("season-wheel-hub-open") as HTMLButtonElement;
-  ["data-open", "data-title", "data-ind-cat", "data-detail-idx"].forEach(function(a){ b.removeAttribute(a); });
-  b.disabled = !open; b.classList.toggle("details-link", !!(open && open.html));
-  if (open && open.cat){ b.setAttribute("data-open", IND); b.setAttribute("data-title", "Indicators"); b.setAttribute("data-ind-cat", open.cat.key); }
-  if (open && open.html){ detailTexts[hubDetailIdx] = open.html; b.setAttribute("data-detail-idx", hubDetailIdx as unknown as string); }
+  b.removeAttribute("data-ind-cat");
+  b.disabled = !open; b.setAttribute("data-open", IND); b.setAttribute("data-title", "Indicators"); b.setAttribute("data-ind-when", open ? open.when : "");
+  if (open && open.cat) b.setAttribute("data-ind-cat", open.cat.key);
 }
 function hubShowDefault(){
   if (dialState.parked != null){ hubShowQuarter(dialState.parked); return; }
   var m = dialState.m, meta = wheelMeta[m.season], qs = dialState.quarters, last = qs[qs.length - 1];
-  if (m.ongoing){ hubSet(hubTodayHtml(), meta, calendarTodayY, { cat:CATEGORIES.filter(function(c){ return c.onDial; })[0] }); return; }
-  var presentSeg = { q:last ? last.seg.q : m.reading!.gdpLatest.q, from:last ? last.seg.from : 0, season:m.season, reading:m.reading! };
-  hubSet("<b>Closed,</b> " + monthLabel(m.endMonth), meta, m.endYear, { html:quarterSheet(m, presentSeg, true) });
+  if (m.ongoing){ hubSet(hubTodayHtml(), meta, calendarTodayY, { cat:CATEGORIES.filter(function(c){ return c.onDial; })[0], when:nowWhen(true) }); return; }
+  hubSet("<b>Closed,</b> " + monthLabel(m.endMonth), meta, m.endYear, { when:last ? last.seg.q : m.reading!.gdpLatest.q });
 }
 function hubShowQuarter(i: number){
-  var q = dialState.quarters[i], cache = dialState.sheets; if (!q) return;
+  var q = dialState.quarters[i]; if (!q) return;
   hubSet("<b>" + qLabel(q.seg.q) + "</b>", wheelMeta[q.seg.season], parseInt(q.seg.q, 10),
-    { html:cache[i] || (cache[i] = quarterSheet(dialState.m, q.seg, false)) });
+    { when:q.seg.q });
 }
 function hubShowYear(y: number){
   var m = dialState.m, ret = sp500AnnualReturns[y], isYtd = m.ongoing && y === calendarTodayY;
@@ -361,15 +358,13 @@ export function settleAll(){
 }
 
 export var growthDetail: string;
-var dialState: DialState, hubDetailIdx: number;
+var dialState: DialState;
 
 export function bootDialCycle(){
   GYN.step("wireThemeChoice", wireThemeChoice, "wire");
   wireThemeChoice();
   GYN.step("renderCycleKicker", renderCycleKicker, "render");
   renderCycleKicker();
-  hubDetailIdx = detailTexts.length;
-  detailTexts.push("");
   GYN.step("renderCycleDial", renderCycleDial, "wire");
   renderCycleDial();
   growthDetail = '<h4>Growth per Cycle</h4>' +
