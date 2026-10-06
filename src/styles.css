@@ -264,11 +264,11 @@
   .contact-actions{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:12px; border-top:1px solid var(--border); }
   .contact-hint{ font-size:var(--type-meta); color:var(--text-muted); }
   .contact-hint.err{ color:var(--critical-ink); }
-  .contact-send{
+  .contact-send, .ind-show{
     border:0; border-radius:var(--round); padding:11px 22px; cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600;
     background:var(--accent); color:var(--on-accent); transition:background 0.12s;
   }
-  .contact-send:hover{ background:var(--accent-ink); }
+  .contact-send:hover, .ind-show:hover{ background:var(--accent-ink); }
   .sources-view .menu-section{ font-family:"Public Sans",sans-serif; font-size:var(--type-meta); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); font-weight:600; }
   .sources-view .menu-row{ font-size:var(--type-reading); padding:14px 18px; line-height:1.45; }
   .sources-view .menu-row svg{ width:14px; height:14px; }
@@ -1027,7 +1027,27 @@
   .ind-sec + .ind-sec{ margin-top:20px; }
   .ind-sec h5{ margin:16px 0 8px; font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); }
   .ind-sec .range-seg small{ color:var(--text-muted); font-weight:500; }
-  .period-list{ max-height:228px; overflow-y:auto; margin-top:8px; padding:4px; border:1px solid var(--border); border-radius:var(--radius-inner); background:var(--surface); }
+  .ind-filter-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .ind-reset{ border:0; background:none; padding:4px 0; cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:600; color:var(--accent); }
+  .ind-sec h5{ display:flex; justify-content:space-between; align-items:baseline; }
+  .ind-sec h5 em{ font-style:normal; letter-spacing:0; text-transform:none; font-size:var(--type-interface); color:var(--accent); }
+  .period-cal{ max-height:300px; overflow-y:auto; padding:2px 12px 10px; border:1px solid var(--border); border-radius:var(--radius-inner); background:var(--surface); }
+  .cal-band{ display:flex; justify-content:space-between; align-items:baseline; width:100%; margin:10px 0 4px; padding:7px 12px; border:0; border-radius:var(--round); background:var(--seg-track); color:var(--text-primary); cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); }
+  .cal-band b{ font-weight:600; } .cal-band small{ font-size:var(--type-meta); color:var(--text-muted); }
+  .cal-band.on{ background:var(--accent); color:var(--on-accent); } .cal-band.on small{ color:inherit; opacity:.75; }
+  .cal-year{ display:grid; grid-template-columns:52px repeat(4, 1fr); gap:6px; margin:5px 0; }
+  .cal-y, .cal-q{ height:30px; border:0; border-radius:var(--round); cursor:pointer; font-family:"Public Sans",sans-serif; color:var(--text-primary); }
+  .cal-y{ background:none; font-size:var(--type-interface); font-weight:500; }
+  .cal-y.is-off{ display:grid; place-items:center; color:var(--text-muted); cursor:default; }
+  .cal-y.on{ background:var(--accent); color:var(--on-accent); }
+  .cal-q{ background:var(--season-wash); font-size:var(--type-meta); }
+  .cal-q.is-off{ background:var(--seg-track); cursor:default; }
+  .cal-year.in .cal-q{ box-shadow:inset 0 0 0 1.5px var(--accent); }
+  .cal-q.on{ box-shadow:inset 0 0 0 2px var(--accent); font-weight:700; }
+  :is(.cal-band, .cal-y, .cal-q, .ind-reset):focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .ind-filter .cal-key{ display:flex; gap:14px; margin:8px 2px 0; font-size:var(--type-meta); color:var(--text-muted); }
+  .cal-key i{ display:inline-block; width:9px; height:9px; margin-right:5px; border-radius:50%; background:var(--season); }
+  .ind-show{ width:100%; margin-top:24px; padding:14px 22px; }
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
   .plain{ --cat:var(--text-muted); }

@@ -470,10 +470,11 @@ Rules that shape the pages:
   is open: today's figure) and judged against `Lab.now`, the range the open cycle uses, so a period adds no band of its
   own. A reading kept only by the year (`k` "y" or "yi") shows its year's figure in a quarter and names the year. Under
   the stepper sits the search box with one filter button; it and the stepper's period open the filter sheet
-  (`filterSheet`, in the detail modal): Period (Cycles | Years | Quarters and the list), Category, and Range (All, Risk,
-  Attention, Normal with their counts). Every pick is a `data-pick-*` button handled once (`wirePicks`), which redraws
+  (`filterSheet`, in the detail modal): Period (`periodCal`: newest cycle first, a band per cycle, a row per year, a tile per
+  quarter in its season's wash from `seasonOfQ`; the key picked sets the mode, so the calendar needs no switch),
+  Category, and Result (All, Risk, Attention, Normal with their counts), then Reset and Show, which closes the sheet. Every pick is a `data-pick-*` button handled once (`wirePicks`), which redraws
   the page and the open sheet. Each year in Year by Year and the dial's centre open Indicators on their period
-  (`data-ind-when`, `openWhen`), and an Insights door on Analysis returns it to Cycles. `narrow` hides the rows that fail the search, the category or the range, and any
+  (`data-ind-when`, `openWhen`), and an Insights door on Analysis returns it to Cycles. `narrow` hides the rows that fail the search, the category or the result, and any
   category left empty. A pick redraws (the counts and the button's label change); typing only narrows, so the
   box keeps its focus. A reading's row is a button that opens its page and a category's name filters Indicators to it,
   through the panels' one `[data-open]` handler; the heading's count and chevron are a separate button that folds it.

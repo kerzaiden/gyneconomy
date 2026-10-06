@@ -312,7 +312,7 @@ async function openPage(p, url, sheet) {
     (yearInd.title === 'Indicators' && yearInd.shown && yearInd.year === '2010' && yearInd.cycle === 'Year 2 of the Big Tech Cycle' && yearInd.items > 10 && !yearInd.popup)
       ? ok('a year in Year by Year opens Indicators on that year', yearInd.items + ' readings in 2010')
       : bad('a year in Year by Year opens Indicators on that year', JSON.stringify(yearInd));
-    await filt(p, '[data-pick-mode="cycles"]'); await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
+    await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
     (past && past.visible && past.title === 'Cycle Statistics' && past.lead === 1 && past.story && past.kicker === 'Big Tech Cycle')
@@ -487,37 +487,38 @@ async function openPage(p, url, sheet) {
       : bad('the search box finds readings by name, measure and category', JSON.stringify({ cpi, mood, nil, back }));
     await click(p, '#sheet-find .lab-filter'); await settle(p);
     const sheet = await p.evaluate(() => ({ open: document.getElementById('detail-backdrop').classList.contains('show'),
-      heads: [...document.querySelectorAll('#detail-modal-body .ind-sec h5')].map(h => h.textContent).join() }));
+      heads: [...document.querySelectorAll('#detail-modal-body .ind-sec h5')].map(h => h.firstChild.textContent).join() }));
     await filt(p, '[data-pick-tier="abnormal"]');
     const risk = await p.evaluate(() => ({ label: document.querySelector('#sheet-find .lab-filter').textContent, on: (document.querySelector('#detail-modal-body [data-pick-tier].on') || {}).textContent,
       rows: [...document.querySelectorAll('#sheet-find .lab-item:not([hidden])')].map(r => r.classList.contains('t-abnormal')) }));
     await filt(p, '[data-pick-tier="all"]');
-    (sheet.open && sheet.heads === 'Period,Category,Range' && risk.label === 'Risk' && /^Risk/.test(risk.on || '') && risk.rows.length > 0 && risk.rows.every(Boolean))
-      ? ok('one filter sheet holds Period, Category and Range, and Range narrows the results to a tier', risk.rows.length + ' at risk')
-      : bad('one filter sheet holds Period, Category and Range, and Range narrows the results to a tier', JSON.stringify({ sheet, risk }));
+    (sheet.open && sheet.heads === 'Period,Category,Result' && risk.label === 'Risk' && /^Risk/.test(risk.on || '') && risk.rows.length > 0 && risk.rows.every(Boolean))
+      ? ok('one filter sheet holds Period, Category and Result, and Result narrows the results to a tier', risk.rows.length + ' at risk')
+      : bad('one filter sheet holds Period, Category and Result, and Result narrows the results to a tier', JSON.stringify({ sheet, risk }));
     const now = () => p.evaluate(() => ({ label: document.querySelector('#sheet-find .period-now b').textContent, cap: document.querySelector('#sheet-find .period-now small').textContent,
-      list: document.querySelectorAll('#detail-modal-body [data-pick-period]').length, items: document.querySelectorAll('#sheet-find .lab-item').length,
+      cal: ['band', 'y', 'q'].map(c => document.querySelectorAll('#detail-modal-body button.cal-' + c).length),
+      on: (document.querySelector('#detail-modal-body .period-cal [aria-pressed="true"]') || {}).textContent, items: document.querySelectorAll('#sheet-find .lab-item').length,
       sp: (document.querySelector('#sheet-find .lab-row[data-open="sheet-sign-market"] .lab-res b') || {}).textContent }));
     const sub = await now();
     await filt(p, '[data-pick-period="Dot-Com Cycle"]');
     const dot = await now();
-    await filt(p, '[data-pick-mode="calendar"]');
-    const yr = await now();
     await filt(p, '[data-pick-period="1999"]');
     const y99 = await now();
-    await filt(p, '[data-pick-mode="quarters"]');
+    await filt(p, '[data-pick-period="1999 Q4"]');
     const q99 = await now();
     await shut(p);
     await click(p, '#sheet-find .period-arrow.back'); await settle(p);
     const stepBack = await now();
-    await filt(p, '[data-pick-mode="cycles"]');
-    const backTo = await now();
-    await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
-    (sub.list > 15 && dot.label === 'Dot-Com Cycle' && dot.items > 10 && yr.label === '2002' && yr.list > 90 && yr.items > 10 &&
-     y99.label === '1999' && y99.cap === 'Year 9 of the Dot-Com Cycle' && /^\+21\.0%/.test(y99.sp || '') && q99.label === 'Q4 1999' && q99.list > 350 &&
-     stepBack.label === 'Q3 1999' && backTo.label === 'Dot-Com Cycle')
-      ? ok('Indicators moves by cycle, year or quarter, from the filter sheet or the stepper\u2019s arrows', sub.list + ' cycles, ' + yr.list + ' years, ' + q99.list + ' quarters; 1999 S&P 500 ' + y99.sp)
-      : bad('Indicators moves by cycle, year or quarter, from the filter sheet or the stepper\u2019s arrows', JSON.stringify({ sub, dot, yr, y99, q99, stepBack, backTo }));
+    await filt(p, '[data-pick-tier="borderline"]'); await filt(p, '[data-pick-reset]');
+    const reset = await p.evaluate(() => ({ tier: document.querySelector('#detail-modal-body [data-pick-tier].on').dataset.pickTier, label: document.querySelector('#sheet-find .period-now b').textContent,
+      show: document.querySelector('#detail-modal-body .ind-show').textContent, items: document.querySelectorAll('#sheet-find .lab-item:not([hidden])').length }));
+    await click(p, '#detail-modal-body .ind-show'); await settle(p);
+    const closed = await p.evaluate(() => !document.getElementById('detail-backdrop').classList.contains('show'));
+    (sub.cal[0] > 15 && sub.cal[1] > 90 && sub.cal[2] > 350 && dot.label === 'Dot-Com Cycle' && dot.on === 'Dot-Com Cycle1991\u20132002' && dot.items > 10 &&
+     y99.label === '1999' && y99.on === '1999' && y99.cap === 'Year 9 of the Dot-Com Cycle' && /^\+21\.0%/.test(y99.sp || '') && q99.label === 'Q4 1999' && q99.on === 'Q4' &&
+     stepBack.label === 'Q3 1999' && reset.tier === 'all' && reset.label === 'AI Cycle' && reset.show === 'Show ' + reset.items + ' readings' && closed)
+      ? ok('Indicators moves by cycle, year or quarter on one season calendar or the stepper\u2019s arrows, and Reset brings it home', sub.cal[0] + ' cycles, ' + sub.cal[1] + ' years, ' + sub.cal[2] + ' quarters; 1999 S&P 500 ' + y99.sp)
+      : bad('Indicators moves by cycle, year or quarter on one season calendar or the stepper\u2019s arrows, and Reset brings it home', JSON.stringify({ sub, dot, y99, q99, stepBack, reset, closed }));
     await p.click('#sheet-find .cat-mood .lab-fold'); await settle(p);
     const folded = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       hid: !document.querySelector('#sheet-find .cat-mood .lab-item').offsetParent }));

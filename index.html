@@ -268,11 +268,11 @@
   .contact-actions{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:12px; border-top:1px solid var(--border); }
   .contact-hint{ font-size:var(--type-meta); color:var(--text-muted); }
   .contact-hint.err{ color:var(--critical-ink); }
-  .contact-send{
+  .contact-send, .ind-show{
     border:0; border-radius:var(--round); padding:11px 22px; cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600;
     background:var(--accent); color:var(--on-accent); transition:background 0.12s;
   }
-  .contact-send:hover{ background:var(--accent-ink); }
+  .contact-send:hover, .ind-show:hover{ background:var(--accent-ink); }
   .sources-view .menu-section{ font-family:"Public Sans",sans-serif; font-size:var(--type-meta); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); font-weight:600; }
   .sources-view .menu-row{ font-size:var(--type-reading); padding:14px 18px; line-height:1.45; }
   .sources-view .menu-row svg{ width:14px; height:14px; }
@@ -1019,7 +1019,27 @@
   .ind-sec + .ind-sec{ margin-top:20px; }
   .ind-sec h5{ margin:16px 0 8px; font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); }
   .ind-sec .range-seg small{ color:var(--text-muted); font-weight:500; }
-  .period-list{ max-height:228px; overflow-y:auto; margin-top:8px; padding:4px; border:1px solid var(--border); border-radius:var(--radius-inner); background:var(--surface); }
+  .ind-filter-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .ind-reset{ border:0; background:none; padding:4px 0; cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:600; color:var(--accent); }
+  .ind-sec h5{ display:flex; justify-content:space-between; align-items:baseline; }
+  .ind-sec h5 em{ font-style:normal; letter-spacing:0; text-transform:none; font-size:var(--type-interface); color:var(--accent); }
+  .period-cal{ max-height:300px; overflow-y:auto; padding:2px 12px 10px; border:1px solid var(--border); border-radius:var(--radius-inner); background:var(--surface); }
+  .cal-band{ display:flex; justify-content:space-between; align-items:baseline; width:100%; margin:10px 0 4px; padding:7px 12px; border:0; border-radius:var(--round); background:var(--seg-track); color:var(--text-primary); cursor:pointer; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); }
+  .cal-band b{ font-weight:600; } .cal-band small{ font-size:var(--type-meta); color:var(--text-muted); }
+  .cal-band.on{ background:var(--accent); color:var(--on-accent); } .cal-band.on small{ color:inherit; opacity:.75; }
+  .cal-year{ display:grid; grid-template-columns:52px repeat(4, 1fr); gap:6px; margin:5px 0; }
+  .cal-y, .cal-q{ height:30px; border:0; border-radius:var(--round); cursor:pointer; font-family:"Public Sans",sans-serif; color:var(--text-primary); }
+  .cal-y{ background:none; font-size:var(--type-interface); font-weight:500; }
+  .cal-y.is-off{ display:grid; place-items:center; color:var(--text-muted); cursor:default; }
+  .cal-y.on{ background:var(--accent); color:var(--on-accent); }
+  .cal-q{ background:var(--season-wash); font-size:var(--type-meta); }
+  .cal-q.is-off{ background:var(--seg-track); cursor:default; }
+  .cal-year.in .cal-q{ box-shadow:inset 0 0 0 1.5px var(--accent); }
+  .cal-q.on{ box-shadow:inset 0 0 0 2px var(--accent); font-weight:700; }
+  :is(.cal-band, .cal-y, .cal-q, .ind-reset):focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .ind-filter .cal-key{ display:flex; gap:14px; margin:8px 2px 0; font-size:var(--type-meta); color:var(--text-muted); }
+  .cal-key i{ display:inline-block; width:9px; height:9px; margin-right:5px; border-radius:50%; background:var(--season); }
+  .ind-show{ width:100%; margin-top:24px; padding:14px 22px; }
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
   .plain{ --cat:var(--text-muted); }
@@ -1599,8 +1619,8 @@
     return MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + " " + m[1];
   }
   function isoDay(s) {
-    var t = String(s || ""), iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t), shown = /^([A-Z][a-z]{2}) (\d{1,2}),? (\d{4})$/.exec(t);
-    var y = iso ? +iso[1] : shown ? +shown[3] : 0, m = iso ? +iso[2] : shown ? MONTHS_SHORT.indexOf(shown[1]) + 1 : 0, d = iso ? +iso[3] : shown ? +shown[2] : 0;
+    var t = String(s || ""), iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t), shown2 = /^([A-Z][a-z]{2}) (\d{1,2}),? (\d{4})$/.exec(t);
+    var y = iso ? +iso[1] : shown2 ? +shown2[3] : 0, m = iso ? +iso[2] : shown2 ? MONTHS_SHORT.indexOf(shown2[1]) + 1 : 0, d = iso ? +iso[3] : shown2 ? +shown2[2] : 0;
     var at = new Date(Date.UTC(y, m - 1, d));
     return y && m >= 1 && at.getUTCMonth() === m - 1 && at.getUTCDate() === d ? at.toISOString().slice(0, 10) : "";
   }
@@ -1674,11 +1694,11 @@
   function hiCard(name, state2, text, body, phrase) {
     return '<div class="hi-card"><span class="hi-name ' + state2 + '">' + (phrase ? name : titleCase(name)) + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
   }
-  function dropWhatIsShown(full, shown) {
-    if (!full || !shown) return full || "";
+  function dropWhatIsShown(full, shown2) {
+    if (!full || !shown2) return full || "";
     var norm = function(x) {
       return x.replace(/\s+/g, " ").trim();
-    }, seen = norm(shown);
+    }, seen = norm(shown2);
     var parts = full.split(new RegExp("(?<=[.!?])\\s+")), i = 0;
     while (i < parts.length && parts[i] && seen.indexOf(norm(parts[i])) !== -1) i++;
     return i ? parts.slice(i).join(" ").replace(/^\s+/, "") : full;
@@ -31671,6 +31691,9 @@
     var prices = "prices are " + (r.cpiHot ? "running hot" : r.cpiCold ? "running cold" : "inside the range") + (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
     return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
   }
+  function seasonOfQ(q) {
+    return seasonByQ[q] || "";
+  }
   function seasonGroup(key) {
     return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key;
   }
@@ -31982,6 +32005,7 @@
   var seasonTrackYears;
   var seasonTrack;
   var regimeByQ;
+  var seasonByQ;
   var readingNow;
   function seasonYears() {
     var firstY = parseInt(gdpQuarterlyYoY[0].q, 10), out = [], prevRegime;
@@ -32037,6 +32061,10 @@
     var lastYear = seasonTrackYears[seasonTrackYears.length - 1];
     seasonTrackAll = seasonQuarters(lastYear && lastYear.reading.regime);
     seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
+    seasonByQ = {};
+    seasonTrack.forEach(function(e) {
+      if (e) seasonByQ[e.q] = seasonGroup(e.reading.season);
+    });
     regimeByQ = function() {
       var out = {};
       seasonTrack.forEach(function(e) {
@@ -37593,8 +37621,13 @@
     });
     return out;
   }
+  var whenOk = {};
+  function hasWhen(w) {
+    var _a;
+    return (_a = whenOk[w]) != null ? _a : whenOk[w] = w <= nowWhen(w.length > 4) && judged(atWhen(w)).length > 0;
+  }
   function periodRows(id) {
-    var mode = page.mode[id], out = [], last = nowWhen(mode === "quarters");
+    var mode = page.mode[id], out = [];
     if (mode === "cycles") return marketCycles.map(function(c) {
       var L = cycLabel(c);
       return {
@@ -37608,7 +37641,7 @@
       return y + " Q" + n;
     }) : [ String(y) ]).forEach(function(w) {
       var c = cycleOfYear(+w.slice(0, 4));
-      if (w <= last && judged(atWhen(w)).length) out.push({
+      if (hasWhen(w)) out.push({
         key: w,
         name: w.length > 4 ? qLabel(w) : w,
         aside: c.name.replace(" Cycle", ""),
@@ -37782,29 +37815,62 @@
   function filterDoor(cls, slot, attrs, inner) {
     return '<button type="button" class="' + cls + ' details-link" data-detail-idx="' + slot + '"' + attrs + ">" + inner + "</button>";
   }
-  function sheetSec(title, inner) {
-    return '<div class="ind-sec"><h5>' + title + "</h5>" + inner + "</div>";
+  function sheetSec(title, inner, aside) {
+    return '<div class="ind-sec"><h5>' + title + (aside ? "<em>" + aside + "</em>" : "") + "</h5>" + inner + "</div>";
   }
-  function periodList(rows, key) {
-    return '<div class="period-list" role="listbox" aria-label="Period">' + rows.slice().reverse().map(function(r) {
-      return pickRow(r.key === key, "data-pick-period", r.key, r.name, r.aside);
-    }).join("") + "</div>";
+  function calBtn(k, key, cls, label, inner) {
+    return '<button type="button" class="' + cls + (k === key ? " on" : "") + '" data-pick-period="' + k + '" aria-pressed="' + (k === key) + '" aria-label="' + label + '">' + inner + "</button>";
+  }
+  function calOff(cls, inner) {
+    return '<span class="' + cls + ' is-off">' + inner + "</span>";
+  }
+  function calQuarter(q, key) {
+    var g = seasonOfQ(q) || (q === nowWhen(true) ? seasonGroup(currentSeason) : "");
+    return hasWhen(q) ? calBtn(q, key, "cal-q " + g, qLabel(q) + ", " + cap(g), q.slice(5)) : calOff("cal-q", "");
+  }
+  function calYear(y, key) {
+    var w = String(y), qs = [ 1, 2, 3, 4 ].map(function(n) {
+      return calQuarter(w + " Q" + n, key);
+    }).join("");
+    return '<div class="cal-year' + (key === w ? " in" : "") + '">' + (hasWhen(w) ? calBtn(w, key, "cal-y", w, w) : calOff("cal-y", w)) + qs + "</div>";
+  }
+  function calCycle(c, key) {
+    var years = cycLabel(c).years, rows = "";
+    for (var y = c.to || calendarTodayY; y >= c.from; y--) rows += calYear(y, key);
+    return calBtn(c.name, key, "cal-band", c.name + ", " + years, "<b>" + c.name + "</b><small>" + years + "</small>") + rows;
+  }
+  function periodCal(key) {
+    return '<div class="period-cal">' + marketCycles.slice().reverse().map(function(c) {
+      return calCycle(c, key);
+    }).join("") + '</div><p class="cal-key">' + [ "winter", "spring", "summer", "autumn" ].map(function(g) {
+      return '<span class="' + g + '"><i></i>' + cap(g) + "</span>";
+    }).join("") + "</p>";
+  }
+  function shown(id, at, j) {
+    var f = findOf(id);
+    return j.filter(function(l) {
+      return (!f.cat || l.cat === f.cat) && (f.tier === "all" || tier(l, at) === f.tier);
+    }).length;
   }
   function filterSheet(id, at, j, rows) {
-    var f = findOf(id), keys = categoriesShown().map(function(c) {
+    var f = findOf(id), key = pickedKey(id), n = shown(id, at, j), keys = categoriesShown().map(function(c) {
       return c.key;
     }).filter(function(k) {
       return j.some(function(l) {
         return l.cat === k;
       });
     });
-    return '<div class="ind-filter"><h4>Filter</h4>' + sheetSec("Period", tabBar('aria-label="Period"', [ [ "cycles", "Cycles" ], [ "calendar", "Years" ], [ "quarters", "Quarters" ] ], page.mode[id], "data-pick-mode") + periodList(rows, pickedKey(id))) + sheetSec("Category", tabBar('aria-label="Category"', [ [ "", "All" ] ].concat(keys.map(function(k) {
+    return '<div class="ind-filter"><div class="ind-filter-head"><h4>Filter</h4><button type="button" class="ind-reset" data-pick-reset="">Reset</button></div>' + sheetSec("Period", periodCal(key), (rows.filter(function(r) {
+      return r.key === key;
+    })[0] || {
+      name: key
+    }).name) + sheetSec("Category", tabBar('aria-label="Category"', [ [ "", "All" ] ].concat(keys.map(function(k) {
       return [ k, catTitle(k) ];
-    })), f.cat, "data-pick-cat", "ind-cats")) + sheetSec(RANGE, tabBar('aria-label="' + RANGE + '"', tierOpts(at, j).map(function(o) {
+    })), f.cat, "data-pick-cat", "ind-cats")) + sheetSec(RESULT, tabBar('aria-label="' + RESULT + '"', tierOpts(at, j).map(function(o) {
       return [ String(o[0]), o[1] + " <small>" + o[2] + "</small>" ];
-    }), f.tier, "data-pick-tier")) + "</div>";
+    }), f.tier, "data-pick-tier")) + '<button type="button" class="ind-show" data-ind-show="">Show ' + n + " reading" + (n === 1 ? "" : "s") + "</button></div>";
   }
-  var RANGE = "Range";
+  var RESULT = "Result";
   var sheetHtml = {};
   function narrow(host, id) {
     var f = findOf(id), any = false;
@@ -38053,6 +38119,7 @@
     });
   }
   function setPeriod(id, k) {
+    page.mode[id] = cycleByName(k) ? "cycles" : k.length > 4 ? "quarters" : "calendar";
     if (page.mode[id] === "cycles") {
       page.cycles[id] = page.cycles[HOME_ID] = k;
       page.when[id] = void 0;
@@ -38062,8 +38129,14 @@
     page.cycles[id] = page.cycles[HOME_ID] = cycleOfYear(+k.slice(0, 4)).name;
   }
   function pick(id, b) {
-    var mode = b.getAttribute("data-pick-mode"), cat = b.getAttribute("data-pick-cat"), tr = b.getAttribute("data-pick-tier");
-    if (mode != null) page.mode[id] = mode; else if (cat != null) findOf(id).cat = cat; else if (tr != null) findOf(id).tier = tr; else setPeriod(id, b.getAttribute("data-pick-period") || "");
+    var cat = b.getAttribute("data-pick-cat"), tr = b.getAttribute("data-pick-tier"), f = findOf(id);
+    if (b.hasAttribute("data-pick-reset")) {
+      page.mode[id] = "cycles";
+      page.cycles[id] = null;
+      page.when[id] = void 0;
+      f.cat = "";
+      f.tier = "all";
+    } else if (cat != null) f.cat = cat; else if (tr != null) f.tier = tr; else setPeriod(id, b.getAttribute("data-pick-period") || "");
   }
   function refreshSheet(id, sel) {
     var body = byId("detail-modal-body");
@@ -38072,10 +38145,10 @@
     centreList(body);
     focusQuiet(body.querySelector(sel));
   }
-  var PICKS = [ "data-pick-mode", "data-pick-period", "data-pick-cat", "data-pick-tier" ];
+  var PICKS = [ "data-pick-reset", "data-pick-period", "data-pick-cat", "data-pick-tier" ];
   function centreList(body) {
-    var list = body.querySelector(".period-list"), on = list && list.querySelector(".on");
-    if (list && on) list.scrollTop = on.offsetTop - list.offsetTop - (list.clientHeight - on.offsetHeight) / 2;
+    var list = body.querySelector(".period-cal"), on = list && list.querySelector(".on");
+    if (list && on) list.scrollTop += on.getBoundingClientRect().top - list.getBoundingClientRect().top - (list.clientHeight - on.offsetHeight) / 2;
   }
   function wirePicks() {
     document.addEventListener("click", function(e) {
@@ -38083,6 +38156,7 @@
         return "[" + a + "]";
       }).join(", "));
       if (t.closest && t.closest(".lab-filter, .period-now")) centreList(need("detail-modal-body"));
+      if (t.closest && t.closest("[data-ind-show]")) need("detail-modal-close").click();
       if (!on) return;
       var attr = PICKS.filter(function(a) {
         return on.hasAttribute(a);
@@ -38754,7 +38828,7 @@
         el.classList.add("active");
       });
     }
-    var shown = false;
+    var shown2 = false;
     function readTarget(el) {
       var t = el.closest && el.closest("[data-q], [data-year]");
       if (!t) return false;
@@ -38767,12 +38841,12 @@
         mark(null);
         hubShowYear(+(t.getAttribute("data-year") || ""));
       }
-      shown = true;
+      shown2 = true;
       return true;
     }
     function reset() {
-      if (scrubbing || !dialState || !shown) return;
-      shown = false;
+      if (scrubbing || !dialState || !shown2) return;
+      shown2 = false;
       mark(dialState.parked);
       hubShowDefault();
     }
@@ -38790,7 +38864,7 @@
     document.addEventListener("click", function(e) {
       if (!(e.target instanceof Node) || dial.contains(e.target) || hub.contains(e.target)) return;
       if (!scrubbing && dialState && dialState.parked != null) {
-        shown = false;
+        shown2 = false;
         goTo(-1);
         return;
       }
@@ -38871,7 +38945,7 @@
       var i = dialKeyStep(e.key);
       if (i == null) return;
       e.preventDefault();
-      shown = false;
+      shown2 = false;
       goTo(i);
       dialSay();
     });

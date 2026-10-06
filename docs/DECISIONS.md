@@ -293,13 +293,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   with a stepper under its title: the period large, its place in its cycle under it, arrows either side.** Keren: "what
   I would want is to be referred to the indicators page under that date … so that we would have the ability to
   navigate between dates and cycles inside the indicators page"; of the stepper, "I love the design … it's really
-  elegant." **Every filter lives in one filter, a sheet from the bottom: Period, Category and Range** (All, Risk,
-  Attention, Normal, the tiers' name). Keren: "they should all live under the same filter. And if I click on the
+  elegant." **Every filter lives in one filter, a sheet from the bottom, like an advanced search: Period, Category and
+  Result** (All, Risk, Attention, Normal; "Result" after Keren's "the test result"), with Reset and a "Show N readings"
+  button that closes it. Keren: "they should all live under the same filter. And if I click on the
   filter, then it would be like a pop-up that pops from the bottom." The filter button sits in the search box and
   the stepper's period opens the same sheet; the category bar left the page. A year is each reading's average over that calendar year (this year: today's figure), judged
   against the range the open cycle uses, so it adds no band. **The dial's centre does the same for its quarter**
-  (Keren: "the same behavior to go to the indicators page under that period of time"), so the bar reads Cycles |
-  Years | Quarters; a reading kept only by the year shows its year's figure in a quarter and says which year. The
+  (Keren: "the same behavior to go to the indicators page under that period of time"). **The Period is one season
+  calendar** (Keren: "it should be in a calendar view"; she chose it over a year grid): each cycle a band, each year a
+  row, each quarter a tile washed in its season; tapping the band, the year or the tile picks that period, so there is
+  no Cycles/Years/Quarters switch. A reading kept only by the year shows its year's figure in a quarter and says which year. The
   quarter pop-up of category cards is gone everywhere, with its card design and the season prose it held (What
   Usually Comes Next, What to Watch, From the Book). (0.8.9)
 - **The category pages and their group pages are gone, with every design that came before Indicators; Indicators

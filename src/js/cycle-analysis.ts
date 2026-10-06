@@ -1,13 +1,13 @@
 import { CHEV, facts, qLabel, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText } from "./dom.ts";
-import { page, pageCycle, pickRow, tabBar } from "./history.ts";
+import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayFace, todayValue } from "./era.ts";
 import { calendarTodayY, DATA_COMPILED } from "./refresh-season.ts";
-import { cycLabel, cycleByName, cycleModel, cycleOfYear, nowModel, openCycle } from "./model.ts";
+import { currentSeason, cycLabel, cycleByName, cycleModel, cycleOfYear, nowModel, openCycle, seasonGroup, seasonOfQ } from "./model.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
 import { catInsight } from "./insights.ts";
 import { categoriesShown, GROUP_MARK, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
@@ -122,12 +122,14 @@ function whenMeans(R: RosterRow){
   return out;
 }
 type PeriodRow = { key: string; name: string; aside: string; caption: string };
+var whenOk: Record<string, boolean> = {};
+function hasWhen(w: string){ return whenOk[w] ?? (whenOk[w] = w <= nowWhen(w.length > 4) && judged(atWhen(w)).length > 0); }
 function periodRows(id: string): PeriodRow[] {
-  var mode = page.mode[id], out: PeriodRow[] = [], last = nowWhen(mode === "quarters");
+  var mode = page.mode[id], out: PeriodRow[] = [];
   if (mode === "cycles") return marketCycles.map(function(c){ var L = cycLabel(c); return { key:c.name, name:c.name, aside:L.years, caption:L.years }; });
   for (var y = marketCycles[0].from; y <= calendarTodayY; y++) (mode === "quarters" ? [1, 2, 3, 4].map(function(n){ return y + " Q" + n; }) : [String(y)]).forEach(function(w){
     var c = cycleOfYear(+w.slice(0, 4)) as Cycle;
-    if (w <= last && judged(atWhen(w)).length) out.push({ key:w, name:w.length > 4 ? qLabel(w) : w, aside:c.name.replace(" Cycle", ""), caption:"Year " + (+w.slice(0, 4) - c.from + 1) + " of the " + c.name });
+    if (hasWhen(w)) out.push({ key:w, name:w.length > 4 ? qLabel(w) : w, aside:c.name.replace(" Cycle", ""), caption:"Year " + (+w.slice(0, 4) - c.from + 1) + " of the " + c.name });
   });
   return out;
 }
@@ -233,18 +235,38 @@ function stepper(id: string, rows: PeriodRow[], slot: number){
 function filterDoor(cls: string, slot: number, attrs: string, inner: string){
   return '<button type="button" class="' + cls + ' details-link" data-detail-idx="' + slot + '"' + attrs + '>' + inner + '</button>';
 }
-function sheetSec(title: string, inner: string){ return '<div class="ind-sec"><h5>' + title + '</h5>' + inner + '</div>'; }
-function periodList(rows: PeriodRow[], key: string){
-  return '<div class="period-list" role="listbox" aria-label="Period">' + rows.slice().reverse().map(function(r){ return pickRow(r.key === key, "data-pick-period", r.key, r.name, r.aside); }).join("") + '</div>';
+function sheetSec(title: string, inner: string, aside?: string){ return '<div class="ind-sec"><h5>' + title + (aside ? '<em>' + aside + '</em>' : "") + '</h5>' + inner + '</div>'; }
+function calBtn(k: string, key: string, cls: string, label: string, inner: string){
+  return '<button type="button" class="' + cls + (k === key ? " on" : "") + '" data-pick-period="' + k + '" aria-pressed="' + (k === key) + '" aria-label="' + label + '">' + inner + '</button>';
 }
+function calOff(cls: string, inner: string){ return '<span class="' + cls + ' is-off">' + inner + '</span>'; }
+function calQuarter(q: string, key: string){
+  var g = seasonOfQ(q) || (q === nowWhen(true) ? seasonGroup(currentSeason) : "");
+  return hasWhen(q) ? calBtn(q, key, "cal-q " + g, qLabel(q) + ", " + cap(g), q.slice(5)) : calOff("cal-q", "");
+}
+function calYear(y: number, key: string){
+  var w = String(y), qs = [1, 2, 3, 4].map(function(n){ return calQuarter(w + " Q" + n, key); }).join("");
+  return '<div class="cal-year' + (key === w ? " in" : "") + '">' + (hasWhen(w) ? calBtn(w, key, "cal-y", w, w) : calOff("cal-y", w)) + qs + '</div>';
+}
+function calCycle(c: Cycle, key: string){
+  var years = cycLabel(c).years, rows = "";
+  for (var y = c.to || calendarTodayY; y >= c.from; y--) rows += calYear(y, key);
+  return calBtn(c.name, key, "cal-band", c.name + ", " + years, '<b>' + c.name + '</b><small>' + years + '</small>') + rows;
+}
+function periodCal(key: string){
+  return '<div class="period-cal">' + marketCycles.slice().reverse().map(function(c){ return calCycle(c, key); }).join("") + '</div>' +
+    '<p class="cal-key">' + ["winter", "spring", "summer", "autumn"].map(function(g){ return '<span class="' + g + '"><i></i>' + cap(g) + '</span>'; }).join("") + '</p>';
+}
+function shown(id: string, at: At, j: Lab[]){ var f = findOf(id); return j.filter(function(l){ return (!f.cat || l.cat === f.cat) && (f.tier === "all" || tier(l, at) === f.tier); }).length; }
 function filterSheet(id: string, at: At, j: Lab[], rows: PeriodRow[]){
-  var f = findOf(id), keys = categoriesShown().map(function(c){ return c.key; }).filter(function(k){ return j.some(function(l){ return l.cat === k; }); });
-  return '<div class="ind-filter"><h4>Filter</h4>' +
-    sheetSec("Period", tabBar('aria-label="Period"', [["cycles", "Cycles"], ["calendar", "Years"], ["quarters", "Quarters"]], page.mode[id], "data-pick-mode") + periodList(rows, pickedKey(id))) +
+  var f = findOf(id), key = pickedKey(id), n = shown(id, at, j), keys = categoriesShown().map(function(c){ return c.key; }).filter(function(k){ return j.some(function(l){ return l.cat === k; }); });
+  return '<div class="ind-filter"><div class="ind-filter-head"><h4>Filter</h4><button type="button" class="ind-reset" data-pick-reset="">Reset</button></div>' +
+    sheetSec("Period", periodCal(key), (rows.filter(function(r){ return r.key === key; })[0] || { name:key }).name) +
     sheetSec("Category", tabBar('aria-label="Category"', [["", "All"]].concat(keys.map(function(k){ return [k, catTitle(k)]; })), f.cat, "data-pick-cat", "ind-cats")) +
-    sheetSec(RANGE, tabBar('aria-label="' + RANGE + '"', tierOpts(at, j).map(function(o){ return [String(o[0]), o[1] + ' <small>' + o[2] + '</small>']; }), f.tier, "data-pick-tier")) + '</div>';
+    sheetSec(RESULT, tabBar('aria-label="' + RESULT + '"', tierOpts(at, j).map(function(o){ return [String(o[0]), o[1] + ' <small>' + o[2] + '</small>']; }), f.tier, "data-pick-tier")) +
+    '<button type="button" class="ind-show" data-ind-show="">Show ' + n + ' reading' + (n === 1 ? "" : "s") + '</button></div>';
 }
-var RANGE = "Range", sheetHtml: Record<string, string> = {};
+var RESULT = "Result", sheetHtml: Record<string, string> = {};
 function narrow(host: HTMLElement, id: string){
   var f = findOf(id), any = false;
   Array.prototype.forEach.call(host.querySelectorAll(".lab-sec"), function(sec: HTMLElement){
@@ -403,12 +425,14 @@ function wireFinder(host: HTMLElement, id: string){
   });
 }
 function setPeriod(id: string, k: string){
+  page.mode[id] = cycleByName(k) ? "cycles" : k.length > 4 ? "quarters" : "calendar";
   if (page.mode[id] === "cycles"){ page.cycles[id] = page.cycles[HOME_ID] = k; page.when[id] = undefined; return; }
   page.when[id] = k; page.cycles[id] = page.cycles[HOME_ID] = (cycleOfYear(+k.slice(0, 4)) as Cycle).name;
 }
 function pick(id: string, b: Element){
-  var mode = b.getAttribute("data-pick-mode"), cat = b.getAttribute("data-pick-cat"), tr = b.getAttribute("data-pick-tier");
-  if (mode != null) page.mode[id] = mode; else if (cat != null) findOf(id).cat = cat; else if (tr != null) findOf(id).tier = tr;
+  var cat = b.getAttribute("data-pick-cat"), tr = b.getAttribute("data-pick-tier"), f = findOf(id);
+  if (b.hasAttribute("data-pick-reset")){ page.mode[id] = "cycles"; page.cycles[id] = null; page.when[id] = undefined; f.cat = ""; f.tier = "all"; }
+  else if (cat != null) f.cat = cat; else if (tr != null) f.tier = tr;
   else setPeriod(id, b.getAttribute("data-pick-period") || "");
 }
 function refreshSheet(id: string, sel: string){
@@ -416,15 +440,16 @@ function refreshSheet(id: string, sel: string){
   body.innerHTML = sheetHtml[id]; centreList(body);
   focusQuiet(body.querySelector<HTMLElement>(sel));
 }
-var PICKS = ["data-pick-mode", "data-pick-period", "data-pick-cat", "data-pick-tier"];
+var PICKS = ["data-pick-reset", "data-pick-period", "data-pick-cat", "data-pick-tier"];
 function centreList(body: HTMLElement){
-  var list = body.querySelector<HTMLElement>(".period-list"), on = list && list.querySelector<HTMLElement>(".on");
-  if (list && on) list.scrollTop = on.offsetTop - list.offsetTop - (list.clientHeight - on.offsetHeight) / 2;
+  var list = body.querySelector<HTMLElement>(".period-cal"), on = list && list.querySelector<HTMLElement>(".on");
+  if (list && on) list.scrollTop += on.getBoundingClientRect().top - list.getBoundingClientRect().top - (list.clientHeight - on.offsetHeight) / 2;
 }
 function wirePicks(){
   document.addEventListener("click", function(e){
     var t = e.target as Element, on = t.closest && t.closest(PICKS.map(function(a){ return "[" + a + "]"; }).join(", "));
     if (t.closest && t.closest(".lab-filter, .period-now")) centreList(need("detail-modal-body"));
+    if (t.closest && t.closest("[data-ind-show]")) need("detail-modal-close").click();
     if (!on) return;
     var attr = PICKS.filter(function(a){ return (on as Element).hasAttribute(a); })[0];
     pick(IND, on); drawChart(IND); refreshSheet(IND, "[" + attr + '="' + on.getAttribute(attr) + '"]');

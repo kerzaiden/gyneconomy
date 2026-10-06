@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `dbcfe5f` on 2026-10-06. **99 components**, **29 shared patterns**.
+Generated from commit `e9780be` on 2026-10-06. **101 components**, **29 shared patterns**.
 
 ## ai-insights.ts
 
@@ -51,9 +51,11 @@ Generated from commit `dbcfe5f` on 2026-10-06. **99 components**, **29 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
+| **`calOff`** | `.is-off` | `cycle-analysis.ts:calQuarter`, `cycle-analysis.ts:calYear` |
 | **`countTag`** | `.lab-n` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:insightSec` |
 | **`drawChart`** | `.home-secs` `.lab-box` `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:openWhen`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder`, `cycle-analysis.ts:wirePicks` |
 | **`filterDoor`** | `.details-link` | `cycle-analysis.ts:finder`, `cycle-analysis.ts:stepper` |
+| **`filterSheet`** | `.ind-filter` `.ind-filter-head` `.ind-reset` `.ind-show` | `cycle-analysis.ts:drawChart` |
 | **`finder`** | `.lab-find` | `cycle-analysis.ts:drawChart` |
 | **`foldSec`** | `.lab-fold` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:subSec` |
 | **`homeSections`** | `.lab-score-box` | `cycle-analysis.ts:drawChart` |
@@ -63,7 +65,7 @@ Generated from commit `dbcfe5f` on 2026-10-06. **99 components**, **29 shared pa
 | **`lengthBars`** | `.len-bars` | `cycle-analysis.ts:lengthPage` |
 | **`lengthPage`** | `.len-key` `.odd` `.ok` | `cycle-analysis.ts:statsHome` |
 | **`markName`** | `.lab-mark` | `cycle-analysis.ts:subSec` |
-| **`periodList`** | `.period-list` | `cycle-analysis.ts:filterSheet` |
+| **`periodCal`** | `.cal-key` `.period-cal` | `cycle-analysis.ts:filterSheet` |
 | **`ring`** | `.lab-ring` | — |
 | **`rowTag`** | `.lab-row` | `cycle-analysis.ts:labItem` |
 | **`scoreRing`** | `.lab-score-v` | `cycle-analysis.ts:scoreBox`, `cycle-analysis.ts:statRow` |
@@ -223,11 +225,11 @@ renderer speaks. Listed most-used first.
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`histControls`** | history.ts | 9 places |
+| **`qLabel`** | format.ts | 9 places |
 | **`closedCount`** | cycle-analysis.ts | 8 places |
 | **`factsFrom`** | format.ts | 8 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
-| **`qLabel`** | format.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`atMonth`** | format.ts | 7 places |
@@ -237,12 +239,13 @@ renderer speaks. Listed most-used first.
 | **`histNote`** | history.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
+| **`cycLabel`** | model.ts | 6 places |
 | **`keyed`** | roster.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
 | **`qAtIndex`** | format.ts | 6 places |
+| **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
-| **`cycLabel`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`growthWord`** | model.ts | 5 places |
 | **`inflationFigure`** | model.ts | 5 places |
@@ -259,6 +262,7 @@ renderer speaks. Listed most-used first.
 | **`yearsWord`** | cycle-analysis.ts | 5 places |
 | **`bandEnds`** | format.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
+| **`cycleByName`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
 | **`cycleOfYear`** | model.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
@@ -274,22 +278,22 @@ renderer speaks. Listed most-used first.
 | **`pctl`** | format.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
-| **`seasonGroup`** | model.ts | 4 places |
 | **`tagFor`** | format.ts | 4 places |
 | **`tier`** | cycle-analysis.ts | 4 places |
 | **`visits`** | cycle-analysis.ts | 4 places |
 | **`word`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
+| **`calBtn`** | cycle-analysis.ts | 3 places |
+| **`cap`** | cycle-analysis.ts | 3 places |
 | **`categoriesShown`** | roster.ts | 3 places |
 | **`curveAt`** | data.ts | 3 places |
-| **`cycleByName`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
+| **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
-| **`judged`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`meanOf`** | cycle-analysis.ts | 3 places |
 | **`monthIdx`** | fed-phases.ts | 3 places |

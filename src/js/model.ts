@@ -173,6 +173,7 @@ export function cycleNowNote(m: CycleModel){
     (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
   return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
 }
+export function seasonOfQ(q: string){ return seasonByQ[q] || ""; }
 export function seasonGroup(key: string){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 // ---- The diagnosis: how she feels, and what has followed ----
 export function rankToDate(prior: (number | null)[], v: number | null | undefined){
@@ -341,7 +342,7 @@ export function forgetMood(){ moodLists = null; moodCache = null; }
 
 export type CycleModel = ReturnType<typeof cycleModel>;
 export var cycleYtdFraction: number, nowModel: CycleModel, cpiNow: number, currentSeason: Season, seasonWhy: string, currentEra: Cycle;
-var seasonTrackAll: TrackEntry[], seasonTrackYears: TrackEntry[], seasonTrack: TrackEntry[], regimeByQ: Record<string, string>, readingNow: ModelReading;
+var seasonTrackAll: TrackEntry[], seasonTrackYears: TrackEntry[], seasonTrack: TrackEntry[], regimeByQ: Record<string, string>, seasonByQ: Record<string, string>, readingNow: ModelReading;
 
 function seasonYears(){
   var firstY = parseInt(gdpQuarterlyYoY[0].q, 10), out: TrackEntry[] = [], prevRegime: string | undefined;
@@ -375,6 +376,8 @@ export function bootModel(){
   var lastYear = seasonTrackYears[seasonTrackYears.length - 1];
   seasonTrackAll = seasonQuarters(lastYear && lastYear.reading.regime);
   seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
+  seasonByQ = {};
+  seasonTrack.forEach(function(e){ if (e) seasonByQ[e.q] = seasonGroup(e.reading.season); });
   regimeByQ = (function(){
     var out: Record<string, string> = {};
     seasonTrack.forEach(function(e){ if (e) out[e.q] = e.reading.regime; });
