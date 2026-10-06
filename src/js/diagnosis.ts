@@ -1,4 +1,4 @@
-import { CHEV, titleCase } from "./format.ts";
+import { CHEV } from "./format.ts";
 import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { calendarSvg, orbitSvg } from "./marks.ts";
@@ -6,7 +6,7 @@ import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
-import { econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
+import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage } from "./ai-insights.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
@@ -31,8 +31,6 @@ function yearByYear(m: CycleModel){
   }
   return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
 }
-function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(title) + '</div>'; }
-function dxSys(cls: string, inner: string){ return '<section class="dx-sys' + cls + '">' + inner + '</section>'; }
 function yearRow(year: string, lead: string, sheet?: string, foot?: string){
   var tag = sheet != null ? "button" : "div";
   return '<' + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '">' +

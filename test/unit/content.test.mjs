@@ -12,6 +12,8 @@ import { HIST_NOTE } from '../../src/js/history.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
 import { fmtSigned } from '../../src/js/format.ts';
+import { labs } from '../../src/js/cycle-analysis.ts';
+import { marketCycles } from '../../src/js/data.ts';
 
 const card = sheet => document.querySelector('[data-open="' + sheet + '"]');
 const value = sheet => card(sheet).querySelector('.ci-value').firstChild.nodeValue;
@@ -338,7 +340,7 @@ test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
 });
 
 test('a Cycle Statistics result is named by its tier, Normal on its good side and flagged on the other', () => {
-  const rows = [...document.querySelectorAll('#chart-home .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
+  const rows = [...document.querySelectorAll('#sheet-find .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
   assert.equal(rows.length, ROSTER.length);
   rows.forEach(({ R, li }) => {
     const way = li.classList.contains('to-up') ? 'up' : li.classList.contains('to-down') ? 'down' : null;
@@ -350,4 +352,13 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
   assert.match(document.querySelector('#diagnosis .lab-score small').textContent, /^(Normal|Attention|Risk) against \d+ closed cycles$/);
   assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
+});
+
+test('Variation is the spread of the three cycles before each one, and is read on the open cycle too', () => {
+  const L = marketCycles.filter(c => !c.ongoing).map(c => c.to - c.from + 1);
+  const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity'), three = L.slice(-3);
+  assert.equal(reg.per[open], Math.max(...three) - Math.min(...three));
+  assert.equal(reg.per[2], null);
+  assert.ok([...document.querySelectorAll('#sheet-find .cat-cycle .lab-item b')].some(b => b.textContent === 'Variation'));
+  assert.match(document.querySelector('#sheet-find .cat-cycle .lab-head').textContent, /^Regularity \(\d+\)/);
 });

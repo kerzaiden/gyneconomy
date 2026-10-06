@@ -66,7 +66,7 @@ function repaintDiagnosis(){
 function repaintDerived(){
   forgetLabs(); forgetEchoes();
   repaintDiagnosis();
-  ["chart-home", "sheet-ai-insights"].forEach(function(id){ var el = byIdMaybe(id); if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id](); });
+  ["chart-home", "sheet-find", "sheet-ai-insights"].forEach(function(id){ var el = byIdMaybe(id); if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id](); });
 }
 
 export function bootRepaint(){
