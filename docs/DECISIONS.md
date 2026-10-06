@@ -643,13 +643,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   pages draw on, until a release retires them. Keren: "we should get rid of the old design … but we should keep the
   conclusions … these are words that can integrate well next to risk, attention, normal", and "in terms of
   regularity, we don't need it. We have it in the analysis page." (0.8.5, Oct 6, 2026)
-- **Insights is one container built like Cycle Statistics: a purple title with its mark (the chart), then one grey
-  tile per category with its mark, its name, and its count of indicators in light grey beside the chevron. In every
-  tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the left.** Keren:
+- **Insights is one container built like Cycle Statistics: a purple title with its mark (the chart), then one plain
+  row per category (no grey tile since 0.8.6) with its mark, its name, and its count of indicators in light grey
+  beside the chevron, a thin grey line above every row, the first included, and the same space either side of each
+  line. In every tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the
+  left.** Keren: "in the insights container on the analysis tab, add a gray line between insights and weather and
+  make the spacing even so it would look tidier" (0.8.8). Keren:
   "I don't need to see indicators four times … maybe next to the chevron in light gray", and "there should be the
   same gap between the chevron and the right edge … like the icon and the left edge." Keren: "make the insight
   section designed like cycle statistics, meaning you have a dark purple headline with an icon next to it inside a
-  container and everything sits below it … I want a consistent design system." (0.8.5, Oct 6, 2026)
+  container and everything sits below it … I want a consistent design system." (0.8.5, 0.8.6, 0.8.8, Oct 6, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
