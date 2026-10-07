@@ -811,6 +811,7 @@
   .ff-col.f5{ stroke:color-mix(in srgb, var(--ff-blue) 70%, var(--ff-deep)); }
   .dv-bar.over{ stroke:var(--serious); } .dv-bar.under{ stroke:var(--good); }
   .dv-bar.over.good-above{ stroke:var(--good); } .dv-bar.under.good-above{ stroke:var(--serious); }
+  .dv-pair{ fill:none; stroke:var(--text-secondary); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
   .bt-xl, .bt-yl{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); fill:var(--text-muted); }
 
@@ -35022,6 +35023,8 @@
   var creditGapHistory = fred_default.creditGapHistory;
   var delinquencyHistory = fred_default.delinquencyHistory;
   var marginHistory = fred_default.marginHistory;
+  var lendingHistory = fred_default.lendingHistory;
+  var loanDemandHistory = fred_default.loanDemandHistory;
   var debtDollarsQuarterly = fred_default.debtDollarsQuarterly;
   var debtToday = fred_default.debtToday;
   var interestQuarterly = fred_default.interestQuarterly;
@@ -36316,13 +36319,37 @@
     if (o.base != null) out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + "," + o.base + "L" + fx1.toFixed(1) + "," + o.base + '"/>');
     return out.join("");
   }
+  function pairKey(d) {
+    return String(d.q || d.m || d.y);
+  }
+  function pairVals(o) {
+    var at = o.pair ? o.pair.at : {};
+    return o.vals.map(function(d) {
+      return at[pairKey(d)];
+    }).filter(function(v) {
+      return v != null;
+    });
+  }
+  function pairPath(o, padL, slot, y) {
+    var at = o.pair.at, d = "", pen = "M";
+    o.vals.forEach(function(p, i) {
+      var v = at[pairKey(p)];
+      if (v == null) {
+        pen = "M";
+        return;
+      }
+      d += pen + (padL + slot * (i + .5)).toFixed(1) + "," + y(v);
+      pen = "L";
+    });
+    return '<path class="dv-pair" d="' + d + '"/>';
+  }
   function divergeChart(o, W) {
     W = Math.max(280, W || 340);
     var F = histFrame(W), H = F.H;
     var padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B, iw = W - padL - padR, ih = H - padT - padB;
     var vs = o.vals.map(function(d) {
       return d.v;
-    });
+    }).concat(pairVals(o));
     var lo = Math.min.apply(null, vs.concat([ o.mid ])), hi = Math.max.apply(null, vs.concat([ o.mid ]));
     var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / (above + below || 1);
     var midY = padT + above * unit;
@@ -36353,6 +36380,7 @@
       return a + (d.v == null ? 0 : d.v);
     }, 0) / (n || 1);
     out.push(avgRule(padL, W - padR, y(dAvg)));
+    if (o.pair) out.push(pairPath(o, padL, slot, y));
     if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * .5, padL + slot * (n - .5), y, W, padL, padR));
     o.vals.forEach(function(d, i) {
       var lab = xLabelOf(o, d, i, o.vals);
@@ -36368,7 +36396,7 @@
       B: padT + ih,
       W: W,
       n: n,
-      refs: o.mid != null ? [ {
+      refs: (o.mid != null ? [ {
         label: "Average",
         v: dAvg
       }, {
@@ -36379,7 +36407,10 @@
       } ] : [ {
         label: "Average",
         v: dAvg
-      } ],
+      } ]).concat(o.pair ? [ {
+        label: o.pair.label,
+        cls: "dv-pair"
+      } ] : []),
       vals: o.vals,
       at: o.at || function(d) {
         return String(d.y);
@@ -36472,6 +36503,7 @@
   var GAP_BUILD = 2;
   var GAP_BOOM = 10;
   var MARGIN_LINE = 0;
+  var LENDING_LINE = 0;
   var DELINQUENCY_TO = 2025;
   var GAP_SRC = [ {
     t: "Bank for International Settlements — Credit-to-GDP gaps, United States, private non-financial sector, quarterly",
@@ -36486,6 +36518,22 @@
   var MARGIN_SRC = [ {
     t: "FINRA — Margin Statistics: debit balances in customers’ securities margin accounts, monthly",
     u: "https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics"
+  } ];
+  var LENDING_SRC = [ {
+    t: "Federal Reserve — Senior Loan Officer Opinion Survey on Bank Lending Practices",
+    u: "https://www.federalreserve.gov/data/sloos.htm"
+  }, {
+    t: "FRED — Net Percentage of Domestic Banks Tightening Standards for Commercial and Industrial Loans to Large and Middle-Market Firms (DRTSCILM)",
+    u: "https://fred.stlouisfed.org/series/DRTSCILM"
+  }, {
+    t: "FRED — Net Percentage of Domestic Banks Reporting Stronger Demand for Commercial and Industrial Loans From Large and Middle-Market Firms (DRSDCILM)",
+    u: "https://fred.stlouisfed.org/series/DRSDCILM"
+  }, {
+    t: "Cara Lown and Donald P. Morgan — The Credit Cycle and the Business Cycle: New Findings Using the Loan Officer Opinion Survey, Journal of Money, Credit and Banking, 2006",
+    u: "https://www.newyorkfed.org/medialibrary/media/research/economists/morgan/morgan_credit_cycle.pdf"
+  }, {
+    t: "William F. Bassett, Mary Beth Chosak, John C. Driscoll and Egon Zakrajšek — Changes in Bank Lending Standards and the Macroeconomy, FEDS 2012-24",
+    u: "https://www.federalreserve.gov/pubs/feds/2012/201224/201224abs.html"
   } ];
   var DELINQUENCY_SRC = [ {
     t: "Federal Reserve — Charge-Off and Delinquency Rates on Loans and Leases at Commercial Banks, all loans, seasonally adjusted",
@@ -36529,6 +36577,25 @@
       text: "Borrowing less",
       says: "below zero: investors owe their brokers less than a year earlier"
     };
+  }
+  function lendingWord(v) {
+    if (v > LENDING_LINE) return {
+      state: "warning",
+      text: "Tightening",
+      says: "above zero: more banks tightened their standards for business loans than eased them"
+    };
+    return {
+      state: "good",
+      text: "Easing",
+      says: "at or below zero: as many banks eased their standards for business loans as tightened them, or more"
+    };
+  }
+  function demandAt() {
+    var at = {};
+    loanDemandHistory.forEach(function(d) {
+      at[d.q] = d.v;
+    });
+    return at;
   }
   function delinquencyWord(v) {
     var avg = DELINQUENCY_MEAN.toFixed(2) + "%";
@@ -36584,6 +36651,26 @@
       about: "Margin debt is money investors borrow from their brokers to buy shares, with the shares as collateral. When prices fall, brokers call for cash or sell the shares, and the forced selling deepens the fall. The figure is FINRA’s total of debit balances in margin accounts, against the same month a year earlier.",
       band: "<b>Zero is the only line.</b> Above it investors are borrowing more to own stocks than a year ago; below it they are paying it back.",
       lede: "Money borrowed to buy stocks, against the same month a year earlier: the market’s own appetite for credit."
+    }, {
+      id: "sheet-sign-lending",
+      term: "Lending standards",
+      econ: "Lending standards",
+      unit: "net tightening",
+      series: lendingHistory,
+      mid: LENDING_LINE,
+      line: "No change",
+      fmt: function(v) {
+        return fmtSigned(v, 1) + "%";
+      },
+      word: lendingWord,
+      src: LENDING_SRC,
+      pair: {
+        label: "Loan demand",
+        at: demandAt()
+      },
+      about: "Each quarter the Federal Reserve asks senior loan officers at large US banks whether they tightened or eased their standards for business loans, and whether demand for those loans grew stronger or weaker. The reading is the share of banks that tightened less the share that eased; the second line is the same count for demand, stronger less weaker. Both are for loans to large and middle-market firms.",
+      band: "<b>Zero is the only line.</b> Above it more banks are tightening than easing; below it more are easing. No convention sets a band. Research at the Fed found that tightening standards come before falls in lending and output (Lown and Morgan, 2006; Bassett and others, 2012).",
+      lede: "Whether banks are willing to lend, set against whether firms want to borrow. When banks tighten while demand holds, credit is being withdrawn: the crunch."
     }, {
       id: "sheet-metric-delinquency",
       term: "Delinquency rate",
@@ -36688,7 +36775,8 @@
         tick: S.fmt,
         src: S.src,
         lede: S.lede,
-        series: S.series
+        series: S.series,
+        pair: S.pair
       };
     });
   }
@@ -39391,7 +39479,7 @@
     }, {
       id: "sheet-sign-credit-gap",
       name: "Credit gap",
-      cat: "circulation",
+      cat: "stress",
       sub: "Credit",
       good: "down",
       group: "Credit",
@@ -39410,8 +39498,8 @@
       id: "sheet-sign-margin",
       name: "Margin debt",
       cat: "stress",
-      sub: "Debt",
-      group: "Debt",
+      sub: "Credit",
+      group: "Credit",
       timing: "leading",
       mark: creditSvg,
       door: "row",
@@ -39423,6 +39511,24 @@
       },
       mid: MARGIN_LINE,
       cardUnit: "YoY"
+    }, {
+      id: "sheet-sign-lending",
+      name: "Lending standards",
+      cat: "stress",
+      sub: "Credit",
+      good: "down",
+      group: "Credit",
+      timing: "leading",
+      mark: creditSvg,
+      door: "row",
+      term: "Lending standards",
+      head: "Banks Tightening Loan Standards",
+      hist: {
+        s: lendingHistory,
+        k: "q"
+      },
+      mid: LENDING_LINE,
+      cardUnit: "net tightening"
     }, {
       id: "sheet-metric-debt",
       name: "Federal debt",
@@ -41652,6 +41758,7 @@
         fmt: P.fmt,
         tick: P.tick,
         src: P.src,
+        pair: P.pair,
         insight: function(s) {
           return creditInsight(s, P);
         }
@@ -41708,6 +41815,7 @@
         tickFmt: s.tick || s.fmt,
         fit: tr.fit,
         goodAbove: s.goodAbove,
+        pair: s.pair,
         xLabel: periodTicks(vals),
         at: s.at || function(d) {
           return d.m ? atMonth(d) : d.q ? qPretty(d.q) : "FY" + d.y;
