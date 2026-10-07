@@ -157,7 +157,7 @@ function desireInfoHtml(f: DesireReading){
   return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
       'The record, month by month, runs ' + f.span + '.</p>' +
-    '<p class="caption follow">Durable goods are the BEA\u2019s own category for goods that last three years or more: ' +
+    '<p class="caption follow">No official series measures discretionary spending, so the app measures it by durable goods, the BEA\u2019s own category for goods that last three years or more: ' +
       'cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their ' +
       'spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p>' +
     '<p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a ' +
@@ -585,7 +585,7 @@ function deriveFeelingReadings(){
     return {
       bodyTerm:"Desire", info:function(){ return desireInfoHtml(desireReading); },
       page:{ chart:function(){ return '<div id="sheet-sign-desire-chart"></div><div id="sheet-sign-desire-highlights"></div>'; } },
-      econTerm:"Consumer demand", metricSub:"consumer demand, YoY, " + at,
+      econTerm:"Discretionary spending", metricSub:"durables, YoY, " + at,
       metric:fmtSigned(R.now.v, 1) + "%", tag:{ state:word.state, text:word.text }, wordSays:word.says,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:DESIRE_LINE, label:"\u2265 0%"}, ends:{ low:"Low appetite" } },
       span:span,
@@ -593,7 +593,7 @@ function deriveFeelingReadings(){
         return colPeek(durablesHistory.map(function(d){ return d.v; }), function(v){ return "dv-bar " + (v > 0 ? "over" : "under"); }, 0, true);
       },
       lead:"",
-      caption:at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says +
+      caption:at + ", real spending on durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says +
         ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
     };
   })(desireRecord);

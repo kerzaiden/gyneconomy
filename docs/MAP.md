@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,966 lines** in 36 files, about 603 KB, roughly **171 thousand tokens**. No session can
+The source is **9,009 lines** in 37 files, about 607 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `dd43b10` on 2026-10-07.
+Generated from commit `dc4935d` on 2026-10-07.
 
 ## The page
 
@@ -20,10 +20,10 @@ Generated from commit `dd43b10` on 2026-10-07.
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
 | `styles.css` | 1,222 | the whole stylesheet, every token and rule |
 | `page-body.html` | 325 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| `js/main.ts` | 32 modules | the entry: imports every module and calls their boots in order |
+| `js/main.ts` | 33 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **32** modules, **713** top-level functions, **121** top-level vars, **349** exported names, **20** boots.
+Counts: **33** modules, **715** top-level functions, **122** top-level vars, **351** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -33,11 +33,11 @@ Counts: **32** modules, **713** top-level functions, **121** top-level vars, **3
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 41 | 5 | `format`, `history-fred` |
 | `js/data.ts` | 571 | 81 | `format`, `history-fred`, `live` |
-| `js/credit.ts` | 138 | 11 | `charts`, `format`, `history-fred` |
+| `js/credit.ts` | 133 | 11 | `activity`, `charts`, `format`, `history-fred` |
 | `js/model.ts` | 382 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 802 | 69 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 136 | 5 | `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
+| `js/roster.ts` | 141 | 5 | `activity`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 500 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 417 | 10 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.ts` | 88 | 13 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
@@ -47,6 +47,7 @@ Counts: **32** modules, **713** top-level functions, **121** top-level vars, **3
 | `js/pages-nav.ts` | 185 | 16 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 228 | 10 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
+| `js/activity.ts` | 41 | 3 | `format`, `history-fred` |
 | `js/ai-insights.ts` | 181 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 249 | 34 | — |
 | `js/cycle-analysis.ts` | 482 | 130 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
@@ -55,7 +56,7 @@ Counts: **32** modules, **713** top-level functions, **121** top-level vars, **3
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 80 | 35 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
-| `js/history-fred.ts` | 28 | 14 | — |
+| `js/history-fred.ts` | 30 | 14 | — |
 | `js/indicators.ts` | 227 | 33 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 182 | 17 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
@@ -75,12 +76,12 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–40 |
 | 5 | `bootData` | `js/data.ts:519`–570 |
-| 6 | `bootCredit` | `js/credit.ts:130`–137 |
+| 6 | `bootCredit` | `js/credit.ts:125`–132 |
 | 7 | `bootModel` | `js/model.ts:357`–381 |
 | 8 | `bootHistory` | `js/history.ts:452`–475 |
 | 9 | `bootReadings` | `js/readings.ts:625`–693 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:736`–801 |
-| 11 | `bootRoster` | `js/roster.ts:123`–135 |
+| 11 | `bootRoster` | `js/roster.ts:128`–140 |
 | 12 | `bootRenderCore` | `js/render-core.ts:490`–499 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:401`–416 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:84`–87 |
@@ -303,17 +304,17 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 15 | `GAP_BUILD` · export | `var GAP_BUILD =` |
-| 36 | `avgSpan` | `function avgSpan(` |
-| 37 | `pointLabel` | `function pointLabel(` |
-| 38 | `gapWord` | `function gapWord(` |
-| 45 | `marginWord` | `function marginWord(` |
-| 50 | `lendingWord` | `function lendingWord(` |
-| 55 | `delinquencyWord` | `function delinquencyWord(` |
-| 61 | `lendingSpec` | `function lendingSpec(` |
-| 70 | `specs` | `function specs(` |
-| 97 | `readingOf` | `function readingOf(` |
-| 120 | `creditInsight` · export | `function creditInsight(` |
+| 10 | `GAP_BUILD` · export | `var GAP_BUILD =` |
+| 31 | `avgSpan` | `function avgSpan(` |
+| 32 | `pointLabel` | `function pointLabel(` |
+| 33 | `gapWord` | `function gapWord(` |
+| 40 | `marginWord` | `function marginWord(` |
+| 45 | `lendingWord` | `function lendingWord(` |
+| 50 | `delinquencyWord` | `function delinquencyWord(` |
+| 56 | `lendingSpec` | `function lendingSpec(` |
+| 65 | `specs` | `function specs(` |
+| 92 | `readingOf` | `function readingOf(` |
+| 115 | `creditInsight` · export | `function creditInsight(` |
 
 ### `js/model.ts`
 
@@ -539,11 +540,11 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 34 | `keyed` · export | `function keyed(` |
-| 40 | `rosterFor` · export | `function rosterFor(` |
-| 41 | `checkRoster` | `function checkRoster(` |
-| 59 | `categoriesShown` · export | `function categoriesShown(` |
-| 63 | `declareRoster` | `function declareRoster(` |
+| 35 | `keyed` · export | `function keyed(` |
+| 41 | `rosterFor` · export | `function rosterFor(` |
+| 42 | `checkRoster` | `function checkRoster(` |
+| 60 | `categoriesShown` · export | `function categoriesShown(` |
+| 64 | `declareRoster` | `function declareRoster(` |
 
 ### `js/render-core.ts`
 
@@ -838,6 +839,16 @@ falls in. **export** marks a name other modules import.
 | 16 | `repaintPolicy` | `function repaintPolicy(` |
 | 17 | `repaintDiagnosis` | `function repaintDiagnosis(` |
 | 20 | `repaintDerived` | `function repaintDerived(` |
+
+### `js/activity.ts`
+
+#### Activity: nonfarm payrolls and retail sales, each against a year earlier
+
+| Line | Name | Anchor |
+|---|---|---|
+| 5 | `PAYROLLS_LINE` · export | `var PAYROLLS_LINE =` |
+| 15 | `sideWord` | `function sideWord(` |
+| 21 | `activitySpecs` · export | `function activitySpecs(` |
 
 ### `js/ai-insights.ts`
 

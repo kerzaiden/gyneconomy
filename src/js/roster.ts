@@ -1,11 +1,12 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
 import { creditSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
-import { confidenceHistory, creditGapHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, creditGapHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
 import { DELINQUENCY_MEAN, GAP_BUILD, LENDING_LINE, MARGIN_LINE } from "./credit.ts";
+import { PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
 
 // ---- The roster: every reading, declared once ----
 type Category = { key: string; title: string; shown: number; onDial?: boolean };
@@ -74,6 +75,10 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"weather", sub:"Activity", good:"up", timing:"structural",
       door:"row", term:"Productivity growth", head:"Output per Hour, YoY", hist:{ s:productivityHistory, k:"q" },
       mid:PRODUCTIVITY_SLOWDOWN },
+    { id:"sheet-sign-payrolls", name:"Nonfarm payrolls", cat:"weather", sub:"Activity", good:"up", timing:"coincident", door:"row",
+      term:"Nonfarm payrolls", head:"Nonfarm Payrolls, YoY", hist:{ s:payrollsHistory, k:"m" }, mid:PAYROLLS_LINE, cardUnit:"YoY" },
+    { id:"sheet-sign-retail", name:"Retail sales", cat:"weather", sub:"Activity", good:"up", timing:"coincident", door:"row",
+      term:"Retail sales", head:"Retail Sales, YoY", hist:{ s:retailHistory, k:"m" }, mid:RETAIL_LINE, cardUnit:"YoY" },
     { id:"sheet-sign-hormones", name:"Federal funds rate", cat:"circulation", sub:"Pressure", timing:"leading", door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, cardUnit:"Fed funds target", live:["fedFunds"] },
     { id:"sheet-sign-pressure", name:"US 10-year Treasury", cat:"circulation", sub:"Pressure", timing:"leading", door:"subject", hk:"pressure-range",
@@ -109,9 +114,9 @@ function declareRoster(): RosterRow[] {
       cardUnit:"of GDP", live:["valuation"] },
     { id:"sheet-sign-sentiment", name:"Fear", cat:"mood", sub:"Sentiment", good:"down", timing:"leading", door:"subject", hk:"fear-range",
       head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, cardUnit:"VIX", live:["sentiment", "vixClose", "vix3mClose"] },
-    { id:"sheet-sign-desire", name:"Consumer demand", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"coincident", door:"row", term:"Desire",
-      head:"Consumer Demand", hist:{ s:durablesHistory, k:"m" }, mid:DESIRE_LINE,
-      cardUnit:"demand, YoY" },
+    { id:"sheet-sign-desire", name:"Discretionary spending", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"coincident", door:"row", term:"Desire",
+      head:"Discretionary Spending", hist:{ s:durablesHistory, k:"m" }, mid:DESIRE_LINE,
+      cardUnit:"durables, YoY" },
     { id:"sheet-sign-premium", name:"Equity risk premium", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"structural", door:"row",
       term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE,
       cardUnit:"over bonds" },

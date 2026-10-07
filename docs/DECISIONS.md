@@ -684,7 +684,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Weather also holds Activity (Unemployment rate, Productivity growth); Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Pressure (Federal funds rate,
+  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls, Retail sales); Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Pressure (Federal funds rate,
   US 10-year Treasury), Money (Pulse, Volume); Stress: Credit (Credit gap, Margin debt, Lending standards) and Debt. There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
@@ -850,6 +850,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Unemployment rate and Productivity growth (its history is OPHNFB, through the Backfill) each have their own
   page, under Weather's Activity; there is no Activity page or group.** Keren: they "should be their own pages";
   then "get rid of the activity page… I want productivity growth and unemployment rate to be under energy". (V661, V688)
+- **Nonfarm payrolls and Retail sales join Activity, each its own page, year over year against zero only.** Keren:
+  "I think payrolls is a good addition and also retail sales because nowadays people talk about how inflation raised
+  the prices of gas and groceries." Payrolls are the BLS employer survey (FRED PAYEMS, monthly from 1939, so growth
+  from 1940); retail sales are the Census figure the news quotes (FRED RSAFS, from 1992), in dollars before
+  inflation on purpose, and the page says that prices are in it. Year over year rather than the monthly change in
+  jobs is the app's YoY rule; zero is a fact, not a band, and words (Adding jobs / Losing jobs, Spending more /
+  Spending less) are Claude's, for Keren to rename. Both are Coincident. Both come through the Backfill. (0.9.7)
 - **Productivity growth belongs to the activity readings, not Stress, and its range is the annual year-over-year
   one it plots.** Keren: "I think it doesn't belong to economic power — I think it belongs to activity";
   output per hour measures what the body is doing. (V395)
@@ -892,8 +899,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
   spread, went with it. Keren: "use appetite as the keyword". (V709)
-- **Desire is a group of two cards, Consumer demand (the durables reading above, its card renamed) and the Equity
-  risk premium, with Consumer demand first and its figure as the group's preview.** Keren: "I think it actually
+- **The durables card is called Discretionary spending, and its (i) says no official series measures discretionary
+  spending, so the app measures it by durable goods.** Keren chose the name over Consumer demand when Retail sales
+  arrived, to keep apart what households spend in dollars and what they could do without. The series is unchanged. (0.9.7)
+- **Desire is a group of two cards, Discretionary spending (the durables reading above, Consumer demand until 0.9.7) and the Equity
+  risk premium, with Discretionary spending first and its figure as the group's preview.** Keren: "I think it actually
   belongs in desire because risk taking is connected to desire and demand for stocks"; she chose "Group" over a ⋯
   menu on Desire's page, since a menu is for variants of one reading (Pressure's maturities), not two readings.
   Claude had recommended Valuations; her placement stands. The premium is Robert Shiller's Excess CAPE Yield (the

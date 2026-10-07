@@ -350,7 +350,7 @@ export var frameworkRows: FrameworkRow[] = [
   {indicator:"Cervical fluid", body:"Cervical mucus change", economy:"Credit spreads / yield curve", category:"Leading"},
   {indicator:"Psychology", body:"Emotional state", economy:"Investor sentiment, asset valuations", category:"Leading"},
   {indicator:"Effort", body:"Energy", economy:"Capital — GDP, profits", category:"Coincident"},
-  {indicator:"Desire", body:"Desire / libido", economy:"Consumer demand", category:"Coincident"},
+  {indicator:"Desire", body:"Desire / libido", economy:"Discretionary spending", category:"Coincident"},
   {indicator:"Activity", body:"Physical activity", economy:"Labor / employment", category:"Lagging"},
   {indicator:"Temperature", body:"Basal body temperature", economy:"Inflation", category:"Lagging"}
 ];

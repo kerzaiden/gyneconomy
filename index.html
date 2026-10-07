@@ -1372,7 +1372,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.6 (777)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.7 (778)</span></p>
     </div>
   </div>
 
@@ -32634,6 +32634,8 @@
       q: "2026 Q2",
       v: 1280
     } ],
+    payrollsHistory: [],
+    retailHistory: [],
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -35467,6 +35469,8 @@
   var debtToday = fred_default.debtToday;
   var interestQuarterly = fred_default.interestQuarterly;
   var interestDollarsQuarterly = fred_default.interestDollarsQuarterly;
+  var payrollsHistory = fred_default.payrollsHistory;
+  var retailHistory = fred_default.retailHistory;
   function hubTodayHtml() {
     var d = new Date;
     return "<b>Today,</b> " + MONTHS_SHORT[d.getMonth()] + " " + d.getDate();
@@ -36263,7 +36267,7 @@
   }, {
     indicator: "Desire",
     body: "Desire / libido",
-    economy: "Consumer demand",
+    economy: "Discretionary spending",
     category: "Coincident"
   }, {
     indicator: "Activity",
@@ -36910,6 +36914,86 @@
     }).join("");
     return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs><g clip-path="url(#' + id + ')">' + paths + "</g></svg>";
   }
+  var PAYROLLS_LINE = 0;
+  var RETAIL_LINE = 0;
+  var PAYROLLS_SRC = [ {
+    t: "Bureau of Labor Statistics — Current Employment Statistics, the monthly survey of employers",
+    u: "https://www.bls.gov/ces/"
+  }, {
+    t: "FRED — All Employees, Total Nonfarm, seasonally adjusted, monthly since 1939 (PAYEMS)",
+    u: "https://fred.stlouisfed.org/series/PAYEMS"
+  } ];
+  var RETAIL_SRC = [ {
+    t: "US Census Bureau — Monthly Retail Trade: advance retail and food services sales",
+    u: "https://www.census.gov/retail/index.html"
+  }, {
+    t: "FRED — Advance Retail Sales: Retail Trade and Food Services, seasonally adjusted, monthly since 1992 (RSAFS)",
+    u: "https://fred.stlouisfed.org/series/RSAFS"
+  } ];
+  function sideWord(up, down, more, less) {
+    return function(v) {
+      if (v >= 0) return {
+        state: "good",
+        text: up,
+        says: "above zero: " + more + " than a year earlier"
+      };
+      return {
+        state: "warning",
+        text: down,
+        says: "below zero: " + less + " than a year earlier"
+      };
+    };
+  }
+  function activitySpecs() {
+    var pct2 = function(v) {
+      return fmtSigned(v, 1) + "%";
+    };
+    return [ {
+      id: "sheet-sign-payrolls",
+      goodAbove: true,
+      term: "Nonfarm payrolls",
+      econ: "Nonfarm payrolls",
+      unit: "YoY",
+      series: payrollsHistory,
+      mid: PAYROLLS_LINE,
+      line: "No change",
+      optimal: {
+        gte: PAYROLLS_LINE,
+        label: "≥ 0%"
+      },
+      ends: {
+        low: "Losing jobs"
+      },
+      fmt: pct2,
+      src: PAYROLLS_SRC,
+      word: sideWord("Adding jobs", "Losing jobs", "more people are on payrolls", "fewer people are on payrolls"),
+      about: "The number of jobs at US employers outside farms, private and government, as the Bureau of Labor Statistics counts them each month from its survey of employers, against the same month a year earlier.",
+      band: "<b>Zero is the only line.</b> Above it the economy holds more jobs than a year ago; below it, fewer. No convention sets a band.",
+      lede: "Jobs, against the same month a year earlier: whether the body is taking on work or shedding it."
+    }, {
+      id: "sheet-sign-retail",
+      goodAbove: true,
+      term: "Retail sales",
+      econ: "Retail sales",
+      unit: "YoY",
+      series: retailHistory,
+      mid: RETAIL_LINE,
+      line: "No change",
+      optimal: {
+        gte: RETAIL_LINE,
+        label: "≥ 0%"
+      },
+      ends: {
+        low: "Spending less"
+      },
+      fmt: pct2,
+      src: RETAIL_SRC,
+      word: sideWord("Spending more", "Spending less", "shoppers are spending more dollars at stores and restaurants", "shoppers are spending fewer dollars at stores and restaurants"),
+      about: "What Americans spend at stores, online retailers, gas stations and restaurants each month, as the Census Bureau reports it, against the same month a year earlier: the figure the news quotes. It is in dollars before inflation, so it rises when prices rise, and part of a gain can be gas and groceries costing more rather than more being bought. Discretionary spending, under Desire, is measured after prices.",
+      band: "<b>Zero is the only line.</b> Above it shoppers are spending more dollars than a year ago; below it, fewer. No convention sets a band.",
+      lede: "Spending at stores and restaurants in dollars, against the same month a year earlier. Prices are in it: when gas and groceries cost more, it reads higher."
+    } ];
+  }
   var GAP_BUILD = 2;
   var GAP_BOOM = 10;
   var MARGIN_LINE = 0;
@@ -37162,9 +37246,10 @@
     DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d) {
       return a + d.v;
     }, 0) / closed.length * 100) / 100;
-    specs().forEach(function(S) {
+    specs().concat(activitySpecs()).forEach(function(S) {
       creditReadings[S.id] = readingOf(S);
       creditPages[S.id] = {
+        goodAbove: S.goodAbove,
         line: S.line,
         fmt: S.fmt,
         tick: S.fmt,
@@ -38566,7 +38651,7 @@
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + ", " + f.wordSays + " (" + f.metricSub + "). The record, month by month, runs " + f.span + '.</p><p class="caption follow"><b>The 100 line is the OECD’s own</b>: the index is amplitude adjusted so that 100 is its long-term average. In the OECD’s words, a reading above 100 “signals a boost in the consumers’ confidence towards the future economic situation”, with households “less prone to save, and more inclined to spend money on major purchases in the next 12 months”; below 100 indicates “a pessimistic attitude towards future developments in the economy”.</p><p class="caption follow">It is built from household surveys of their finances, the economy, unemployment and saving, and the OECD publishes it a few months after the month it describes, which is why the card’s date trails the others.</p>' + srcBlock(CONFIDENCE_SRC);
   }
   function desireInfoHtml(f) {
-    return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + ", " + f.wordSays + " (" + f.metricSub + "). The record, month by month, runs " + f.span + '.</p><p class="caption follow">Durable goods are the BEA’s own category for goods that last three years or more: cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p><p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a year ago; below it her appetite is low. No other band is drawn.</p>' + srcBlock(DESIRE_SRC);
+    return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + ", " + f.wordSays + " (" + f.metricSub + "). The record, month by month, runs " + f.span + '.</p><p class="caption follow">No official series measures discretionary spending, so the app measures it by durable goods, the BEA’s own category for goods that last three years or more: cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p><p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a year ago; below it her appetite is low. No other band is drawn.</p>' + srcBlock(DESIRE_SRC);
   }
   function premiumInfoHtml(f) {
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">' + f.metric + " (" + f.metricSub + "): " + f.side + ". The record, month by month, runs " + f.span + '.</p><p class="caption follow">The equity risk premium is what stocks earn over safe bonds. This is Robert Shiller’s Excess CAPE Yield: the CAPE’s earnings yield (one over the CAPE, ten years of real earnings against today’s price) less the real 10-year Treasury yield (the yield less the inflation of the ten years before). A thin premium is investors asking little for the risk of owning stocks; a wide one is investors asking a lot.</p><p class="caption follow"><b>Zero is the only line</b>, where stocks stop earning more than bonds. No other band is drawn, and the reading carries no word.</p>' + srcBlock(PREMIUM_SRC);
@@ -39130,8 +39215,8 @@
             return '<div id="sheet-sign-desire-chart"></div><div id="sheet-sign-desire-highlights"></div>';
           }
         },
-        econTerm: "Consumer demand",
-        metricSub: "consumer demand, YoY, " + at,
+        econTerm: "Discretionary spending",
+        metricSub: "durables, YoY, " + at,
         metric: fmtSigned(R.now.v, 1) + "%",
         tag: {
           state: word2.state,
@@ -39159,7 +39244,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word2.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
+        caption: at + ", real spending on durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word2.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
       };
     }(desireRecord);
     premiumRecord = function() {
@@ -39800,6 +39885,38 @@
       },
       mid: PRODUCTIVITY_SLOWDOWN
     }, {
+      id: "sheet-sign-payrolls",
+      name: "Nonfarm payrolls",
+      cat: "weather",
+      sub: "Activity",
+      good: "up",
+      timing: "coincident",
+      door: "row",
+      term: "Nonfarm payrolls",
+      head: "Nonfarm Payrolls, YoY",
+      hist: {
+        s: payrollsHistory,
+        k: "m"
+      },
+      mid: PAYROLLS_LINE,
+      cardUnit: "YoY"
+    }, {
+      id: "sheet-sign-retail",
+      name: "Retail sales",
+      cat: "weather",
+      sub: "Activity",
+      good: "up",
+      timing: "coincident",
+      door: "row",
+      term: "Retail sales",
+      head: "Retail Sales, YoY",
+      hist: {
+        s: retailHistory,
+        k: "m"
+      },
+      mid: RETAIL_LINE,
+      cardUnit: "YoY"
+    }, {
       id: "sheet-sign-hormones",
       name: "Federal funds rate",
       cat: "circulation",
@@ -40059,7 +40176,7 @@
       live: [ "sentiment", "vixClose", "vix3mClose" ]
     }, {
       id: "sheet-sign-desire",
-      name: "Consumer demand",
+      name: "Discretionary spending",
       cat: "mood",
       sub: "Desire",
       good: "up",
@@ -40067,13 +40184,13 @@
       timing: "coincident",
       door: "row",
       term: "Desire",
-      head: "Consumer Demand",
+      head: "Discretionary Spending",
       hist: {
         s: durablesHistory,
         k: "m"
       },
       mid: DESIRE_LINE,
-      cardUnit: "demand, YoY"
+      cardUnit: "durables, YoY"
     }, {
       id: "sheet-sign-premium",
       name: "Equity risk premium",
@@ -42127,7 +42244,7 @@
     Object.keys(creditPages).forEach(function(id) {
       var P = creditPages[id];
       o[id] = readingPage(creditReadings[id], {
-        goodAbove: false,
+        goodAbove: !!P.goodAbove,
         line: P.line,
         fmt: P.fmt,
         tick: P.tick,
@@ -42763,7 +42880,7 @@
     return !!d.word && d.pct != null && d.change != null;
   }
   function moodInfo(d) {
-    return "<h4>Her Mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: consumer demand measures what households spend rather than how they feel, the equity risk premium shares its earnings yield with the CAPE the valuations already count, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
+    return "<h4>Her Mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: discretionary spending measures what households spend rather than how they feel, the equity risk premium shares its earnings yield with the CAPE the valuations already count, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
   }
   function moodFigures(d) {
     var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
@@ -45787,7 +45904,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Credit & delinquencies", /bis\.org|finra\.org|releases\/chargeoff|DRALACBS|sloos|DRTSCILM|feds\/2012\/201224/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Credit & delinquencies", /bis\.org|finra\.org|releases\/chargeoff|DRALACBS|sloos|DRTSCILM|feds\/2012\/201224/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {

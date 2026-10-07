@@ -283,7 +283,7 @@ async function finraMargin() {
   return marginRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -309,6 +309,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (credit && credit.standards) Object.assign(out, { lendingHistory: q(credit.standards) });
   if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v },
     interestQuarterly: q(dollars.share), interestDollarsQuarterly: q(dollars.interest) });
+  if (activity) Object.assign(out, { payrollsHistory: m(activity.payrolls), retailHistory: m(activity.retail) });
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -420,7 +421,16 @@ async function main() {
   say('GFDEBTN       ' + dollars.debt.length + ' quarters, ' + dollars.debt[0].q + ' → ' + dollars.debt[dollars.debt.length - 1].q + ' ($ billions)');
   say('Debt to the Penny ' + dollars.today.d + ' $' + dollars.today.v + 'B');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars));
+  const activity = {
+    payrolls: yoyMonthly(await fredSeries('PAYEMS', '1939-01-01'), -20, 20),
+    retail: yoyMonthly(await fredSeries('RSAFS', '1992-01-01'), -30, 60)
+  };
+  if (activity.payrolls[0].m !== '1940-01' || activity.retail[0].m !== '1993-01')
+    throw new Error('activity: expected payroll growth from 1940-01 and retail sales growth from 1993-01');
+  say('PAYEMS YoY    ' + activity.payrolls.length + ' months, ' + activity.payrolls[0].m + ' → ' + activity.payrolls[activity.payrolls.length - 1].m);
+  say('RSAFS YoY     ' + activity.retail.length + ' months, ' + activity.retail[0].m + ' → ' + activity.retail[activity.retail.length - 1].m);
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 

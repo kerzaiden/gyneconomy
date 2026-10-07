@@ -49,7 +49,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          msg="Backfill: Fed funds and the Fed's moves, the VIX and VXO, the OMB fiscal series, the Treasury quarters, productivity, OECD consumer confidence, real durable-goods spending, PCE inflation since 2000, CBO potential growth, bank delinquencies, the Fed loan officer survey, the BIS credit gap, FINRA margin debt, federal debt in dollars, BEA federal interest payments, and GDP, CPI and S&P returns before 1990, from FRED, the OECD, the BIS, FINRA, the Treasury and Damodaran (fetched $(date -u +%F))"
+          msg="Backfill: Fed funds and the Fed's moves, the VIX and VXO, the OMB fiscal series, the Treasury quarters, productivity, OECD consumer confidence, real durable-goods spending, PCE inflation since 2000, CBO potential growth, bank delinquencies, the Fed loan officer survey, the BIS credit gap, FINRA margin debt, federal debt in dollars, BEA federal interest payments, BLS nonfarm payrolls, Census retail sales, and GDP, CPI and S&P returns before 1990, from FRED, the OECD, the BIS, FINRA, the Treasury and Damodaran (fetched $(date -u +%F))"
           files="src/data/fred.json index.html docs/MAP.md docs/COMPONENTS.md"
           git add $files
           git commit -m "$msg"
