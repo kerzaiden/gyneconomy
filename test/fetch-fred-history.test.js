@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { bisGapRows, marginRows, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -165,6 +165,11 @@ ok('the credit readings are written as the app reads them',
    (({ creditGapHistory, marginHistory }) => ({ creditGapHistory, marginHistory }))(J(emit([], [], null, null, null, null, null, null, null, null, null, null, null,
      { gap: [{ q: '2026 Q1', v: -11.3 }], delinquency: [], margin: [{ m: '2026-08', v: 37.19 }] }))),
    { creditGapHistory: [{ q: '2026 Q1', v: -11.3 }], marginHistory: [{ m: '2026-08', v: 37.19 }] });
+ok('Debt to the Penny gives the latest total, in billions',
+   pennyRow({ data: [{ record_date: '2026-10-05', tot_pub_debt_out_amt: '40249104431078.48' }] }), { d: '2026-10-05', v: 40249 });
+throws('a Debt to the Penny reply without a row is refused', () => pennyRow({ data: [] }), /no usable latest row/);
+ok('federal interest is BEA\'s payments over nominal GDP, both at annual rates, quarter by quarter, to two decimals',
+   interestShare([{ q: '2026 Q2', v: 1279.734 }, { q: '2026 Q3', v: 1300 }], [{ q: '2026 Q2', v: 31800 }]), [{ q: '2026 Q2', v: 4.02 }]);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 

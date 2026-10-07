@@ -533,7 +533,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 | Marker | Range (primary series) | Band |
 |---|---|---|
 | Federal debt (gross debt ÷ GDP, V643; "Debt burden" until V660) | 0% 1835 (Treasury Fiscal Data) – 125.9% FY2020 (OMB via FRED GFDGDPA188S); today GFDEGDQ188S, latest quarter | ≤ 70%, the series' own FY1976–2025 mean — CBO's 50-year rule applied to gross, since CBO states it only for held (51%); `checkGrossDebt` re-derives all of it |
-| Interest payments (÷ GDP; "Interest burden" until V660) | 0.63% FY1942 (FRED FYOIGDA188S) – 3.3% FY2026 CBO projection | ≤ 2.0% |
+| Federal interest payments (BEA gross interest ÷ GDP, 0.9.0; "Interest burden" until V660) | 1.8% 1952 Q4 – 5.0% 1991 Q1, quarterly from 1947 (FRED A091RC1Q027SBEA ÷ GDP); read from the record by `syncInterest` | ≤ 3.5%, the series' own 1976–2025 mean; `checkInterest` re-derives it |
 | Deficit rate (÷ GDP) | −2.3% FY2000 surplus – 26.9% FY1943 (FRED FYFSGDA188S); the low end departs the true-extreme rule (real max surplus FY1948 +4.3%), flagged, Keren's to settle | ≤ 3.8% |
 | Household debt service | 9.05% 2021 Q1 – 15.85% 2007 Q4; FRED TDSP, begins 2005 Q1, rebuilt 2024 on tradeline data — its 15.85% is not the retired series' 13.2%, never in one sentence | below its own mean, `DSR_MEAN` 12.4% |
 | Personal saving rate | 1.8% 2005 Q3 – 24.4% 2020 Q2; BEA via FRED A072RC1Q156SBEA | 4.5–12.2%, 10th–90th pct of 318 quarters |

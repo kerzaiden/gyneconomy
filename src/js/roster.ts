@@ -1,7 +1,7 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
 import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, interestSvg, creditSvg, lateSvg, marketSvg, personSvg, sproutSvg, thermoSvg, volatilitySvg } from "./marks.ts";
-import { confidenceHistory, creditGapHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, creditGapHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
@@ -53,7 +53,6 @@ function checkRoster(){
   LIVE_NAMES.forEach(function(n){ if (!live[n]) bad.push(n + ": arrives live and no reading shows it"); });
   if (bad.length && window.console) console.warn("roster: " + bad.join(", "));
 }
-export function periodOf(row: { shortNote?: string }){ return (/^(FY\d{4}|Q[1-4] \d{4})/.exec(row.shortNote || "") || [])[1] || ""; }
 export function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b){ return a.shown - b.shown; }); }
 
 export var ROSTER: RosterRow[];
@@ -82,8 +81,8 @@ function declareRoster(): RosterRow[] {
       term:"Margin debt", head:"Margin Debt, Year over Year", hist:{ s:marginHistory, k:"m" }, mid:MARGIN_LINE, cardUnit:"YoY" },
     { id:"sheet-metric-debt", name:"Federal debt", cat:"circulation", sub:"Stress", good:"down", group:"Stress", timing:"structural", mark:debtSvg, door:"split",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:DEBT_LINE, cardUnit:"of GDP" },
-    { id:"sheet-metric-interest", name:"Interest payments", cat:"circulation", sub:"Stress", good:"down", group:"Stress", timing:"structural", mark:interestSvg,
-      door:"split", head:"Net Interest, Share of GDP", hist:{ s:fiscalHistory.interest, k:"y" }, mid:INTEREST_LINE,
+    { id:"sheet-metric-interest", name:"Federal interest payments", cat:"circulation", sub:"Stress", good:"down", group:"Stress", timing:"structural", mark:interestSvg,
+      door:"split", head:"Federal Interest Payments, Share of GDP", hist:{ s:interestQuarterly, k:"q" }, mid:INTEREST_LINE,
       cardUnit:"of GDP" },
     { id:"sheet-marker-deficit", name:"Federal budget", cat:"circulation", sub:"Stress", good:"up", group:"Stress", timing:"structural", mark:budgetSvg, door:"split",
       hk:"deficit-range", slot:"deficit", head:"Federal Deficit or Surplus, Share of GDP", hist:{ s:deficitHistory, k:"yi", y0:DEF_FROM_YEAR },

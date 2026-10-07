@@ -38,8 +38,18 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The household reading is Households, never Debt service; "Debt service" names only the Households bill.**
   Keren: "debt service is too general — there is government debt service and household debt service." (V463,
   V660)
-- **The fiscal markers are Federal debt (not "Debt burden") and Interest payments (not "Interest burden").**
-  Keren chose "Federal debt" because the card shows the debt itself. (V660)
+- **The fiscal markers are Federal debt (not "Debt burden") and Federal interest payments (not "Interest burden").**
+  Keren chose "Federal debt" because the card shows the debt itself (V660), and "federal government interest payments"
+  so it is not read as the Interest rates reading (0.9.0).
+- **Federal debt is shown in dollars as well as against GDP.** Keren: "we only have percentages, but we don't really
+  grasp the numbers … a lot of analysts use the numbers 40 trillion and 1.2 trillion." Its Insights lead with the
+  Treasury's Debt to the Penny; the chart stays a share of GDP and its readout adds each quarter's dollars (GFDEBTN,
+  the same total public debt). (0.9.0)
+- **Federal interest payments is BEA's gross interest, as a share of GDP and in dollars.** Keren chose it over OMB's net
+  interest because it is the $1.28 trillion analysts quote, and kept it knowing it reads Attention rather than Risk: at
+  3.9% of GDP it is below the 5.0% of 1991, because today's debt pays a far lower average rate. The line is the series'
+  own 1976–2025 average (3.5%), computed by CBO's 50-year rule since no convention sets one; the readout adds each
+  quarter's dollars a year. CBO's FY2026 projection no longer drives the card. (0.9.0)
 - **The fiscal reading is Federal budget, never "deficit rate", and its chart head says "deficit or surplus",
   never deficit alone.** It can go either way (the budget was in surplus four straight years), and a name that
   covers one sign is wrong in the other sign's years. (V359, V397)
@@ -776,7 +786,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 ### Where each reading belongs
 
 - **Credit and debt are one system, and both live in Circulation: Credit is the flow, Stress is the stock.** Credit
-  (Credit gap, Margin debt) is borrowing as it happens; Stress (Federal debt, Interest payments, Federal budget,
+  (Credit gap, Margin debt) is borrowing as it happens; Stress (Federal debt, Federal interest payments, Federal budget,
   Households, Delinquency rate) is what the borrowing leaves owed. Keren: "Dalio says that debt service squeezes out
   spending, so we should see it in the same place"; "margin debt has everything to do with credit because they use
   credit to buy stocks". Activity keeps Work (Unemployment rate, Productivity growth). This overturns V457/V462/V660's

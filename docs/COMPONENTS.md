@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f8c184a` on 2026-10-07. **98 components**, **28 shared patterns**.
+Generated from commit `f21efeb` on 2026-10-07. **98 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -211,7 +211,7 @@ renderer speaks. Listed most-used first.
 | **`titleCase`** | format.ts | 19 places |
 | **`fmtSigned`** | format.ts | 17 places |
 | **`histFrame`** | charts.ts | 12 places |
-| **`metered`** | format.ts | 12 places |
+| **`metered`** | format.ts | 11 places |
 | **`pageCycle`** | history.ts | 11 places |
 | **`publishGeom`** | charts.ts | 11 places |
 | **`addSources`** | dom.ts | 10 places |
@@ -239,14 +239,17 @@ renderer speaks. Listed most-used first.
 | **`keyed`** | roster.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
 | **`qAtIndex`** | format.ts | 6 places |
+| **`qPretty`** | format.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
 | **`atMonth`** | format.ts | 5 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
+| **`dollars`** | indicators.ts | 5 places |
 | **`growthWord`** | model.ts | 5 places |
 | **`inflationFigure`** | model.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
+| **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`listWords`** | cycle-analysis.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
@@ -267,12 +270,10 @@ renderer speaks. Listed most-used first.
 | **`fill`** | ai-insights.ts | 4 places |
 | **`fmt`** | cycle-analysis.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
-| **`labRow`** | data.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`panel`** | ai-insights.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
-| **`qPretty`** | format.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`side`** | cycle-analysis.ts | 4 places |
@@ -289,6 +290,7 @@ renderer speaks. Listed most-used first.
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
+| **`fmtAsOf`** | format.ts | 3 places |
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`lineInsight`** | indicators.ts | 3 places |
