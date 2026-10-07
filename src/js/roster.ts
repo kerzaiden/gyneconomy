@@ -1,13 +1,12 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
 import { bagSvg, creditSvg, debtSvg, diamondSvg, diceSvg, ecgSvg, gaugeSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
-import { concentrationHistory, confidenceHistory, creditGapHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, creditGapHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
 import { DELINQUENCY_MEAN, GAP_BUILD, LENDING_LINE, MARGIN_LINE } from "./credit.ts";
 import { PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
-import { CONCENTRATION_MEAN } from "./concentration.ts";
 
 // ---- The roster: every reading, declared once ----
 type Category = { key: string; title: string; shown: number; onDial?: boolean };
@@ -119,9 +118,6 @@ function declareRoster(): RosterRow[] {
       cardUnit:"durables, YoY" },
     { id:"sheet-sign-retail", name:"Retail sales", cat:"desire", sub:"Demand", good:"up", group:"Demand", timing:"coincident", door:"row",
       term:"Retail sales", head:"Retail Sales, YoY", hist:{ s:retailHistory, k:"m" }, mid:RETAIL_LINE, cardUnit:"YoY" },
-    { id:"sheet-sign-concentration", name:"Concentration", cat:"desire", sub:"Risk", good:"down", group:"Risk", timing:"structural", door:"row",
-      term:"Concentration", head:"Market Cap, Top 10%", hist:{ s:concentrationHistory, k:"m" }, mid:CONCENTRATION_MEAN,
-      cardUnit:"of market cap" },
     { id:"sheet-sign-premium", name:"Equity risk premium", cat:"desire", sub:"Risk", good:"up", group:"Risk", timing:"structural", door:"row",
       term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE,
       cardUnit:"over bonds" },

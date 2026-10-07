@@ -27,4 +27,3 @@ export var interestQuarterly: QuarterPoint[] = FRED.interestQuarterly;
 export var interestDollarsQuarterly: QuarterPoint[] = FRED.interestDollarsQuarterly;
 export var payrollsHistory: MonthPoint[] = FRED.payrollsHistory;
 export var retailHistory: MonthPoint[] = FRED.retailHistory;
-export var concentrationHistory: MonthPoint[] = FRED.concentrationHistory;

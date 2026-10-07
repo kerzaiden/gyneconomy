@@ -2,7 +2,6 @@ import { atMonth, fmtSigned, hiCard, lede, qPretty, srcBlock, titleCase } from "
 import { colPeek } from "./charts.ts";
 import { creditGapHistory, delinquencyHistory, lendingHistory, marginHistory } from "./history-fred.ts";
 import { activitySpecs } from "./activity.ts";
-import { concentrationSpecs } from "./concentration.ts";
 
 // ---- Credit and debt: the credit gap, margin debt, lending standards and delinquencies ----
 export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; page: IndicatorPage; wordSays: string };
@@ -126,7 +125,7 @@ export function creditInsight(s: { series: readonly Point[]; mid: number; name: 
 export function bootCredit(){
   var closed = delinquencyHistory.filter(function(d){ return +d.q.slice(0, 4) <= DELINQUENCY_TO; });
   DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d){ return a + d.v; }, 0) / closed.length * 100) / 100;
-  specs().concat(activitySpecs(), concentrationSpecs()).forEach(function(S){
+  specs().concat(activitySpecs()).forEach(function(S){
     creditReadings[S.id] = readingOf(S);
     creditPages[S.id] = { goodAbove:S.goodAbove, line:S.line, fmt:S.fmt, tick:S.fmt, src:S.src, lede:S.lede, series:S.series };
   });
