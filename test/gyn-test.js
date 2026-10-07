@@ -133,7 +133,7 @@ async function openPage(p, url, sheet) {
       const svg = band && [...band.querySelectorAll('svg')]
         .sort((a, b) => b.getBoundingClientRect().height - a.getBoundingClientRect().height)[0];
       const q = s => svg ? svg.querySelectorAll(s).length : 0;
-      const btn = document.querySelector('.bh-more[data-head-more="' + h + '"]');
+      const btn = document.querySelector('.bh-more[data-head-more="' + h + '"]') || mp.querySelector('.band-head .bh-info');
       return {
         head: !!mp.querySelector('.band-head'), ctl: !!mp.querySelector('.hist-bar'),
         trend: !!mp.querySelector('.trendpill'), headBtn: !!btn,
@@ -149,7 +149,7 @@ async function openPage(p, url, sheet) {
     }, hid);
     const miss = [];
     if (!r.head) miss.push('head'); if (!r.ctl) miss.push('control'); if (!r.trend) miss.push('trend');
-    if (!r.headBtn) miss.push('⋯'); if (!r.ctlOutside) miss.push('control outside the band');
+    if (!r.headBtn) miss.push('⋯ or (i)'); if (!r.ctlOutside) miss.push('control outside the band');
     if (!r.frame) miss.push('frame'); if (!r.grid) miss.push('gridlines');
     if (!r.vgrid) miss.push('vertical rules'); if (!r.yl) miss.push('y labels'); if (!r.xl) miss.push('x labels');
     if (!r.mark) miss.push('the head\u2019s mark'); if (!r.chip) miss.push('the timing chip');
@@ -171,9 +171,10 @@ async function openPage(p, url, sheet) {
     });
 
     if (r.headBtn) {
-      await p.evaluate(h => document.querySelector('.bh-more[data-head-more="' + h + '"]').click(), hid);
-      await settle(p);
+      if (hid) { await p.evaluate(h => document.querySelector('.bh-more[data-head-more="' + h + '"]').click(), hid); await settle(p); }
       const note = await p.evaluate(h => {
+        const info = h ? null : document.querySelector('#metric-page .band-head .bh-info');
+        if (info) { info.click(); return { rows: 1 }; }
         const wrap = document.querySelector('.bh-more[data-head-more="' + h + '"]').closest('.bh-more-wrap');
         const optn = wrap.querySelector('.bh-opt'); if (!optn) return { rows: 0 };
         optn.click(); return { rows: wrap.querySelectorAll('.bh-opt').length };
@@ -621,14 +622,14 @@ async function openPage(p, url, sheet) {
     await openPage(p, url, 'sheet-metric-valuation');
     const headCol = await p.evaluate(() => {
       const box = document.createElement('div'), dot = document.createElement('span');
-      box.className = 'cat-mood'; dot.style.color = 'var(--cat)'; box.appendChild(dot); document.body.appendChild(box);
+      box.className = 'cat-mood'; dot.style.color = 'var(--text-secondary)'; box.appendChild(dot); document.body.appendChild(box);
       const want = getComputedStyle(dot).color; box.remove();
       const mark = document.querySelector('#metric-page .bh-mark');
       return { got: mark && getComputedStyle(mark).color, want, worn: !!document.querySelector('#metric-page .metric-sheet.cat-mood') };
     });
     headCol.got === headCol.want && headCol.worn
-      ? ok('a reading\u2019s page wears its category colour', headCol.got)
-      : bad('a reading\u2019s page wears its category colour', JSON.stringify(headCol));
+      ? ok('a reading\u2019s page wears its category, its head\u2019s mark grey', headCol.got)
+      : bad('a reading\u2019s page wears its category, its head\u2019s mark grey', JSON.stringify(headCol));
     const square = () => p.evaluate(() => [...document.querySelectorAll('.rangebar, .range-seg.on, .search-field, .cycsel-btn, .more-row, .contact-send, .trendpill, .lab-filter')]
       .filter(e => e.offsetParent && e.getBoundingClientRect().height).map(e => ({ c: e.className.split(' ')[0], ok: parseFloat(getComputedStyle(e).borderTopLeftRadius) >= e.getBoundingClientRect().height / 2 - 0.5 })));
     const seen = [...await square()];

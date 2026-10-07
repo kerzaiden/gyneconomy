@@ -37,12 +37,27 @@ export function histHead(id: string){
     (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + '</span>' : "") +
     '<h2 class="bh-title">' + titleCase(t) + '</h2>' +
     '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' +
-    '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +
-      'aria-expanded="' + (headMenuFor === id ? "true" : "false") +
-      '" aria-label="More about this chart">' + DOTS + '</button>' +
-    '<div class="cycsel-menu bh-menu"' + (headMenuFor === id ? "" : " hidden") + '>' +
-      (headMenuFor === id ? headMenuHtml(id) : "") + '</div></div>' +
+    '<div class="bh-more-wrap">' + (H.menu ? headDots(id) : headInfo(id)) + '</div>' +
   '</div>';
+}
+function headDots(id: string){
+  return headBtn("", 'data-head-more="' + id + '" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart"', DOTS) +
+    '<div class="cycsel-menu bh-menu"' + (headMenuFor === id ? "" : " hidden") + '>' +
+      (headMenuFor === id ? headMenuHtml(id) : "") + '</div>';
+}
+function headInfo(id: string){
+  var i = headNote(id);
+  return i == null ? "" : headBtn(" bh-info bh-opt", 'data-detail-idx="' + i + '" aria-label="About this reading"', "i");
+}
+function headBtn(cls: string, attrs: string, inner: string){
+  return '<button type="button" class="bh-more' + cls + '" ' + attrs + '>' + inner + '</button>';
+}
+function headNote(id: string): number | null {
+  var note = typeof HIST_NOTE[id] === "function" ? (HIST_NOTE[id] as () => string)() : HIST_NOTE[id];
+  if (!note) return null;
+  if (headNoteIdx[id] == null){ headNoteIdx[id] = detailTexts.length; detailTexts.push(""); }
+  detailTexts[headNoteIdx[id]] = note;
+  return headNoteIdx[id];
 }
 var headNoteIdx: Record<string, number> = {};
 function headMenuHtml(id: string): string {
@@ -62,13 +77,11 @@ function headMenuHtml(id: string): string {
       'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + '</span>' +
       '<span class="cycsel-yr">' + (x.on ? x.value : "") + '</span>' + CHEV + '</button>';
   }).join("") + '<div class="bh-sep"></div>';
-  var note = typeof HIST_NOTE[id] === "function" ? (HIST_NOTE[id] as () => string)() : HIST_NOTE[id];
-  if (!note) return extra;
-  if (headNoteIdx[id] == null){ headNoteIdx[id] = detailTexts.length; detailTexts.push(""); }
-  detailTexts[headNoteIdx[id]] = note;
+  var i = headNote(id);
+  if (i == null) return extra;
   return extra +
     '<button type="button" class="cycsel-opt bh-opt" data-detail-idx="' +
-    headNoteIdx[id] + '"><span class="cycsel-nm">About this reading</span></button>';
+    i + '"><span class="cycsel-nm">About this reading</span></button>';
 }
 var headMenuFor: string | null = null;
 var headSubFor: string | null = null;

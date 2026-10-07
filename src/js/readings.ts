@@ -98,11 +98,11 @@ export var coincident: Indicator[] = [
     bodyTerm:"Volume", econTerm:"Money stock (M2)",
     page:{ chart:function(ind){ return volumeBlock(ind); } },
     tag:null,
-    metric:"+5.7%", metricSub:"M2, year over year, Aug 2026",
+    metric:"+5.7%", metricSub:"M2, YoY, Aug 2026",
     meter:{min:-4.64, max:25.61, value:5.66, optimal:{from:M2_PACE_LO, to:M2_PACE_HI, label:M2_PACE_LO + "\u2013" + M2_PACE_HI + "%"},
            ends:{ low:"Draining", zone:"Her pace", high:"Flooding" }},
     shortCaption:"Growing at her ordinary pace again, after the largest transfusion in the record and the only drain.",
-    caption:"How much blood there is \u2014 the other half of the number Pulse measures. Nominal output is the money stock times its velocity, so Volume and Pulse are two halves of one reading and neither means much alone: a racing pulse on full volume is exercise, and the same pulse on falling volume is shock. Her volume grew 40% in the twenty-six months to April 2022, the largest transfusion in the record, while velocity fell to its all-time low \u2014 which is why prices stayed quiet far longer than the money alone implied, and why the fever arrived only when circulation picked up on top of the enlarged stock. Then the volume itself was drained: five quarters of year-over-year contraction from 2023 Q1, the only ones in sixty-seven years. Range: +25.6% (2021 Q1) to \u22124.6% (2023 Q2), against a 1960\u20132019 pace of 6.8%.",
+    caption:"How much blood there is \u2014 the other half of the number Pulse measures. Nominal output is the money stock times its velocity, so Volume and Pulse are two halves of one reading and neither means much alone: a racing pulse on full volume is exercise, and the same pulse on falling volume is shock. Her volume grew 40% in the twenty-six months to April 2022, the largest transfusion in the record, while velocity fell to its all-time low \u2014 which is why prices stayed quiet far longer than the money alone implied, and why the fever arrived only when circulation picked up on top of the enlarged stock. Then the volume itself was drained: five quarters of YoY contraction from 2023 Q1, the only ones in sixty-seven years. Range: +25.6% (2021 Q1) to \u22124.6% (2023 Q2), against a 1960\u20132019 pace of 6.8%.",
     src:[{t:"Federal Reserve via FRED \u2014 M2 money stock, monthly since 1959 (M2SL)", u:"https://fred.stlouisfed.org/series/M2SL"}]
   }
 ];
@@ -117,7 +117,7 @@ export function meterFlagged(m: Meter){
 function volumeInfoHtml(ind: Indicator){
   return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
-      'cash, chequing and savings deposits, and retail money-market funds \u2014 read as the year-over-year change ' +
+      'cash, chequing and savings deposits, and retail money-market funds \u2014 read as the YoY change ' +
       '(' + ind.metricSub + ').</p>' +
     '<p class="caption follow"><b>Her pace is ' + M2_PACE_LO + '\u2013' + M2_PACE_HI + '%</b>, and that is a band computed from ' +
       'this page\u2019s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a ' +
@@ -215,7 +215,7 @@ function bandMonths(){
 function temperatureInfoHtml(ind: Indicator){
   return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is ' +
-      'consumer prices, year over year (' + ind.metricSub + '). The ends of the track are the record, and they ' +
+      'consumer prices, YoY (' + ind.metricSub + '). The ends of the track are the record, and they ' +
       'are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p>' +
     '<p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one ' +
       'band in this app that describes where prices <i>ought</i> to be rather than where they have been. The ' +

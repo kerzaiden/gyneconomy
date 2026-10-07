@@ -676,7 +676,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   titles under insights … a universal page for the indicators to be searched, to be filtered … also filtered by
   category", and "indicator page needs some work, but for now it would be fine." (0.8.3, Oct 6, 2026)
 - **On one category, Indicators groups its readings by subcategory: each subcategory is a quiet heading (the
-  first member's mark and its name, small and grey) over its results, in place of the category's heading, which the
+  subcategory's mark and its name, small and grey) over its results, in place of the category's heading, which the
   bar already names.** All keeps one heading per category. Every heading sits in one container, the standard gap
   (`--gap`) below the bar and above More details; each heading is white over its apricot-tinted results with an
   apricot line between, its mark in apricot and its count in light grey beside its fold chevron. Keren: "the
@@ -1141,9 +1141,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 ### Head and menu
 
 - **Every history has the same head: a small grey badge holding the page's mark, a title naming what the chart
-  measures (never the page's name, never the period: no ", YoY", though a unit that is part of the reading
-  stays, as in "Share of Income"), and a single ⋯ on the right.** Taken from the dashboard Keren sent; the
-  axis already says the period on every window. (V518, V606)
+  measures (never the page's name, never the period, though a unit that is part of the reading stays, as in
+  "Share of Income" or "YoY"), and a single ⋯ on the right.** Taken from the dashboard Keren sent; the
+  axis already says the period on every window. (V518, V606) **Year over year is written YoY, everywhere the app
+  shows it** (Keren: "It says year over year. You can just say YoY. This applies everywhere in the app"); screen
+  reader labels keep the words. (0.9.6)
 - **A history's title reads its own menu row, so one label has one source.** Horizon's title comes from its
   spread menu, Pressure's from its maturity menu. (V639)
 - **The head's badge is 21px with a 13px glyph, a 7px radius, a lighter stroke and a neutral wash mixed from
@@ -1153,9 +1155,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Federal budget page's head wears the budget mark its card wears, and the page carries its timing chip
   (Structural), like every other page.** Keren's call at V670 ends the wait V518 set ("no mark until Keren picks
   one"). (V518, V670)
-- **A history's note opens from its head's ⋯ menu, last in the menu, never from an (i) beside the title.**
-  Keren: "put the info in the three dots in the history panel as convention" — one string read from one place.
-  (V518, V522, V582, V593)
+- **A history's note opens from its head's ⋯ menu, last in the menu; when the note is all the menu would hold,
+  the head shows an (i) in the ⋯'s place that opens it directly.** Keren: "put the info in the three dots in the
+  history panel as convention" (V518, V522, V582, V593); then "if there is nothing but about this reading inside
+  the three dots, just turn it into an info button. So we spare a click" (0.9.6).
 - **A control that chooses which series a chart draws (Pressure's maturity, Horizon's spread) is a row in the
   head's ⋯ menu; the control row holds only the window, so only one duration ruler is
   ever on screen.** Keren: "Put it in the growth page under the three dots in history"; "shouldn't be a new
@@ -1315,7 +1318,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   by the reading's state; its colour is its category's.** Keren: "make the icons without colour" (the piggy
   bank went because it carried the verdict); "I don't want the individual icons to disappear. I just want them
   to inherit the color." (V301, V302, V457, V490, V657, V661)
-- **Every reading wears its own mark, the glyph alone with no disc, in its category's colour on its card, its
+- **A reading wears its subcategory's mark: one mark per subcategory, declared once (`SUB_MARK` in the roster),
+  on the Vitals subcategory heading and on every history head in it; the history head's mark is grey.** Keren:
+  "the federal funds rate icon in the history component … doesn't match the icon of the category … I would assume
+  that it would have a pressure icon. So make sure the icons match their categories", and "the icon should be gray
+  everywhere in all history components" (0.9.6). This retires the rule below that every reading wears its own
+  mark; the per-reading glyphs no subcategory uses were deleted.
+- **(Retired 0.9.6.) Every reading wears its own mark, the glyph alone with no disc, in its category's colour on its card, its
   Search row and its page.** Keren, with Apple Health: "they have an icon next to each title"; she asked for
   Desire's icon "grey and refined, without a green background". Related readings may share a mark (Shiller CAPE
   and the Buffett indicator wear one diamond); V510's "no glyph twice" is retired. (V300, V449, V586, V657,

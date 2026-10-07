@@ -750,7 +750,6 @@
     justify-content:center; color:var(--text-secondary);
     background:color-mix(in srgb, var(--text-primary) 8%, var(--surface)); }
   .bh-mark svg{ width:13px; height:13px; }
-  .metric-sheet[class*=" cat-"] .bh-mark{ color:var(--cat); }
   .bh-mark svg path, .bh-mark svg circle, .bh-mark svg rect, .bh-mark svg line{ stroke-width:1.35; }
   .bh-title, .spread-history-head h4{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface);
     font-weight:600; letter-spacing:-0.01em; color:var(--text-primary); }
@@ -762,6 +761,7 @@
     border:1px solid var(--border); background:none;
     color:var(--text-muted); display:flex; align-items:center; justify-content:center; }
   .bh-more svg{ width:13px; height:13px; }
+  .bh-info{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-meta); line-height:1; }
   .bh-more:hover{ color:var(--text-primary); border-color:var(--border-strong); }
   .bh-menu{ min-width:0; }
   .bh-sep{ height:1px; background:var(--border); margin:4px 6px; }
