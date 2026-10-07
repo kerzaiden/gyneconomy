@@ -717,12 +717,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   from the book on screen, and none is invented for the others until the manuscript supplies one. Summer's
   (Ovulation) stays in the book: Keren, "I don't think we should say ovulation in this app" (0.6.12). (undated,
   Sep 16–19, 2026; 0.8.6)
-- **The Season Model table runs in colour order, the blues together, then the warm colours: the two Autumns,
-  Winter, the two Springs, then Summer.** Keren: "you can put winter deflation below autumn stagflation because it's
-  the same colour palette". Keren's order; the lists keep the cycle's order above, and she confirmed both at V668. Its price bars
-  wear the season's pastel (`--season-wash`, the shade of the info page's season table) with no gradient. Keren:
-  "I like the pastel colours that you used in the info … I don't think we need to see the transition".
-  (V193, V668, 0.8.7)
+- **The Season Model table runs in the cycle's order: Spring·deflation, Spring·reflation, Summer·inflation,
+  Autumn·disinflation, Autumn·stagflation, Winter·deflation.** Keren: "I think the order of the seasons should be
+  spring deflation, spring reflation, summer inflation, autumn disinflation, autumn stagflation, winter deflation."
+  Replaces the colour order of V193 and 0.8.7 (the blues together). Its price bars wear the season's pastel
+  (`--season-wash`, the shade of the info page's season table) with no gradient. Keren: "I like the pastel colours
+  that you used in the info … I don't think we need to see the transition". (V193, V668, 0.8.7, 0.9.2)
 - **The season is computed and never set by hand; `seasonOverride` stays null.** It follows Keren's rule:
   inflation rising while growth falls is stagflation. (undated)
 - **Growth's side is real GDP against a year earlier set beside the economy's potential growth: at or above
