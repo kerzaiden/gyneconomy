@@ -303,8 +303,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   still folds it. The box matches a reading's name, its series, its group or its category. There is no timing filter:
   "the division of Structural, leading, coincident, lagging … It's not something that I would filter by", so timing
   lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.6.1, 0.8.6)
-  **The search box lives only in Indicators; Analysis has none, and the Insights head is its way in.** Keren: "in the
+  **The search box lives only in Indicators; Analysis has none, and the Vitals head is its way in.** Keren: "in the
   analysis page, I don't need the search indicators because I already have this in the insight page." (0.8.8)
+  **Analysis's container of categories is called Vitals, not Insights;** Keren: "instead of insights call the container
+  in analysis 'vitals'". Insights stays the name of the commentary box on every reading page. (0.9.5)
 - **Each year in Year by Year opens Indicators on that year, and Indicators moves between cycles, years and quarters
   with a stepper under its title: the period large, its place in its cycle under it, arrows either side.** Keren: "what
   I would want is to be referred to the indicators page under that date … so that we would have the ability to

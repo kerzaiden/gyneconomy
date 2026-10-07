@@ -380,7 +380,7 @@ function insightsHome(i: number){
 }
 function homeSections(i: number){
   return statsHome(i) + fedEnvironment(nowModel) +
-    dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
+    dxSys("", dxHead(chartSvg(), "Vitals", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){
   var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;

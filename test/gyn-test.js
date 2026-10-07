@@ -467,8 +467,8 @@ async function openPage(p, url, sheet) {
     const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
     (all.title === 'Indicators' && all.shown === 'weather,mood,circulation,stress')
-      ? ok('the Insights head opens Indicators on All', all.shown)
-      : bad('the Insights head opens Indicators on All', JSON.stringify(all));
+      ? ok('the Vitals head opens Indicators on All', all.shown)
+      : bad('the Vitals head opens Indicators on All', JSON.stringify(all));
     await p.goto('file://' + url); await ready(p); await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
     await p.click('#chart-home .insight-row[data-ind-cat="weather"]'); await settle(p);
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
@@ -476,8 +476,8 @@ async function openPage(p, url, sheet) {
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
     (door.first === 'home-secs' && door.rows === 'weather,mood,circulation,stress' && weather.title === 'Indicators' && weather.shown === 'weather' &&
      weather.subs === 'Economic Season 2,Market 1,Activity 2')
-      ? ok('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
-      : bad('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', JSON.stringify({ door, weather }));
+      ? ok('Vitals lists the categories, each opening Indicators on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
+      : bad('Vitals lists the categories, each opening Indicators on its own, grouped by subcategory', JSON.stringify({ door, weather }));
     await filt(p, '[data-pick-cat=""]'); await shut(p);
     const tab = await p.evaluate(() => {
       const h = document.getElementById('sheet-find'), rows = [...h.querySelectorAll('.lab-row[data-open]')];
