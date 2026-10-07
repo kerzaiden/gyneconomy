@@ -1372,7 +1372,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.8 (779)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.9 (780)</span></p>
     </div>
   </div>
 
@@ -4860,6 +4860,91 @@
     }, {
       q: "2026 Q2",
       v: 2.1
+    } ],
+    topTenQuarterly: [ {
+      q: "2019 Q3",
+      v: 21.59
+    }, {
+      q: "2019 Q4",
+      v: 22.73
+    }, {
+      q: "2020 Q1",
+      v: 25.37
+    }, {
+      q: "2020 Q2",
+      v: 26.97
+    }, {
+      q: "2020 Q3",
+      v: 27.96
+    }, {
+      q: "2020 Q4",
+      v: 27.39
+    }, {
+      q: "2021 Q1",
+      v: 26.33
+    }, {
+      q: "2021 Q2",
+      v: 27.43
+    }, {
+      q: "2021 Q3",
+      v: 28.13
+    }, {
+      q: "2021 Q4",
+      v: 29.34
+    }, {
+      q: "2022 Q1",
+      v: 29.46
+    }, {
+      q: "2022 Q2",
+      v: 26.95
+    }, {
+      q: "2022 Q3",
+      v: 27.77
+    }, {
+      q: "2022 Q4",
+      v: 24.38
+    }, {
+      q: "2023 Q1",
+      v: 27.35
+    }, {
+      q: "2023 Q2",
+      v: 30.5
+    }, {
+      q: "2023 Q3",
+      v: 30.61
+    }, {
+      q: "2023 Q4",
+      v: 30.86
+    }, {
+      q: "2024 Q1",
+      v: 32.15
+    }, {
+      q: "2024 Q2",
+      v: 35.76
+    }, {
+      q: "2024 Q3",
+      v: 34.63
+    }, {
+      q: "2024 Q4",
+      v: 37.33
+    }, {
+      q: "2025 Q1",
+      v: 33.56
+    }, {
+      q: "2025 Q2",
+      v: 36.61
+    }, {
+      q: "2025 Q3",
+      v: 38.87
+    }, {
+      q: "2025 Q4",
+      v: 39.23
+    }, {
+      q: "2026 Q1",
+      v: 36.49
+    }, {
+      q: "2026 Q2",
+      v: 36.42
     } ]
   };
   var fred_default = {
@@ -36971,6 +37056,11 @@
       m: "2026-08",
       v: 5.36
     } ],
+    topTenRecent: [ {
+      q: "2026 Q4",
+      d: "2026-10-06",
+      v: 39.27
+    } ],
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -39806,6 +39896,7 @@
   var interestDollarsQuarterly = fred_default.interestDollarsQuarterly;
   var payrollsHistory = fred_default.payrollsHistory;
   var retailHistory = fred_default.retailHistory;
+  var topTenRecent = fred_default.topTenRecent;
   function hubTodayHtml() {
     var d = new Date;
     return "<b>Today,</b> " + MONTHS_SHORT[d.getMonth()] + " " + d.getDate();
@@ -40626,6 +40717,7 @@
   var dsrHistory = series_default.dsrHistory;
   var SAV_FROM_YEAR = 1947;
   var savHistory = series_default.savHistory;
+  var topTenQuarterly = series_default.topTenQuarterly;
   var SAV_THIN = pctl(savHistory, .05);
   var SAV_LOW = pctl(savHistory, .1);
   var SAV_MID = pctl(savHistory, .5);
@@ -41329,6 +41421,71 @@
       lede: "Spending at stores and restaurants in dollars, against the same month a year earlier. Prices are in it: when gas and groceries cost more, it reads higher."
     } ];
   }
+  var CONCENTRATION_TO = 2025;
+  var CONCENTRATION_MEAN;
+  var CONCENTRATION_SRC = [ {
+    t: "SEC EDGAR — SPDR S&P 500 ETF Trust (SPY), Form N-PORT, the full portfolio at each quarter end since September 2019",
+    u: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000884394&type=NPORT-P"
+  }, {
+    t: "State Street Global Advisors — SPY daily holdings, the latest figure",
+    u: "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"
+  } ];
+  var topTenHistory = [];
+  function concentrationSpan() {
+    return topTenQuarterly[0].q.slice(0, 4) + "–" + CONCENTRATION_TO;
+  }
+  function concentrationWord(v) {
+    var avg = CONCENTRATION_MEAN.toFixed(1) + "%";
+    if (v >= CONCENTRATION_MEAN) return {
+      state: "warning",
+      text: "Concentrated",
+      says: "above its " + concentrationSpan() + " average of " + avg + ": more of the index rests on its ten largest stocks than usual"
+    };
+    return {
+      state: "good",
+      text: "Broad",
+      says: "below its " + concentrationSpan() + " average of " + avg + ": the index is spread wider than usual"
+    };
+  }
+  function concentrationSpecs() {
+    var closed = topTenQuarterly.filter(function(d) {
+      return +d.q.slice(0, 4) <= CONCENTRATION_TO;
+    });
+    CONCENTRATION_MEAN = Math.round(closed.reduce(function(a, d) {
+      return a + d.v;
+    }, 0) / closed.length * 10) / 10;
+    var last = topTenQuarterly[topTenQuarterly.length - 1].q;
+    topTenHistory.length = 0;
+    topTenQuarterly.concat(topTenRecent.filter(function(d) {
+      return d.q > last;
+    })).forEach(function(d) {
+      topTenHistory.push(d);
+    });
+    return [ {
+      id: "sheet-sign-concentration",
+      term: "Concentration",
+      econ: "Concentration",
+      unit: "top ten of the S&P 500",
+      series: topTenHistory,
+      mid: CONCENTRATION_MEAN,
+      line: concentrationSpan() + " average",
+      optimal: {
+        lte: CONCENTRATION_MEAN,
+        label: "≤ " + CONCENTRATION_MEAN.toFixed(1) + "%"
+      },
+      ends: {
+        high: "Concentrated"
+      },
+      fmt: function(v) {
+        return v.toFixed(1) + "%";
+      },
+      word: concentrationWord,
+      src: CONCENTRATION_SRC,
+      about: "The weight of the ten largest holdings in the S&P 500, read from SPY, the oldest fund that tracks the index: their share of its net assets. Each share class counts on its own, so Alphabet’s two can both appear, as the index lists them. Quarter ends come from SPY’s filings with the SEC; the latest figure is State Street’s own daily holdings file. When a few giants carry the index, its fortunes ride on theirs: the concentration risk.",
+      band: "<b>The line is the record’s own average</b>, every quarter from " + concentrationSpan() + ". The SEC publishes the full holdings only since 2019, and no convention sets a band for concentration, so the line is derived from that record and no other is drawn.",
+      lede: "How much of the S&P 500 rests on its ten biggest stocks. The higher it runs, the more the whole market leans on a few names."
+    } ];
+  }
   var GAP_BUILD = 2;
   var GAP_BOOM = 10;
   var MARGIN_LINE = 0;
@@ -41373,7 +41530,7 @@
     return delinquencyHistory[0].q.slice(0, 4) + "–" + DELINQUENCY_TO;
   }
   function pointLabel(d) {
-    return d.m ? atMonth(d) : qPretty(d.q);
+    return d.d ? fmtAsOf(d.d) : d.m ? atMonth(d) : qPretty(d.q);
   }
   function gapWord(v) {
     if (v >= GAP_BOOM) return {
@@ -41581,7 +41738,7 @@
     DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d) {
       return a + d.v;
     }, 0) / closed.length * 100) / 100;
-    specs().concat(activitySpecs()).forEach(function(S) {
+    specs().concat(activitySpecs(), concentrationSpecs()).forEach(function(S) {
       creditReadings[S.id] = readingOf(S);
       creditPages[S.id] = {
         goodAbove: S.goodAbove,
@@ -44538,6 +44695,23 @@
       },
       mid: RETAIL_LINE,
       cardUnit: "YoY"
+    }, {
+      id: "sheet-sign-concentration",
+      name: "Concentration",
+      cat: "desire",
+      sub: "Risk",
+      good: "down",
+      group: "Risk",
+      timing: "structural",
+      door: "row",
+      term: "Concentration",
+      head: "S&P 500, Top 10 Weight",
+      hist: {
+        s: topTenHistory,
+        k: "q"
+      },
+      mid: CONCENTRATION_MEAN,
+      cardUnit: "top ten of the S&P 500"
     }, {
       id: "sheet-sign-premium",
       name: "Equity risk premium",
@@ -50252,7 +50426,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Credit & delinquencies", /bis\.org|finra\.org|releases\/chargeoff|DRALACBS|sloos|DRTSCILM|feds\/2012\/201224/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|sec\.gov|ssga\.com|fortune\.com|berkshirehathaway/ ], [ "Credit & delinquencies", /bis\.org|finra\.org|releases\/chargeoff|DRALACBS|sloos|DRTSCILM|feds\/2012\/201224/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {

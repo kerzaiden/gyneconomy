@@ -124,7 +124,7 @@ type RosterRow = {
   pair?: HistSpec;
 };
 type PeekCardOpts = { value?: string; word?: string; state?: Tone; cols?: (number | null)[]; colClass?: (v: number, i: number) => string; colBase?: number; colRule?: boolean; target?: string; title?: string; kicker?: string; mark?: string; unit?: string };
-type CreditPoint = { m?: string; q?: string; v: number };
+type CreditPoint = { m?: string; q?: string; d?: string; v: number };
 type CreditWord = { state: State; text: string; says: string };
 type CreditSpec = {
   id: string; goodAbove?: boolean; term: string; econ: string; unit: string; series: CreditPoint[]; mid: number; line: string; optimal?: Band; ends?: Meter["ends"];

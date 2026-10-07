@@ -345,6 +345,9 @@ the manifest's; now each module says what it imports.
 - **Figures are data, not code** (V697). The hand-kept series are `src/data/series.json`; the FRED histories are
   `src/data/fred.json`, written by the backfill; `data`, `refresh-season` and `history-fred` import them and
   export each series by name. `test/series.test.js` checks that the code reads exactly the keys each file holds.
+  `topTenQuarterly` (SPY's SEC N-PORT quarter ends, 2019 Q3 to 2026 Q2) was written once by `tools/import-nport.js`
+  from filings downloaded outside the cloud, since the SEC refuses GitHub's runners; the Backfill carries it forward
+  from State Street's daily file as `topTenRecent` in `fred.json`, one figure per quarter.
 - **The modules are TypeScript, strict** (V702, Keren: "If that is typesetting, then do it"). `src/js/*.ts` uses
   only erasable syntax (`erasableSyntaxOnly`): annotations, `!`, `as`, generics and type declarations, never an enum
   or a namespace. So esbuild bundles it by dropping the types, and Node runs it as it is (type stripping), which is
@@ -373,7 +376,7 @@ the manifest's; now each module says what it imports.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
-  `data` (the figures, their constants and sources), `activity` (nonfarm payrolls and retail sales, drawn by credit's line readings), `credit` (the credit gap, margin debt and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
+  `data` (the figures, their constants and sources), `activity` (nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (the credit gap, margin debt and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
   and inner pages), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-const { topTen, nportFilings, nportWeights, spyDailyRows, bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { topTen, spyDailyRows, keepQuarter, bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { nportQuarter, quarters, withKey } = require('../tools/import-nport.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -173,15 +174,20 @@ ok('federal interest is BEA\'s payments over nominal GDP, both at annual rates, 
 const fund = Array.from({ length: 500 }, (_, i) => i < 10 ? 4 : 0.12);
 ok('the top ten share sums the ten largest weights, to two decimals', topTen(fund.slice().reverse()), 40);
 throws('a holdings list far short of the index is refused', () => topTen([5, 4, 3]), /only 3 holdings/);
-ok('N-PORT keeps quarter ends and the latest amendment of each',
-   nportFilings({ filings: { recent: { form: ['NPORT-P', 'NPORT-P/A', 'NPORT-P', 'N-CSR'], reportDate: ['2026-06-30', '2026-06-30', '2026-03-31', '2026-03-31'],
-     filingDate: ['2026-08-20', '2026-09-01', '2026-05-20', '2026-05-30'], accessionNumber: ['0001-26-1', '0001-26-2', '0001-26-3', '0001-26-4'] } } }),
-   [{ d: '2026-03-31', filed: '2026-05-20', acc: '0001263' }, { d: '2026-06-30', filed: '2026-09-01', acc: '0001262' }]);
-ok('N-PORT weights are each holding\'s percent of net assets',
-   nportWeights('<invstOrSec><name>Apple Inc</name><pctVal>6.9</pctVal></invstOrSec><invstOrSec><name>Microsoft</name><pctVal>6.512</pctVal></invstOrSec>'), [6.9, 6.512]);
+const holding = w => '<invstOrSec><name>A</name><pctVal>' + w + '</pctVal></invstOrSec>';
+const filing = (d, ws) => '<genInfo><repPdDate>' + d + '</repPdDate></genInfo>' + ws.map(holding).join('');
+ok('an N-PORT filing gives its quarter and the top ten share of net assets', nportQuarter(filing('2026-06-30', fund)), { q: '2026 Q2', v: 40 });
+throws('an N-PORT filing for a month inside a quarter is refused', () => nportQuarter(filing('2026-05-31', fund)), /quarter-end/);
+ok('the filings line up oldest quarter first, one row each', quarters([filing('2026-06-30', fund), filing('2019-09-30', fund), filing('2026-06-30', fund)]).map(r => r.q), ['2019 Q3', '2026 Q2']);
+ok('the import adds its key to the hand-kept series, and replaces it on a second run',
+   [withKey('{\n  "a": [1]\n}\n', [{ q: '2026 Q2', v: 40 }]), withKey('{\n  "a": [1],\n  "topTenQuarterly": []\n}\n', [{ q: '2026 Q2', v: 40 }])],
+   ['{\n  "a": [1],\n  "topTenQuarterly": [{"q":"2026 Q2","v":40}]\n}\n', '{\n  "a": [1],\n  "topTenQuarterly": [{"q":"2026 Q2","v":40}]\n}\n']);
 ok('State Street\'s daily file gives its date and the top ten share',
    spyDailyRows([['Fund Name:', 'SPDR S&P 500 ETF Trust'], ['Holdings:', 'As of 06-Oct-2026'], [], ['Name', 'Ticker', 'Weight'], ...fund.map((w, i) => ['N' + i, 'T' + i, w])]),
    { d: '2026-10-06', v: 40 });
+ok('State Street\'s figure replaces its own quarter and keeps the others',
+   keepQuarter([{ q: '2026 Q4', d: '2026-10-06', v: 39.27 }], { d: '2026-11-03', v: 40.1 }).concat(keepQuarter([{ q: '2026 Q4', d: '2026-12-03', v: 41 }], { d: '2027-01-04', v: 40 })),
+   [{ q: '2026 Q4', d: '2026-11-03', v: 40.1 }, { q: '2026 Q4', d: '2026-12-03', v: 41 }, { q: '2027 Q1', d: '2027-01-04', v: 40 }]);
 throws('a State Street file without its date is refused', () => spyDailyRows([['Name', 'Weight'], ['A', 4]]), /As of/);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);

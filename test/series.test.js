@@ -54,6 +54,7 @@ const KEYED = [
   ['fred.json',   'gdpGrowthBefore',         'y',  60, [-20, 25]],
   ['series.json', 'buffettHistory',          'q', 220, [10, 400]],
   ['series.json', 'capeHistory',             'y',  55, [4, 60]],
+  ['series.json', 'topTenQuarterly',         'q',  28, [10, 60]],
 ];
 const COMPILED = /DATA_COMPILED = new Date\((\d+), (\d+), (\d+)\)/.exec(fs.readFileSync(path.join(__dirname, '..', 'src', 'js', 'refresh-season.ts'), 'utf8'));
 const TODAY = new Date(Date.UTC(+COMPILED[1], +COMPILED[2], +COMPILED[3]));
