@@ -1372,7 +1372,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.4 (775)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.5 (776)</span></p>
     </div>
   </div>
 
@@ -43273,7 +43273,7 @@
   }
   function finder(id, slot) {
     var f = findOf(id);
-    return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search indicators" aria-label="Search indicators" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' + filterDoor("lab-filter", slot, ' aria-label="Filter"', slidersSvg() + filterTag(id))) + "</div>";
+    return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search vitals" aria-label="Search vitals" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' + filterDoor("lab-filter", slot, ' aria-label="Filter"', slidersSvg() + filterTag(id))) + "</div>";
   }
   function stepBtn(row, cls, label) {
     return '<button type="button" class="period-arrow' + cls + '" data-pick-period="' + (row ? row.key : "") + '" aria-label="' + label + (row ? ", " + row.name : "") + '"' + (row ? "" : " disabled") + ">" + CHEV + "</button>";
@@ -43514,7 +43514,7 @@
     return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on ' + closedCount() + " closed market cycles since " + marketCycles[0].from + ".</p>" + healthRow(i) + statRow("Cycle length", meanOf(closed.map(len)), top(len), mark(typical(x.years, open) ? " ok" : " odd", yearsWord(x.years) + " yrs"), lengthPage(i), tone(typical(x.years, open))) + statRow("Cycle variation", sdOf(lengths()), meanOf(lengths()), mark(typical(x.years, open) ? " ok" : " odd", driftWord(i)), variationPage(i), tone(typical(x.years, open)), "±" + yearsWord(sdOf(lengths())) + " years") + statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
   }
   function insightSec(k, ls) {
-    return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
+    return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Vitals" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
   }
   function catName(k) {
     return markName(CAT_MARK[k], catTitle(k));
@@ -43523,7 +43523,7 @@
     return '<span class="lab-mark">' + mark2() + "</span>" + name;
   }
   function countTag(n) {
-    return '<small class="lab-n" aria-label="' + n + ' indicators">' + n + "</small>";
+    return '<small class="lab-n" aria-label="' + n + ' vitals">' + n + "</small>";
   }
   function insightsHome(i) {
     var at = atCycle(i), j = judged(at), rank = TIERS.map(function(t) {
@@ -43539,7 +43539,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return statsHome(i) + fedEnvironment(nowModel) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
+    return statsHome(i) + fedEnvironment(nowModel) + dxSys("", dxHead(chartSvg(), "Vitals", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -43567,7 +43567,7 @@
     narrow(host, id);
   }
   var IND = "sheet-find";
-  var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
+  var IND_ALL = ' data-open="' + IND + '" data-title="Vitals" data-ind-cat=""';
   function searchShell(tag, cls, attrs, inner) {
     return "<" + tag + ' class="search-field' + cls + '"' + attrs + ">" + LENS + inner + "</" + tag + ">";
   }
@@ -44040,7 +44040,7 @@
     return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
   }
   function yearRow(year, lead, foot) {
-    return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Indicators" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
+    return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Vitals" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
   }
   function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
@@ -44255,7 +44255,7 @@
     b.removeAttribute("data-ind-cat");
     b.disabled = !open;
     b.setAttribute("data-open", IND);
-    b.setAttribute("data-title", "Indicators");
+    b.setAttribute("data-title", "Vitals");
     b.setAttribute("data-ind-when", open ? open.when : "");
     if (open && open.cat) b.setAttribute("data-ind-cat", open.cat.key);
   }
