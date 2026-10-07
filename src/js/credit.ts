@@ -1,16 +1,11 @@
 import { atMonth, fmtSigned, hiCard, lede, qPretty, srcBlock, titleCase } from "./format.ts";
 import { colPeek } from "./charts.ts";
 import { creditGapHistory, delinquencyHistory, lendingHistory, marginHistory } from "./history-fred.ts";
+import { activitySpecs } from "./activity.ts";
 
 // ---- Credit and debt: the credit gap, margin debt, lending standards and delinquencies ----
-type CreditPoint = { m?: string; q?: string; v: number };
-type CreditWord = { state: State; text: string; says: string };
 export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; page: IndicatorPage; wordSays: string };
-type CreditSpec = {
-  id: string; term: string; econ: string; unit: string; series: CreditPoint[]; mid: number; line: string; optimal?: Band; ends?: Meter["ends"];
-  fmt: (v: number) => string; word: (v: number) => CreditWord; about: string; band: string; lede: string; src: Src[];
-};
-export type CreditPage = { line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
+export type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
 
 export var GAP_BUILD = 2, GAP_BOOM = 10, MARGIN_LINE = 0, LENDING_LINE = 0, DELINQUENCY_TO = 2025;
 export var GAP_SRC: Src[] = [
@@ -130,8 +125,8 @@ export function creditInsight(s: { series: readonly Point[]; mid: number; name: 
 export function bootCredit(){
   var closed = delinquencyHistory.filter(function(d){ return +d.q.slice(0, 4) <= DELINQUENCY_TO; });
   DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d){ return a + d.v; }, 0) / closed.length * 100) / 100;
-  specs().forEach(function(S){
+  specs().concat(activitySpecs()).forEach(function(S){
     creditReadings[S.id] = readingOf(S);
-    creditPages[S.id] = { line:S.line, fmt:S.fmt, tick:S.fmt, src:S.src, lede:S.lede, series:S.series };
+    creditPages[S.id] = { goodAbove:S.goodAbove, line:S.line, fmt:S.fmt, tick:S.fmt, src:S.src, lede:S.lede, series:S.series };
   });
 }

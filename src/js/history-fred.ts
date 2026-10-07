@@ -25,3 +25,5 @@ export var debtDollarsQuarterly: QuarterPoint[] = FRED.debtDollarsQuarterly;
 export var debtToday: { d: string; v: number } = FRED.debtToday;
 export var interestQuarterly: QuarterPoint[] = FRED.interestQuarterly;
 export var interestDollarsQuarterly: QuarterPoint[] = FRED.interestDollarsQuarterly;
+export var payrollsHistory: MonthPoint[] = FRED.payrollsHistory;
+export var retailHistory: MonthPoint[] = FRED.retailHistory;

@@ -62,7 +62,7 @@ function marketPage(){
 function withCredit(o: Record<string, SplitPage>){
   Object.keys(creditPages).forEach(function(id){
     var P = creditPages[id];
-    o[id] = readingPage(creditReadings[id], { goodAbove:false, line:P.line, fmt:P.fmt, tick:P.tick, src:P.src, insight:function(s){ return creditInsight(s, P); } });
+    o[id] = readingPage(creditReadings[id], { goodAbove:!!P.goodAbove, line:P.line, fmt:P.fmt, tick:P.tick, src:P.src, insight:function(s){ return creditInsight(s, P); } });
   });
   return o;
 }

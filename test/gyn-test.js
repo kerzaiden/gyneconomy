@@ -476,7 +476,7 @@ async function openPage(p, url, sheet) {
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
     (door.first === 'home-secs' && door.rows === 'weather,mood,circulation,stress' && weather.title === 'Vitals' && weather.shown === 'weather' &&
-     weather.subs === 'Economic Season 2,Market 1,Activity 2')
+     weather.subs === 'Economic Season 2,Market 1,Activity 3')
       ? ok('Vitals lists the categories, each opening Vitals on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Vitals lists the categories, each opening Vitals on its own, grouped by subcategory', JSON.stringify({ door, weather }));
     await filt(p, '[data-pick-cat=""]'); await shut(p);
@@ -592,14 +592,14 @@ async function openPage(p, url, sheet) {
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-find:not([hidden])');
       return page && { bar: document.getElementById('topbar-title').textContent.trim(),
-        names: [...page.querySelectorAll('.lab-sec:not([hidden]) .lab-row > div:first-child > b')].map(n => n.textContent.trim()).join('+'),
+        names: [...page.querySelectorAll('.lab-sec:not([hidden]) .lab-row > div:first-child > b')].map(n => n.textContent.trim()).sort().join('+'),
         modal: !document.getElementById('detail-modal') || document.getElementById('detail-modal').hidden !== false ? false : true };
     });
     await click(p, '#sheet-find:not([hidden]) .labs > .more-row'); await settle(p);
     if (wx) wx.cards = await p.evaluate(() => [...document.querySelectorAll('#detail-modal-body .hi-name')].map(n => n.textContent.trim()));
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (wx && wx.bar === 'Vitals' && wx.names === 'Temperature+Growth+S&P 500+Unemployment rate+Productivity growth' && !wx.modal &&
+    (wx && wx.bar === 'Vitals' && wx.names === 'Growth+Nonfarm payrolls+Productivity growth+S&P 500+Temperature+Unemployment rate' && !wx.modal &&
      wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
       ? ok('the season in the dial opens Vitals on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Vitals on Weather, with the market and what the season means', JSON.stringify(wx));
