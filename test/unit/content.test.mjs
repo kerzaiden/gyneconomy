@@ -287,7 +287,6 @@ test('each category’s insights follow the cycle on screen, and the old categor
   const mood = () => catInsight('mood');
   assert.equal(document.querySelectorAll('.cat-sheet .cat-item, [id^="sheet-cat-"], .sign-row, .peek').length, 0);
   for (const key of ['weather', 'mood', 'circulation']) assert.ok(catInsight(key), key);
-  assert.equal(catInsight('energy'), '');
   assert.match(mood(), /She\u2019s in .+AI Cycle/);
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.match(mood(), /She\u2019s in .+Big Tech Cycle/);

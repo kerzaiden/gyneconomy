@@ -26,8 +26,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
-- **The category holding the activity readings is Energy, shown as Activity.** Keren: "activity should be
-  renamed to energy — the icon needs to embody energy" (V457). Stress left it for Circulation in 0.9.0.
+- **There are three categories: Weather, Mood and Circulation. The work readings are Weather's subcategory Work.**
+  Keren: "we don't need a category named activity. I think it's a subcategory under weather … economy, market, work"
+  (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0.
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)
@@ -40,7 +41,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   V660)
 - **The fiscal markers are Federal debt (not "Debt burden") and Federal interest payments (not "Interest burden").**
   Keren chose "Federal debt" because the card shows the debt itself (V660), and "federal government interest payments"
-  so it is not read as the Interest rates reading (0.9.0).
+  so it is not read as the Federal funds rate reading (0.9.0).
 - **Federal debt is shown in dollars as well as against GDP.** Keren: "we only have percentages, but we don't really
   grasp the numbers … a lot of analysts use the numbers 40 trillion and 1.2 trillion." Its Insights lead with the
   Treasury's Debt to the Penny; the chart stays a share of GDP and its readout adds each quarter's dollars (GFDEBTN,
@@ -319,10 +320,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "All the previous designs we made, we can throw them out." A closed cycle's figures are Cycle Statistics'. This
   replaced the group card (V688), the category page's ground (0.6.2), its cards and More details (1.5.0, 0.6.1), the
   equal-height cards (V688) and the past cycle's category cards (V660, V665). (0.8.6, Oct 6, 2026)
-- **Debt is one group, Stress (Federal debt, Interest payments, Federal budget, Households, Delinquency rate); the
-  name Economic power is retired.** Keren: "households should be inside economic power… the terminology is stress
-  because debts are stress", then chose Stress (V688); "everything related to debt should be in the stress
-  category" (0.9.0).
+- **Debt is one group, Debt (Margin debt, Federal debt, Federal interest payments, Federal budget, Households,
+  Delinquency rate); the names Economic power and Stress are retired.** Keren: "the terminology is stress because
+  debts are stress" (V688, Stress); "everything related to debt should be in the stress category", then "the title in
+  circulation should be debt (stress). And margin debt should be under debt" (0.9.0, Debt).
 - **No season says what comes next or what to watch for the turn.** Both read as forecasts; Keren: "drop the forecast"
   (1.5.0). They went with the season pop-up, and the book quotes it never had with them; Keren: "don't need it, we have
   it in About" (0.8.9).
@@ -647,16 +648,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Pressure (Interest rates,
-  US 10-year Treasury), Money (Pulse, Volume), Credit (Credit gap, Margin debt) and Stress; Activity: Work (Unemployment
-  rate, Productivity growth). The
-  names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
+  Weather also holds Work (Unemployment rate, Productivity growth); Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Pressure (Federal funds rate,
+  US 10-year Treasury), Money (Pulse, Volume), Credit (Credit gap) and Debt. There is no Activity category (Keren, 0.9.0). The
+  names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". Keren renamed
   Circulation's first subcategory Pressure and the reading that was Pressure US 10-year Treasury: "the title needs
   to be pressure. And instead of pressure, we should have the US 10 year treasury." (0.8.5, 0.8.6, Oct 6, 2026)
-- **The fourth category is Activity, not Energy** (its key stays `energy`). Keren: "the market convention is economic
-  activity." An open year's figure carries no "so far" on Indicators: every figure there is so far. (0.8.5, Oct 6, 2026)
+- **An open year's figure carries no "so far" on Indicators: every figure there is so far. (0.8.5, Oct 6, 2026)
 - **A category opens in Indicators, never on its old page of chart cards.** Its heading on Indicators and the
   dial's season both open Indicators on that category, and its More details is that category's insights. Each
   result on the open cycle leads with its card's verdict word, then its tier ("Rich · Risk", "Calm · Normal"):
@@ -785,11 +784,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
-- **Credit and debt are one system, and both live in Circulation: Credit is the flow, Stress is the stock.** Credit
-  (Credit gap, Margin debt) is borrowing as it happens; Stress (Federal debt, Federal interest payments, Federal budget,
-  Households, Delinquency rate) is what the borrowing leaves owed. Keren: "Dalio says that debt service squeezes out
+- **Credit and debt are one system, and both live in Circulation: Credit is the flow, Debt is the stock.** Credit
+  (Credit gap) is borrowing as it builds; Debt (Margin debt, Federal debt, Federal interest payments, Federal budget,
+  Households, Delinquency rate) is what the borrowing leaves owed, margin debt included (Keren, 0.9.0). Keren: "Dalio says that debt service squeezes out
   spending, so we should see it in the same place"; "margin debt has everything to do with credit because they use
-  credit to buy stocks". Activity keeps Work (Unemployment rate, Productivity growth). This overturns V457/V462/V660's
+  credit to buy stocks". Work (Unemployment rate, Productivity growth) moved to Weather. This overturns V457/V462/V660's
   Stress under Energy; there is still no separate Load or debt category. (0.9.0)
 - **The credit readings are the popular, published ones, and few.** Keren: "I want to use popular metrics,
   conventional metrics, and not too many of them." The Credit gap is the BIS's own published gap (the app does not
@@ -803,20 +802,20 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Power score is gone: its card, page, composite and history. Don't re-add it.** Keren: "remove the
   power score". (V660)
 - **Unemployment rate and Productivity growth (its history is OPHNFB, through the Backfill) each have their own
-  page, directly under Energy; there is no Activity page or group.** Keren: they "should be their own pages";
+  page, under Weather's Work; there is no Activity page or group.** Keren: they "should be their own pages";
   then "get rid of the activity page… I want productivity growth and unemployment rate to be under energy". (V661, V688)
 - **Productivity growth belongs to the activity readings, not Stress, and its range is the annual year-over-year
   one it plots.** Keren: "I think it doesn't belong to economic power — I think it belongs to activity";
   output per hour measures what the body is doing. (V395)
 - **Institutional trust (Gallup's confidence survey) is not a Stress reading; don't re-add it.**
   Keren: "the trust is embodied in the bond market." (V392)
-- **Circulation reads in the order cause runs: Interest rates (the rate the Fed sets), Pressure (the rate the market
+- **Circulation reads in the order cause runs: Federal funds rate (the rate the Fed sets), Pressure (the rate the market
   charges), Pulse (how fast money moves), Volume (how much of it there is).** The rate is the cause; pulse and
   volume are what it acts on. (V317, V639)
-- **The policy-rate reading is Interest rates, a member of Circulation; "hormones" is its word only in the
+- **The policy-rate reading is the Federal funds rate, a member of Circulation; "hormones" is its word only in the
   Diagnosis.** Keren: "when I'm looking at circulation page I want to see interest rates instead of hormones and
   in the analysis … I would want to see hormones because hormones are not the official terminology of the
-  market." The card, page, Search and Insights say Interest rates; the Diagnosis said "Hormones are …" until its
+  market." Then, in 0.9.0: "instead of interest rates, write federal fund rate", its official name. The card, page, Search and Insights say Federal funds rate; the Diagnosis said "Hormones are …" until its
   systems left in 1.8.0. A hormone is a messenger secreted on purpose that sets the tempo
   of everything downstream, which is the rate the Fed sets; the Insights lede keeps that sentence. (V592, V683)
 - **Pressure is the Treasury yields and the Treasury spreads in one page, opening on the 10-year yield; its ⋯

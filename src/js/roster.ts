@@ -18,10 +18,9 @@ export var TIMING: Record<RosterTiming, { label: string }> = {
 export var CATEGORIES: Category[] = [
   { key:"weather", title:"Weather", shown:0, onDial:true },
   { key:"circulation", title:"Circulation", shown:2 },
-  { key:"mood", title:"Mood", shown:1 },
-  { key:"energy", title:"Activity", shown:3 }
+  { key:"mood", title:"Mood", shown:1 }
 ];
-export var GROUP_MARK: Record<string, () => string> = { "Stress":boltSvg };
+export var GROUP_MARK: Record<string, () => string> = { "Debt":boltSvg };
 export var ROSTER_BY: Record<string, RosterRow> = {};
 function pageState<T>(of: (R: RosterRow) => T | undefined): Record<string, T> {
   var o: Record<string, T> = {};
@@ -66,7 +65,12 @@ function declareRoster(): RosterRow[] {
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, cardUnit:"YoY" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, cardUnit:"total return" },
-    { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", sub:"Pressure", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
+    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"weather", sub:"Work", good:"down", timing:"lagging", mark:personSvg, door:"row",
+      term:"Activity", head:"Unemployment Rate", hist:{ s:unempHistory, k:"m" } },
+    { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"weather", sub:"Work", good:"up", timing:"structural", mark:clockSvg,
+      door:"row", term:"Productivity growth", head:"Output per Hour, Year over Year", hist:{ s:productivityHistory, k:"q" },
+      mid:PRODUCTIVITY_SLOWDOWN },
+    { id:"sheet-sign-hormones", name:"Federal funds rate", cat:"circulation", sub:"Pressure", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, cardUnit:"Fed funds target", live:["fedFunds"] },
     { id:"sheet-sign-pressure", name:"US 10-year Treasury", cat:"circulation", sub:"Pressure", timing:"leading", mark:gaugeSvg, door:"subject", hk:"pressure-range",
       head:"", stops:["5y", "10y", "max"], hist:{ s:t10yYieldHistory, k:"q" }, cardUnit:"10-year Treasury", live:["yieldCurve"] },
@@ -77,20 +81,20 @@ function declareRoster(): RosterRow[] {
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, cardUnit:"M2, YoY", live:["coincident"] },
     { id:"sheet-sign-credit-gap", name:"Credit gap", cat:"circulation", sub:"Credit", good:"down", group:"Credit", timing:"leading", mark:creditSvg, door:"row",
       term:"Credit gap", head:"Credit-to-GDP Gap, Private Sector", hist:{ s:creditGapHistory, k:"q" }, mid:GAP_BUILD, cardUnit:"over trend" },
-    { id:"sheet-sign-margin", name:"Margin debt", cat:"circulation", sub:"Credit", group:"Credit", timing:"leading", mark:creditSvg, door:"row",
+    { id:"sheet-sign-margin", name:"Margin debt", cat:"circulation", sub:"Debt", group:"Debt", timing:"leading", mark:creditSvg, door:"row",
       term:"Margin debt", head:"Margin Debt, Year over Year", hist:{ s:marginHistory, k:"m" }, mid:MARGIN_LINE, cardUnit:"YoY" },
-    { id:"sheet-metric-debt", name:"Federal debt", cat:"circulation", sub:"Stress", good:"down", group:"Stress", timing:"structural", mark:debtSvg, door:"split",
+    { id:"sheet-metric-debt", name:"Federal debt", cat:"circulation", sub:"Debt", good:"down", group:"Debt", timing:"structural", mark:debtSvg, door:"split",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:DEBT_LINE, cardUnit:"of GDP" },
-    { id:"sheet-metric-interest", name:"Federal interest payments", cat:"circulation", sub:"Stress", good:"down", group:"Stress", timing:"structural", mark:interestSvg,
+    { id:"sheet-metric-interest", name:"Federal interest payments", cat:"circulation", sub:"Debt", good:"down", group:"Debt", timing:"structural", mark:interestSvg,
       door:"split", head:"Federal Interest Payments, Share of GDP", hist:{ s:interestQuarterly, k:"q" }, mid:INTEREST_LINE,
       cardUnit:"of GDP" },
-    { id:"sheet-marker-deficit", name:"Federal budget", cat:"circulation", sub:"Stress", good:"up", group:"Stress", timing:"structural", mark:budgetSvg, door:"split",
+    { id:"sheet-marker-deficit", name:"Federal budget", cat:"circulation", sub:"Debt", good:"up", group:"Debt", timing:"structural", mark:budgetSvg, door:"split",
       hk:"deficit-range", slot:"deficit", head:"Federal Deficit or Surplus, Share of GDP", hist:{ s:deficitHistory, k:"yi", y0:DEF_FROM_YEAR },
       flip:true, mid:DEFICIT_LINE, cardUnit:"deficit, of GDP" },
-    { id:"sheet-metric-households", name:"Households", cat:"circulation", sub:"Stress", good:"down", group:"Stress", timing:"structural", mark:houseSvg, door:"peek", slot:"households",
+    { id:"sheet-metric-households", name:"Households", cat:"circulation", sub:"Debt", good:"down", group:"Debt", timing:"structural", mark:houseSvg, door:"peek", slot:"households",
       head:"Debt Service, Share of Income", stops:["5y", "10y", "max"], hist:{ s:dsrHistory, k:"qi", y0:DSR_FROM_YEAR },
       pair:{ s:savHistory, k:"qi", y0:SAV_FROM_YEAR }, cardUnit:"% paid / kept" },
-    { id:"sheet-metric-delinquency", name:"Delinquency rate", cat:"circulation", sub:"Stress", good:"down", group:"Stress", timing:"lagging", mark:lateSvg, door:"row",
+    { id:"sheet-metric-delinquency", name:"Delinquency rate", cat:"circulation", sub:"Debt", good:"down", group:"Debt", timing:"lagging", mark:lateSvg, door:"row",
       term:"Delinquency rate", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
     { id:"sheet-metric-valuation", name:"Shiller CAPE", cat:"mood", sub:"Valuations", good:"down", group:"Valuations", timing:"structural", mark:diamondSvg, door:"peek",
       slot:"valuation", head:"Shiller CAPE, Against Fair Value", hist:{ s:capeHistory, k:"y" }, mid:CAPE_FAIR, cardUnit:"CAPE", live:["valuation", "capeValue"] },
@@ -107,12 +111,7 @@ function declareRoster(): RosterRow[] {
       cardUnit:"over bonds" },
     { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", sub:"Sentiment", good:"up", timing:"leading", mark:bagSvg, door:"row", term:"Confidence",
       head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE,
-      cardUnit:"OECD index" },
-    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"energy", sub:"Work", good:"down", timing:"lagging", mark:personSvg, door:"row",
-      term:"Activity", head:"Unemployment Rate", hist:{ s:unempHistory, k:"m" } },
-    { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"energy", sub:"Work", good:"up", timing:"structural", mark:clockSvg,
-      door:"row", term:"Productivity growth", head:"Output per Hour, Year over Year", hist:{ s:productivityHistory, k:"q" },
-      mid:PRODUCTIVITY_SLOWDOWN }
+      cardUnit:"OECD index" }
   ];
 }
 export function bootRoster(){

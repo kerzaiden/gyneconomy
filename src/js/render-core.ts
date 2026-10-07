@@ -457,14 +457,14 @@ function renderPressureInsights(){
   cards.push(hiCard("The Risk-Free Loan", "",
     "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " +
     "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " +
-    "a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" +
+    "a stock’s future earnings are measured against. The Federal funds rate is the overnight rate the Fed sets" +
     (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") +
     "; this is that rate as the market re-prices it ten years out" +
     (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
   cards.push(hiCard("Pressure on the Borrower", "",
     "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " +
     "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest " +
-    "payments reading, under Activity. " +
+    "payments reading, under Debt. " +
     (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") +
     "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q +
     " to " + pct(hi.v) + " in " + hi.q + "."));

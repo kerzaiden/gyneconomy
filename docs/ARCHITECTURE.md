@@ -144,7 +144,7 @@ Diagnosis (two orders, both Keren's). A row's fields:
 id, name, cat, timing, mark   the page, the name on every door, the category, the timing chip, the glyph
 good                          the side that is good for it ("up" or "down"; none where neither is), which colours
                               a Cycle analysis result outside its range
-group                         consecutive rows with one group are one group (Valuations, Stress)
+group                         consecutive rows with one group are one group (Valuations, Debt)
 door                          where today's figure and the page come from: peek (an authored page, its figure
                               in OWN_FACE), pair and row (a reading object), split (a split page), subject (an
                               authored subject page, its figure in OWN_FACE)
@@ -387,8 +387,8 @@ The conversion was proved by the snapshot (every state identical) and the browse
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
 to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio (labels; the panels keep their keys `chart` and `analysis`. Cycle Statistics (Cycle analysis until 0.6.8) took Search's place in 0.6.1 and is labelled Analysis, and the cycle list is labelled Herstory; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
-Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Pressure · Pulse · Volume) ·
-Mood (Valuations · Volatility · Desire · Confidence) · Energy (Stress · Unemployment rate · Productivity growth). Named Weather, never
+Browse: Weather (Economic Season · Market · Work) · Circulation (Pressure · Money · Credit · Debt) ·
+Mood (Valuations · Sentiment · Desire); three categories since 0.9.0, when Activity (key `energy`) folded into Weather. Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:
@@ -400,8 +400,8 @@ Rules that shape the pages:
 - **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),
   read by the category sheets, the past cycles, the Diagnosis and Cycle analysis.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
-  card (Valuations: Shiller CAPE · Buffett indicator; Stress: Federal debt · Interest payments · Federal
-  budget · Households). The split pages are
+  card (Valuations: Shiller CAPE · Buffett indicator; Debt: Margin debt · Federal debt · Federal interest payments
+  · Federal budget · Households · Delinquency rate). The split pages are
   built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, joined by
   `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
@@ -435,7 +435,7 @@ Rules that shape the pages:
   icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
   the color." `wearCategories` (`cycle-tab`) marks each reading's page with
   its category class, so the page head disc and the history head take `--cat`. Group rows keep a mark
-  of their own (`GROUP_MARK`: Stress the bolt; Valuations its first member's).
+  of their own (`GROUP_MARK`: Debt the bolt; Valuations its first member's).
   The two Treasury spreads (one view of Pressure) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
 - **Analysis shows every cycle as one `.era-row`** (V631), opening the cycle's page.
   Don't split it into list + overview.
@@ -1035,8 +1035,8 @@ by its own picture, by cycle = the average never the total.
 ## Wording
 
 Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
-or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Stress is the
-group of Federal debt, Interest payments, Federal budget and Households (V688; Economic power until then); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
+or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Debt is the
+group of Margin debt, Federal debt, Federal interest payments, Federal budget, Households and Delinquency rate (0.9.0; Stress from V688, Economic power before); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.

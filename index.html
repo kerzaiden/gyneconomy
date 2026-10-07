@@ -888,7 +888,7 @@
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
 
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
-  .cat-mood{ --cat:var(--accent); } .cat-energy{ --cat:var(--good); }
+  .cat-mood{ --cat:var(--accent); }
   .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
@@ -1402,7 +1402,7 @@
       <h3 class="menu-section">Sentiment and Rates</h3>
       <div class="menu-card menu-prose">
         <p>Market sentiment has a drawer of its own, <b>Sentiment</b>, carrying the fear curve — the shape of expected volatility — and the market it is read beside: the VIX. The <b>Fed funds rate</b> sits where it belongs, inside <b>Temperature</b> under the Lagging signs: that card is inflation and monetary policy together, and the rate is the lever pulled after her temperature, not ahead of it.</p>
-        <p>Her economic activity is a category of its own, <b>Activity</b>: the federal debt, the interest payments and the federal budget, each read on its own page, beside the households and the labour market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse.</p>
+        <p>Her debts sit in Circulation, under <b>Debt</b>: margin debt, the federal debt, the interest payments, the federal budget, the households and the loans running late, each read on its own page. Her work, the labour market and productivity, sits in Weather beside the economic season and the market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse.</p>
       </div>
 
       <h3 class="menu-section">The Tabs</h3>
@@ -39151,13 +39151,9 @@
     key: "mood",
     title: "Mood",
     shown: 1
-  }, {
-    key: "energy",
-    title: "Activity",
-    shown: 3
   } ];
   var GROUP_MARK = {
-    Stress: boltSvg
+    Debt: boltSvg
   };
   var ROSTER_BY = {};
   function pageState(of) {
@@ -39274,8 +39270,39 @@
       mid: 0,
       cardUnit: "total return"
     }, {
+      id: "sheet-sign-activity",
+      name: "Unemployment rate",
+      cat: "weather",
+      sub: "Work",
+      good: "down",
+      timing: "lagging",
+      mark: personSvg,
+      door: "row",
+      term: "Activity",
+      head: "Unemployment Rate",
+      hist: {
+        s: unempHistory,
+        k: "m"
+      }
+    }, {
+      id: "sheet-sign-productivity-growth",
+      name: "Productivity growth",
+      cat: "weather",
+      sub: "Work",
+      good: "up",
+      timing: "structural",
+      mark: clockSvg,
+      door: "row",
+      term: "Productivity growth",
+      head: "Output per Hour, Year over Year",
+      hist: {
+        s: productivityHistory,
+        k: "q"
+      },
+      mid: PRODUCTIVITY_SLOWDOWN
+    }, {
       id: "sheet-sign-hormones",
-      name: "Interest rates",
+      name: "Federal funds rate",
       cat: "circulation",
       sub: "Pressure",
       timing: "leading",
@@ -39364,8 +39391,8 @@
       id: "sheet-sign-margin",
       name: "Margin debt",
       cat: "circulation",
-      sub: "Credit",
-      group: "Credit",
+      sub: "Debt",
+      group: "Debt",
       timing: "leading",
       mark: creditSvg,
       door: "row",
@@ -39381,9 +39408,9 @@
       id: "sheet-metric-debt",
       name: "Federal debt",
       cat: "circulation",
-      sub: "Stress",
+      sub: "Debt",
       good: "down",
-      group: "Stress",
+      group: "Debt",
       timing: "structural",
       mark: debtSvg,
       door: "split",
@@ -39398,9 +39425,9 @@
       id: "sheet-metric-interest",
       name: "Federal interest payments",
       cat: "circulation",
-      sub: "Stress",
+      sub: "Debt",
       good: "down",
-      group: "Stress",
+      group: "Debt",
       timing: "structural",
       mark: interestSvg,
       door: "split",
@@ -39415,9 +39442,9 @@
       id: "sheet-marker-deficit",
       name: "Federal budget",
       cat: "circulation",
-      sub: "Stress",
+      sub: "Debt",
       good: "up",
-      group: "Stress",
+      group: "Debt",
       timing: "structural",
       mark: budgetSvg,
       door: "split",
@@ -39436,9 +39463,9 @@
       id: "sheet-metric-households",
       name: "Households",
       cat: "circulation",
-      sub: "Stress",
+      sub: "Debt",
       good: "down",
-      group: "Stress",
+      group: "Debt",
       timing: "structural",
       mark: houseSvg,
       door: "peek",
@@ -39460,9 +39487,9 @@
       id: "sheet-metric-delinquency",
       name: "Delinquency rate",
       cat: "circulation",
-      sub: "Stress",
+      sub: "Debt",
       good: "down",
-      group: "Stress",
+      group: "Debt",
       timing: "lagging",
       mark: lateSvg,
       door: "row",
@@ -39581,37 +39608,6 @@
       },
       mid: CONFIDENCE_LINE,
       cardUnit: "OECD index"
-    }, {
-      id: "sheet-sign-activity",
-      name: "Unemployment rate",
-      cat: "energy",
-      sub: "Work",
-      good: "down",
-      timing: "lagging",
-      mark: personSvg,
-      door: "row",
-      term: "Activity",
-      head: "Unemployment Rate",
-      hist: {
-        s: unempHistory,
-        k: "m"
-      }
-    }, {
-      id: "sheet-sign-productivity-growth",
-      name: "Productivity growth",
-      cat: "energy",
-      sub: "Work",
-      good: "up",
-      timing: "structural",
-      mark: clockSvg,
-      door: "row",
-      term: "Productivity growth",
-      head: "Output per Hour, Year over Year",
-      hist: {
-        s: productivityHistory,
-        k: "q"
-      },
-      mid: PRODUCTIVITY_SLOWDOWN
     } ];
   }
   function bootRoster() {
@@ -40997,8 +40993,8 @@
     };
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
-    cards.push(hiCard("The Risk-Free Loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
-    cards.push(hiCard("Pressure on the Borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments reading, under Activity. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("The Risk-Free Loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. The Federal funds rate is the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
+    cards.push(hiCard("Pressure on the Borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments reading, under Debt. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, Not Slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
@@ -41390,7 +41386,7 @@
         if (pk[i].v < pk[i - 1].v) run++; else break;
       }
       var cards = [];
-      cards.push('<p class="hi-lede">Interest rates are the hormone: one signal, secreted on purpose, that the whole body then runs at the tempo of. Nothing on this page is measured off the economy — this is the instruction it was given.</p>');
+      cards.push('<p class="hi-lede">The Federal funds rate is the hormone: one signal, secreted on purpose, that the whole body then runs at the tempo of. Nothing on this page is measured off the economy — this is the instruction it was given.</p>');
       cards.push(hiCard("Two Clocks", "", "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " + pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock — from the " + top.v.toFixed(2) + "% of " + yOf(top) + ", " + run + " peaks in a row came in lower than the one before, until " + yOf(last) + " broke the run at " + last.v.toFixed(2) + "% against " + prev.v.toFixed(2) + "%."));
       cards.push(hiCard("Rise, Peak, Withdraw", "", "That shape is progesterone’s: it rises through the second half of a cycle, peaks, and then falls — and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal rather than the level, because the cuts come after the top, never before it."));
       ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div></section>";
@@ -42142,7 +42138,7 @@
     var f1 = function(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
     };
-    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and Interest rates are the signal that sets all three. Credit is the money lent into the flow, and Stress is the debt it leaves behind: what is repaid today is money that cannot be spent.</p>';
+    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and the Federal funds rate is the signal that sets all three. Credit is the money lent into the flow, and Debt is what it leaves behind, the stress it puts on the flow: what is repaid today is money that cannot be spent.</p>';
     var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
     if (run >= 8) {
       var oc = openCycle();
@@ -42674,8 +42670,7 @@
   var CAT_MARK = {
     weather: weatherSvg,
     mood: moodSvg,
-    circulation: circulationSvg,
-    energy: boltSvg
+    circulation: circulationSvg
   };
   function foldSec(k, title, name, ls, at) {
     return catHeadCard("lab-sec plain", k, {
