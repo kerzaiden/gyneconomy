@@ -223,6 +223,48 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
+const FRENCH_ME = 'https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_ME_CSV.zip';
+function unzipFirst(buf) {
+  let end = buf.length - 22;
+  while (end >= 0 && buf.readUInt32LE(end) !== 0x06054b50) end--;
+  if (end < 0) throw new Error('zip: no end of central directory');
+  const dir = buf.readUInt32LE(end + 16);
+  if (buf.readUInt32LE(dir) !== 0x02014b50) throw new Error('zip: no central directory entry');
+  const method = buf.readUInt16LE(dir + 10), size = buf.readUInt32LE(dir + 20), at = buf.readUInt32LE(dir + 42);
+  const start = at + 30 + buf.readUInt16LE(at + 26) + buf.readUInt16LE(at + 28), data = buf.subarray(start, start + size);
+  return (method === 8 ? require('zlib').inflateRawSync(data) : data).toString('latin1');
+}
+function frenchBlock(lines, title) {
+  const i = lines.findIndex(l => title.test(l));
+  if (i < 0) throw new Error('French size portfolios: no ' + title + ' section');
+  const head = lines[i + 1].split(',').map(c => c.trim());
+  if (head[head.length - 1] !== 'Hi 10' || head[head.length - 10] !== 'Lo 10') throw new Error('French size portfolios: deciles not Lo 10 … Hi 10 under ' + title);
+  const rows = new Map();
+  for (let k = i + 2; k < lines.length && /^\s*\d{6}\s*,/.test(lines[k]); k++) {
+    const c = lines[k].split(',').map(Number);
+    rows.set(String(c[0]), c.slice(-10));
+  }
+  return rows;
+}
+function topDecileShare(csv) {
+  const lines = csv.split(/\r?\n/), n = frenchBlock(lines, /Number of Firms in Portfolios/i), size = frenchBlock(lines, /Average Firm Size/i);
+  const out = [];
+  for (const [ym, firms] of n) {
+    const s = size.get(ym);
+    if (!s || firms.some(v => !(v > 0)) || s.some(v => !(v > 0))) continue;
+    const caps = firms.map((f, i) => f * s[i]), all = caps.reduce((a, b) => a + b, 0);
+    const v = Math.round(caps[9] / all * 1000) / 10;
+    if (band(v, 20, 100)) out.push({ m: ym.slice(0, 4) + '-' + ym.slice(4), v });
+  }
+  if (!out.length) throw new Error('French size portfolios: no month with firms and sizes');
+  return out;
+}
+async function frenchConcentration() {
+  const r = await fetch(FRENCH_ME, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
+  if (!r.ok) throw new Error('French size portfolios: HTTP ' + r.status);
+  return topDecileShare(unzipFirst(Buffer.from(await r.arrayBuffer())));
+}
+
 const BIS_GAP = 'https://stats.bis.org/api/v1/data/WS_CREDIT_GAP/Q.US.P.A.C?format=csv';
 function bisGapRows(csv) {
   const lines = csv.trim().split(/\r?\n/);
@@ -283,7 +325,7 @@ async function finraMargin() {
   return marginRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, concentration) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -310,6 +352,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v },
     interestQuarterly: q(dollars.share), interestDollarsQuarterly: q(dollars.interest) });
   if (activity) Object.assign(out, { payrollsHistory: m(activity.payrolls), retailHistory: m(activity.retail) });
+  if (concentration) out.concentrationHistory = m(concentration);
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -428,9 +471,12 @@ async function main() {
   if (activity.payrolls[0].m !== '1940-01' || activity.retail[0].m !== '1993-01')
     throw new Error('activity: expected payroll growth from 1940-01 and retail sales growth from 1993-01');
   say('PAYEMS YoY    ' + activity.payrolls.length + ' months, ' + activity.payrolls[0].m + ' → ' + activity.payrolls[activity.payrolls.length - 1].m);
+  const concentration = await frenchConcentration();
+  if (concentration[0].m !== '1926-07') throw new Error('French size portfolios: expected months from 1926-07');
+  say('Concentration ' + concentration.length + ' months, ' + concentration[0].m + ' → ' + concentration[concentration.length - 1].m + ' (top decile share, Fama-French)');
   say('RSAFS YoY     ' + activity.retail.length + ' months, ' + activity.retail[0].m + ' → ' + activity.retail[activity.retail.length - 1].m);
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity));
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, concentration));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
@@ -465,5 +511,5 @@ async function earlySeasons() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { topDecileShare, unzipFirst, bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

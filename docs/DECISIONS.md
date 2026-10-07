@@ -684,7 +684,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations, Sentiment (Confidence, Fear) and Desire (Discretionary spending, Retail sales, Equity risk premium); Circulation: Pressure (Federal funds rate,
+  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations, Sentiment (Confidence, Fear) and Desire (Discretionary spending, Retail sales, Concentration, Equity risk premium); Circulation: Pressure (Federal funds rate,
   US 10-year Treasury), Money (Pulse, Volume); Stress: Credit (Credit gap, Margin debt, Lending standards) and Debt. There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
@@ -902,6 +902,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
   spread, went with it. Keren: "use appetite as the keyword". (V709)
+- **Concentration risk is a Desire reading: the largest tenth of US stocks' share of the market's value, monthly
+  from July 1926, against the record's own average.** Keren: "Of course, concentration risk is under desire." The
+  measure is computed from Kenneth French's size portfolios (NYSE breakpoints: each decile's number of firms times
+  its average size), the only free primary record that reaches back through 1929, the Nifty Fifty and 2000. The
+  top-ten share quoted in the news (S&P, JPMorgan) is not free. No convention sets a band, so the line is the
+  1926–2025 average, derived and said so; Concentrated above, Broad below, Structural timing. Claude's calls, for
+  Keren to overturn. (0.9.8)
 - **The durables card is called Discretionary spending, and its (i) says no official series measures discretionary
   spending, so the app measures it by durable goods.** Keren chose the name over Consumer demand when Retail sales
   arrived, to keep apart what households spend in dollars and what they could do without. The series is unchanged. (0.9.7)

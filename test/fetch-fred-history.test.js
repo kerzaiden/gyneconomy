@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { topDecileShare, unzipFirst, bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -160,6 +160,16 @@ throws('a BIS reply without the gap column is refused', () => bisGapRows('FREQ,T
 ok('FINRA margin debt is the debit balances column, oldest month first',
    marginRows([['Year-Month', 'Debit Balances in Customers\' Securities Margin Accounts', 'Free Credit Balances'], ['2026-08', 1453832, 207641], ['2026-07', 1417225, 205132]]),
    [{ date: '2026-07-01', v: 1417225 }, { date: '2026-08-01', v: 1453832 }]);
+const ffHead = ',<= 0,Lo 30,Med 40,Hi 30,Lo 20,Qnt 2,Qnt 3,Qnt 4,Hi 20,Lo 10,Dec 2,Dec 3,Dec 4,Dec 5,Dec 6,Dec 7,Dec 8,Dec 9,Hi 10';
+const ffCsv = ' Number of Firms in Portfolios\r\n' + ffHead + '\r\n192607,0,1,1,1,1,1,1,1,1,10,10,10,10,10,10,10,10,10,10\r\n192608,0,1,1,1,1,1,1,1,1,10,10,10,10,10,10,10,10,10,0\r\n\r\n' +
+  ' Average Firm Size\r\n' + ffHead + '\r\n192607,-99.99,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,91\r\n192608,-99.99,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,91\r\n';
+ok('concentration is the top decile\u2019s share of the deciles\u2019 market value, months missing a decile dropped', topDecileShare(ffCsv), [{ m: '1926-07', v: 91 }]);
+throws('a size file without the firm counts is refused', () => topDecileShare(' Average Firm Size\r\n' + ffHead), /Number of Firms/);
+const zipOf = s => { const b = Buffer.from(s), n = Buffer.from('a.csv'), z = Buffer.alloc(30 + n.length + b.length + 46 + n.length + 22);
+  z.writeUInt32LE(0x04034b50, 0); z.writeUInt16LE(n.length, 26); n.copy(z, 30); b.copy(z, 30 + n.length);
+  const c = 30 + n.length + b.length; z.writeUInt32LE(0x02014b50, c); z.writeUInt32LE(b.length, c + 20); z.writeUInt16LE(n.length, c + 28); n.copy(z, c + 46);
+  const e = c + 46 + n.length; z.writeUInt32LE(0x06054b50, e); z.writeUInt32LE(c, e + 16); return z; };
+ok('the zip reader returns its one stored file', unzipFirst(zipOf('192607,1')), '192607,1');
 throws('a FINRA sheet without the debit balances is refused', () => marginRows([['Year-Month', 'Other'], ['2026-08', 1]]), /debit balances/);
 ok('the credit readings are written as the app reads them',
    (({ creditGapHistory, marginHistory, lendingHistory }) => ({ creditGapHistory, marginHistory, lendingHistory }))(J(emit([], [], null, null, null, null, null, null, null, null, null, null, null,

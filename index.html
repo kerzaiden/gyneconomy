@@ -1372,7 +1372,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.7 (778)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.8 (779)</span></p>
     </div>
   </div>
 
@@ -36971,6 +36971,7 @@
       m: "2026-08",
       v: 5.36
     } ],
+    concentrationHistory: [],
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -39806,6 +39807,7 @@
   var interestDollarsQuarterly = fred_default.interestDollarsQuarterly;
   var payrollsHistory = fred_default.payrollsHistory;
   var retailHistory = fred_default.retailHistory;
+  var concentrationHistory = fred_default.concentrationHistory;
   function hubTodayHtml() {
     var d = new Date;
     return "<b>Today,</b> " + MONTHS_SHORT[d.getMonth()] + " " + d.getDate();
@@ -41329,6 +41331,63 @@
       lede: "Spending at stores and restaurants in dollars, against the same month a year earlier. Prices are in it: when gas and groceries cost more, it reads higher."
     } ];
   }
+  var CONCENTRATION_TO = 2025;
+  var CONCENTRATION_MEAN;
+  var CONCENTRATION_SRC = [ {
+    t: "Kenneth R. French — Data Library: Portfolios Formed on Size, monthly from July 1926, NYSE breakpoints (number of firms and average firm size per decile)",
+    u: "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/Data_Library/det_port_form_sz.html"
+  }, {
+    t: "Eugene F. Fama and Kenneth R. French — The Cross-Section of Expected Stock Returns, Journal of Finance, 1992 (the size portfolios)",
+    u: "https://doi.org/10.1111/j.1540-6261.1992.tb04398.x"
+  } ];
+  function concentrationSpan() {
+    return concentrationHistory[0].m.slice(0, 4) + "–" + CONCENTRATION_TO;
+  }
+  function concentrationWord(v) {
+    var avg = CONCENTRATION_MEAN.toFixed(1) + "%";
+    if (v >= CONCENTRATION_MEAN) return {
+      state: "warning",
+      text: "Concentrated",
+      says: "above its " + concentrationSpan() + " average of " + avg + ": more of the market’s value rests on its largest stocks than usual"
+    };
+    return {
+      state: "good",
+      text: "Broad",
+      says: "below its " + concentrationSpan() + " average of " + avg + ": the market’s value is spread wider than usual"
+    };
+  }
+  function concentrationSpecs() {
+    var closed = concentrationHistory.filter(function(d) {
+      return +d.m.slice(0, 4) <= CONCENTRATION_TO;
+    });
+    CONCENTRATION_MEAN = Math.round(closed.reduce(function(a, d) {
+      return a + d.v;
+    }, 0) / closed.length * 10) / 10;
+    return [ {
+      id: "sheet-sign-concentration",
+      term: "Concentration",
+      econ: "Concentration",
+      unit: "of market value",
+      series: concentrationHistory,
+      mid: CONCENTRATION_MEAN,
+      line: concentrationSpan() + " average",
+      optimal: {
+        lte: CONCENTRATION_MEAN,
+        label: "≤ " + CONCENTRATION_MEAN.toFixed(1) + "%"
+      },
+      ends: {
+        high: "Concentrated"
+      },
+      fmt: function(v) {
+        return v.toFixed(1) + "%";
+      },
+      word: concentrationWord,
+      src: CONCENTRATION_SRC,
+      about: "The share of the whole US stock market’s value held by its largest tenth of companies, sized against the New York Stock Exchange, from Kenneth French’s size portfolios: each tenth’s number of firms times its average size. When a few giants carry the market, its fortunes ride on theirs: the concentration risk.",
+      band: "<b>The line is the record’s own average</b>, every month from " + concentrationSpan() + ". No convention sets a band for concentration, so the line is derived from the record and no other is drawn.",
+      lede: "How much of the market’s value rests on its biggest companies. The higher it runs, the more the whole market leans on a few names."
+    } ];
+  }
   var GAP_BUILD = 2;
   var GAP_BOOM = 10;
   var MARGIN_LINE = 0;
@@ -41581,7 +41640,7 @@
     DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d) {
       return a + d.v;
     }, 0) / closed.length * 100) / 100;
-    specs().concat(activitySpecs()).forEach(function(S) {
+    specs().concat(activitySpecs(), concentrationSpecs()).forEach(function(S) {
       creditReadings[S.id] = readingOf(S);
       creditPages[S.id] = {
         goodAbove: S.goodAbove,
@@ -44527,6 +44586,23 @@
       },
       mid: RETAIL_LINE,
       cardUnit: "YoY"
+    }, {
+      id: "sheet-sign-concentration",
+      name: "Concentration",
+      cat: "mood",
+      sub: "Desire",
+      good: "down",
+      group: "Desire",
+      timing: "structural",
+      door: "row",
+      term: "Concentration",
+      head: "Largest Tenth of US Stocks, Share of Market Value",
+      hist: {
+        s: concentrationHistory,
+        k: "m"
+      },
+      mid: CONCENTRATION_MEAN,
+      cardUnit: "of market value"
     }, {
       id: "sheet-sign-premium",
       name: "Equity risk premium",
@@ -50240,7 +50316,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Credit & delinquencies", /bis\.org|finra\.org|releases\/chargeoff|DRALACBS|sloos|DRTSCILM|feds\/2012\/201224/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|ken\.french|j\.1540-6261\.1992|fortune\.com|berkshirehathaway/ ], [ "Credit & delinquencies", /bis\.org|finra\.org|releases\/chargeoff|DRALACBS|sloos|DRTSCILM|feds\/2012\/201224/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {
