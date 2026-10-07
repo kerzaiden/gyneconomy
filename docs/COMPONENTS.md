@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `87a45a4` on 2026-10-06. **98 components**, **28 shared patterns**.
+Generated from commit `85f1693` on 2026-10-07. **98 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -53,6 +53,7 @@ Generated from commit `87a45a4` on 2026-10-06. **98 components**, **28 shared pa
 |---|---|---|
 | **`calOff`** | `.is-off` | `cycle-analysis.ts:calQuarter`, `cycle-analysis.ts:calYear` |
 | **`countTag`** | `.lab-n` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:insightSec` |
+| **`cycleBars`** | `.len-bars` `.this` | `cycle-analysis.ts:lengthPage`, `cycle-analysis.ts:spreadBars` |
 | **`drawChart`** | `.home-secs` `.lab-box` `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:openWhen`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder`, `cycle-analysis.ts:wirePicks` |
 | **`filterSheet`** | `.ind-filter` `.ind-filter-head` `.ind-reset` `.ind-show` | `cycle-analysis.ts:drawChart` |
 | **`finder`** | `.lab-find` | `cycle-analysis.ts:drawChart` |
@@ -61,7 +62,6 @@ Generated from commit `87a45a4` on 2026-10-06. **98 components**, **28 shared pa
 | **`insightSec`** | `.insight-mark` | `cycle-analysis.ts:insightsHome` |
 | **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:foldSec` |
 | **`labSec`** | `.lab-cat` | `cycle-analysis.ts:bySystem` |
-| **`lengthBars`** | `.len-bars` | `cycle-analysis.ts:lengthPage` |
 | **`lengthPage`** | `.len-key` `.odd` `.ok` | `cycle-analysis.ts:statsHome` |
 | **`markName`** | `.lab-mark` | `cycle-analysis.ts:subSec` |
 | **`periodCal`** | `.cal-key` `.period-cal` | `cycle-analysis.ts:filterSheet` |
@@ -223,12 +223,12 @@ renderer speaks. Listed most-used first.
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`histControls`** | history.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
-| **`closedCount`** | cycle-analysis.ts | 8 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`atMonth`** | format.ts | 7 places |
+| **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`factsFrom`** | format.ts | 7 places |
@@ -256,6 +256,7 @@ renderer speaks. Listed most-used first.
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`side`** | cycle-analysis.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
+| **`visits`** | cycle-analysis.ts | 5 places |
 | **`yearsWord`** | cycle-analysis.ts | 5 places |
 | **`bandEnds`** | format.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
@@ -276,7 +277,6 @@ renderer speaks. Listed most-used first.
 | **`qPretty`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`tier`** | cycle-analysis.ts | 4 places |
-| **`visits`** | cycle-analysis.ts | 4 places |
 | **`word`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
@@ -291,15 +291,18 @@ renderer speaks. Listed most-used first.
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
-| **`meanOf`** | cycle-analysis.ts | 3 places |
 | **`monthIdx`** | fed-phases.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`needInd`** | render-core.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
+| **`present`** | cycle-analysis.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
+| **`regLab`** | cycle-analysis.ts | 3 places |
+| **`regularity`** | cycle-analysis.ts | 3 places |
+| **`regularOk`** | cycle-analysis.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`scoreTile`** | cycle-analysis.ts | 3 places |
 | **`seasonPills`** | render-core.ts | 3 places |

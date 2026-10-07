@@ -929,6 +929,7 @@
   .len-bars rect.odd{ fill:var(--critical); }
   .len-bars rect.now{ fill:var(--normal); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
+  .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
   .len-key i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 12px; vertical-align:-1px; }
   .len-key i:first-child{ margin-left:0; }
   .len-key i.ok{ background:var(--normal); }
@@ -1365,7 +1366,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.10 (768)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.12 (770)</span></p>
     </div>
   </div>
 
@@ -37809,53 +37810,66 @@
       return v.years;
     });
   }
-  function typical(v) {
+  function typical(v, open) {
     var n = normOf(lengths());
-    return v >= n.floor && v <= n.fence;
+    return v <= n.fence && (open || v >= n.floor);
   }
-  var INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>';
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function lengthBars() {
-    var vs = visits(), F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, vs.map(function(v) {
-      return v.years;
-    })), bw = W / vs.length;
-    return '<svg class="len-bars" viewBox="0 ' + F.T + " " + W + " " + (H + 22) + '" role="img" aria-label="Each cycle’s length in years">' + vs.map(function(v, i) {
-      var h = H * v.years / top, x = i * bw + 2, c = marketCycles[i], cls = c.ongoing ? "now" : typical(v.years) ? "ok" : "odd";
-      return '<rect class="' + cls + '" x="' + x.toFixed(1) + '" y="' + (F.B - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/><text x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (F.B + 14) + '">' + String(c.from).slice(2) + "</text>";
+  function verdict(ok) {
+    return '<span class="stat-tick' + (ok ? "" : " odd") + '">' + TICK + "</span>" + (ok ? "Typical" : "Atypical");
+  }
+  function cycleBars(vs, cls, at, label) {
+    var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;
+    return '<svg class="len-bars" viewBox="0 ' + F.T + " " + W + " " + (H + 22) + '" role="img" aria-label="' + label + '">' + vs.map(function(v, i) {
+      var h = v == null ? 0 : H * v / top, x = i * bw + 2, c = marketCycles[i];
+      return (v == null ? "" : '<rect class="' + cls(v, i) + '" x="' + x.toFixed(1) + '" y="' + (F.B - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/>') + "<text" + (i === at ? ' class="this"' : "") + ' x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (F.B + 14) + '">' + String(c.from).slice(2) + "</text>";
     }).join("") + "</svg>";
   }
-  function lengthPage() {
-    var n = normOf(lengths()), odd = marketCycles.filter(function(c, i) {
-      return !c.ongoing && !typical(visits()[i].years);
+  function barClass(ok, i) {
+    return marketCycles[i].ongoing ? "now" : ok ? "ok" : "odd";
+  }
+  function lengthPage(i) {
+    var n = normOf(lengths()), v = visits()[i].years, open = !!marketCycles[i].ongoing, odd = marketCycles.filter(function(c, k) {
+      return !c.ongoing && !typical(visits()[k].years);
     }).map(function(c) {
       return cycLabel(c).name;
     });
-    return "<h3>Her cycle length</h3><p>Each bar is one cycle, from its first bull year to the bear year that closes it; the last is the cycle in progress.</p><p>Her cycles average " + yearsWord(meanOf(lengths())) + " years, across her " + lengths().length + " closed cycles since " + marketCycles[0].from + ". A typical one lasts " + yearsWord(n.floor) + " to " + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of her " + lengths().length + " closed cycles, the standard rule for an outlier. " + listWords(odd) + ' ran longer.</p><p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>' + lengthBars() + srcBlock([ FENCE_SRC ]);
+    return "<h3>Her typical cycle</h3><p>" + (typical(v, open) ? "Typical" : "Atypical") + ": the " + marketCycles[i].name + (open ? " has run " : " ran ") + yearsWord(v) + " years. Her cycles average " + yearsWord(meanOf(lengths())) + " years, across her " + lengths().length + " closed cycles since " + marketCycles[0].from + ". A typical one lasts " + yearsWord(n.floor) + " to " + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of her " + lengths().length + " closed cycles, the standard rule for an outlier. " + listWords(odd) + ' ran longer.</p><p>Each bar is one cycle, from its first bull year to the bear year that closes it; the last is the cycle in progress.</p><p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>' + cycleBars(visits().map(function(x) {
+      return x.years;
+    }), function(x, k) {
+      return barClass(typical(x), k);
+    }, i, "Each cycle’s length in years") + srcBlock([ FENCE_SRC ]);
   }
-  function figo() {
-    var reg = labs().find(function(l) {
+  function regLab() {
+    return labs().find(function(l) {
       return l.id === "regularity";
-    }), n = reg.norm, v = reg.per[reg.per.length - 1];
-    return {
-      v: v,
-      n: n,
-      ok: v <= n.fence,
-      top: Math.max.apply(null, present(reg.per))
-    };
-  }
-  function variationPage() {
-    var f = figo(), k = closedCount(), three = marketCycles.slice(k - BASELINE, k), ys = closedVisits().slice(k - BASELINE).map(function(v) {
-      return yearsWord(v.years);
     });
-    return "<h3>Her cycle variation</h3><p>" + (f.ok ? "Typical" : "Atypical") + ": her last three cycles, " + listWords(three.map(function(c) {
-      return cycLabel(c).name;
-    })) + ", ran " + listWords(ys) + " years, a spread of " + yearsWord(f.v) + " years. Up to " + yearsWord(f.n.fence) + " years is typical for her.</p><h4>How it’s calculated</h4><p>FIGO, the world federation of gynaecologists, calls a cycle regular by the gap between the shortest and longest of the last few. Here it is the gap across her last three cycles, judged against every such gap since " + marketCycles[0].from + " with Tukey’s fences.</p>" + srcBlock([ FIGO_SRC, FENCE_SRC ]);
   }
-  function statsHome() {
-    var vs = closedVisits(), L = lengths(), B = vs.map(function(v) {
+  function regularOk(v) {
+    return v <= regLab().norm.fence;
+  }
+  function spreadBars(i) {
+    return "<p>It tells how steady her rhythm is: the narrower the spread, the closer her cycles keep to one length. Each bar is the spread of the three cycles before a cycle.</p>" + cycleBars(regLab().per, function(x) {
+      return regularOk(x) ? "ok" : "odd";
+    }, i, "The spread of the three cycles before each cycle, in years");
+  }
+  function variationPage(i) {
+    var v = regularity(i), three = marketCycles.slice(i - BASELINE, i), ys = visits().slice(i - BASELINE, i).map(function(x) {
+      return yearsWord(x.years);
+    });
+    return "<h3>Her cycle variation</h3><p>" + (regularOk(v) ? "Typical" : "Atypical") + ": the three cycles before the " + marketCycles[i].name + ", " + listWords(three.map(function(c) {
+      return cycLabel(c).name;
+    })) + ", ran " + listWords(ys) + " years, a spread of " + yearsWord(v) + " years from the shortest to the longest. Up to " + yearsWord(regLab().norm.fence) + " years is typical for her.</p>" + spreadBars(i) + "<h4>How it’s calculated</h4><p>FIGO, the world federation of gynaecologists, calls a cycle regular by the gap between the shortest and longest of the last few. Here it is the gap across the three cycles before this one, judged against every such gap since " + marketCycles[0].from + " with Tukey’s fences.</p>" + srcBlock([ FIGO_SRC, FENCE_SRC ]);
+  }
+  function statsHome(i) {
+    var x = visits()[i], open = !!marketCycles[i].ongoing, r = regularity(i), all = visits(), top = function(f) {
+      return Math.max.apply(null, all.map(f));
+    };
+    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + statRow("Cycle length", x.years, top(function(v) {
+      return v.years;
+    }), verdict(typical(x.years, open)), lengthPage(i)) + (r == null ? "" : statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i))) + statRow("Period flow", x.bleed, top(function(v) {
       return v.bleed;
-    }), longest = Math.max.apply(null, L), f = figo(), ok = f.ok;
-    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + statRow("Cycle length", meanOf(L), longest, INFO + "More info", lengthPage()) + statRow("Cycle variation", f.v, f.top, '<span class="stat-tick' + (ok ? "" : " odd") + '">' + TICK + "</span>" + (ok ? "Typical" : "Atypical"), variationPage()) + statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow"));
+    }), "", "", "flow"));
   }
   function insightSec(k, ls) {
     return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
@@ -37883,7 +37897,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
+    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;

@@ -938,6 +938,7 @@
   .len-bars rect.odd{ fill:var(--critical); }
   .len-bars rect.now{ fill:var(--normal); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
+  .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
   .len-key i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 12px; vertical-align:-1px; }
   .len-key i:first-child{ margin-left:0; }
   .len-key i.ok{ background:var(--normal); }

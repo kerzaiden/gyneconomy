@@ -618,6 +618,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   figure, one number), so it reads her recent cycles (Keren: "maybe we should regard more recent cycles"). Period
   flow's ring is red and has no page. Keren: "they have like a dividing line … I want the dividing line to align
   between cycle length and cycle variation … to look like basically the same component." (0.8.3, Oct 6, 2026)
+- **Cycle Statistics shows the figures of the cycle it shows, the open cycle's or a past one's; the norm sits behind
+  "Typical".** Cycle length is that cycle's own length (the open cycle's so far), Cycle variation the spread of the three
+  cycles before it, Period flow its own bear years; a cycle with fewer than three before it has no variation card. Each
+  card's side says Typical or Atypical (an open cycle is Atypical only once it outruns the fence) and opens the page of
+  her typical cycle: the average, the typical range and every cycle as a bar, the one shown in bold. "More info" is
+  gone. The variation page says what the figure tells: how steady her rhythm is. Keren: "I think we need to see the
+  current cycle statistics and not the general cycle length … We can call it typical instead of more info … cycle
+  length, four years, typical. And if I click on it, I see what the average cycle is." (0.8.12, Oct 7, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings.** Typical is within Tukey's fences
   of her closed cycles, the app's outlier rule; a page says how in a line or two, because the model is new. Keren:
   "typical is the right word … because normal is something that we use for parameters … regular cycles are
