@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,945 lines** in 36 files, about 602 KB, roughly **171 thousand tokens**. No session can
+The source is **8,946 lines** in 36 files, about 602 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `f959022` on 2026-10-07.
+Generated from commit `32f5163` on 2026-10-07.
 
 ## The page
 
@@ -37,7 +37,7 @@ Counts: **32** modules, **712** top-level functions, **121** top-level vars, **3
 | `js/model.ts` | 382 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 463 | 42 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 802 | 69 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 130 | 5 | `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
+| `js/roster.ts` | 131 | 5 | `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 500 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 417 | 10 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.ts` | 88 | 13 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
@@ -80,7 +80,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 8 | `bootHistory` | `js/history.ts:439`–462 |
 | 9 | `bootReadings` | `js/readings.ts:625`–693 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:736`–801 |
-| 11 | `bootRoster` | `js/roster.ts:117`–129 |
+| 11 | `bootRoster` | `js/roster.ts:118`–130 |
 | 12 | `bootRenderCore` | `js/render-core.ts:490`–499 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:401`–416 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:84`–87 |
@@ -533,11 +533,11 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 30 | `keyed` · export | `function keyed(` |
-| 36 | `rosterFor` · export | `function rosterFor(` |
-| 37 | `checkRoster` | `function checkRoster(` |
-| 55 | `categoriesShown` · export | `function categoriesShown(` |
-| 59 | `declareRoster` | `function declareRoster(` |
+| 31 | `keyed` · export | `function keyed(` |
+| 37 | `rosterFor` · export | `function rosterFor(` |
+| 38 | `checkRoster` | `function checkRoster(` |
+| 56 | `categoriesShown` · export | `function categoriesShown(` |
+| 60 | `declareRoster` | `function declareRoster(` |
 
 ### `js/render-core.ts`
 

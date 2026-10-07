@@ -888,7 +888,7 @@
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
 
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
-  .cat-mood{ --cat:var(--accent); }
+  .cat-mood{ --cat:var(--accent); } .cat-stress{ --cat:var(--gold); }
   .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
@@ -1408,7 +1408,7 @@
       <h3 class="menu-section">Sentiment and Rates</h3>
       <div class="menu-card menu-prose">
         <p>Market sentiment has a drawer of its own, <b>Sentiment</b>, carrying the fear curve — the shape of expected volatility — and the market it is read beside: the VIX. The <b>Fed funds rate</b> sits where it belongs, inside <b>Temperature</b> under the Lagging signs: that card is inflation and monetary policy together, and the rate is the lever pulled after her temperature, not ahead of it.</p>
-        <p>Her debts sit in Circulation, under <b>Debt</b>: margin debt, the federal debt, the interest payments, the federal budget, the households and the loans running late, each read on its own page. Her activity, the labour market and productivity, sits in Weather beside the economic season and the market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse.</p>
+        <p>Her debts have a category of their own, <b>Stress</b>, under <b>Debt</b>: margin debt, the federal debt, the interest payments, the federal budget, the households and the loans running late, each read on its own page. Her activity, the labour market and productivity, sits in Weather beside the economic season and the market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse.</p>
       </div>
 
       <h3 class="menu-section">The Tabs</h3>
@@ -39166,9 +39166,13 @@
     key: "mood",
     title: "Mood",
     shown: 1
+  }, {
+    key: "stress",
+    title: "Stress",
+    shown: 3
   } ];
   var GROUP_MARK = {
-    Debt: boltSvg
+    Debt: debtSvg
   };
   var ROSTER_BY = {};
   function pageState(of) {
@@ -39405,7 +39409,7 @@
     }, {
       id: "sheet-sign-margin",
       name: "Margin debt",
-      cat: "circulation",
+      cat: "stress",
       sub: "Debt",
       group: "Debt",
       timing: "leading",
@@ -39422,7 +39426,7 @@
     }, {
       id: "sheet-metric-debt",
       name: "Federal debt",
-      cat: "circulation",
+      cat: "stress",
       sub: "Debt",
       good: "down",
       group: "Debt",
@@ -39439,7 +39443,7 @@
     }, {
       id: "sheet-metric-interest",
       name: "Federal interest payments",
-      cat: "circulation",
+      cat: "stress",
       sub: "Debt",
       good: "down",
       group: "Debt",
@@ -39456,7 +39460,7 @@
     }, {
       id: "sheet-marker-deficit",
       name: "Federal budget",
-      cat: "circulation",
+      cat: "stress",
       sub: "Debt",
       good: "up",
       group: "Debt",
@@ -39477,7 +39481,7 @@
     }, {
       id: "sheet-metric-households",
       name: "Households",
-      cat: "circulation",
+      cat: "stress",
       sub: "Debt",
       good: "down",
       group: "Debt",
@@ -39501,7 +39505,7 @@
     }, {
       id: "sheet-metric-delinquency",
       name: "Delinquency rate",
-      cat: "circulation",
+      cat: "stress",
       sub: "Debt",
       good: "down",
       group: "Debt",
@@ -42157,7 +42161,7 @@
     var f1 = function(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
     };
-    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and the Federal funds rate is the signal that sets all three. Credit is the money lent into the flow, and Debt is what it leaves behind, the stress it puts on the flow: what is repaid today is money that cannot be spent.</p>';
+    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and the Federal funds rate is the signal that sets all three. Credit is the money lent into the flow; what it leaves behind, Debt, is read under Stress.</p>';
     var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
     if (run >= 8) {
       var oc = openCycle();
@@ -42697,7 +42701,8 @@
   var CAT_MARK = {
     weather: weatherSvg,
     mood: moodSvg,
-    circulation: circulationSvg
+    circulation: circulationSvg,
+    stress: boltSvg
   };
   function foldSec(k, title, name, ls, at) {
     return catHeadCard("lab-sec plain", k, {

@@ -26,9 +26,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
-- **There are three categories: Weather, Mood and Circulation. The work readings are Weather's subcategory Activity.**
+- **There are four categories: Weather, Mood, Circulation and Stress. The work readings are Weather's subcategory Activity;
+  the debt readings are Stress's subcategory Debt, and Stress's mark is the lightning bolt.** Keren: "stress should have its own
+  category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3).
   Keren: "we don't need a category named activity. I think it's a subcategory under weather … economy, market, work", then "instead of work, write activity"
-  (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0.
+  (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3.
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)

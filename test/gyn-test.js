@@ -466,7 +466,7 @@ async function openPage(p, url, sheet) {
     await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p);
     const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
-    (all.title === 'Indicators' && all.shown === 'weather,mood,circulation')
+    (all.title === 'Indicators' && all.shown === 'weather,mood,circulation,stress')
       ? ok('the Insights head opens Indicators on All', all.shown)
       : bad('the Insights head opens Indicators on All', JSON.stringify(all));
     await p.goto('file://' + url); await ready(p); await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
@@ -474,7 +474,7 @@ async function openPage(p, url, sheet) {
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
-    (door.first === 'home-secs' && door.rows === 'weather,mood,circulation' && weather.title === 'Indicators' && weather.shown === 'weather' &&
+    (door.first === 'home-secs' && door.rows === 'weather,mood,circulation,stress' && weather.title === 'Indicators' && weather.shown === 'weather' &&
      weather.subs === 'Economic Season 2,Market 1,Activity 2')
       ? ok('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', JSON.stringify({ door, weather }));
@@ -488,7 +488,7 @@ async function openPage(p, url, sheet) {
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.indCat).join(), regularity: !!h.querySelector('.cat-cycle, [data-ind-cat="cycle"]') };
     });
     (tab.title === 'Indicators' && tab.first === 'period-step' && tab.under && tab.chips === 0 && tab.menu && tab.rows > 15 && tab.doors &&
-     tab.cats === 'weather,mood,circulation' && !tab.regularity)
+     tab.cats === 'weather,mood,circulation,stress' && !tab.regularity)
       ? ok('Indicators opens on its period stepper, then its search box with the one filter, every reading and category a door', tab.rows + ' readings')
       : bad('Indicators opens on its period stepper, then its search box with the one filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {

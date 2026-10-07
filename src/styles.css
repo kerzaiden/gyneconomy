@@ -897,7 +897,7 @@
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
   /* ---- The symptoms: a cycle's years against today ---- */
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
-  .cat-mood{ --cat:var(--accent); }
+  .cat-mood{ --cat:var(--accent); } .cat-stress{ --cat:var(--gold); }
   .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
