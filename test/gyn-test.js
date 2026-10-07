@@ -592,14 +592,14 @@ async function openPage(p, url, sheet) {
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-find:not([hidden])');
       return page && { bar: document.getElementById('topbar-title').textContent.trim(),
-        names: [...page.querySelectorAll('.lab-sec:not([hidden]) .lab-row > div:first-child > b')].map(n => n.textContent.trim()).join('+'),
+        names: [...page.querySelectorAll('.lab-sec:not([hidden]) .lab-row > div:first-child > b')].map(n => n.textContent.trim()).sort().join('+'),
         modal: !document.getElementById('detail-modal') || document.getElementById('detail-modal').hidden !== false ? false : true };
     });
     await click(p, '#sheet-find:not([hidden]) .labs > .more-row'); await settle(p);
     if (wx) wx.cards = await p.evaluate(() => [...document.querySelectorAll('#detail-modal-body .hi-name')].map(n => n.textContent.trim()));
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (wx && wx.bar === 'Vitals' && wx.names === 'Temperature+Growth+S&P 500+Unemployment rate+Productivity growth+Nonfarm payrolls+Retail sales' && !wx.modal &&
+    (wx && wx.bar === 'Vitals' && wx.names === 'Growth+Nonfarm payrolls+Productivity growth+Retail sales+S&P 500+Temperature+Unemployment rate' && !wx.modal &&
      wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
       ? ok('the season in the dial opens Vitals on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Vitals on Weather, with the market and what the season means', JSON.stringify(wx));
