@@ -171,10 +171,14 @@ ok('Debt to the Penny gives the latest total, in billions',
 throws('a Debt to the Penny reply without a row is refused', () => pennyRow({ data: [] }), /no usable latest row/);
 ok('federal interest is BEA\'s payments over nominal GDP, both at annual rates, quarter by quarter, to two decimals',
    interestShare([{ q: '2026 Q2', v: 1279.734 }, { q: '2026 Q3', v: 1300 }], [{ q: '2026 Q2', v: 31800 }]), [{ q: '2026 Q2', v: 4.02 }]);
-const fund = Array.from({ length: 500 }, (_, i) => i < 10 ? 4 : 0.12);
-ok('the top ten share sums the ten largest weights, to two decimals', topTen(fund.slice().reverse()), 40);
-throws('a holdings list far short of the index is refused', () => topTen([5, 4, 3]), /only 3 holdings/);
-const holding = w => '<invstOrSec><name>A</name><pctVal>' + w + '</pctVal></invstOrSec>';
+const fund = Array.from({ length: 500 }, (_, i) => ({ cusip: String(100000 + i) + '10' + (i % 10), v: i < 10 ? 4 : 0.12 }));
+ok('the top ten share sums the ten largest companies, to two decimals', topTen(fund.slice().reverse()), 40);
+ok('two share classes of one issuer count as one company, as Alphabet\'s A and C do',
+   topTen([{ cusip: '02079K305', v: 3.25 }, { cusip: '02079K107', v: 2.59 }].concat(fund.slice(10))), 5.84 + 9 * 0.12);
+ok('holdings without a CUSIP, or with the zero placeholder, each stand alone',
+   topTen([{ cusip: '000000000', v: 1 }, { cusip: '000000000', v: 1 }, { v: 1 }, { v: 1 }].concat(fund.slice(10))), 4 + 6 * 0.12);
+throws('a holdings list far short of the index is refused', () => topTen([{ v: 5 }, { v: 4 }, { v: 3 }]), /only 3 holdings/);
+const holding = h => '<invstOrSec><name>A</name><cusip>' + h.cusip + '</cusip><pctVal>' + h.v + '</pctVal></invstOrSec>';
 const filing = (d, ws) => '<genInfo><repPdDate>' + d + '</repPdDate></genInfo>' + ws.map(holding).join('');
 ok('an N-PORT filing gives its quarter and the top ten share of net assets', nportQuarter(filing('2026-06-30', fund)), { q: '2026 Q2', v: 40 });
 throws('an N-PORT filing for a month inside a quarter is refused', () => nportQuarter(filing('2026-05-31', fund)), /quarter-end/);
@@ -183,12 +187,13 @@ ok('the import adds its key to the hand-kept series, and replaces it on a second
    [withKey('{\n  "a": [1]\n}\n', [{ q: '2026 Q2', v: 40 }]), withKey('{\n  "a": [1],\n  "topTenQuarterly": []\n}\n', [{ q: '2026 Q2', v: 40 }])],
    ['{\n  "a": [1],\n  "topTenQuarterly": [{"q":"2026 Q2","v":40}]\n}\n', '{\n  "a": [1],\n  "topTenQuarterly": [{"q":"2026 Q2","v":40}]\n}\n']);
 ok('State Street\'s daily file gives its date and the top ten share',
-   spyDailyRows([['Fund Name:', 'SPDR S&P 500 ETF Trust'], ['Holdings:', 'As of 06-Oct-2026'], [], ['Name', 'Ticker', 'Weight'], ...fund.map((w, i) => ['N' + i, 'T' + i, w])]),
+   spyDailyRows([['Fund Name:', 'SPDR S&P 500 ETF Trust'], ['Holdings:', 'As of 06-Oct-2026'], [], ['Name', 'Ticker', 'Identifier', 'Weight'], ...fund.map((h, i) => ['N' + i, 'T' + i, h.cusip, h.v])]),
    { d: '2026-10-06', v: 40 });
 ok('State Street\'s figure replaces its own quarter and keeps the others',
    keepQuarter([{ q: '2026 Q4', d: '2026-10-06', v: 39.27 }], { d: '2026-11-03', v: 40.1 }).concat(keepQuarter([{ q: '2026 Q4', d: '2026-12-03', v: 41 }], { d: '2027-01-04', v: 40 })),
    [{ q: '2026 Q4', d: '2026-11-03', v: 40.1 }, { q: '2026 Q4', d: '2026-12-03', v: 41 }, { q: '2027 Q1', d: '2027-01-04', v: 40 }]);
-throws('a State Street file without its date is refused', () => spyDailyRows([['Name', 'Weight'], ['A', 4]]), /As of/);
+throws('a State Street file without its date is refused', () => spyDailyRows([['Name', 'Identifier', 'Weight'], ['A', '037833100', 4]]), /As of/);
+throws('a State Street file without CUSIPs is refused, since its classes could not be joined', () => spyDailyRows([['As of 06-Oct-2026'], ['Name', 'Weight'], ['A', 4]]), /Identifier/);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 

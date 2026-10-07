@@ -9,7 +9,8 @@ const KEY = 'topTenQuarterly';
 function nportQuarter(xml) {
   const d = (xml.match(/<repPdDate>(\d{4})-(03|06|09|12)-\d{2}<\/repPdDate>/) || []);
   if (!d.length) throw new Error('N-PORT: no quarter-end <repPdDate>');
-  const w = [...xml.matchAll(/<invstOrSec>[\s\S]*?<pctVal>(-?[\d.Ee+-]+)<\/pctVal>[\s\S]*?<\/invstOrSec>/g)].map(m => Number(m[1]));
+  const w = [...xml.matchAll(/<invstOrSec>([\s\S]*?)<\/invstOrSec>/g)].map(m => ({
+    cusip: (m[1].match(/<cusip>([^<]*)<\/cusip>/) || [])[1], v: Number((m[1].match(/<pctVal>(-?[\d.Ee+-]+)<\/pctVal>/) || [])[1]) }));
   return { q: d[1] + ' Q' + Number(d[2]) / 3, v: topTen(w) };
 }
 

@@ -26,8 +26,8 @@ export function concentrationSpecs(): CreditSpec[] {
   return [{ id:"sheet-sign-concentration", term:"Concentration", econ:"Concentration", unit:"top ten of the S&P 500", series:topTenHistory,
     mid:CONCENTRATION_MEAN, line:concentrationSpan() + " average", optimal:{ lte:CONCENTRATION_MEAN, label:"≤ " + CONCENTRATION_MEAN.toFixed(1) + "%" },
     ends:{ high:"Concentrated" }, fmt:function(v){ return v.toFixed(1) + "%"; }, word:concentrationWord, src:CONCENTRATION_SRC,
-    about:"The weight of the ten largest holdings in the S&P 500, read from SPY, the oldest fund that tracks the index: their share of its net assets. " +
-      "Each share class counts on its own, so Alphabet’s two can both appear, as the index lists them. Quarter ends come from SPY’s filings with the SEC; " +
+    about:"The weight of the ten largest companies in the S&P 500, read from SPY, the oldest fund that tracks the index: their share of its net assets. " +
+      "A company with two share classes counts once, so Alphabet’s A and C shares are added together. Quarter ends come from SPY’s filings with the SEC; " +
       "the latest figure is State Street’s own daily holdings file. When a few giants carry the index, its fortunes ride on theirs: the concentration risk.",
     band:"<b>The line is the record’s own average</b>, every quarter from " + concentrationSpan() + ". The SEC publishes the full holdings only since 2019, " +
       "and no convention sets a band for concentration, so the line is derived from that record and no other is drawn.",
