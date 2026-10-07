@@ -456,7 +456,7 @@ Rules that shape the pages:
   category rows, 0.8.3), and `#sheet-find`, the Indicators page, built at boot by `buildFind` and redrawn when it opens
   or a live reading lands (`repaint`). Every Insights row and the home's search box open it, setting its category
   (`finds[IND].cat`, a `tabBar`); the two share one cycle through `page.cycles`. Cycle Statistics reads the cycle it shows
-  (`statsHome(i)`): each card is the average of every closed cycle beside the cycle shown; variation is `sdOf(lengths())` and a cycle's own result `drift(i)`, never computed twice. The Diagnosis's card (under the cycle story, previewing the visit note and score) is not a door to a
+  (`statsHome(i)`): each card is the average of every closed cycle beside the cycle shown; variation is `sdOf(lengths())`; every verdict is `typical()`, Tukey's fences on length. The Diagnosis's card (under the cycle story, previewing the visit note and score) is not a door to a
   page: it carries `data-chart-cycle`, sets `page.cycles` for the tab and presses the Analysis tab (0.6.3).
   `wireFinder` gives the host a `page.cycles` key and its own search state (`finds`). Every roster reading is
   averaged over the cycle's years; its range is the middle half of the closed cycles that reading covers, Tukey's

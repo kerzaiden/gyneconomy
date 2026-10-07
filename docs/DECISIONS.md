@@ -592,15 +592,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The cycle results' drawer is titled Regularity, after FIGO's two measures of a regular cycle, length and
   variation; it holds Length, Variation, Bull years and Period flow.** Keren: "I would think that the title would be
   regularity and length would be the parameters that we're looking in terms of regular cycles." (0.8.3, Oct 6, 2026)
-- **Variation (named Regularity until the drawer took that name) is the standard deviation of her closed cycles'
-  lengths; a cycle's own result is how far its length ran from the average, Typical within twice the deviation.**
-  Keren chose it over FIGO's spread (0.8.12): across all 18 cycles the spread is 10 years, one long cycle stretching it
-  over a century, while 5¼ ± 2¾ years matches the four to eight years analysts quote. An open cycle counts only once
-  it runs past the average. Until 0.8.12 it was FIGO's spread of the three, then six, cycles before each one. Lower is
-  its good side, and its range is the middle
-  half of all her closed cycles, like every other result. It is the one cycle result
-  read on the open cycle, since the three cycles before it have closed. Keren: "I think we should show track
-  regularity." (0.8.3, Oct 5, 2026)
+- **Cycle variation is the standard deviation of her closed cycles' lengths (±2¾ years), a figure, not a second
+  verdict; a cycle's distance from the average sits beside it, judged by the same Tukey fences as its length.** Keren
+  chose the deviation over FIGO's spread (0.8.12): across all 18 cycles the spread is 10 years, while 5¼ ± 2¾ matches
+  the four to eight years analysts quote. Twice the deviation was tried as variation's own cut-off and dropped the same
+  day: it judged length a second way and disagreed with Tukey on the Buyout and Big Tech cycles. Keren: "Are we sure we
+  want to use different models for length and variation? What is the benefit of this?" One rule, Tukey's, also suits
+  lopsided lengths better than a bell-curve rule. The Variation result is gone; until 0.8.12 it was FIGO's spread of
+  the cycles before each one.
 - **Cycle Statistics' (i) names FIGO only as the source of Regularity's measure, one line and one link; it does not
   explain FIGO or compare the app with cycle-tracking apps.** Keren: "I think we overcomplicated things with the FIGO
   thing." The ±0.47 band stays "Sensitivity" (Keren: "I think sensitivity is a better word", after "margin for
@@ -618,14 +617,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and economists would say that the average market cycle runs between four and eight years. So I don't want to be the
   outlier … I guess we should base all our averages on … 18 market cycles." The line speaks of market cycles, not
   "her": "users would not understand because they need the book as a guide." Cycle length's page draws every cycle as a bar, Typical or Atypical. Cycle variation is the
-  standard deviation (above), the same number as the Variation result's range (one figure, one number). Period
+  standard deviation (above). Period
   flow's ring is red and has no page. Keren: "they have like a dividing line … I want the dividing line to align
   between cycle length and cycle variation … to look like basically the same component." (0.8.3, Oct 6, 2026)
 - **Beside each average, Cycle Statistics shows the cycle on screen, the open one or a past one: its length (3¾ yrs)
   and how far it ran from the average (−1½ yrs), each with a green or red tick for Typical or Atypical.** Each card
   opens a page saying so in a line or two, with every cycle as a bar and the one shown in bold. "More info" is gone.
-  The Health Score counts the cycle's length and variation as Normal when Typical, Risk when not; an open cycle's
-  length is Typical until it passes the fence. Keren: "I think we need to see the current cycle statistics", and "a
+  The Health Score counts the cycle's length once, Normal when Typical, Risk when not; an open cycle's length is
+  Typical until it passes the fence. Keren: "I think we need to see the current cycle statistics", and "a
   health score should incorporate if the cycle length is typical and cycle variation is typical." (0.8.12, Oct 7, 2026)
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged

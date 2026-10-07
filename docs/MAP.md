@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,770 lines** in 35 files, about 586 KB, roughly **166 thousand tokens**. No session can
+The source is **8,763 lines** in 35 files, about 586 KB, roughly **166 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `333a6d5` on 2026-10-07.
+Generated from commit `df0dd46` on 2026-10-07.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `333a6d5` on 2026-10-07.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **696** top-level functions, **120** top-level vars, **352** exported names, **19** boots.
+Counts: **31** modules, **694** top-level functions, **120** top-level vars, **352** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -48,7 +48,7 @@ Counts: **31** modules, **696** top-level functions, **120** top-level vars, **3
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/ai-insights.ts` | 181 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 249 | 34 | — |
-| `js/cycle-analysis.ts` | 489 | 130 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/cycle-analysis.ts` | 482 | 128 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 23 | 2 | `data`, `dom`, `format`, `indicators`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 37 | 3 | `data`, `indicators`, `model`, `readings`, `render-core` |
 | `js/fed-phases.ts` | 126 | 21 | `data`, `format`, `history-fred`, `model`, `refresh-season` |
@@ -929,125 +929,123 @@ falls in. **export** marks a name other modules import.
 | 45 | `present` | `function present(` |
 | 46 | `sdOf` | `function sdOf(` |
 | 47 | `drift` | `function drift(` |
-| 48 | `driftLab` | `function driftLab(` |
-| 53 | `cycleLab` | `function cycleLab(` |
-| 57 | `cycleReadings` | `function cycleReadings(` |
-| 63 | `readingsNorm` | `function readingsNorm(` |
-| 66 | `spanOf` | `function spanOf(` |
-| 69 | `cardPrint` | `function cardPrint(` |
-| 78 | `readingLab` | `function readingLab(` |
-| 86 | `forgetLabs` · export | `function forgetLabs(` |
-| 87 | `cycleLabs` | `function cycleLabs(` |
-| 95 | `labs` · export | `function labs(` |
-| 96 | `normAt` | `function normAt(` |
-| 97 | `unread` | `function unread(` |
-| 99 | `atCycle` | `function atCycle(` |
-| 102 | `atWhen` | `function atWhen(` |
-| 107 | `nowWhen` · export | `function nowWhen(` |
-| 108 | `yearly` | `function yearly(` |
-| 110 | `whenValue` | `function whenValue(` |
-| 117 | `quarterKey` | `function quarterKey(` |
-| 118 | `whenMeans` | `function whenMeans(` |
-| 129 | `hasWhen` | `function hasWhen(` |
-| 130 | `periodRows` | `function periodRows(` |
-| 139 | `state` | `function state(` |
-| 144 | `yearsWord` · export | `function yearsWord(` |
-| 145 | `fmt` · export | `function fmt(` |
-| 146 | `TIERS` | `var TIERS =` |
-| 147 | `tier` | `function tier(` |
-| 151 | `catTitle` | `function catTitle(` |
-| 152 | `side` | `function side(` |
-| 153 | `findWords` | `function findWords(` |
-| 157 | `rowTag` | `function rowTag(` |
-| 158 | `cardWord` | `function cardWord(` |
-| 162 | `labItem` | `function labItem(` |
-| 168 | `ring` | `function ring(` |
-| 172 | `pastScores` | `function pastScores(` |
-| 173 | `scoreTier` | `function scoreTier(` |
-| 177 | `scoreBox` | `function scoreBox(` |
-| 181 | `scoreRing` | `function scoreRing(` |
-| 182 | `scoreTile` | `function scoreTile(` |
-| 185 | `foldSec` | `function foldSec(` |
-| 190 | `labSec` | `function labSec(` |
-| 194 | `subSec` | `function subSec(` |
-| 197 | `bySub` | `function bySub(` |
-| 205 | `bySystem` | `function bySystem(` |
-| 214 | `findOf` | `function findOf(` |
-| 215 | `LENS` | `var LENS =` |
-| 216 | `tierOpts` | `function tierOpts(` |
-| 219 | `filterTag` | `function filterTag(` |
-| 223 | `finder` | `function finder(` |
-| 228 | `stepBtn` | `function stepBtn(` |
-| 231 | `stepper` | `function stepper(` |
-| 237 | `filterDoor` | `function filterDoor(` |
-| 240 | `sheetSec` | `function sheetSec(` |
-| 241 | `calBtn` | `function calBtn(` |
-| 244 | `calOff` | `function calOff(` |
-| 245 | `calQuarter` | `function calQuarter(` |
-| 249 | `calYear` | `function calYear(` |
-| 253 | `calCycle` | `function calCycle(` |
-| 258 | `periodCal` | `function periodCal(` |
-| 262 | `shown` | `function shown(` |
-| 263 | `filterSheet` | `function filterSheet(` |
-| 271 | `RESULT` | `var RESULT =` |
-| 272 | `narrow` | `function narrow(` |
-| 284 | `riskLabs` · export | `function riskLabs(` |
-| 285 | `judged` | `function judged(` |
-| 286 | `score` | `function score(` |
-| 287 | `listWords` · export | `function listWords(` |
-| 288 | `word` | `function word(` |
-| 289 | `cap` | `function cap(` |
-| 291 | `depthWords` | `function depthWords(` |
-| 300 | `pinnedFacts` | `function pinnedFacts(` |
-| 306 | `methodFacts` | `function methodFacts(` |
-| 309 | `chartDetail` | `function chartDetail(` |
-| 318 | `cycleScore` · export | `function cycleScore(` |
-| 319 | `chartDoor` · export | `function chartDoor(` |
-| 323 | `HOME_ID` | `var HOME_ID =` |
-| 324 | `statRow` | `function statRow(` |
-| 329 | `statBody` | `function statBody(` |
-| 332 | `meanOf` | `function meanOf(` |
-| 333 | `lengths` | `function lengths(` |
-| 334 | `typical` | `function typical(` |
-| 335 | `TICK` | `var TICK =` |
-| 336 | `tone` | `function tone(` |
-| 337 | `mark` | `function mark(` |
-| 338 | `RELATIVE` | `var RELATIVE =` |
-| 339 | `healthPage` | `function healthPage(` |
-| 343 | `healthRow` | `function healthRow(` |
-| 347 | `cycleBars` | `function cycleBars(` |
-| 355 | `barClass` | `function barClass(` |
-| 356 | `lengthPage` | `function lengthPage(` |
-| 361 | `driftOk` | `function driftOk(` |
-| 362 | `driftWord` | `function driftWord(` |
-| 363 | `variationPage` | `function variationPage(` |
-| 368 | `statsHome` | `function statsHome(` |
-| 375 | `insightSec` | `function insightSec(` |
-| 378 | `catName` | `function catName(` |
-| 379 | `markName` | `function markName(` |
-| 380 | `countTag` | `function countTag(` |
-| 381 | `insightsHome` | `function insightsHome(` |
-| 388 | `homeSections` | `function homeSections(` |
-| 392 | `whenPicked` | `function whenPicked(` |
-| 396 | `pickedKey` | `function pickedKey(` |
-| 397 | `periodAt` | `function periodAt(` |
-| 401 | `drawChart` | `function drawChart(` |
-| 409 | `IND` · export | `var IND =` |
-| 410 | `IND_ALL` | `var IND_ALL =` |
-| 411 | `searchShell` | `function searchShell(` |
-| 412 | `pickCat` | `function pickCat(` |
-| 418 | `buildFind` | `function buildFind(` |
-| 419 | `fold` | `function fold(` |
-| 423 | `wireFinder` | `function wireFinder(` |
-| 436 | `setPeriod` | `function setPeriod(` |
-| 441 | `pick` | `function pick(` |
-| 447 | `refreshSheet` | `function refreshSheet(` |
-| 452 | `PICKS` | `var PICKS =` |
-| 453 | `centreList` | `function centreList(` |
-| 457 | `wirePicks` | `function wirePicks(` |
-| 467 | `openWhen` | `function openWhen(` |
-| 472 | `wireCatDoors` | `function wireCatDoors(` |
-| 478 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 48 | `cycleLab` | `function cycleLab(` |
+| 52 | `cycleReadings` | `function cycleReadings(` |
+| 58 | `readingsNorm` | `function readingsNorm(` |
+| 61 | `spanOf` | `function spanOf(` |
+| 64 | `cardPrint` | `function cardPrint(` |
+| 73 | `readingLab` | `function readingLab(` |
+| 81 | `forgetLabs` · export | `function forgetLabs(` |
+| 82 | `cycleLabs` | `function cycleLabs(` |
+| 89 | `labs` · export | `function labs(` |
+| 90 | `normAt` | `function normAt(` |
+| 91 | `unread` | `function unread(` |
+| 93 | `atCycle` | `function atCycle(` |
+| 96 | `atWhen` | `function atWhen(` |
+| 101 | `nowWhen` · export | `function nowWhen(` |
+| 102 | `yearly` | `function yearly(` |
+| 104 | `whenValue` | `function whenValue(` |
+| 111 | `quarterKey` | `function quarterKey(` |
+| 112 | `whenMeans` | `function whenMeans(` |
+| 123 | `hasWhen` | `function hasWhen(` |
+| 124 | `periodRows` | `function periodRows(` |
+| 133 | `state` | `function state(` |
+| 138 | `yearsWord` · export | `function yearsWord(` |
+| 139 | `fmt` · export | `function fmt(` |
+| 140 | `TIERS` | `var TIERS =` |
+| 141 | `tier` | `function tier(` |
+| 145 | `catTitle` | `function catTitle(` |
+| 146 | `side` | `function side(` |
+| 147 | `findWords` | `function findWords(` |
+| 151 | `rowTag` | `function rowTag(` |
+| 152 | `cardWord` | `function cardWord(` |
+| 156 | `labItem` | `function labItem(` |
+| 162 | `ring` | `function ring(` |
+| 166 | `pastScores` | `function pastScores(` |
+| 167 | `scoreTier` | `function scoreTier(` |
+| 171 | `scoreBox` | `function scoreBox(` |
+| 175 | `scoreRing` | `function scoreRing(` |
+| 176 | `scoreTile` | `function scoreTile(` |
+| 179 | `foldSec` | `function foldSec(` |
+| 184 | `labSec` | `function labSec(` |
+| 188 | `subSec` | `function subSec(` |
+| 191 | `bySub` | `function bySub(` |
+| 199 | `bySystem` | `function bySystem(` |
+| 208 | `findOf` | `function findOf(` |
+| 209 | `LENS` | `var LENS =` |
+| 210 | `tierOpts` | `function tierOpts(` |
+| 213 | `filterTag` | `function filterTag(` |
+| 217 | `finder` | `function finder(` |
+| 222 | `stepBtn` | `function stepBtn(` |
+| 225 | `stepper` | `function stepper(` |
+| 231 | `filterDoor` | `function filterDoor(` |
+| 234 | `sheetSec` | `function sheetSec(` |
+| 235 | `calBtn` | `function calBtn(` |
+| 238 | `calOff` | `function calOff(` |
+| 239 | `calQuarter` | `function calQuarter(` |
+| 243 | `calYear` | `function calYear(` |
+| 247 | `calCycle` | `function calCycle(` |
+| 252 | `periodCal` | `function periodCal(` |
+| 256 | `shown` | `function shown(` |
+| 257 | `filterSheet` | `function filterSheet(` |
+| 265 | `RESULT` | `var RESULT =` |
+| 266 | `narrow` | `function narrow(` |
+| 278 | `riskLabs` · export | `function riskLabs(` |
+| 279 | `judged` | `function judged(` |
+| 280 | `score` | `function score(` |
+| 281 | `listWords` · export | `function listWords(` |
+| 282 | `word` | `function word(` |
+| 283 | `cap` | `function cap(` |
+| 285 | `depthWords` | `function depthWords(` |
+| 294 | `pinnedFacts` | `function pinnedFacts(` |
+| 300 | `methodFacts` | `function methodFacts(` |
+| 303 | `chartDetail` | `function chartDetail(` |
+| 312 | `cycleScore` · export | `function cycleScore(` |
+| 313 | `chartDoor` · export | `function chartDoor(` |
+| 317 | `HOME_ID` | `var HOME_ID =` |
+| 318 | `statRow` | `function statRow(` |
+| 323 | `statBody` | `function statBody(` |
+| 326 | `meanOf` | `function meanOf(` |
+| 327 | `lengths` | `function lengths(` |
+| 328 | `typical` | `function typical(` |
+| 329 | `TICK` | `var TICK =` |
+| 330 | `tone` | `function tone(` |
+| 331 | `mark` | `function mark(` |
+| 332 | `RELATIVE` | `var RELATIVE =` |
+| 333 | `healthPage` | `function healthPage(` |
+| 337 | `healthRow` | `function healthRow(` |
+| 341 | `cycleBars` | `function cycleBars(` |
+| 349 | `barClass` | `function barClass(` |
+| 350 | `lengthPage` | `function lengthPage(` |
+| 355 | `driftWord` | `function driftWord(` |
+| 356 | `variationPage` | `function variationPage(` |
+| 361 | `statsHome` | `function statsHome(` |
+| 368 | `insightSec` | `function insightSec(` |
+| 371 | `catName` | `function catName(` |
+| 372 | `markName` | `function markName(` |
+| 373 | `countTag` | `function countTag(` |
+| 374 | `insightsHome` | `function insightsHome(` |
+| 381 | `homeSections` | `function homeSections(` |
+| 385 | `whenPicked` | `function whenPicked(` |
+| 389 | `pickedKey` | `function pickedKey(` |
+| 390 | `periodAt` | `function periodAt(` |
+| 394 | `drawChart` | `function drawChart(` |
+| 402 | `IND` · export | `var IND =` |
+| 403 | `IND_ALL` | `var IND_ALL =` |
+| 404 | `searchShell` | `function searchShell(` |
+| 405 | `pickCat` | `function pickCat(` |
+| 411 | `buildFind` | `function buildFind(` |
+| 412 | `fold` | `function fold(` |
+| 416 | `wireFinder` | `function wireFinder(` |
+| 429 | `setPeriod` | `function setPeriod(` |
+| 434 | `pick` | `function pick(` |
+| 440 | `refreshSheet` | `function refreshSheet(` |
+| 445 | `PICKS` | `var PICKS =` |
+| 446 | `centreList` | `function centreList(` |
+| 450 | `wirePicks` | `function wirePicks(` |
+| 460 | `openWhen` | `function openWhen(` |
+| 465 | `wireCatDoors` | `function wireCatDoors(` |
+| 471 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/cycle-tab.ts`
 

@@ -37254,20 +37254,7 @@
     }, 0) / (vs.length - 1));
   }
   function drift(i) {
-    var d = visits()[i].years - meanOf(lengths());
-    return marketCycles[i].ongoing ? Math.max(0, d) : Math.abs(d);
-  }
-  function driftLab() {
-    var l = cycleLab("regularity", "Variation", "down", function(_, i) {
-      return drift(i);
-    }, true), sd = sdOf(lengths());
-    l.norm = {
-      lo: 0,
-      hi: sd,
-      fence: 2 * sd,
-      floor: -sd
-    };
-    return l;
+    return Math.abs(visits()[i].years - meanOf(lengths()));
   }
   function cycleLab(id, name, good, f, settled) {
     var per = visits().map(f), print = function(v) {
@@ -37378,7 +37365,7 @@
       return v.bull;
     }), cycleLab("bleed", "Period flow", "down", function(v) {
       return v.bleed;
-    }), driftLab() ];
+    }) ];
   }
   function labs() {
     return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab)));
@@ -37512,7 +37499,7 @@
   } ];
   function tier(l, at) {
     var v = at.v(l), n = at.n(l), up = v > n.hi, down = v < n.lo;
-    return l.id === "length" || l.id === "regularity" ? v <= n.fence && (at.open || v >= n.floor) ? "optimal" : "abnormal" : !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, at) ? "abnormal" : "borderline";
+    return l.id === "length" ? v <= n.fence && (at.open || v >= n.floor) ? "optimal" : "abnormal" : !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, at) ? "abnormal" : "borderline";
   }
   function catTitle(key) {
     return categoriesShown().filter(function(c) {
@@ -37779,7 +37766,7 @@
     }).join(" ");
   }
   function methodFacts() {
-    return [ "<b>Variation</b> is the standard deviation of her closed cycles’ lengths; a cycle within twice it of her average length is Typical." ];
+    return [ "<b>Length</b> is Typical inside Tukey’s fences of her closed cycles; <b>variation</b> is the standard deviation of their lengths." ];
   }
   function chartDetail() {
     return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, SD_SRC ]);
@@ -37855,26 +37842,23 @@
       return barClass(typical(x), k);
     }, [ i ], "Each cycle’s length in years") + srcBlock([ FENCE_SRC ]);
   }
-  function driftOk(i) {
-    return drift(i) <= 2 * sdOf(lengths());
-  }
   function driftWord(i) {
     var d = visits()[i].years - meanOf(lengths());
     return Math.round(Math.abs(d) * 4) === 0 ? "on average" : (d < 0 ? "−" : "+") + yearsWord(Math.abs(d)) + " yrs";
   }
   function variationPage(i) {
     var L = lengths(), sd = sdOf(L), c = marketCycles[i], d = visits()[i].years - meanOf(L), off = Math.round(Math.abs(d) * 4) === 0 ? "right on the average" : yearsWord(Math.abs(d)) + " years " + (d < 0 ? "under" : "over") + " the average";
-    return "<h3>Cycle variation</h3><p>" + (driftOk(i) ? "Typical" : "Atypical") + ": market cycles run " + yearsWord(meanOf(L)) + " years, give or take " + yearsWord(sd) + ", the standard deviation of the " + L.length + " closed cycles since " + marketCycles[0].from + ". The " + c.name + (c.ongoing ? " has run " : " ran ") + yearsWord(visits()[i].years) + " years, " + off + ". A cycle within twice the deviation, " + yearsWord(2 * sd) + " years either side of the average, is typical.</p>" + RELATIVE + "<p>Each bar is how far a cycle ran from the average.</p>" + cycleBars(marketCycles.map(function(_, k) {
+    return "<h3>Cycle variation</h3><p>" + (typical(visits()[i].years, c.ongoing) ? "Typical" : "Atypical") + ": market cycles run " + yearsWord(meanOf(L)) + " years, give or take " + yearsWord(sd) + ", the standard deviation of the " + L.length + " closed cycles since " + marketCycles[0].from + ". The " + c.name + (c.ongoing ? " has run " : " ran ") + yearsWord(visits()[i].years) + " years, " + off + ". Typical or not is read as for cycle length, inside Tukey’s fences.</p>" + RELATIVE + "<p>Each bar is how far a cycle ran from the average.</p>" + cycleBars(marketCycles.map(function(_, k) {
       return drift(k);
     }), function(x, k) {
-      return driftOk(k) ? "ok" : "odd";
-    }, [ i ], "How far each cycle ran from the average length, in years") + srcBlock([ SD_SRC ]);
+      return barClass(typical(visits()[k].years), k);
+    }, [ i ], "How far each cycle ran from the average length, in years") + srcBlock([ SD_SRC, FENCE_SRC ]);
   }
   function statsHome(i) {
     var x = visits()[i], open = !!marketCycles[i].ongoing, closed = visits().slice(0, closedCount()), top = function(f) {
       return Math.max.apply(null, visits().map(f));
     };
-    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on ' + closedCount() + " closed market cycles since " + marketCycles[0].from + ".</p>" + healthRow(i) + statRow("Cycle length", meanOf(closed.map(len)), top(len), mark(typical(x.years, open) ? " ok" : " odd", yearsWord(x.years) + " yrs"), lengthPage(i), tone(typical(x.years, open))) + statRow("Cycle variation", sdOf(lengths()), meanOf(lengths()), mark(driftOk(i) ? " ok" : " odd", driftWord(i)), variationPage(i), tone(driftOk(i)), "±" + yearsWord(sdOf(lengths())) + " years") + statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
+    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on ' + closedCount() + " closed market cycles since " + marketCycles[0].from + ".</p>" + healthRow(i) + statRow("Cycle length", meanOf(closed.map(len)), top(len), mark(typical(x.years, open) ? " ok" : " odd", yearsWord(x.years) + " yrs"), lengthPage(i), tone(typical(x.years, open))) + statRow("Cycle variation", sdOf(lengths()), meanOf(lengths()), mark(typical(x.years, open) ? " ok" : " odd", driftWord(i)), variationPage(i), tone(typical(x.years, open)), "±" + yearsWord(sdOf(lengths())) + " years") + statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
   }
   function insightSec(k, ls) {
     return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));

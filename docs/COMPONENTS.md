@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `333a6d5` on 2026-10-07. **99 components**, **28 shared patterns**.
+Generated from commit `df0dd46` on 2026-10-07. **99 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -268,7 +268,6 @@ renderer speaks. Listed most-used first.
 | **`fmt`** | cycle-analysis.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`labRow`** | data.ts | 4 places |
-| **`lengths`** | cycle-analysis.ts | 4 places |
 | **`listWords`** | cycle-analysis.ts | 4 places |
 | **`meanOf`** | cycle-analysis.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
@@ -291,6 +290,7 @@ renderer speaks. Listed most-used first.
 | **`expandBtn`** | dom.ts | 3 places |
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
+| **`lengths`** | cycle-analysis.ts | 3 places |
 | **`lineInsight`** | indicators.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`mark`** | cycle-analysis.ts | 3 places |
@@ -307,7 +307,6 @@ renderer speaks. Listed most-used first.
 | **`score`** | cycle-analysis.ts | 3 places |
 | **`scoreTier`** | cycle-analysis.ts | 3 places |
 | **`scoreTile`** | cycle-analysis.ts | 3 places |
-| **`sdOf`** | cycle-analysis.ts | 3 places |
 | **`seasonPills`** | render-core.ts | 3 places |
 | **`seasonRuns`** | render-core.ts | 3 places |
 | **`seasonRunsLabel`** | render-core.ts | 3 places |
@@ -319,6 +318,7 @@ renderer speaks. Listed most-used first.
 | **`tagFor`** | format.ts | 3 places |
 | **`todayFace`** | era.ts | 3 places |
 | **`trendText`** | dom.ts | 3 places |
+| **`typical`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`word`** | cycle-analysis.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
