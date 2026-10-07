@@ -755,11 +755,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   tolerances it stood beside went with the eight-quarter trend in 0.8.0. (1.2.2; the full list is in
   code-review/trends-1.3.0.md in the project files)
 
-- **In expansion, hot is Summer–Inflation; otherwise cooling is Spring–Deflation and heating or steady is
+- **In expansion, hot is Summer–Inflation; otherwise cooling is Spring–Deflation and heating is
   Spring–Reflation, within or below the range. In contraction, cold is Winter–Deflation; otherwise heating is
-  Autumn–Stagflation and cooling or steady is Autumn–Disinflation, within or above the range.** Keren's season
-  table. Steady moved from Stagflation to Disinflation in 0.8.0, when she set the table out again: stagflation is
-  prices heating while growth stagnates. (Sep 18–19, 2026; 0.8.0, Oct 5, 2026)
+  Autumn–Stagflation and cooling is Autumn–Disinflation, within or above the range.** Keren's season
+  table. Steady prices (a twelve-month trend inside ±0.02 points a month) keep the prior quarter's direction, as
+  growth inside its margin keeps the prior regime. Keren: "steady is that if we don't see a significant change from
+  the previous season, then it just continues that season." With no prior direction, steady reads Reflation in
+  expansion and Disinflation in contraction, as 0.8.0 had it for every steady quarter. (Sep 18–19, 2026; 0.8.0,
+  Oct 5, 2026; 0.9.2)
 
 - **Stagflation does not need prices above the range; it mirrors expansion.** Keren made the two sides
   symmetric "even though heating-within-range is empirically rare". (undated, Sep 19, 2026)

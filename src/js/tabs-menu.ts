@@ -16,8 +16,8 @@ function seasonGrid(){
   };
   var head = function(name: string, sub: string){ return '<div class="sg-head"><b>' + name + '</b><small>' + sub + '</small></div>'; };
   return '<div class="season-grid">' + '<span></span>' + head("Cold", "below 1%") + head("In range", "1\u20133%") + head("Hot", "above 3%") +
-    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating, steady", "Deflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation"]) +
-    head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling, steady"]) +
+    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating", "Deflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation"]) +
+    head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling"]) +
   '</div>';
 }
 function recessionLine(){
@@ -29,7 +29,7 @@ function seasonModelNote(){
     "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock\u2019s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.",
     "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
     "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model\u2019s 1\u20133% band, a point either side of the Fed\u2019s 2% target.",
-    "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.",
+    "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn. A trend that moves less than about a quarter point over the year is steady and keeps the prior direction.",
     recessionLine(),
     seasonWhy
   ]) + srcBlock([CLOCK_SRC[0]]);
@@ -50,9 +50,9 @@ function renderSeasonRows(){
 
   var seasonRules = [
     {key:"springdeflation", growth:"Expansion",  temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
-    {key:"spring",          growth:"Expansion",  temp:"Heating or steady", zones:{within:1, below:1}, range:"Heating or steady — within or below the range"},
+    {key:"spring",          growth:"Expansion",  temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
     {key:"summer",          growth:"Expansion",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
-    {key:"autumn",          growth:"Contraction", temp:"Cooling or steady", zones:{within:1, above:1}, range:"Cooling or steady — within or above the range"},
+    {key:"autumn",          growth:"Contraction", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
     {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"},
     {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"}
   ];
