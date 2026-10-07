@@ -1,6 +1,6 @@
 import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf, titleCase } from "./format.ts";
 import { addSources, byId, put } from "./dom.ts";
-import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears, type ChartPair } from "./charts.ts";
+import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.ts";
 import { debtDollarsQuarterly, debtToday, grossDebtQuarterly, interestDollarsQuarterly, interestQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { buffettHistory, CONFIDENCE_SRC, DEBT_DOLLAR_SRC, DESIRE_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
@@ -14,7 +14,7 @@ import { creditInsight, creditPages, creditReadings } from "./credit.ts";
 type SeriesPt = Point & { v: number };
 type SplitRow = { sub: string; note: string; meter: Meter; flagValue: string; flagState?: Tone; shortNote?: string };
 type SplitPage = { after?: string; row: SplitRow; line: string; fmt: (v: number) => string; tick?: (v: number) => string; at?: (d: SeriesPt) => string;
-  src: Src[]; band?: string; goodAbove?: boolean; info?: () => string; insight: (s: SplitSpec) => string[]; pair?: ChartPair };
+  src: Src[]; band?: string; goodAbove?: boolean; info?: () => string; insight: (s: SplitSpec) => string[] };
 type SplitSpec = SplitPage & { id: string; name: string; mid: number; timing: string; series: SeriesPt[]; midLabel: string };
 
 // ---- The split indicators: one page each ----
@@ -62,7 +62,7 @@ function marketPage(){
 function withCredit(o: Record<string, SplitPage>){
   Object.keys(creditPages).forEach(function(id){
     var P = creditPages[id];
-    o[id] = readingPage(creditReadings[id], { goodAbove:false, line:P.line, fmt:P.fmt, tick:P.tick, src:P.src, pair:P.pair, insight:function(s){ return creditInsight(s, P); } });
+    o[id] = readingPage(creditReadings[id], { goodAbove:false, line:P.line, fmt:P.fmt, tick:P.tick, src:P.src, insight:function(s){ return creditInsight(s, P); } });
   });
   return o;
 }
@@ -92,7 +92,7 @@ function drawSplit(s: SplitSpec, W?: number){
   var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, page.range[id]);
   var tr = trendOf(vals.map(function(d){ return d.v; }), "points", periodOfSeries(s.series[0]));
   var chart = function(w?: number){
-    return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove, pair:s.pair,
+    return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
       xLabel:periodTicks(vals), at:s.at || function(d: SeriesPt){ return d.m ? atMonth(d as MonthPoint) : d.q ? qPretty(d.q) : "FY" + d.y; },
       alt:s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
   };

@@ -834,10 +834,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   growth against a year earlier, zero its only line. The Delinquency rate is the Fed's all-loans rate at commercial
   banks; no convention bands it, so its line is the record's own 1985–2025 average (Keren's rule: derive it from the
   record and say so). (0.9.0)
-- **Lending standards (the Fed's Senior Loan Officer Survey) is a Credit reading, with loan demand drawn as its second
-  line.** Keren asked which was more informative; Claude recommended standards, the survey's early signal in the Fed's
-  own research (Lown and Morgan 2006; Bassett and others 2012), with demand from the same survey on the same chart, and
-  Keren: "I will follow your recommendation" (0.9.4). It is the net share of banks tightening C&I standards for large and
+- **Lending standards (the Fed's Senior Loan Officer Survey) is a Credit reading, drawn alone like Margin debt: no loan
+  demand line.** Keren asked which was more informative; Claude recommended standards, the survey's early signal in the
+  Fed's own research (Lown and Morgan 2006; Bassett and others 2012), and Keren: "I will follow your recommendation"
+  (0.9.4). A loan-demand second line was tried and taken off: "I don't get the lending standards chart. It's confusing." It is the net share of banks tightening C&I standards for large and
   middle-market firms (DRTSCILM, quarterly from 1990), zero its only line; it tightened before 1990, 2001 and 2008, but
   also in 2015–16 and 2022–24 with no recession. It was left out in 0.9.0 ("drop the lending standards for now"). No
   credit spread came back with the credit readings (V709).

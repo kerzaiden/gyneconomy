@@ -817,7 +817,6 @@
   .ff-col.f5{ stroke:color-mix(in srgb, var(--ff-blue) 70%, var(--ff-deep)); }
   .dv-bar.over{ stroke:var(--serious); } .dv-bar.under{ stroke:var(--good); }
   .dv-bar.over.good-above{ stroke:var(--good); } .dv-bar.under.good-above{ stroke:var(--serious); }
-  .dv-pair{ fill:none; stroke:var(--text-secondary); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
   .bt-xl, .bt-yl{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); fill:var(--text-muted); }
 

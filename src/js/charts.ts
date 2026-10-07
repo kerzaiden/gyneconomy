@@ -6,8 +6,7 @@ type FitOpts = { fit?: Fit; fmt: (v: number) => string };
 type XLabelOpts = { xLabel?: ((d: never, i: number) => string) | null; _years?: number[] };
 type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; noGridAt?: number | null; base?: number | string | null };
 type DivergeDatum = { v: number | null; y?: number; [k: string]: unknown };
-type DivergeOpts = XLabelOpts & FitOpts & { vals: DivergeDatum[]; mid: number; midLabel?: string; tickFmt?: (v: number) => string; step?: number; goodAbove?: boolean; at?: ChartGeom["at"]; alt?: string; pair?: ChartPair };
-export type ChartPair = { label: string; at: Record<string, number> };
+type DivergeOpts = XLabelOpts & FitOpts & { vals: DivergeDatum[]; mid: number; midLabel?: string; tickFmt?: (v: number) => string; step?: number; goodAbove?: boolean; at?: ChartGeom["at"]; alt?: string };
 export type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: number; T: number; B: number };
 
 // ---- The range bar ----
@@ -148,26 +147,11 @@ export function chartAxes(o: AxesOpts){
     out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + ',' + o.base + 'L' + fx1.toFixed(1) + ',' + o.base + '"/>');
   return out.join("");
 }
-function pairKey(d: DivergeDatum){ return String(d.q || d.m || d.y); }
-function pairVals(o: DivergeOpts){
-  var at = o.pair ? o.pair.at : {};
-  return o.vals.map(function(d){ return at[pairKey(d)]; }).filter(function(v){ return v != null; }) as number[];
-}
-function pairPath(o: DivergeOpts, padL: number, slot: number, y: (v: number) => string){
-  var at = (o.pair as ChartPair).at, d = "", pen = "M";
-  o.vals.forEach(function(p, i){
-    var v = at[pairKey(p)];
-    if (v == null){ pen = "M"; return; }
-    d += pen + (padL + slot * (i + 0.5)).toFixed(1) + "," + y(v);
-    pen = "L";
-  });
-  return '<path class="dv-pair" d="' + d + '"/>';
-}
 export function divergeChart(o: DivergeOpts, W?: number){
   W = Math.max(280, W || 340);
   var F = histFrame(W), H = F.H;
   var padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B, iw = W - padL - padR, ih = H - padT - padB;
-  var vs = o.vals.map(function(d){ return d.v; }).concat(pairVals(o));
+  var vs = o.vals.map(function(d){ return d.v; });
   var lo = Math.min.apply(null, (vs as number[]).concat([o.mid])), hi = Math.max.apply(null, (vs as number[]).concat([o.mid]));
   var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / ((above + below) || 1);
   var midY = padT + above * unit;
@@ -182,7 +166,7 @@ export function divergeChart(o: DivergeOpts, W?: number){
     out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
   });
   var dAvg = o.vals.reduce(function(a, d){ return a + (d.v == null ? 0 : d.v); }, 0) / (n || 1);
-  out.push(avgRule(padL, (W - padR), y(dAvg))); if (o.pair) out.push(pairPath(o, padL, slot, y));
+  out.push(avgRule(padL, (W - padR), y(dAvg)));
   if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * 0.5, padL + slot * (n - 0.5), y, W, padL, padR));
   o.vals.forEach(function(d, i){
     var lab = xLabelOf(o, d, i, o.vals); if (!lab) return;
@@ -191,8 +175,8 @@ export function divergeChart(o: DivergeOpts, W?: number){
   });
   out.push(crossLine(padT, (padT + ih)));
   publishGeom("divergeChart", { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
-                   refs:((o.mid != null ? [{ label:"Average", v:dAvg }, { label:refName(o.midLabel), v:o.mid, dash:true, cls:"dv-mid" }]
-                                      : [{ label:"Average", v:dAvg }]) as ChartRef[]).concat(o.pair ? [{ label:o.pair.label, cls:"dv-pair" }] : []),
+                   refs:(o.mid != null ? [{ label:"Average", v:dAvg }, { label:refName(o.midLabel), v:o.mid, dash:true, cls:"dv-mid" }]
+                                      : [{ label:"Average", v:dAvg }]),
                    vals:o.vals, at:(o.at || function(d: DivergeDatum){ return String(d.y); }), fmt:o.fmt });
   return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
 }
