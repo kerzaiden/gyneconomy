@@ -333,7 +333,8 @@ function meanOf(vs: number[]){ return vs.reduce(function(a, b){ return a + b; },
 function lengths(){ return visits().slice(0, closedCount()).map(function(v){ return v.years; }); }
 function typical(v: number){ var n = normOf(lengths()) as Norm; return v <= n.fence && v >= n.floor; }
 var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-function verdict(ok: boolean){ return mark(ok ? "" : " odd", ok ? "Typical" : "Atypical"); }
+function verdict(ok: boolean){ return mark(ok ? " ok" : " odd", ok ? "Typical" : "Atypical"); }
+function tone(ok: boolean){ return ok ? "t-ok" : "t-odd"; }
 function mark(cls: string, name: string){ return '<span class="stat-tick' + cls + '">' + TICK + '</span>' + name; }
 var RELATIVE = '<p>Typical is relative: it is read against her own past cycles, not a fixed standard.</p>';
 function healthPage(i: number){
@@ -341,8 +342,8 @@ function healthPage(i: number){
   return '<h3>Her Health Score</h3><p>' + t + ': ' + s.v + ' out of 100, the share of her ' + s.of + ' results that are Normal. It is judged against the scores of her ' + closedCount() + ' closed cycles: Normal from ' + Math.round(n.lo) + ', Risk below ' + Math.max(0, Math.round(n.floor)) + ', past Tukey’s fence.</p><p>Normal is relative: it is read against her own past cycles, not a fixed standard.</p>' + srcBlock([FENCE_SRC]);
 }
 function healthRow(i: number){
-  var v = score(i).v, t = scoreTier(v);
-  return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(t === "Normal" ? "" : t === "Risk" ? " odd" : " warn", t), healthPage(i), "", String(v)) + '</div>';
+  var v = score(i).v, t = scoreTier(v), k = ({ Normal:["ok", "t-ok"], Attention:["warn", "t-warn"], Risk:["odd", "t-odd"] } as Record<string, string[]>)[t];
+  return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(" " + k[0], t), healthPage(i), k[1], String(v)) + '</div>';
 }
 function cycleBars(vs: (number | null)[], cls: (v: number, i: number) => string, at: number[], label: string){
   var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;
@@ -374,8 +375,8 @@ function variationPage(i: number){
 function statsHome(i: number){
   var six = before(i), r = regularity(i), top = function(f: (v: Visit) => number){ return Math.max.apply(null, visits().map(f)); }, avg = function(f: (v: Visit) => number){ return meanOf((six as Visit[]).map(f)); };
   return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on the last ' + word(BASELINE) + ' market cycles.</p>' + healthRow(i) + (!six || r == null ? "" :
-    statRow("Cycle length", avg(len), top(len), verdict(typical(avg(len))), lengthPage(i)) +
-    statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i)) +
+    statRow("Cycle length", avg(len), top(len), verdict(typical(avg(len))), lengthPage(i), tone(typical(avg(len)))) +
+    statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i), tone(regularOk(r))) +
     statRow("Period flow", avg(flow), top(flow), "", "", "flow")));
 }
 function insightSec(k: string, ls: Lab[]){

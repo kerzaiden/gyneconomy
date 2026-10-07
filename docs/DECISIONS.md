@@ -644,6 +644,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   … in a line or two." On Oct 7, 2026 she tried Normal/Abnormal and went back within the hour: "I don't like the
   words normal and abnormal. Use typical and atypical." The relative line is hers: "briefly explain that normal is
   subjective or relative to her own past cycles." (0.8.12, Oct 7, 2026)
+- **Cycle Statistics' verdicts carry the tier colours: green (`--good`) for Typical or Normal, yellow (`--gold`) for
+  Attention, red (`--critical`) for Atypical or Risk, on the tick and the ring; the length bars follow.** Period flow's
+  ring stays red. Keren: "if a stat is typical, meaning normal, then it should be green. Attention is yellow and risk
+  is red." (0.8.12, Oct 7, 2026)
 - **Insights lists only the categories; each opens one Indicators page on that category, where every reading is
   searched, filtered by tier and cycle, and switched between categories by a bar (All, Regularity, Weather, Mood,
   Circulation, Energy).** The search box on Analysis opens the same page on All. Keren: "put only the categories

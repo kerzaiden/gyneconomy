@@ -922,19 +922,22 @@
   button.stat-row .stat-side{ flex:0 0 auto; width:8em; }
   .stat-row .lab-score-v{ width:46px; height:46px; }
   .stat-side .peek-chev{ margin-left:auto; }
-  .stat-tick{ display:inline-flex; color:var(--normal); }
+  .stat-tick{ display:inline-flex; color:var(--good); }
+  .stat-row.t-ok .lab-ring circle.on{ stroke:var(--good); }
+  .stat-row.t-warn .lab-ring circle.on{ stroke:var(--gold); }
+  .stat-row.t-odd .lab-ring circle.on{ stroke:var(--critical); }
   .stat-tick.odd{ color:var(--critical); }
   .stat-tick.warn{ color:var(--gold); }
   .stat-note{ margin:-4px 0 10px; font-size:var(--type-meta); color:var(--text-muted); }
   .len-bars{ display:block; width:100%; margin:8px 0; }
-  .len-bars rect.ok{ fill:var(--normal); }
+  .len-bars rect.ok{ fill:var(--good); }
   .len-bars rect.odd{ fill:var(--critical); }
-  .len-bars rect.now{ fill:var(--normal); opacity:0.45; }
+  .len-bars rect.now{ fill:var(--good); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
   .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
   .len-key i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 12px; vertical-align:-1px; }
   .len-key i:first-child{ margin-left:0; }
-  .len-key i.ok{ background:var(--normal); }
+  .len-key i.ok{ background:var(--good); }
   .len-key i.odd{ background:var(--critical); }
   .insight-mark{ display:flex; flex:none; color:var(--accent); }
   .insight-mark svg{ width:18px; height:18px; }
@@ -37827,7 +37830,10 @@
   }
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function verdict(ok) {
-    return mark(ok ? "" : " odd", ok ? "Typical" : "Atypical");
+    return mark(ok ? " ok" : " odd", ok ? "Typical" : "Atypical");
+  }
+  function tone(ok) {
+    return ok ? "t-ok" : "t-odd";
   }
   function mark(cls, name) {
     return '<span class="stat-tick' + cls + '">' + TICK + "</span>" + name;
@@ -37838,8 +37844,12 @@
     return "<h3>Her Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of her " + s.of + " results that are Normal. It is judged against the scores of her " + closedCount() + " closed cycles: Normal from " + Math.round(n.lo) + ", Risk below " + Math.max(0, Math.round(n.floor)) + ", past Tukey’s fence.</p><p>Normal is relative: it is read against her own past cycles, not a fixed standard.</p>" + srcBlock([ FENCE_SRC ]);
   }
   function healthRow(i) {
-    var v = score(i).v, t = scoreTier(v);
-    return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(t === "Normal" ? "" : t === "Risk" ? " odd" : " warn", t), healthPage(i), "", String(v)) + "</div>";
+    var v = score(i).v, t = scoreTier(v), k = {
+      Normal: [ "ok", "t-ok" ],
+      Attention: [ "warn", "t-warn" ],
+      Risk: [ "odd", "t-odd" ]
+    }[t];
+    return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(" " + k[0], t), healthPage(i), k[1], String(v)) + "</div>";
   }
   function cycleBars(vs, cls, at, label) {
     var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;
@@ -37899,7 +37909,7 @@
     }, avg = function(f) {
       return meanOf(six.map(f));
     };
-    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on the last ' + word(BASELINE) + " market cycles.</p>" + healthRow(i) + (!six || r == null ? "" : statRow("Cycle length", avg(len), top(len), verdict(typical(avg(len))), lengthPage(i)) + statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i)) + statRow("Period flow", avg(flow), top(flow), "", "", "flow")));
+    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on the last ' + word(BASELINE) + " market cycles.</p>" + healthRow(i) + (!six || r == null ? "" : statRow("Cycle length", avg(len), top(len), verdict(typical(avg(len))), lengthPage(i), tone(typical(avg(len)))) + statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i), tone(regularOk(r))) + statRow("Period flow", avg(flow), top(flow), "", "", "flow")));
   }
   function insightSec(k, ls) {
     return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
