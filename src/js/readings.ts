@@ -7,6 +7,7 @@ import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-sea
 import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
 import { cpiNow, growthWord, HOLD_BAND, inflationFigure, nowModel, potentialGap } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
+import { creditReadings } from "./credit.ts";
 
 type SeriesRecord<P> = { now: P; lo: P; hi: P };
 type WordReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; page: IndicatorPage };
@@ -512,7 +513,7 @@ function marketInfoHtml(f: MarketReading){
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
 }
-export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading]); }
+export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading], Object.keys(creditReadings).map(function(k){ return creditReadings[k]; })); }
 export function indOf(R: { term?: string }): Indicator | undefined { return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
 function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },

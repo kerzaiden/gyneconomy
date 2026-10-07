@@ -9,6 +9,7 @@ import { attachHistory, histControls, histHead, histNote, page, pageCycle, refit
 import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, premiumReading, premiumRecord, productivityReading } from "./readings.ts";
 import { periodOf, ROSTER } from "./roster.ts";
 import { metricSheet, sheetRenderers, timingPill } from "./render-core.ts";
+import { creditInsight, creditPages, creditReadings } from "./credit.ts";
 
 type SeriesPt = Point & { v: number };
 type SplitRow = { sub: string; note: string; meter: Meter; flagValue: string; flagState?: Tone; shortNote?: string };
@@ -27,7 +28,7 @@ function midOf(R: RosterRow): number { if (R.mid == null) throw new Error(R.id +
 export function meterWord(m: Meter){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
 function splitPages(): Record<string, SplitPage> {
   var tenth = function(v: number){ return v.toFixed(1) + "%"; };
-  return {
+  return withCredit({
     "sheet-metric-buffett": { after:"sheet-metric-valuation", row:fileRow("buffett"), line:"Buffett’s line",
       fmt:function(v){ return Math.round(v) + "%"; }, src:BUFFETT_2001.concat(now.valuation.src.slice(0, 2)),
       band:"The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, " +
@@ -40,7 +41,7 @@ function splitPages(): Record<string, SplitPage> {
     "sheet-sign-productivity-growth": productivityPage(tenth),
     "sheet-sign-desire": desirePage(), "sheet-sign-premium": premiumPage(), "sheet-sign-confidence": confidencePage(),
     "sheet-sign-market": marketPage()
-  };
+  });
 }
 type PageReading = { info: () => string; metricSub: string; caption: string; meter: Meter; metric: string; tag: { state?: Tone } };
 var signedPct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; }, wholePct = function(v: number){ return Math.round(v) + "%"; };
@@ -56,6 +57,13 @@ function premiumPage(){ return readingPage(premiumReading, { line:"No premium", 
 function marketPage(){
   return readingPage(marketReading, { line:"No change", fmt:signedPct, tick:wholePct, at:function(d){ return String(d.y); },
     src:sp500AnnualReturnSource, insight:marketInsight });
+}
+function withCredit(o: Record<string, SplitPage>){
+  Object.keys(creditPages).forEach(function(id){
+    var P = creditPages[id];
+    o[id] = readingPage(creditReadings[id], { goodAbove:false, line:P.line, fmt:P.fmt, tick:P.tick, src:P.src, insight:function(s){ return creditInsight(s, P); } });
+  });
+  return o;
 }
 function productivityPage(tenth: (v: number) => string){
   return readingPage(productivityReading, { line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight });
@@ -107,9 +115,17 @@ function mountSplit(s: SplitSpec){
   put(s.id + "-highlights", highlightsHtml(s.insight(s), "", ""));
   addSources(s.src);
 }
+function seatSplits(pages: Record<string, SplitPage>, todo: RosterRow[]){
+  while (todo.length){
+    var left = todo.filter(function(R){ var a = pages[R.id].after; return a && !document.getElementById(a); });
+    if (left.length === todo.length) throw new Error("no page to seat " + left.map(function(R){ return R.id; }).join(", ") + " after");
+    todo.forEach(function(R){ if (left.indexOf(R) === -1) mountSplit(splitSpec(R, pages[R.id])); });
+    todo = left;
+  }
+}
 export function mountSplits(){
   var pages = splitPages();
-  ROSTER.forEach(function(R){ if (pages[R.id]) mountSplit(splitSpec(R, pages[R.id])); });
+  seatSplits(pages, ROSTER.filter(function(R){ return pages[R.id]; }));
   if (ROSTER.some(function(R){ return R.door === "split" && !pages[R.id]; })) addSources(longCycleSrc);
 }
 // ---- The split indicators' insights ----

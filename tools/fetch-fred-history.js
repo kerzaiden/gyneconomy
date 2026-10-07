@@ -223,7 +223,49 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential) {
+const BIS_GAP = 'https://stats.bis.org/api/v1/data/WS_CREDIT_GAP/Q.US.P.A.C?format=csv';
+function bisGapRows(csv) {
+  const lines = csv.trim().split(/\r?\n/);
+  const head = lines[0].split(',');
+  const at = k => { const i = head.indexOf(k); if (i < 0) throw new Error('BIS credit gap: no ' + k + ' column in ' + lines[0].slice(0, 200)); return i; };
+  const per = at('TIME_PERIOD'), val = at('OBS_VALUE'), kind = at('CG_DTYPE');
+  const out = lines.slice(1).map(l => l.split(',')).filter(c => c[kind] === 'C' && /^\d{4}-Q[1-4]$/.test(c[per]) && band(Number(c[val]), -60, 60))
+    .map(c => ({ q: c[per].replace('-', ' '), v: Math.round(Number(c[val]) * 10) / 10 })).sort((x, y) => (x.q < y.q ? -1 : 1));
+  if (!out.length) throw new Error('BIS credit gap: no gap rows in the reply');
+  return out;
+}
+
+async function bisGap() {
+  const r = await fetch(BIS_GAP, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
+  if (!r.ok) throw new Error('BIS credit gap: HTTP ' + r.status);
+  return bisGapRows(await r.text());
+}
+
+const FINRA_PAGE = 'https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics';
+function marginRows(rows) {
+  const hdr = rows.findIndex(r => (r || []).some(c => /debit balances/i.test(String(c))));
+  if (hdr < 0) throw new Error('FINRA margin: no column naming the debit balances');
+  const col = rows[hdr].findIndex(c => /debit balances/i.test(String(c)));
+  const out = rows.slice(hdr + 1).filter(r => r && /^\d{4}-\d{2}$/.test(String(r[0])) && band(Number(r[col]), 1, 1e8))
+    .map(r => ({ date: String(r[0]) + '-01', v: Number(r[col]) })).sort((x, y) => (x.date < y.date ? -1 : 1));
+  if (!out.length) throw new Error('FINRA margin: no month below the header');
+  return out;
+}
+
+async function finraMargin() {
+  const ua = { headers: { 'user-agent': 'Mozilla/5.0 (gyneconomy-backfill; github.com/kerzaiden/gyneconomy)' } };
+  const page = await fetch(FINRA_PAGE, ua);
+  if (!page.ok) throw new Error('FINRA margin page: HTTP ' + page.status);
+  const link = ((await page.text()).match(/[^"' ]*margin-statistics\.xlsx/) || [])[0];
+  if (!link) throw new Error('FINRA margin page: no link to margin-statistics.xlsx');
+  const r = await fetch(link.startsWith('/') ? 'https://www.finra.org' + link : link, ua);
+  if (!r.ok) throw new Error('FINRA margin sheet: HTTP ' + r.status);
+  const XLSX = require('xlsx');
+  const wb = XLSX.read(Buffer.from(await r.arrayBuffer()));
+  return marginRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
+}
+
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -245,6 +287,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (moves) out.fedMoves = m(moves);
   if (pce) out.pceYoYHistory = m(pce);
   if (potential) out.potentialYoYHistory = q(potential);
+  if (credit) Object.assign(out, { creditGapHistory: q(credit.gap), delinquencyHistory: q(credit.delinquency), marginHistory: m(credit.margin) });
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -330,7 +373,19 @@ async function main() {
   if (!potential.length || potential[0].q !== '1950 Q1') throw new Error('GDPPOT: expected year-over-year quarters from 1950 Q1');
   say('GDPPOT YoY    ' + potential.length + ' quarters, ' + potential[0].q + ' → ' + potential[potential.length - 1].q + ' (CBO, through the last full quarter)');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential));
+  const credit = {
+    gap: await bisGap(),
+    delinquency: quarterly(await fredSeries('DRALACBS', '1985-01-01'), 0, 20),
+    margin: yoyMonthly(await finraMargin(), -80, 200)
+  };
+  if (credit.gap[0].q > '1958 Q1' || credit.delinquency[0].q !== '1985 Q1' || credit.margin[0].m !== '1998-01')
+    throw new Error('credit: expected the BIS gap from 1957, delinquency from 1985 Q1 and margin growth from 1998-01');
+  for (const k of ['gap', 'delinquency', 'margin']) {
+    const a = credit[k];
+    say(('credit ' + k).padEnd(13) + ' ' + a.length + ' periods, ' + (a[0].q || a[0].m) + ' → ' + (a[a.length - 1].q || a[a.length - 1].m));
+  }
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
@@ -365,5 +420,5 @@ async function earlySeasons() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { bisGapRows, marginRows, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }
