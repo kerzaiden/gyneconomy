@@ -1486,6 +1486,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   you I want the spacing to be 30, you would just change one number — do not repeat yourself"; "make outer
   spacing 15 pixels and inner spacing 10 pixels", then "five pixels shorter … this applies to all of the app".
   (V381, V385, V449, V450, V505, V507)
+- **The Insights rows on Analysis sit 30px apart, line to line, a fifth more than before.** Keren: "space out the
+  insights container on the analysis page, maybe twenty percent more room between one line and another." (0.9.1)
 - **A component sets its own internal spacing; a page only says where the component sits.** A per-page
   override silently zeroed the gap between two history menus on two of eight pages: "just checking whether you
   are dry coding this app." (V440)

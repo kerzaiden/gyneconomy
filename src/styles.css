@@ -951,7 +951,7 @@
   .insight-mark{ display:flex; flex:none; color:var(--accent); }
   .insight-mark svg{ width:18px; height:18px; }
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
-  button.insight-row{ margin:0; padding:12px 2px; gap:10px; background:none; border-top:1px solid var(--border); border-radius:0; }
+  button.insight-row{ margin:0; padding:14.5px 2px; gap:10px; background:none; border-top:1px solid var(--border); border-radius:0; }
   .dx-sys-head + button.insight-row{ margin-top:12px; }
   button.insight-row:last-child{ padding-bottom:0; }
   button.insight-row .stat-main{ border-right:0; }
