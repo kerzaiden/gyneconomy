@@ -119,7 +119,7 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-sign-retail", name:"Retail sales", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"coincident", door:"row",
       term:"Retail sales", head:"Retail Sales, YoY", hist:{ s:retailHistory, k:"m" }, mid:RETAIL_LINE, cardUnit:"YoY" },
     { id:"sheet-sign-concentration", name:"Concentration", cat:"mood", sub:"Desire", good:"down", group:"Desire", timing:"structural", door:"row",
-      term:"Concentration", head:"Largest Tenth of US Stocks, Share of Market Cap", hist:{ s:concentrationHistory, k:"m" }, mid:CONCENTRATION_MEAN,
+      term:"Concentration", head:"Market Concentration, Top 10%", hist:{ s:concentrationHistory, k:"m" }, mid:CONCENTRATION_MEAN,
       cardUnit:"of market cap" },
     { id:"sheet-sign-premium", name:"Equity risk premium", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"structural", door:"row",
       term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE,
