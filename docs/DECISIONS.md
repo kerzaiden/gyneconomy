@@ -626,6 +626,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   gone. The variation page says what the figure tells: how steady her rhythm is. Keren: "I think we need to see the
   current cycle statistics and not the general cycle length … We can call it typical instead of more info … cycle
   length, four years, typical. And if I click on it, I see what the average cycle is." (0.8.12, Oct 7, 2026)
+- **The Health Score sits inside Cycle Statistics, first under its title, white with a grey border to set it apart
+  from the statistics.** Keren: "put the health score inside cycle statistics, but keep it white with a gray border
+  because it's a bit different from the rest of the statistics." (0.8.12, Oct 7, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings.** Typical is within Tukey's fences
   of her closed cycles, the app's outlier rule; a page says how in a line or two, because the model is new. Keren:
   "typical is the right word … because normal is something that we use for parameters … regular cycles are

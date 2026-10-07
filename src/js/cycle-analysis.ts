@@ -361,7 +361,7 @@ function variationPage(i: number){
 }
 function statsHome(i: number){
   var x = visits()[i], open = !!marketCycles[i].ongoing, r = regularity(i), all = visits(), top = function(f: (v: Visit) => number){ return Math.max.apply(null, all.map(f)); };
-  return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") +
+  return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<div class="lab-score-box">' + scoreBox(i) + '</div>' +
     statRow("Cycle length", x.years, top(function(v){ return v.years; }), verdict(typical(x.years, open)), lengthPage(i)) +
     (r == null ? "" : statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i))) +
     statRow("Period flow", x.bleed, top(function(v){ return v.bleed; }), "", "", "flow"));
@@ -380,7 +380,7 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
+  return statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
     dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){

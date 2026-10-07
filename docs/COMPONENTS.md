@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `85f1693` on 2026-10-07. **98 components**, **28 shared patterns**.
+Generated from commit `9408aad` on 2026-10-07. **98 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -58,7 +58,6 @@ Generated from commit `85f1693` on 2026-10-07. **98 components**, **28 shared pa
 | **`filterSheet`** | `.ind-filter` `.ind-filter-head` `.ind-reset` `.ind-show` | `cycle-analysis.ts:drawChart` |
 | **`finder`** | `.lab-find` | `cycle-analysis.ts:drawChart` |
 | **`foldSec`** | `.lab-fold` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:subSec` |
-| **`homeSections`** | `.lab-score-box` | `cycle-analysis.ts:drawChart` |
 | **`insightSec`** | `.insight-mark` | `cycle-analysis.ts:insightsHome` |
 | **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:foldSec` |
 | **`labSec`** | `.lab-cat` | `cycle-analysis.ts:bySystem` |
@@ -70,6 +69,7 @@ Generated from commit `85f1693` on 2026-10-07. **98 components**, **28 shared pa
 | **`scoreRing`** | `.lab-score-v` | `cycle-analysis.ts:scoreBox`, `cycle-analysis.ts:statRow` |
 | **`sheetSec`** | `.ind-sec` | `cycle-analysis.ts:filterSheet` |
 | **`statBody`** | `.stat-main` `.stat-side` | `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:statRow` |
+| **`statsHome`** | `.lab-score-box` | `cycle-analysis.ts:homeSections` |
 | **`stepper`** | `.period-step` | `cycle-analysis.ts:drawChart` |
 
 ## diagnosis.ts
