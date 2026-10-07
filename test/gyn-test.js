@@ -285,7 +285,7 @@ async function openPage(p, url, sheet) {
     const today = await read();
     await sweep(p);
     (today && today.visible && today.title === 'AI Insights' && today.lead === 0 && today.cards === 0 &&
-     today.boxes === 'fed,ai,sys' && today.doors === 1 && today.score && today.kicker === 'AI Cycle')
+     today.boxes === 'fed,ai,sys' && today.doors === 2 && today.score && today.kicker === 'AI Cycle')
       ? ok('the dial reads its cycle, and under it the Fed\'s phases, AI Insights with the health score, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Fed\'s phases, AI Insights with the health score, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
@@ -298,7 +298,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'fed,trend,sys' && past.doors === 1 && !past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'fed,trend,sys' && past.doors === 2 && !past.after &&
      yearRun(past.years) && past.opens === past.years.length)
       ? ok('the cycle reads year by year, newest first, each year opening Indicators, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening Indicators, today and at a close', JSON.stringify([today, past]));
@@ -375,6 +375,26 @@ async function openPage(p, url, sheet) {
   }
 
   {
+    const rateFrom = async (tab, past) => {
+      await p.goto('file://' + url); await ready(p);
+      return p.evaluate(async ([tab, past]) => {
+        const frame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        document.querySelector('.tab-btn[data-tab="' + tab + '"]').click(); await frame();
+        if (past){ [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click(); await frame(); }
+        const head = [...document.querySelectorAll('button.dx-sys-head[data-open="sheet-sign-hormones"]')].find(e => e.offsetParent);
+        if (!head || !head.querySelector('.peek-chev')) return 'no chevron';
+        head.click(); await frame();
+        const sh = document.getElementById('sheet-sign-hormones');
+        return sh && sh.offsetParent ? document.getElementById('topbar-title').textContent : 'no page';
+      }, [tab, past]);
+    };
+    const got = [await rateFrom('cycle'), await rateFrom('chart'), await rateFrom('analysis', true)];
+    got.every(t => t === 'Federal funds rate')
+      ? ok('Interest Rates Environment opens the Federal funds rate on Current Cycle, Analysis and a past cycle')
+      : bad('Interest Rates Environment opens the Federal funds rate on Current Cycle, Analysis and a past cycle', JSON.stringify(got));
+  }
+
+  {
     await p.goto('file://' + url); await ready(p);
     const gaps = await p.evaluate(async () => {
       const frame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
@@ -446,7 +466,7 @@ async function openPage(p, url, sheet) {
     await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p);
     const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
-    (all.title === 'Indicators' && all.shown === 'weather,mood,circulation')
+    (all.title === 'Indicators' && all.shown === 'weather,mood,circulation,stress')
       ? ok('the Insights head opens Indicators on All', all.shown)
       : bad('the Insights head opens Indicators on All', JSON.stringify(all));
     await p.goto('file://' + url); await ready(p); await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
@@ -454,7 +474,7 @@ async function openPage(p, url, sheet) {
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
-    (door.first === 'home-secs' && door.rows === 'weather,mood,circulation' && weather.title === 'Indicators' && weather.shown === 'weather' &&
+    (door.first === 'home-secs' && door.rows === 'weather,mood,circulation,stress' && weather.title === 'Indicators' && weather.shown === 'weather' &&
      weather.subs === 'Economic Season 2,Market 1,Activity 2')
       ? ok('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', JSON.stringify({ door, weather }));
@@ -468,7 +488,7 @@ async function openPage(p, url, sheet) {
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.indCat).join(), regularity: !!h.querySelector('.cat-cycle, [data-ind-cat="cycle"]') };
     });
     (tab.title === 'Indicators' && tab.first === 'period-step' && tab.under && tab.chips === 0 && tab.menu && tab.rows > 15 && tab.doors &&
-     tab.cats === 'weather,mood,circulation' && !tab.regularity)
+     tab.cats === 'weather,mood,circulation,stress' && !tab.regularity)
       ? ok('Indicators opens on its period stepper, then its search box with the one filter, every reading and category a door', tab.rows + ' readings')
       : bad('Indicators opens on its period stepper, then its search box with the one filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {

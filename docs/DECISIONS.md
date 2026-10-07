@@ -26,9 +26,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
-- **There are three categories: Weather, Mood and Circulation. The work readings are Weather's subcategory Activity.**
+- **There are four categories: Weather, Mood, Circulation and Stress. The work readings are Weather's subcategory Activity;
+  the debt readings are Stress's subcategory Debt, and Stress's mark is the lightning bolt.** Keren: "stress should have its own
+  category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3).
   Keren: "we don't need a category named activity. I think it's a subcategory under weather … economy, market, work", then "instead of work, write activity"
-  (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0.
+  (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3.
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)
@@ -289,6 +291,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   indicator, Federal debt, Interest payments and Federal budget each have their own; the two Treasury spreads
   stay one view, Households' debt service and saving rate stay one page, and Pressure stays one card with its
   maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
+- **The Interest Rates Environment head is a door to the Federal funds rate page, with a chevron, wherever it stands:**
+  Current Cycle, every past cycle and Analysis. Keren: "add a chevron to the interest rates environment container, both
+  in the current cycle and in analysis, and let it land in the federal funds rate page." (0.9.1)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** Keren: "if I go to
   the health chart page and I click on, let's say, temperature, I would get to the temperature page"; "the filter
@@ -1486,6 +1491,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   you I want the spacing to be 30, you would just change one number — do not repeat yourself"; "make outer
   spacing 15 pixels and inner spacing 10 pixels", then "five pixels shorter … this applies to all of the app".
   (V381, V385, V449, V450, V505, V507)
+- **The Insights rows on Analysis sit 30px apart, line to line, a fifth more than before.** Keren: "space out the
+  insights container on the analysis page, maybe twenty percent more room between one line and another." (0.9.1)
 - **A component sets its own internal spacing; a page only says where the component sits.** A per-page
   override silently zeroed the gap between two history menus on two of eight pages: "just checking whether you
   are dry coding this app." (V440)

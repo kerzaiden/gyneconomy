@@ -897,7 +897,7 @@
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
   /* ---- The symptoms: a cycle's years against today ---- */
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
-  .cat-mood{ --cat:var(--accent); }
+  .cat-mood{ --cat:var(--accent); } .cat-stress{ --cat:var(--gold); }
   .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
@@ -951,7 +951,7 @@
   .insight-mark{ display:flex; flex:none; color:var(--accent); }
   .insight-mark svg{ width:18px; height:18px; }
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
-  button.insight-row{ margin:0; padding:12px 2px; gap:10px; background:none; border-top:1px solid var(--border); border-radius:0; }
+  button.insight-row{ margin:0; padding:14.5px 2px; gap:10px; background:none; border-top:1px solid var(--border); border-radius:0; }
   .dx-sys-head + button.insight-row{ margin-top:12px; }
   button.insight-row:last-child{ padding-bottom:0; }
   button.insight-row .stat-main{ border-right:0; }

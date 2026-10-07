@@ -2,13 +2,13 @@ import { CHEV, facts, qLabel, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
-import { calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
+import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayFace, todayValue } from "./era.ts";
 import { calendarTodayY, DATA_COMPILED } from "./refresh-season.ts";
 import { currentSeason, cycLabel, cycleByName, cycleModel, cycleOfYear, nowModel, openCycle, seasonGroup, seasonOfQ } from "./model.ts";
-import { fedPhasesCard } from "./fed-phases.ts";
+import { fedEnvironment } from "./fed-phases.ts";
 import { catInsight } from "./insights.ts";
 import { categoriesShown, GROUP_MARK, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
@@ -175,7 +175,7 @@ function scoreBox(i: number){
 function scoreRing(v: number, label: string){ return '<span class="lab-score-v">' + ring(v) + label + '</span>'; }
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
 }
-var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, mood:moodSvg, circulation:circulationSvg };
+var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, stress:boltSvg };
 function foldSec(k: string, title: string, name: string, ls: Lab[], at: At){
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"", name:name,
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + countTag(ls.length) + CHEV + '</button>' },
@@ -379,7 +379,7 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  return statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(nowModel)) +
+  return statsHome(i) + fedEnvironment(nowModel) +
     dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){

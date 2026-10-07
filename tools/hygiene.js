@@ -4,7 +4,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const PAD_OWNERS = ['colPeek', 'meterPeek'];
-const DYNAMIC_CLASS = /^(cat-(weather|circulation|mood)|mkt-(up|down)|f[0-9])$/;
+const DYNAMIC_CLASS = /^(cat-(weather|circulation|mood|stress)|mkt-(up|down)|f[0-9])$/;
 const GONE = ['vh-line', 'subject-chev', 'gdpPeers', 'pickPeer', 'data-gdp-peer', 'panel-row', 'pbar', 'rbar-track', 'reading-box', 'all-row', 'sheet-indicators', 'growth-peers', 'peer-picker'];
 const PINNED = [['COL_FILL', /var COL_FILL = 0\.68;/], ['AXIS', /var AXIS = \{ L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 \};/]];
 

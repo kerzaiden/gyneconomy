@@ -1,14 +1,14 @@
 import { CHEV } from "./format.ts";
 import { addSources, byId } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { calendarSvg, orbitSvg } from "./marks.ts";
+import { calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor, IND } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage } from "./ai-insights.ts";
-import { fedPhasesCard } from "./fed-phases.ts";
+import { fedEnvironment } from "./fed-phases.ts";
 import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
@@ -18,7 +18,7 @@ var DIAG_SRC = [
 ];
 function diagnosisHtml(m: CycleModel){
   if (m.ongoing && !diagnoseToday()) return "";
-  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
+  return fedEnvironment(m) + cycleCard(m) + yearByYear(m);
 }
 function cycleCard(m: CycleModel){ return m.ongoing ? aiInsights() : chartDoor(m); }
 function yearByYear(m: CycleModel){
