@@ -487,13 +487,6 @@ async function main() {
 
   const heavy = { today: await spyToday() };
   say('SPY top ten   ' + heavy.today.d + ' ' + heavy.today.v + '% (State Street daily holdings)');
-  for (const path of ['us/en/intermediary/library-content', 'us/en/intermediary/etfs/library-content', 'us/en/individual/etfs/library-content', 'us/en/institutional/etfs/library-content', 'library-content'].map(x => 'www.ssga.com/' + x + '/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx')) {
-    const r = await fetch('https://web.archive.org/cdx/search/cdx?url=' + encodeURIComponent(path) + '&fl=timestamp,statuscode&filter=statuscode:200&collapse=timestamp:6', { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
-    const t = await r.text();
-    say('probe wayback ' + r.status + ' ' + path.slice(13, 60) + ' | ' + t.trim().split('\n').length + ' months | ' + t.replace(/\s+/g, ' ').slice(0, 400));
-  }
-  heavy.quarters = [];
-  say('SPY top ten   ' + heavy.quarters.length + ' quarters, ' + heavy.quarters.map(d => d.d + ' ' + d.v).join(', '));
 
   fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
