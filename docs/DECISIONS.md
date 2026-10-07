@@ -720,12 +720,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   from the book on screen, and none is invented for the others until the manuscript supplies one. Summer's
   (Ovulation) stays in the book: Keren, "I don't think we should say ovulation in this app" (0.6.12). (undated,
   Sep 16–19, 2026; 0.8.6)
-- **The Season Model table runs in colour order, the blues together, then the warm colours: the two Autumns,
-  Winter, the two Springs, then Summer.** Keren: "you can put winter deflation below autumn stagflation because it's
-  the same colour palette". Keren's order; the lists keep the cycle's order above, and she confirmed both at V668. Its price bars
-  wear the season's pastel (`--season-wash`, the shade of the info page's season table) with no gradient. Keren:
-  "I like the pastel colours that you used in the info … I don't think we need to see the transition".
-  (V193, V668, 0.8.7)
+- **The Season Model table runs in the cycle's order: Spring·deflation, Spring·reflation, Summer·inflation,
+  Autumn·disinflation, Autumn·stagflation, Winter·deflation.** Keren: "I think the order of the seasons should be
+  spring deflation, spring reflation, summer inflation, autumn disinflation, autumn stagflation, winter deflation."
+  Replaces the colour order of V193 and 0.8.7 (the blues together). Its price bars wear the season's pastel
+  (`--season-wash`, the shade of the info page's season table) with no gradient. Keren: "I like the pastel colours
+  that you used in the info … I don't think we need to see the transition". (V193, V668, 0.8.7, 0.9.2)
 - **The season is computed and never set by hand; `seasonOverride` stays null.** It follows Keren's rule:
   inflation rising while growth falls is stagflation. (undated)
 - **Growth's side is real GDP against a year earlier set beside the economy's potential growth: at or above
@@ -758,11 +758,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   tolerances it stood beside went with the eight-quarter trend in 0.8.0. (1.2.2; the full list is in
   code-review/trends-1.3.0.md in the project files)
 
-- **In expansion, hot is Summer–Inflation; otherwise cooling is Spring–Deflation and heating or steady is
+- **In expansion, hot is Summer–Inflation; otherwise cooling is Spring–Deflation and heating is
   Spring–Reflation, within or below the range. In contraction, cold is Winter–Deflation; otherwise heating is
-  Autumn–Stagflation and cooling or steady is Autumn–Disinflation, within or above the range.** Keren's season
-  table. Steady moved from Stagflation to Disinflation in 0.8.0, when she set the table out again: stagflation is
-  prices heating while growth stagnates. (Sep 18–19, 2026; 0.8.0, Oct 5, 2026)
+  Autumn–Stagflation and cooling is Autumn–Disinflation, within or above the range.** Keren's season
+  table. Steady prices (a twelve-month trend inside ±0.02 points a month) keep the prior quarter's direction, as
+  growth inside its margin keeps the prior regime. Keren: "steady is that if we don't see a significant change from
+  the previous season, then it just continues that season." With no prior direction, steady reads Reflation in
+  expansion and Disinflation in contraction, as 0.8.0 had it for every steady quarter. (Sep 18–19, 2026; 0.8.0,
+  Oct 5, 2026; 0.9.2)
 
 - **Stagflation does not need prices above the range; it mirrors expansion.** Keren made the two sides
   symmetric "even though heating-within-range is empirically rare". (undated, Sep 19, 2026)
@@ -784,7 +787,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Investment Clock lives on the Portfolio tab only, read from the Season Model's regime and the direction of
   inflation; no season page points to an asset class.** The tilt on the season pages was dropped at Keren's
   instruction (Sep 17, 2026); she brought the clock back as a portfolio method (0.5.0, Oct 4, 2026). Steady prices
-  count with rising, since the clock has no steady phase (Claude's call).
+  keep the prior direction, as in the Season Model (Keren, 0.9.2; was "count with rising", Claude's call).
 - **Before quarterly GDP (1948), a season is read a year at a time: that year's real GDP growth against the
   1929–48 peak trend, with prices read monthly as always (CPIAUCNS before 1948), the December reading standing for
   the year.** Keren chose annual seasons for the older cycles (V690). From 1948 Q1 every quarter is read, against

@@ -715,9 +715,9 @@ slope (V694).
 | Season | Growth | Temperature |
 |---|---|---|
 | Spring — Deflation | Expansion | Cooling, within or below |
-| Spring — Reflation | Expansion | Heating or steady, within or below |
+| Spring — Reflation | Expansion | Heating, within or below |
 | Summer — Inflation | Expansion | Hot |
-| Autumn — Disinflation | Contraction | Cooling or steady, within or above |
+| Autumn — Disinflation | Contraction | Cooling, within or above |
 | Autumn — Stagflation | Contraction | Heating, within or above |
 | Winter — Deflation | Contraction | Cold |
 
@@ -725,7 +725,7 @@ Row order is Keren's. The tie-breaks, all stated in the (i): in expansion, hot i
 direction, otherwise direction alone decides — **never re-add a Goldilocks Zone**. Contraction mirrors it:
 cold is Winter outright, otherwise direction alone. **Never redefine stagflation as contraction + hot
 regardless of direction** — it flips the Q4 2023 example (CPI 3.32%, hot and falling, reads
-Autumn–Disinflation). Steady prices read Reflation in expansion and Disinflation in contraction (0.8.0).
+Autumn–Disinflation). Steady prices keep the prior reading's direction (`heading`, carried down the track like `prevRegime`), and read Reflation or Disinflation only when nothing precedes them (0.9.2).
 Shrinking needs no rule of its own: below zero is always further than the band below potential. **Inside the
 band the regime continues**: `prevRegime` comes from the track, computed once over the full history, never per
 cycle; the annual track runs first and seeds the quarterly one.

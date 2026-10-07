@@ -16,8 +16,8 @@ function seasonGrid(){
   };
   var head = function(name: string, sub: string){ return '<div class="sg-head"><b>' + name + '</b><small>' + sub + '</small></div>'; };
   return '<div class="season-grid">' + '<span></span>' + head("Cold", "below 1%") + head("In range", "1\u20133%") + head("Hot", "above 3%") +
-    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating, steady", "Deflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation \u00b7 any"]) +
-    head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation \u00b7 any"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling, steady"]) +
+    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating", "Deflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation"]) +
+    head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling"]) +
   '</div>';
 }
 function recessionLine(){
@@ -29,7 +29,7 @@ function seasonModelNote(){
     "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock\u2019s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.",
     "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
     "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model\u2019s 1\u20133% band, a point either side of the Fed\u2019s 2% target.",
-    "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.",
+    "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn. A trend that moves less than about a quarter point over the year is steady and keeps the prior direction.",
     recessionLine(),
     seasonWhy
   ]) + srcBlock([CLOCK_SRC[0]]);
@@ -49,12 +49,12 @@ function wireIdea(){
 function renderSeasonRows(){
 
   var seasonRules = [
-    {key:"autumn",          growth:"Contraction", temp:"Cooling or steady", zones:{within:1, above:1}, range:"Cooling or steady — within or above the range"},
-    {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"},
-    {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},
     {key:"springdeflation", growth:"Expansion",  temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
-    {key:"spring",          growth:"Expansion",  temp:"Heating or steady", zones:{within:1, below:1}, range:"Heating or steady — within or below the range"},
-    {key:"summer",          growth:"Expansion",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"}
+    {key:"spring",          growth:"Expansion",  temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
+    {key:"summer",          growth:"Expansion",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
+    {key:"autumn",          growth:"Contraction", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
+    {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"},
+    {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"}
   ];
   var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
   var FLAME = '<svg class="hot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.4 0 7-2.9 7-6.6 0-3.2-2-5.3-3.6-7.2-.6 1.4-1.4 2.2-2.4 2.6.3-3-1-6.3-4-8.8-.2 3-1.6 4.6-3 6.3C4.6 10.1 5 12 5 15.4 5 19.1 7.6 22 12 22z"/><path d="M12 22c-1.9 0-3-1.4-3-3 0-1.5.9-2.4 1.8-3.4.6 1 1.4 1.5 2.2 1.7.4-1 .3-2.1.1-3.1 1.5 1.3 1.9 2.7 1.9 4.2 0 1.8-1.1 3.6-3 3.6z"/></svg>';

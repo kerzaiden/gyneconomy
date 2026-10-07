@@ -25,8 +25,8 @@ var ALL_WEATHER = [
 var WEATHER = [
   { when:"Growth picking up", holds:"Stocks, commodities", test:function(r: ModelReading){ return r.regime === "expansion"; } },
   { when:"Growth slowing", holds:"Treasuries", test:function(r: ModelReading){ return r.regime !== "expansion"; } },
-  { when:"Prices heating", holds:"Gold, commodities", test:function(r: ModelReading){ return r.cpiDirection === "rising"; } },
-  { when:"Prices cooling", holds:"Stocks, Treasuries", test:function(r: ModelReading){ return r.cpiDirection === "falling"; } }
+  { when:"Prices heating", holds:"Gold, commodities", test:function(r: ModelReading){ return r.heading === "rising"; } },
+  { when:"Prices cooling", holds:"Stocks, Treasuries", test:function(r: ModelReading){ return r.heading === "falling"; } }
 ];
 var PHASES: Phase[] = [
   { key:"reflation", name:"Reflation", growth:"slowing", prices:"falling", holds:"Bonds", at:[1, 1.5] },
@@ -45,7 +45,7 @@ function weatherDetail(){
   return '<h4>How All Weather Reads</h4>' + facts([
     "Bridgewater built All Weather in 1996 on one idea: every asset does well in some economic weather and badly in another, so a portfolio that balances its risk across all four, growth picking up or slowing, prices heating or cooling, needs no one to call the next season.",
     "These weights are the version Ray Dalio gave individual investors in Tony Robbins’s Money: Master the Game (2014). Bridgewater’s own fund uses leverage and different weights. The mix is held all the time and brought back to its weights from time to time; it is never timed.",
-    "Which assets each weather favours is Bridgewater’s grid, cut to the five assets the mix holds. Today’s weather is marked from the Season Model: growth by its regime, prices by the direction of inflation. Prices holding steady mark neither.",
+    "Which assets each weather favours is Bridgewater’s grid, cut to the five assets the mix holds. Today’s weather is marked from the Season Model: growth by its regime, prices by the direction of inflation. Prices holding steady keep the prior direction, as in the Season Model.",
     "This is a published allocation, not advice."
   ]) + srcBlock(WEATHER_SRC);
 }
@@ -57,7 +57,7 @@ function drawWeather(){
     weatherStrip() + weights + say("What each kind of weather has favoured:") + weather, weatherDetail());
 }
 function phaseOf(r: ModelReading): Phase {
-  var up = r.regime === "expansion", cooling = r.cpiDirection === "falling";
+  var up = r.regime === "expansion", cooling = r.heading === "falling";
   return PHASES[up ? (cooling ? 1 : 2) : (cooling ? 0 : 3)];
 }
 function arc(a0: number, a1: number){
@@ -80,14 +80,14 @@ function clockFace(now: Phase){
 function clockDetail(){
   return '<h4>How the Clock Reads</h4>' + facts([
     "Merrill Lynch’s Investment Clock (2004) splits the economy into four phases by two questions: is growth above or below its trend, and are prices rising or falling? Across its record, each phase had an asset that led: bonds in Reflation, stocks in Recovery, commodities in Overheat and cash in Stagflation. The clock usually turns Reflation, Recovery, Overheat, Stagflation, but it can skip a phase or turn back.",
-    "Today’s phase is read from the Season Model, over the same windows: growth by its regime, at or above its potential or below it, and prices by the direction of inflation. Prices holding steady count with rising, since the clock has no steady phase; that is Claude’s call.",
+    "Today’s phase is read from the Season Model, over the same windows: growth by its regime, at or above its potential or below it, and prices by the direction of inflation. Prices holding steady keep the prior direction, as in the Season Model.",
     "The clock names one asset for each phase, not a mix; a portfolio that follows it moves between them as the phases turn. This is a published method, not advice."
   ]) + srcBlock(CLOCK_SRC);
 }
 function drawClock(){
   var now = phaseOf(nowModel.reading);
   var rows = PHASES.map(function(p){ return auxStat({ label:p.name + (p === now ? " · today" : "") + '<small>Growth ' + p.growth + ', prices ' + p.prices + '</small>', value:p.holds, wordy:true }); }).join("");
-  methodPage(CLOCK_ID, say('Today reads ' + now.name + ': growth ' + now.growth + ' and prices ' + (now.prices === "rising" && nowModel.reading.cpiDirection === "steady" ? "holding steady" : now.prices) + '. In this phase the clock holds ' + now.holds.toLowerCase() + '.') +
+  methodPage(CLOCK_ID, say('Today reads ' + now.name + ': growth ' + now.growth + ' and prices ' + (nowModel.reading.cpiDirection === "steady" ? "holding steady, still " + now.prices : now.prices) + '. In this phase the clock holds ' + now.holds.toLowerCase() + '.') +
     clockFace(now) + rows, clockDetail());
 }
 function homeHtml(){
