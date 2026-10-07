@@ -334,11 +334,11 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });
 
-test('Variation is the spread of the six cycles before each one, read on the open cycle too, and left to Cycle Statistics rather than Indicators', () => {
-  const L = marketCycles.filter(c => !c.ongoing).map(c => c.to - c.from + 1);
-  const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity'), six = L.slice(-6);
-  assert.equal(reg.per[open], Math.max(...six) - Math.min(...six));
-  assert.equal(reg.per[5], null);
-  assert.notEqual(reg.per[6], null);
+test('Variation is how far a cycle ran from the average length, an open cycle only once it runs past it, and left to Cycle Statistics rather than Indicators', () => {
+  const L = marketCycles.filter(c => !c.ongoing).map(c => c.to - c.from + 1), mean = L.reduce((a, b) => a + b, 0) / L.length;
+  const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity'), sd = Math.sqrt(L.reduce((a, v) => a + (v - mean) ** 2, 0) / (L.length - 1));
+  assert.equal(reg.per[0], Math.abs(L[0] - mean));
+  assert.equal(reg.per[open], Math.max(0, reg.per[open] && labs().find(l => l.id === 'length').per[open] - mean));
+  assert.equal(reg.norm.fence, 2 * sd);
   assert.equal(document.querySelector('#sheet-find .cat-cycle, #sheet-find [data-ind-cat="cycle"]'), null);
 });

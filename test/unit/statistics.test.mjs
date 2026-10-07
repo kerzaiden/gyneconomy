@@ -54,17 +54,16 @@ test('Temperature’s Normal is the Season Model’s 1–3% band, its Risk the f
   assert.equal(tier, v >= 1 && v <= 3 ? 'optimal' : v > l.now.fence || v < l.now.floor ? 'abnormal' : 'borderline');
 });
 
-test('Cycle Statistics averages the six cycles before the one it shows: length, variation and period flow', () => {
+test('Cycle Statistics shows the averages of every closed cycle, and the cycle shown beside them', () => {
   const shown = name => {
     const d = document.createElement('button'); d.setAttribute('data-chart-cycle', name); document.body.appendChild(d); d.click(); d.remove();
-    return [...document.querySelectorAll('#chart-home .lab-score-box ~ .stat-row b')].map(b => b.textContent);
+    return [...document.querySelectorAll('#chart-home .lab-score-box ~ .stat-row')].map(b => [b.querySelector('b').textContent, (b.querySelector('.stat-side') || {}).textContent]);
   };
-  const mean = (id, k) => lab(id).per.slice(k - 6, k).reduce((a, b) => a + b, 0) / 6;
-  const dotCom = marketCycles.find(c => /Dot-Com/.test(c.name)), k = marketCycles.indexOf(dotCom);
-  assert.deepEqual(shown(dotCom.name), [mean('length', k), lab('regularity').per[k], mean('bleed', k)].map(v => yearsWord(v) + ' years'));
-  assert.equal(shown(marketCycles[5].name).length, 0);
-  assert.equal(shown(marketCycles[open].name)[0], yearsWord(mean('length', open)) + ' years');
-  assert.match(document.querySelector('#chart-home .stat-note').textContent, /last six market cycles/);
-  assert.match(document.querySelector('#chart-home .lab-score-box ~ button.stat-row .stat-side').textContent, /^(Typical|Atypical)$/);
+  const closed = marketCycles.filter(c => !c.ongoing), mean = id => lab(id).per.slice(0, closed.length).reduce((a, b) => a + b, 0) / closed.length;
+  const dotCom = marketCycles.find(c => /Dot-Com/.test(c.name)), k = marketCycles.indexOf(dotCom), rows = shown(dotCom.name);
+  assert.deepEqual(rows.map(r => r[0]), [yearsWord(mean('length')) + ' years', '±' + yearsWord(lab('regularity').norm.hi) + ' years', yearsWord(mean('bleed')) + ' years']);
+  assert.equal(rows[0][1], yearsWord(lab('length').per[k]) + ' yrs');
+  assert.deepEqual(shown(marketCycles[open].name).map(r => r[0]), rows.map(r => r[0]));
+  assert.match(document.querySelector('#chart-home .stat-note').textContent, /^Averages are based on 18 closed market cycles since 1928\.$/);
   assert.match(document.querySelector('#chart-home .lab-score-box .stat-side').textContent, /^(Normal|Attention|Risk)$/);
 });

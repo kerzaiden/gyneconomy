@@ -592,12 +592,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The cycle results' drawer is titled Regularity, after FIGO's two measures of a regular cycle, length and
   variation; it holds Length, Variation, Bull years and Period flow.** Keren: "I would think that the title would be
   regularity and length would be the parameters that we're looking in terms of regular cycles." (0.8.3, Oct 6, 2026)
-- **Variation (named Regularity until the drawer took that name) is a cycle result: the spread from the shortest to the longest of the six cycles before it.** FIGO
-  measures how regular cycles are by the gap between the shortest and the longest (Munro, Critchley and Fraser,
-  2018). FIGO looks over a year of cycles; hers last years. Six is Keren's choice, as Clue averages over the last six
-  (0.8.12): "the market is not regular, like a female body. So maybe we should have a larger margin of safety." The
-  app's text names FIGO only. It was three until 0.8.12. Lower
-  is its good side, and its range is the middle
+- **Variation (named Regularity until the drawer took that name) is the standard deviation of her closed cycles'
+  lengths; a cycle's own result is how far its length ran from the average, Typical within twice the deviation.**
+  Keren chose it over FIGO's spread (0.8.12): across all 18 cycles the spread is 10 years, one long cycle stretching it
+  over a century, while 5¼ ± 2¾ years matches the four to eight years analysts quote. An open cycle counts only once
+  it runs past the average. Until 0.8.12 it was FIGO's spread of the three, then six, cycles before each one. Lower is
+  its good side, and its range is the middle
   half of all her closed cycles, like every other result. It is the one cycle result
   read on the open cycle, since the three cycles before it have closed. Keren: "I think we should show track
   regularity." (0.8.3, Oct 5, 2026)
@@ -613,22 +613,20 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   flow"). (0.8.3, Oct 6, 2026)
 - **Cycle Statistics holds three cards, Cycle length, Cycle variation and Period flow, each a ring and a figure in
   years; the first two carry a dividing line, aligned across both, and open a page explaining their figure.** Each
-  card averages the six cycles before the cycle shown, as Clue averages the last six, and a line under the title says
-  so: "Averages are based on the last six market cycles." Keren (0.8.12): "cycle length should be the average cycle
-  length based on the last six market cycles. Same goes for cycle variation, same goes for average period length",
-  because "the market is not regular, like a female body." The normal range each average is judged by still comes
-  from all her closed cycles since 1928. This overturns 0.8.3's all-cycles average ("I don't like the arbitrary 6
-  cycles"). Cycle length's page draws every cycle as a bar, Typical or Atypical. Cycle variation is FIGO's measure,
-  the gap between the shortest and longest of the six cycles before it, the same number as the Variation result (one
-  figure, one number), so it reads her recent cycles (Keren: "maybe we should regard more recent cycles"). Period
+  card is the average of every closed cycle since 1928, and a line under the title says so: "Averages are based on 18
+  closed market cycles since 1928." Keren (0.8.12), after trying the last six as Clue does: "the majority of analysts
+  and economists would say that the average market cycle runs between four and eight years. So I don't want to be the
+  outlier … I guess we should base all our averages on … 18 market cycles." The line speaks of market cycles, not
+  "her": "users would not understand because they need the book as a guide." Cycle length's page draws every cycle as a bar, Typical or Atypical. Cycle variation is the
+  standard deviation (above), the same number as the Variation result's range (one figure, one number). Period
   flow's ring is red and has no page. Keren: "they have like a dividing line … I want the dividing line to align
   between cycle length and cycle variation … to look like basically the same component." (0.8.3, Oct 6, 2026)
-- **Cycle Statistics follows the cycle shown, the open one or a past one: its cards average the six cycles before it,
-  and a cycle with fewer than six before it shows only its Health Score.** Each card's side says Typical or Atypical
-  and opens a page with the six-cycle figure, her typical range, the cycle's own length and every cycle as a bar, the
-  six and the cycle shown in bold. "More info" is gone. The variation page says what the figure tells: how steady her
-  rhythm is. Keren first asked for the cycle's own figures ("I think we need to see the current cycle statistics"),
-  then for the six-cycle averages (above). (0.8.12, Oct 7, 2026)
+- **Beside each average, Cycle Statistics shows the cycle on screen, the open one or a past one: its length (3¾ yrs)
+  and how far it ran from the average (−1½ yrs), each with a green or red tick for Typical or Atypical.** Each card
+  opens a page saying so in a line or two, with every cycle as a bar and the one shown in bold. "More info" is gone.
+  The Health Score counts the cycle's length and variation as Normal when Typical, Risk when not; an open cycle's
+  length is Typical until it passes the fence. Keren: "I think we need to see the current cycle statistics", and "a
+  health score should incorporate if the cycle length is typical and cycle variation is typical." (0.8.12, Oct 7, 2026)
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
   against.** Keren: "put the health score inside cycle statistics, but keep it white with a gray border", "other
@@ -638,7 +636,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Instead of interest environment, write interest rates environment because most people recognize interest
   rates." (0.8.12, Oct 7, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
-  adds that the verdict is relative to her own past cycles.** Typical is within Tukey's fences of her closed cycles,
+  adds that the verdict is relative to the market's own past cycles.** Typical is within Tukey's fences of her closed cycles,
   the app's outlier rule; a page says how in a line or two, because the model is new. Keren (0.8.3): "typical is the
   right word … because normal is something that we use for parameters", and "we should explain how it's calculated
   … in a line or two." On Oct 7, 2026 she tried Normal/Abnormal and went back within the hour: "I don't like the
