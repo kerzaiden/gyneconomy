@@ -618,14 +618,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   length based on the last six market cycles. Same goes for cycle variation, same goes for average period length",
   because "the market is not regular, like a female body." The normal range each average is judged by still comes
   from all her closed cycles since 1928. This overturns 0.8.3's all-cycles average ("I don't like the arbitrary 6
-  cycles"). Cycle length's page draws every cycle as a bar, Normal or Abnormal. Cycle variation is FIGO's measure,
+  cycles"). Cycle length's page draws every cycle as a bar, Typical or Atypical. Cycle variation is FIGO's measure,
   the gap between the shortest and longest of the six cycles before it, the same number as the Variation result (one
   figure, one number), so it reads her recent cycles (Keren: "maybe we should regard more recent cycles"). Period
   flow's ring is red and has no page. Keren: "they have like a dividing line … I want the dividing line to align
   between cycle length and cycle variation … to look like basically the same component." (0.8.3, Oct 6, 2026)
 - **Cycle Statistics follows the cycle shown, the open one or a past one: its cards average the six cycles before it,
-  and a cycle with fewer than six before it shows only its Health Score.** Each card's side says Normal or Abnormal
-  and opens a page with the six-cycle figure, her normal range, the cycle's own length and every cycle as a bar, the
+  and a cycle with fewer than six before it shows only its Health Score.** Each card's side says Typical or Atypical
+  and opens a page with the six-cycle figure, her typical range, the cycle's own length and every cycle as a bar, the
   six and the cycle shown in bold. "More info" is gone. The variation page says what the figure tells: how steady her
   rhythm is. Keren first asked for the cycle's own figures ("I think we need to see the current cycle statistics"),
   then for the six-cycle averages (above). (0.8.12, Oct 7, 2026)
@@ -637,11 +637,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The interest-rate container is titled Interest Rates Environment, on the cycle pages and on Analysis.** Keren:
   "Instead of interest environment, write interest rates environment because most people recognize interest
   rates." (0.8.12, Oct 7, 2026)
-- **Cycle Statistics says Normal or Abnormal, like the readings; every page that says so adds that Normal is relative
-  to her own past cycles.** Normal is within Tukey's fences of her closed cycles, the app's outlier rule; a page says
-  how in a line or two. Keren: "let's not use the word typical. Let's use the word normal because nothing is typical
-  in the economy", and "briefly explain that normal is subjective or relative to her own past cycles." Overturns
-  Typical/Atypical (0.8.3). (0.8.12, Oct 7, 2026)
+- **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
+  adds that the verdict is relative to her own past cycles.** Typical is within Tukey's fences of her closed cycles,
+  the app's outlier rule; a page says how in a line or two, because the model is new. Keren (0.8.3): "typical is the
+  right word … because normal is something that we use for parameters", and "we should explain how it's calculated
+  … in a line or two." On Oct 7, 2026 she tried Normal/Abnormal and went back within the hour: "I don't like the
+  words normal and abnormal. Use typical and atypical." The relative line is hers: "briefly explain that normal is
+  subjective or relative to her own past cycles." (0.8.12, Oct 7, 2026)
 - **Insights lists only the categories; each opens one Indicators page on that category, where every reading is
   searched, filtered by tier and cycle, and switched between categories by a bar (All, Regularity, Weather, Mood,
   Circulation, Energy).** The search box on Analysis opens the same page on All. Keren: "put only the categories

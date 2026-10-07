@@ -65,6 +65,6 @@ test('Cycle Statistics averages the six cycles before the one it shows: length, 
   assert.equal(shown(marketCycles[5].name).length, 0);
   assert.equal(shown(marketCycles[open].name)[0], yearsWord(mean('length', open)) + ' years');
   assert.match(document.querySelector('#chart-home .stat-note').textContent, /last six market cycles/);
-  assert.match(document.querySelector('#chart-home .lab-score-box ~ button.stat-row .stat-side').textContent, /^(Normal|Abnormal)$/);
+  assert.match(document.querySelector('#chart-home .lab-score-box ~ button.stat-row .stat-side').textContent, /^(Typical|Atypical)$/);
   assert.match(document.querySelector('#chart-home .lab-score-box .stat-side').textContent, /^(Normal|Attention|Risk)$/);
 });
