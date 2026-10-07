@@ -902,7 +902,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
   spread, went with it. Keren: "use appetite as the keyword". (V709)
-- **Concentration risk is a Desire reading: the largest tenth of US stocks' share of the market's value, monthly
+- **Concentration risk is a Desire reading: the largest tenth of US stocks' share of market cap, monthly
   from July 1926, against the record's own average.** Keren: "Of course, concentration risk is under desire." The
   measure is computed from Kenneth French's size portfolios (NYSE breakpoints: each decile's number of firms times
   its average size), the only free primary record that reaches back through 1929, the Nifty Fifty and 2000. The

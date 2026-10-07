@@ -44973,7 +44973,7 @@
       id: "sheet-sign-concentration",
       term: "Concentration",
       econ: "Concentration",
-      unit: "of market value",
+      unit: "of market cap",
       series: concentrationHistory,
       mid: CONCENTRATION_MEAN,
       line: concentrationSpan() + " average",
@@ -44989,7 +44989,7 @@
       },
       word: concentrationWord,
       src: CONCENTRATION_SRC,
-      about: "The share of the whole US stock market’s value held by its largest tenth of companies, sized against the New York Stock Exchange, from Kenneth French’s size portfolios: each tenth’s number of firms times its average size. When a few giants carry the market, its fortunes ride on theirs: the concentration risk.",
+      about: "The share of the whole US stock market’s capitalization (market cap: shares times price) held by its largest tenth of companies, sized against the New York Stock Exchange, from Kenneth French’s size portfolios: each tenth’s number of firms times its average size. When a few giants carry the market, its fortunes ride on theirs: the concentration risk.",
       band: "<b>The line is the record’s own average</b>, every month from " + concentrationSpan() + ". No convention sets a band for concentration, so the line is derived from the record and no other is drawn.",
       lede: "How much of the market’s value rests on its biggest companies. The higher it runs, the more the whole market leans on a few names."
     } ];
@@ -48202,13 +48202,13 @@
       timing: "structural",
       door: "row",
       term: "Concentration",
-      head: "Largest Tenth of US Stocks, Share of Market Value",
+      head: "Largest Tenth of US Stocks, Share of Market Cap",
       hist: {
         s: concentrationHistory,
         k: "m"
       },
       mid: CONCENTRATION_MEAN,
-      cardUnit: "of market value"
+      cardUnit: "of market cap"
     }, {
       id: "sheet-sign-premium",
       name: "Equity risk premium",

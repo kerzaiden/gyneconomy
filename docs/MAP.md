@@ -8,7 +8,7 @@ read it whole, so this file exists to get you to the right two hundred lines.
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `a2a3a51` on 2026-10-07.
+Generated from commit `38b1eff` on 2026-10-07.
 
 ## The page
 
@@ -954,7 +954,7 @@ falls in. **export** marks a name other modules import.
 
 ### `js/concentration.ts`
 
-#### Concentration: the largest tenth of US stocks' share of the market's value
+#### Concentration: the largest tenth of US stocks' share of market cap
 
 | Line | Name | Anchor |
 |---|---|---|

@@ -1,6 +1,6 @@
 import { concentrationHistory } from "./history-fred.ts";
 
-// ---- Concentration: the largest tenth of US stocks' share of the market's value ----
+// ---- Concentration: the largest tenth of US stocks' share of market cap ----
 export var CONCENTRATION_TO = 2025;
 export var CONCENTRATION_MEAN: number;
 export var CONCENTRATION_SRC: Src[] = [
@@ -18,10 +18,10 @@ function concentrationWord(v: number): CreditWord {
 export function concentrationSpecs(): CreditSpec[] {
   var closed = concentrationHistory.filter(function(d){ return +d.m.slice(0, 4) <= CONCENTRATION_TO; });
   CONCENTRATION_MEAN = Math.round(closed.reduce(function(a, d){ return a + d.v; }, 0) / closed.length * 10) / 10;
-  return [{ id:"sheet-sign-concentration", term:"Concentration", econ:"Concentration", unit:"of market value", series:concentrationHistory,
+  return [{ id:"sheet-sign-concentration", term:"Concentration", econ:"Concentration", unit:"of market cap", series:concentrationHistory,
     mid:CONCENTRATION_MEAN, line:concentrationSpan() + " average", optimal:{ lte:CONCENTRATION_MEAN, label:"≤ " + CONCENTRATION_MEAN.toFixed(1) + "%" },
     ends:{ high:"Concentrated" }, fmt:function(v){ return v.toFixed(1) + "%"; }, word:concentrationWord, src:CONCENTRATION_SRC,
-    about:"The share of the whole US stock market’s value held by its largest tenth of companies, sized against the New York Stock Exchange, " +
+    about:"The share of the whole US stock market’s capitalization (market cap: shares times price) held by its largest tenth of companies, sized against the New York Stock Exchange, " +
       "from Kenneth French’s size portfolios: each tenth’s number of firms times its average size. When a few giants carry the market, " +
       "its fortunes ride on theirs: the concentration risk.",
     band:"<b>The line is the record’s own average</b>, every month from " + concentrationSpan() + ". No convention sets a band for concentration, " +
