@@ -26,10 +26,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
-- **There are four categories: Weather, Mood, Circulation and Stress. The work readings are Weather's subcategory Activity;
+- **There are five categories: Weather, Mood, Desire, Circulation and Stress. The work readings are Weather's subcategory Activity;
   Stress holds two subcategories, Credit and Debt, and its mark is the lightning bolt.** Keren: "stress should have its own
   category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3); "Under stress category, put credit
-  and debt" (0.9.4).
+  and debt" (0.9.4). Desire left Mood to be its own category, after Mood, with two subcategories, Demand (Discretionary
+  spending, Retail sales) and Risk (Concentration, Equity risk premium). Keren: "desire should be its own category";
+  "the subcategories … would be risk and demand" (0.9.8). Its mark is the flame and its colour the red of `--bleed-mid`;
+  Demand wears a shopping bag and Risk a die: Claude's picks, for Keren to change.
   Keren: "we don't need a category named activity. I think it's a subcategory under weather … economy, market, work", then "instead of work, write activity"
   (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3; Credit followed in 0.9.4.
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
@@ -684,7 +687,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations, Sentiment (Confidence, Fear) and Desire (Discretionary spending, Retail sales, Concentration, Equity risk premium); Circulation: Pressure (Federal funds rate,
+  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Concentration, Equity risk premium); Circulation: Pressure (Federal funds rate,
   US 10-year Treasury), Money (Pulse, Volume); Stress: Credit (Credit gap, Margin debt, Lending standards) and Debt. There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and

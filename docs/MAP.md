@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,046 lines** in 38 files, about 611 KB, roughly **173 thousand tokens**. No session can
+The source is **9,054 lines** in 38 files, about 611 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `38b1eff` on 2026-10-07.
+Generated from commit `efa831a` on 2026-10-07.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `38b1eff` on 2026-10-07.
 | `js/main.ts` | 34 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **34** modules, **718** top-level functions, **123** top-level vars, **353** exported names, **20** boots.
+Counts: **34** modules, **720** top-level functions, **123** top-level vars, **355** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -37,7 +37,7 @@ Counts: **34** modules, **718** top-level functions, **123** top-level vars, **3
 | `js/model.ts` | 382 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 802 | 69 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 145 | 5 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
+| `js/roster.ts` | 146 | 5 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 500 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 417 | 10 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.ts` | 88 | 13 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
@@ -61,7 +61,7 @@ Counts: **34** modules, **718** top-level functions, **123** top-level vars, **3
 | `js/indicators.ts` | 227 | 33 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 182 | 17 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
-| `js/marks.ts` | 50 | 23 | — |
+| `js/marks.ts` | 57 | 25 | — |
 | `js/main.ts` | 44 | 0 | `analysis`, `credit`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
 
 ## The boots
@@ -82,7 +82,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 8 | `bootHistory` | `js/history.ts:452`–475 |
 | 9 | `bootReadings` | `js/readings.ts:625`–693 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:736`–801 |
-| 11 | `bootRoster` | `js/roster.ts:132`–144 |
+| 11 | `bootRoster` | `js/roster.ts:133`–145 |
 | 12 | `bootRenderCore` | `js/render-core.ts:490`–499 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:401`–416 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:84`–87 |
@@ -541,11 +541,11 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 36 | `keyed` · export | `function keyed(` |
-| 42 | `rosterFor` · export | `function rosterFor(` |
-| 43 | `checkRoster` | `function checkRoster(` |
-| 61 | `categoriesShown` · export | `function categoriesShown(` |
-| 65 | `declareRoster` | `function declareRoster(` |
+| 37 | `keyed` · export | `function keyed(` |
+| 43 | `rosterFor` · export | `function rosterFor(` |
+| 44 | `checkRoster` | `function checkRoster(` |
+| 62 | `categoriesShown` · export | `function categoriesShown(` |
+| 66 | `declareRoster` | `function declareRoster(` |
 
 ### `js/render-core.ts`
 
@@ -1339,21 +1339,23 @@ falls in. **export** marks a name other modules import.
 | 13 | `markSvg` | `function markSvg(` |
 | 16 | `orbitSvg` · export | `function orbitSvg(` |
 | 17 | `flameSvg` · export | `function flameSvg(` |
-| 20 | `clockSvg` · export | `function clockSvg(` |
-| 21 | `thermoSvg` · export | `function thermoSvg(` |
-| 24 | `personSvg` · export | `function personSvg(` |
-| 26 | `calendarSvg` · export | `function calendarSvg(` |
-| 27 | `sparkleSvg` · export | `function sparkleSvg(` |
-| 29 | `umbrellaSvg` · export | `function umbrellaSvg(` |
-| 31 | `slidersSvg` · export | `function slidersSvg(` |
-| 33 | `chartSvg` · export | `function chartSvg(` |
-| 35 | `ecgSvg` · export | `function ecgSvg(` |
-| 37 | `weatherSvg` · export | `function weatherSvg(` |
-| 39 | `moodSvg` · export | `function moodSvg(` |
-| 40 | `circulationSvg` · export | `function circulationSvg(` |
-| 41 | `boltSvg` · export | `function boltSvg(` |
-| 42 | `marketSvg` · export | `function marketSvg(` |
-| 45 | `volatilitySvg` · export | `function volatilitySvg(` |
+| 20 | `bagSvg` · export | `function bagSvg(` |
+| 23 | `diceSvg` · export | `function diceSvg(` |
+| 27 | `clockSvg` · export | `function clockSvg(` |
+| 28 | `thermoSvg` · export | `function thermoSvg(` |
+| 31 | `personSvg` · export | `function personSvg(` |
+| 33 | `calendarSvg` · export | `function calendarSvg(` |
+| 34 | `sparkleSvg` · export | `function sparkleSvg(` |
+| 36 | `umbrellaSvg` · export | `function umbrellaSvg(` |
+| 38 | `slidersSvg` · export | `function slidersSvg(` |
+| 40 | `chartSvg` · export | `function chartSvg(` |
+| 42 | `ecgSvg` · export | `function ecgSvg(` |
+| 44 | `weatherSvg` · export | `function weatherSvg(` |
+| 46 | `moodSvg` · export | `function moodSvg(` |
+| 47 | `circulationSvg` · export | `function circulationSvg(` |
+| 48 | `boltSvg` · export | `function boltSvg(` |
+| 49 | `marketSvg` · export | `function marketSvg(` |
+| 52 | `volatilitySvg` · export | `function volatilitySvg(` |
 
 ## Registries — the lookup tables that route behaviour
 

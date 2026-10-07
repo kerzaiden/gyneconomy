@@ -17,6 +17,13 @@ export function orbitSvg(){ return markSvg('<path d="M9.51 19.81A8.2 8.2 0 0 0 1
 export function flameSvg(){ return markSvg(
   '<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' +
   '<path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>'); }
+export function bagSvg(){ return markSvg(
+  '<path d="M5.6 8.4h12.8l-1 11.2H6.6z" stroke-width="1.9"/>' +
+  '<path d="M9.2 8.4V7a2.8 2.8 0 0 1 5.6 0v1.4" stroke-width="1.8"/>'); }
+export function diceSvg(){ return markSvg(
+  '<rect x="4" y="4" width="16" height="16" rx="3.6" stroke-width="1.8"/>' +
+  '<circle cx="8.6" cy="8.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none"/>' +
+  '<circle cx="15.4" cy="15.4" r="1.25" fill="currentColor" stroke="none"/>'); }
 export function clockSvg(){ return markSvg('<circle cx="12" cy="12" r="8.4" stroke-width="1.8"/><path d="M12 7.4V12l3.1 2.1" stroke-width="1.8"/>'); }
 export function thermoSvg(){ return markSvg(
   '<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' +
