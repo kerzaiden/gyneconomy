@@ -10,7 +10,7 @@ import { calendarTodayY, DATA_COMPILED } from "./refresh-season.ts";
 import { currentSeason, cycLabel, cycleByName, cycleModel, cycleOfYear, nowModel, openCycle, seasonGroup, seasonOfQ } from "./model.ts";
 import { fedEnvironment } from "./fed-phases.ts";
 import { catInsight } from "./insights.ts";
-import { categoriesShown, GROUP_MARK, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
+import { categoriesShown, keyed, ROSTER, ROSTER_BY, SUB_MARK } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
@@ -183,7 +183,7 @@ function labSec(k: string, ls: Lab[], at: At){
   return foldSec(k, title, '<button type="button" class="lab-cat" data-ind-cat="' + k + '">' + name + '</button>', ls, at);
 }
 function subSec(k: string, sub: string, ls: Lab[], at: At){
-  return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub), ls, at);
+  return foldSec(k, sub, markName(SUB_MARK[sub], sub), ls, at);
 }
 function bySub(k: string, ls: Lab[], at: At){
   var subs: string[] = [];

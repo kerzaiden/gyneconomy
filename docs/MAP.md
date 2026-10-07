@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,971 lines** in 36 files, about 605 KB, roughly **172 thousand tokens**. No session can
+The source is **8,966 lines** in 36 files, about 603 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `012a959` on 2026-10-07.
+Generated from commit `dd43b10` on 2026-10-07.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `012a959` on 2026-10-07.
 | `js/main.ts` | 32 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **32** modules, **716** top-level functions, **121** top-level vars, **356** exported names, **20** boots.
+Counts: **32** modules, **713** top-level functions, **121** top-level vars, **349** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -35,9 +35,9 @@ Counts: **32** modules, **716** top-level functions, **121** top-level vars, **3
 | `js/data.ts` | 571 | 81 | `format`, `history-fred`, `live` |
 | `js/credit.ts` | 138 | 11 | `charts`, `format`, `history-fred` |
 | `js/model.ts` | 382 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
-| `js/history.ts` | 463 | 42 | `charts`, `data`, `dom`, `format`, `live`, `model` |
+| `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 802 | 69 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 133 | 5 | `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
+| `js/roster.ts` | 136 | 5 | `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 500 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 417 | 10 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.ts` | 88 | 13 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
@@ -59,7 +59,7 @@ Counts: **32** modules, **716** top-level functions, **121** top-level vars, **3
 | `js/indicators.ts` | 227 | 33 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 182 | 17 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
-| `js/marks.ts` | 71 | 30 | — |
+| `js/marks.ts` | 50 | 23 | — |
 | `js/main.ts` | 44 | 0 | `analysis`, `credit`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
 
 ## The boots
@@ -77,10 +77,10 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 5 | `bootData` | `js/data.ts:519`–570 |
 | 6 | `bootCredit` | `js/credit.ts:130`–137 |
 | 7 | `bootModel` | `js/model.ts:357`–381 |
-| 8 | `bootHistory` | `js/history.ts:439`–462 |
+| 8 | `bootHistory` | `js/history.ts:452`–475 |
 | 9 | `bootReadings` | `js/readings.ts:625`–693 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:736`–801 |
-| 11 | `bootRoster` | `js/roster.ts:120`–132 |
+| 11 | `bootRoster` | `js/roster.ts:123`–135 |
 | 12 | `bootRenderCore` | `js/render-core.ts:490`–499 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:401`–416 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:84`–87 |
@@ -409,44 +409,48 @@ falls in. **export** marks a name other modules import.
 | 24 | `DOTS` | `var DOTS =` |
 | 26 | `headPickRow` · export | `function headPickRow(` |
 | 32 | `histHead` · export | `function histHead(` |
-| 48 | `headMenuHtml` | `function headMenuHtml(` |
-| 75 | `paintHeadMenus` | `function paintHeadMenus(` |
-| 86 | `headMoreBtn` | `function headMoreBtn(` |
-| 90 | `headMenuFirst` | `function headMenuFirst(` |
-| 94 | `headMenuShut` | `function headMenuShut(` |
-| 99 | `histNote` · export | `function histNote(` |
-| 100 | `TIMELINE_STOPS` | `var TIMELINE_STOPS =` |
-| 106 | `timelineSpan` · export | `function timelineSpan(` |
-| 110 | `timelineFor` | `function timelineFor(` |
-| 124 | `windowScale` · export | `function windowScale(` |
-| 139 | `histReadEnsure` | `function histReadEnsure(` |
-| 159 | `geomFmt` | `function geomFmt(` |
-| 160 | `attrNum` | `function attrNum(` |
-| 161 | `histReadFill` | `function histReadFill(` |
-| 209 | `histAxisEnds` | `function histAxisEnds(` |
-| 220 | `histLegend` | `function histLegend(` |
-| 279 | `refitHistory` · export | `function refitHistory(` |
-| 289 | `wireHistHover` | `function wireHistHover(` |
-| 322 | `histShow` | `function histShow(` |
-| 331 | `histLive` | `function histLive(` |
-| 338 | `histKeysWire` | `function histKeysWire(` |
-| 352 | `mWindowFrom` · export | `function mWindowFrom(` |
-| 356 | `qWindowFrom` · export | `function qWindowFrom(` |
-| 360 | `defFrom` · export | `function defFrom(` |
-| 364 | `tabSegs` | `function tabSegs(` |
-| 372 | `tabBar` · export | `function tabBar(` |
-| 375 | `modeBar` | `function modeBar(` |
-| 379 | `controlKeys` · export | `function controlKeys(` |
-| 383 | `controlKeysIn` | `function controlKeysIn(` |
-| 389 | `histControls` · export | `function histControls(` |
-| 397 | `controlsBox` | `function controlsBox(` |
-| 398 | `pageCycle` · export | `function pageCycle(` |
-| 403 | `cyclePicker` | `function cyclePicker(` |
-| 415 | `pickRow` | `function pickRow(` |
-| 419 | `nameAside` | `function nameAside(` |
-| 420 | `rangeBar` | `function rangeBar(` |
-| 424 | `headSigma` · export | `function headSigma(` |
-| 429 | `attachHistory` · export | `function attachHistory(` |
+| 43 | `headDots` | `function headDots(` |
+| 48 | `headInfo` | `function headInfo(` |
+| 52 | `headBtn` | `function headBtn(` |
+| 55 | `headNote` | `function headNote(` |
+| 63 | `headMenuHtml` | `function headMenuHtml(` |
+| 88 | `paintHeadMenus` | `function paintHeadMenus(` |
+| 99 | `headMoreBtn` | `function headMoreBtn(` |
+| 103 | `headMenuFirst` | `function headMenuFirst(` |
+| 107 | `headMenuShut` | `function headMenuShut(` |
+| 112 | `histNote` · export | `function histNote(` |
+| 113 | `TIMELINE_STOPS` | `var TIMELINE_STOPS =` |
+| 119 | `timelineSpan` · export | `function timelineSpan(` |
+| 123 | `timelineFor` | `function timelineFor(` |
+| 137 | `windowScale` · export | `function windowScale(` |
+| 152 | `histReadEnsure` | `function histReadEnsure(` |
+| 172 | `geomFmt` | `function geomFmt(` |
+| 173 | `attrNum` | `function attrNum(` |
+| 174 | `histReadFill` | `function histReadFill(` |
+| 222 | `histAxisEnds` | `function histAxisEnds(` |
+| 233 | `histLegend` | `function histLegend(` |
+| 292 | `refitHistory` · export | `function refitHistory(` |
+| 302 | `wireHistHover` | `function wireHistHover(` |
+| 335 | `histShow` | `function histShow(` |
+| 344 | `histLive` | `function histLive(` |
+| 351 | `histKeysWire` | `function histKeysWire(` |
+| 365 | `mWindowFrom` · export | `function mWindowFrom(` |
+| 369 | `qWindowFrom` · export | `function qWindowFrom(` |
+| 373 | `defFrom` · export | `function defFrom(` |
+| 377 | `tabSegs` | `function tabSegs(` |
+| 385 | `tabBar` · export | `function tabBar(` |
+| 388 | `modeBar` | `function modeBar(` |
+| 392 | `controlKeys` · export | `function controlKeys(` |
+| 396 | `controlKeysIn` | `function controlKeysIn(` |
+| 402 | `histControls` · export | `function histControls(` |
+| 410 | `controlsBox` | `function controlsBox(` |
+| 411 | `pageCycle` · export | `function pageCycle(` |
+| 416 | `cyclePicker` | `function cyclePicker(` |
+| 428 | `pickRow` | `function pickRow(` |
+| 432 | `nameAside` | `function nameAside(` |
+| 433 | `rangeBar` | `function rangeBar(` |
+| 437 | `headSigma` · export | `function headSigma(` |
+| 442 | `attachHistory` · export | `function attachHistory(` |
 
 ### `js/readings.ts`
 
@@ -535,11 +539,11 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 31 | `keyed` · export | `function keyed(` |
-| 37 | `rosterFor` · export | `function rosterFor(` |
-| 38 | `checkRoster` | `function checkRoster(` |
-| 56 | `categoriesShown` · export | `function categoriesShown(` |
-| 60 | `declareRoster` | `function declareRoster(` |
+| 34 | `keyed` · export | `function keyed(` |
+| 40 | `rosterFor` · export | `function rosterFor(` |
+| 41 | `checkRoster` | `function checkRoster(` |
+| 59 | `categoriesShown` · export | `function categoriesShown(` |
+| 63 | `declareRoster` | `function declareRoster(` |
 
 ### `js/render-core.ts`
 
@@ -1306,34 +1310,27 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 1 | `debtSvg` · export | `function debtSvg(` |
 | 2 | `creditSvg` · export | `function creditSvg(` |
-| 3 | `lateSvg` · export | `function lateSvg(` |
-| 4 | `interestSvg` · export | `function interestSvg(` |
-| 6 | `budgetSvg` · export | `function budgetSvg(` |
-| 8 | `dropSvg` | `function dropSvg(` |
-| 10 | `gaugeSvg` · export | `function gaugeSvg(` |
-| 14 | `diamondSvg` · export | `function diamondSvg(` |
-| 18 | `sproutSvg` · export | `function sproutSvg(` |
-| 26 | `markSvg` | `function markSvg(` |
-| 29 | `orbitSvg` · export | `function orbitSvg(` |
-| 30 | `heartSvg` · export | `function heartSvg(` |
-| 32 | `flameSvg` · export | `function flameSvg(` |
-| 35 | `clockSvg` · export | `function clockSvg(` |
-| 36 | `thermoSvg` · export | `function thermoSvg(` |
-| 39 | `personSvg` · export | `function personSvg(` |
-| 41 | `calendarSvg` · export | `function calendarSvg(` |
-| 42 | `sparkleSvg` · export | `function sparkleSvg(` |
-| 44 | `umbrellaSvg` · export | `function umbrellaSvg(` |
-| 46 | `slidersSvg` · export | `function slidersSvg(` |
-| 48 | `chartSvg` · export | `function chartSvg(` |
-| 50 | `ecgSvg` · export | `function ecgSvg(` |
-| 52 | `weatherSvg` · export | `function weatherSvg(` |
-| 54 | `moodSvg` · export | `function moodSvg(` |
-| 55 | `circulationSvg` · export | `function circulationSvg(` |
-| 56 | `boltSvg` · export | `function boltSvg(` |
-| 57 | `houseSvg` · export | `function houseSvg(` |
-| 60 | `marketSvg` · export | `function marketSvg(` |
-| 63 | `bagSvg` · export | `function bagSvg(` |
-| 66 | `volatilitySvg` · export | `function volatilitySvg(` |
+| 3 | `dropSvg` | `function dropSvg(` |
+| 5 | `gaugeSvg` · export | `function gaugeSvg(` |
+| 9 | `diamondSvg` · export | `function diamondSvg(` |
+| 13 | `markSvg` | `function markSvg(` |
+| 16 | `orbitSvg` · export | `function orbitSvg(` |
+| 17 | `flameSvg` · export | `function flameSvg(` |
+| 20 | `clockSvg` · export | `function clockSvg(` |
+| 21 | `thermoSvg` · export | `function thermoSvg(` |
+| 24 | `personSvg` · export | `function personSvg(` |
+| 26 | `calendarSvg` · export | `function calendarSvg(` |
+| 27 | `sparkleSvg` · export | `function sparkleSvg(` |
+| 29 | `umbrellaSvg` · export | `function umbrellaSvg(` |
+| 31 | `slidersSvg` · export | `function slidersSvg(` |
+| 33 | `chartSvg` · export | `function chartSvg(` |
+| 35 | `ecgSvg` · export | `function ecgSvg(` |
+| 37 | `weatherSvg` · export | `function weatherSvg(` |
+| 39 | `moodSvg` · export | `function moodSvg(` |
+| 40 | `circulationSvg` · export | `function circulationSvg(` |
+| 41 | `boltSvg` · export | `function boltSvg(` |
+| 42 | `marketSvg` · export | `function marketSvg(` |
+| 45 | `volatilitySvg` · export | `function volatilitySvg(` |
 
 ## Registries — the lookup tables that route behaviour
 

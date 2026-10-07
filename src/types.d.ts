@@ -107,7 +107,6 @@ type RosterRow = {
   cat: string;
   good?: "up" | "down";
   timing: RosterTiming;
-  mark: () => string;
   door: "peek" | "row" | "subject" | "pair" | "split";
   head: string;
   hist: HistSpec;

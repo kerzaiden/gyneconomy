@@ -744,7 +744,6 @@
     justify-content:center; color:var(--text-secondary);
     background:color-mix(in srgb, var(--text-primary) 8%, var(--surface)); }
   .bh-mark svg{ width:13px; height:13px; }
-  .metric-sheet[class*=" cat-"] .bh-mark{ color:var(--cat); }
   .bh-mark svg path, .bh-mark svg circle, .bh-mark svg rect, .bh-mark svg line{ stroke-width:1.35; }
   .bh-title, .spread-history-head h4{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface);
     font-weight:600; letter-spacing:-0.01em; color:var(--text-primary); }
@@ -756,6 +755,7 @@
     border:1px solid var(--border); background:none;
     color:var(--text-muted); display:flex; align-items:center; justify-content:center; }
   .bh-more svg{ width:13px; height:13px; }
+  .bh-info{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-meta); line-height:1; }
   .bh-more:hover{ color:var(--text-primary); border-color:var(--border-strong); }
   .bh-menu{ min-width:0; }
   .bh-sep{ height:1px; background:var(--border); margin:4px 6px; }
@@ -1372,7 +1372,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.5 (776)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.6 (777)</span></p>
     </div>
   </div>
 
@@ -1402,7 +1402,7 @@
 
       <h3 class="menu-section">Temperature and Growth</h3>
       <div class="menu-card menu-prose">
-        <p><b>Temperature</b> is a line through the months of the cycle — inflation, year over year (PCE since 2000) — red where it runs above the band, teal inside it, blue below, with the 2% target drawn through it. Tap either chart to read a month on both at once; tap again, or anywhere else, to dismiss.</p>
+        <p><b>Temperature</b> is a line through the months of the cycle — inflation, YoY (PCE since 2000) — red where it runs above the band, teal inside it, blue below, with the 2% target drawn through it. Tap either chart to read a month on both at once; tap again, or anywhere else, to dismiss.</p>
         <p><b>Growth</b> sits directly beneath on the same axis: a line through the quarters of real GDP growth, teal above zero and red below, the dashed line its average over the closed years; its columns are gold where growth was at or above the economy's potential and periwinkle where it was below — the reading the season’s growth side comes from.</p>
       </div>
 
@@ -37843,7 +37843,27 @@
     var H = page.head[id];
     if (!H) return "";
     var t = typeof H.title === "function" ? H.title() : H.title;
-    return '<div class="band-head">' + (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + "</span>" : "") + '<h2 class="bh-title">' + titleCase(t) + '</h2><span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span><div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart">' + DOTS + '</button><div class="cycsel-menu bh-menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div></div></div>";
+    return '<div class="band-head">' + (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + "</span>" : "") + '<h2 class="bh-title">' + titleCase(t) + '</h2><span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span><div class="bh-more-wrap">' + (H.menu ? headDots(id) : headInfo(id)) + "</div></div>";
+  }
+  function headDots(id) {
+    return headBtn("", 'data-head-more="' + id + '" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart"', DOTS) + '<div class="cycsel-menu bh-menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div>";
+  }
+  function headInfo(id) {
+    var i = headNote(id);
+    return i == null ? "" : headBtn(" bh-info bh-opt", 'data-detail-idx="' + i + '" aria-label="About this reading"', "i");
+  }
+  function headBtn(cls, attrs, inner) {
+    return '<button type="button" class="bh-more' + cls + '" ' + attrs + ">" + inner + "</button>";
+  }
+  function headNote(id) {
+    var note = typeof HIST_NOTE[id] === "function" ? HIST_NOTE[id]() : HIST_NOTE[id];
+    if (!note) return null;
+    if (headNoteIdx[id] == null) {
+      headNoteIdx[id] = detailTexts.length;
+      detailTexts.push("");
+    }
+    detailTexts[headNoteIdx[id]] = note;
+    return headNoteIdx[id];
   }
   var headNoteIdx = {};
   function headMenuHtml(id) {
@@ -37862,14 +37882,9 @@
     } else extra = groups.map(function(x) {
       return '<button type="button" class="cycsel-opt bh-grp-row" data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + '</span><span class="cycsel-yr">' + (x.on ? x.value : "") + "</span>" + CHEV + "</button>";
     }).join("") + '<div class="bh-sep"></div>';
-    var note = typeof HIST_NOTE[id] === "function" ? HIST_NOTE[id]() : HIST_NOTE[id];
-    if (!note) return extra;
-    if (headNoteIdx[id] == null) {
-      headNoteIdx[id] = detailTexts.length;
-      detailTexts.push("");
-    }
-    detailTexts[headNoteIdx[id]] = note;
-    return extra + '<button type="button" class="cycsel-opt bh-opt" data-detail-idx="' + headNoteIdx[id] + '"><span class="cycsel-nm">About this reading</span></button>';
+    var i = headNote(id);
+    if (i == null) return extra;
+    return extra + '<button type="button" class="cycsel-opt bh-opt" data-detail-idx="' + i + '"><span class="cycsel-nm">About this reading</span></button>';
   }
   var headMenuFor = null;
   var headSubFor = null;
@@ -38508,7 +38523,7 @@
     },
     tag: null,
     metric: "+5.7%",
-    metricSub: "M2, year over year, Aug 2026",
+    metricSub: "M2, YoY, Aug 2026",
     meter: {
       min: -4.64,
       max: 25.61,
@@ -38525,7 +38540,7 @@
       }
     },
     shortCaption: "Growing at her ordinary pace again, after the largest transfusion in the record and the only drain.",
-    caption: "How much blood there is — the other half of the number Pulse measures. Nominal output is the money stock times its velocity, so Volume and Pulse are two halves of one reading and neither means much alone: a racing pulse on full volume is exercise, and the same pulse on falling volume is shock. Her volume grew 40% in the twenty-six months to April 2022, the largest transfusion in the record, while velocity fell to its all-time low — which is why prices stayed quiet far longer than the money alone implied, and why the fever arrived only when circulation picked up on top of the enlarged stock. Then the volume itself was drained: five quarters of year-over-year contraction from 2023 Q1, the only ones in sixty-seven years. Range: +25.6% (2021 Q1) to −4.6% (2023 Q2), against a 1960–2019 pace of 6.8%.",
+    caption: "How much blood there is — the other half of the number Pulse measures. Nominal output is the money stock times its velocity, so Volume and Pulse are two halves of one reading and neither means much alone: a racing pulse on full volume is exercise, and the same pulse on falling volume is shock. Her volume grew 40% in the twenty-six months to April 2022, the largest transfusion in the record, while velocity fell to its all-time low — which is why prices stayed quiet far longer than the money alone implied, and why the fever arrived only when circulation picked up on top of the enlarged stock. Then the volume itself was drained: five quarters of YoY contraction from 2023 Q1, the only ones in sixty-seven years. Range: +25.6% (2021 Q1) to −4.6% (2023 Q2), against a 1960–2019 pace of 6.8%.",
     src: [ {
       t: "Federal Reserve via FRED — M2 money stock, monthly since 1959 (M2SL)",
       u: "https://fred.stlouisfed.org/series/M2SL"
@@ -38542,7 +38557,7 @@
     return m.value != null && (m.value < ends[0] || m.value > ends[1]);
   }
   function volumeInfoHtml(ind) {
-    return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. M2 is the money stock — cash, chequing and savings deposits, and retail money-market funds — read as the year-over-year change (" + ind.metricSub + ').</p><p class="caption follow"><b>Her pace is ' + M2_PACE_LO + "–" + M2_PACE_HI + "%</b>, and that is a band computed from this page’s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a year on average (median 6.70%), and the tenth to ninetieth percentile runs " + M2_PACE_LO + "% to " + M2_PACE_HI + '%. So roughly four quarters in five sat inside this band, and the two ends are what unusual looks like in each direction — <b>draining</b> below it, <b>flooding</b> above. The ends of the track are the record itself: −4.6% in 2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.</p><p class="caption follow">Volume and Pulse are two halves of one number — nominal output is the money stock times its velocity — so neither means much read alone.</p>';
+    return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. M2 is the money stock — cash, chequing and savings deposits, and retail money-market funds — read as the YoY change (" + ind.metricSub + ').</p><p class="caption follow"><b>Her pace is ' + M2_PACE_LO + "–" + M2_PACE_HI + "%</b>, and that is a band computed from this page’s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a year on average (median 6.70%), and the tenth to ninetieth percentile runs " + M2_PACE_LO + "% to " + M2_PACE_HI + '%. So roughly four quarters in five sat inside this band, and the two ends are what unusual looks like in each direction — <b>draining</b> below it, <b>flooding</b> above. The ends of the track are the record itself: −4.6% in 2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.</p><p class="caption follow">Volume and Pulse are two halves of one number — nominal output is the money stock times its velocity — so neither means much read alone.</p>';
   }
   function pulseInfoHtml(ind) {
     return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. Velocity is how many times the same dollar changes hands in a year, nominal GDP divided by M2 (" + ind.metricSub + '). The track’s ends are the record: 1.126× in 2020 Q2 and 2.192× in 1997 Q3.</p><p class="caption follow"><b>The ' + (PULSE_PRE2008 * PULSE_STEADY_LO).toFixed(2) + "–" + (PULSE_PRE2008 * PULSE_STEADY_HI).toFixed(2) + "× band is the pre-2008 era’s own middle</b>, not a target — the tenth to ninetieth percentile of the 196 quarters from 1959 Q1 to 2007 Q4, when velocity averaged " + PULSE_PRE2008.toFixed(3) + "× (median 1.808×) and ran between " + (PULSE_PRE2008 * PULSE_FLOOR).toFixed(3) + "× and " + (PULSE_PRE2008 * PULSE_CEIL).toFixed(3) + '×. Beyond those two, the era’s own extremes, the word is <b>very</b> slow or fast. It is labelled <b>Pre-2008</b> rather than normal for that reason: the collapse after 2008 may be the new ordinary, and calling the old range normal would beg that question.</p><p class="caption follow">The ends mean direction as well as level: <b>slow</b> is money sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which is a busy economy and, past a point, an inflationary one.</p>';
@@ -38574,7 +38589,7 @@
     }).length;
   }
   function temperatureInfoHtml(ind) {
-    return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. The figure is consumer prices, year over year (" + ind.metricSub + '). The ends of the track are the record, and they are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p><p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one band in this app that describes where prices <i>ought</i> to be rather than where they have been. The Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the Fed’s; the two edges are set a point either side of it as part of the Season Model’s structure, not taken from a source. And the months inside it are not evidence that the band is normal — ' + bandMonths() + " of the " + inflationHistory.length + " months this page can draw, since " + inflationHistory[0].m.slice(0, 4) + ', have sat inside 1–3%, which is a fact about how often the Fed has hit its target rather than about where prices naturally sit. Widen the window and the band stops describing anything: the ends of this same track are −15.8% and +23.7%.</p><p class="caption follow">The needle is read on the gauge the Fed used in each era. Since January 2000 it is the <b>PCE</b> price index: the FOMC moved its inflation projections to it in its February 2000 Monetary Policy Report, and its 2% target is written on it. Before 2000 it is the <b>CPI</b>, the measure the Fed worked from then. The two are not the same index: the CPI covers only urban out-of-pocket spending, leans harder on shelter and reweights less often, so it usually runs a little higher.</p><p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero rather than at it.</p>' + srcBlock([ FED_TARGET_SRC, PCE_SWITCH_SRC, PCE_SRC, {
+    return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. The figure is consumer prices, YoY (" + ind.metricSub + '). The ends of the track are the record, and they are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p><p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one band in this app that describes where prices <i>ought</i> to be rather than where they have been. The Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the Fed’s; the two edges are set a point either side of it as part of the Season Model’s structure, not taken from a source. And the months inside it are not evidence that the band is normal — ' + bandMonths() + " of the " + inflationHistory.length + " months this page can draw, since " + inflationHistory[0].m.slice(0, 4) + ', have sat inside 1–3%, which is a fact about how often the Fed has hit its target rather than about where prices naturally sit. Widen the window and the band stops describing anything: the ends of this same track are −15.8% and +23.7%.</p><p class="caption follow">The needle is read on the gauge the Fed used in each era. Since January 2000 it is the <b>PCE</b> price index: the FOMC moved its inflation projections to it in its February 2000 Monetary Policy Report, and its 2% target is written on it. Before 2000 it is the <b>CPI</b>, the measure the Fed worked from then. The two are not the same index: the CPI covers only urban out-of-pocket spending, leans harder on shelter and reweights less often, so it usually runs a little higher.</p><p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero rather than at it.</p>' + srcBlock([ FED_TARGET_SRC, PCE_SWITCH_SRC, PCE_SRC, {
       t: "Cleveland Fed — The CPI versus the PCE price index",
       u: "https://www.clevelandfed.org/collections/infographics/2024/infogr-20241205-cpi-versus-pce-price-index"
     }, {
@@ -39537,15 +39552,6 @@
   function creditSvg() {
     return markSvg('<rect x="3.5" y="6" width="17" height="12" rx="2" stroke-width="1.8"/><path d="M3.5 10h17M7 14.5h4" stroke-width="1.7"/>');
   }
-  function lateSvg() {
-    return markSvg('<rect x="3.5" y="6" width="17" height="12" rx="2" stroke-width="1.8"/><path d="M3.5 10h17M15 13l4 4M19 13l-4 4" stroke-width="1.7"/>');
-  }
-  function interestSvg() {
-    return markSvg('<path d="M18.5 5.5 5.5 18.5" stroke-width="1.9"/><circle cx="7.2" cy="7.2" r="2.3" stroke-width="1.7"/><circle cx="16.8" cy="16.8" r="2.3" stroke-width="1.7"/>');
-  }
-  function budgetSvg() {
-    return markSvg('<path d="M12 4v16M8 20h8M4.5 8h15" stroke-width="1.8"/><path d="M4.5 8 2.5 13.5h4zM19.5 8l-2 5.5h4z" stroke-width="1.6"/>');
-  }
   function dropSvg(sw) {
     return markSvg('<path d="M12 3.2C12 3.2 6.5 10.8 6.5 14.9A5.5 5.5 0 0 0 17.5 14.9C17.5 10.8 12 3.2 12 3.2Z" stroke-width="' + (sw || 1.7) + '"/>');
   }
@@ -39555,17 +39561,11 @@
   function diamondSvg() {
     return markSvg('<path d="M6.2 3.9h11.6l3.9 5.3L12 20.4 2.3 9.2z" stroke-width="1.7"/><path d="M2.3 9.2h19.4" stroke-width="1.5"/><path d="M6.2 3.9 8.9 9.2M17.8 3.9 15.1 9.2" stroke-width="1.35" opacity="0.75"/>');
   }
-  function sproutSvg() {
-    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.6 19.7 C7.6 18.8 16.4 18.8 19.4 19.7"/><path d="M12 19 V12.3"/><path d="M12 12.3 C12.1 8 15 5 19.6 4.9 C19.7 9.3 16.7 12.2 12 12.3"/><path d="M12 14.3 C11.9 11.4 9.9 9.5 6.3 9.4 C6.2 12.9 8.7 14.3 12 14.3"/></svg>';
-  }
   function markSvg(body, extra) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + "</svg>";
   }
   function orbitSvg() {
     return markSvg('<path d="M9.51 19.81A8.2 8.2 0 0 0 19.53 15.24M20.19 11.53A8.2 8.2 0 0 0 6.76 5.69M4.49 8.70A8.2 8.2 0 0 0 6.27 17.87" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke-width="1.6"/><circle cx="5.45" cy="7.07" r="1.9" stroke-width="1.6"/><circle cx="20.08" cy="13.42" r="1.9" stroke-width="1.6"/><circle cx="7.78" cy="19.03" r="1.9" stroke-width="1.6"/>');
-  }
-  function heartSvg() {
-    return markSvg('<path d="M12 20.3 4.6 13.1C2.4 10.9 2.5 7.4 4.8 5.6c2.1-1.6 5-1.2 6.6.8l.6.8.6-.8c1.6-2 4.5-2.4 6.6-.8 2.3 1.8 2.4 5.3.2 7.5Z" stroke-width="1.8"/>');
   }
   function flameSvg() {
     return markSvg('<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/><path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>');
@@ -39609,14 +39609,8 @@
   function boltSvg() {
     return markSvg('<path d="M14.2 2.4 5.2 13.6h5.9l-1.3 8 9-11.2h-5.9z" stroke-width="1.8"/>');
   }
-  function houseSvg() {
-    return markSvg('<path d="M3.4 10.9 12 4.1l8.6 6.8" stroke-width="1.9"/><path d="M5.7 9.6v9.7h12.6V9.6" stroke-width="1.9"/>');
-  }
   function marketSvg() {
     return markSvg('<path d="M3.5 17.5 9 12l3.5 3.5L20 8" stroke-width="1.9"/><path d="M15 8h5v5" stroke-width="1.8"/>');
-  }
-  function bagSvg() {
-    return markSvg('<path d="M5.6 8.4h12.8l-1 11.2H6.6z" stroke-width="1.9"/><path d="M9.2 8.4V7a2.8 2.8 0 0 1 5.6 0v1.4" stroke-width="1.8"/>');
   }
   function volatilitySvg() {
     return markSvg('<path d="M5.5 7.5v2.5M5.5 15.5v2.5M12 2.5v3M12 18.5v3M18.5 5.5v3.5M18.5 14.5v2" stroke-width="1.8"/><rect x="3.9" y="10" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/><rect x="10.4" y="5.5" width="3.2" height="13" rx="0.6" stroke-width="1.8"/><rect x="16.9" y="9" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>');
@@ -39653,8 +39647,17 @@
     title: "Stress",
     shown: 3
   } ];
-  var GROUP_MARK = {
-    Debt: debtSvg
+  var SUB_MARK = {
+    "Economic Season": thermoSvg,
+    Market: marketSvg,
+    Activity: personSvg,
+    Pressure: gaugeSvg,
+    Money: ecgSvg,
+    Credit: creditSvg,
+    Debt: debtSvg,
+    Valuations: diamondSvg,
+    Sentiment: volatilitySvg,
+    Desire: flameSvg
   };
   var ROSTER_BY = {};
   function pageState(of) {
@@ -39694,7 +39697,7 @@
         return c.key === R.cat;
       })) bad.push(R.id + ": no category " + R.cat);
       if (!TIMING[R.timing]) bad.push(R.id + ": no timing " + R.timing);
-      if (typeof R.mark !== "function") bad.push(R.id + ": no mark");
+      if (typeof SUB_MARK[R.sub] !== "function") bad.push(R.id + ": no mark for " + R.sub);
       if (R.group && !(prev && prev.group === R.group)) {
         if (groups.indexOf(R.group) !== -1) bad.push(R.id + ": " + R.group + " is split");
         groups.push(R.group);
@@ -39722,7 +39725,6 @@
       cat: "weather",
       sub: "Economic Season",
       timing: "lagging",
-      mark: thermoSvg,
       door: "peek",
       slot: "temp",
       term: "Temperature",
@@ -39744,7 +39746,6 @@
       sub: "Economic Season",
       good: "up",
       timing: "coincident",
-      mark: sproutSvg,
       door: "peek",
       slot: "gdp",
       head: "Real GDP",
@@ -39760,7 +39761,6 @@
       sub: "Market",
       good: "up",
       timing: "leading",
-      mark: marketSvg,
       door: "row",
       term: "S&P 500",
       head: "S&P 500, Total Return by Year",
@@ -39777,7 +39777,6 @@
       sub: "Activity",
       good: "down",
       timing: "lagging",
-      mark: personSvg,
       door: "row",
       term: "Activity",
       head: "Unemployment Rate",
@@ -39792,10 +39791,9 @@
       sub: "Activity",
       good: "up",
       timing: "structural",
-      mark: clockSvg,
       door: "row",
       term: "Productivity growth",
-      head: "Output per Hour, Year over Year",
+      head: "Output per Hour, YoY",
       hist: {
         s: productivityHistory,
         k: "q"
@@ -39807,7 +39805,6 @@
       cat: "circulation",
       sub: "Pressure",
       timing: "leading",
-      mark: heartSvg,
       door: "subject",
       hk: "hormones-range",
       head: "Federal Funds Rate",
@@ -39823,7 +39820,6 @@
       cat: "circulation",
       sub: "Pressure",
       timing: "leading",
-      mark: gaugeSvg,
       door: "subject",
       hk: "pressure-range",
       head: "",
@@ -39840,7 +39836,6 @@
       cat: "circulation",
       sub: "Money",
       timing: "coincident",
-      mark: ecgSvg,
       door: "pair",
       term: "Pulse",
       hk: "pulse-range",
@@ -39858,7 +39853,6 @@
       cat: "circulation",
       sub: "Money",
       timing: "leading",
-      mark: circulationSvg,
       door: "pair",
       term: "Volume",
       hk: "volume-range",
@@ -39878,7 +39872,6 @@
       good: "down",
       group: "Credit",
       timing: "leading",
-      mark: creditSvg,
       door: "row",
       term: "Credit gap",
       head: "Credit-to-GDP Gap, Private Sector",
@@ -39895,10 +39888,9 @@
       sub: "Credit",
       group: "Credit",
       timing: "leading",
-      mark: creditSvg,
       door: "row",
       term: "Margin debt",
-      head: "Margin Debt, Year over Year",
+      head: "Margin Debt, YoY",
       hist: {
         s: marginHistory,
         k: "m"
@@ -39913,7 +39905,6 @@
       good: "down",
       group: "Credit",
       timing: "leading",
-      mark: creditSvg,
       door: "row",
       term: "Lending standards",
       head: "Banks Tightening Loan Standards",
@@ -39931,7 +39922,6 @@
       good: "down",
       group: "Debt",
       timing: "structural",
-      mark: debtSvg,
       door: "split",
       head: "Gross Federal Debt, Share of GDP",
       hist: {
@@ -39948,7 +39938,6 @@
       good: "down",
       group: "Debt",
       timing: "structural",
-      mark: interestSvg,
       door: "split",
       head: "Federal Interest Payments, Share of GDP",
       hist: {
@@ -39965,7 +39954,6 @@
       good: "up",
       group: "Debt",
       timing: "structural",
-      mark: budgetSvg,
       door: "split",
       hk: "deficit-range",
       slot: "deficit",
@@ -39986,7 +39974,6 @@
       good: "down",
       group: "Debt",
       timing: "structural",
-      mark: houseSvg,
       door: "peek",
       slot: "households",
       head: "Debt Service, Share of Income",
@@ -40010,7 +39997,6 @@
       good: "down",
       group: "Debt",
       timing: "lagging",
-      mark: lateSvg,
       door: "row",
       term: "Delinquency rate",
       head: "Bank Loans Past Due",
@@ -40028,7 +40014,6 @@
       good: "down",
       group: "Valuations",
       timing: "structural",
-      mark: diamondSvg,
       door: "peek",
       slot: "valuation",
       head: "Shiller CAPE, Against Fair Value",
@@ -40047,7 +40032,6 @@
       good: "down",
       group: "Valuations",
       timing: "structural",
-      mark: diamondSvg,
       door: "split",
       head: "Buffett Indicator, Market Value ÷ GDP",
       hist: {
@@ -40064,7 +40048,6 @@
       sub: "Sentiment",
       good: "down",
       timing: "leading",
-      mark: volatilitySvg,
       door: "subject",
       hk: "fear-range",
       head: "Cboe Volatility Index (VIX)",
@@ -40082,7 +40065,6 @@
       good: "up",
       group: "Desire",
       timing: "coincident",
-      mark: flameSvg,
       door: "row",
       term: "Desire",
       head: "Consumer Demand",
@@ -40100,7 +40082,6 @@
       good: "up",
       group: "Desire",
       timing: "structural",
-      mark: flameSvg,
       door: "row",
       term: "Equity risk premium",
       head: "Shiller Excess CAPE Yield",
@@ -40117,7 +40098,6 @@
       sub: "Sentiment",
       good: "up",
       timing: "leading",
-      mark: bagSvg,
       door: "row",
       term: "Confidence",
       head: "OECD Consumer Confidence",
@@ -40148,7 +40128,7 @@
     });
     page.head = pageState(function(R) {
       return {
-        mark: R.mark,
+        mark: SUB_MARK[R.sub],
         title: R.head
       };
     });
@@ -43219,7 +43199,7 @@
     return foldSec(k, title, '<button type="button" class="lab-cat" data-ind-cat="' + k + '">' + name + "</button>", ls, at);
   }
   function subSec(k, sub, ls, at) {
-    return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub), ls, at);
+    return foldSec(k, sub, markName(SUB_MARK[sub], sub), ls, at);
   }
   function bySub(k, ls, at) {
     var subs = [];
@@ -44963,8 +44943,8 @@
       put("gdp-rangebar", histControls("sheet-metric-gdp", {
         series: gdpQuarterlyYoY
       }));
-      put("gdp-head", histHead("sheet-metric-gdp"));
       histNote("sheet-metric-gdp", growthInfoHtml());
+      put("gdp-head", histHead("sheet-metric-gdp"));
       var hist = need("gdp-history");
       hist.hidden = false;
       var gCyc = pageCycle("sheet-metric-gdp");

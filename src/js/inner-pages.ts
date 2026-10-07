@@ -76,8 +76,8 @@ function registerTempGdpPages(){
   sheetRenderers["sheet-metric-gdp"] = function(W = 0){
     var r = page.range["sheet-metric-gdp"];
     put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY }));
-    put("gdp-head", histHead("sheet-metric-gdp"));
     histNote("sheet-metric-gdp", growthInfoHtml());
+    put("gdp-head", histHead("sheet-metric-gdp"));
     var hist = need("gdp-history"); hist.hidden = false;
     var gCyc = pageCycle("sheet-metric-gdp");
     var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `012a959` on 2026-10-07. **99 components**, **28 shared patterns**.
+Generated from commit `dd43b10` on 2026-10-07. **100 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -136,8 +136,9 @@ Generated from commit `012a959` on 2026-10-07. **99 components**, **28 shared pa
 |---|---|---|
 | **`controlsBox`** | `.hist-controls` | `history.ts:histControls` |
 | **`cyclePicker`** | `.cycsel-btn` | `history.ts:histControls` |
-| **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.ts:histHead`, `history.ts:paintHeadMenus` |
-| **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `inner-pages.ts:registerTempGdpPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-core.ts:pressureHead`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
+| **`headDots`** | `.bh-menu` | `history.ts:histHead` |
+| **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.ts:headDots`, `history.ts:paintHeadMenus` |
+| **`histHead`** | `.band-head` `.bh-mark` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `inner-pages.ts:registerTempGdpPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-core.ts:pressureHead`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | **`histLive`** | `.sr-only` | `history.ts:histKeysWire`, `history.ts:wireHistHover` |
 | **`histReadEnsure`** | `.hist-read` `.hr-label` `.hr-plate` `.hr-value` | `history.ts:histKeysWire`, `history.ts:wireHistHover` |
 
@@ -354,7 +355,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.hi-card` | 2 | `format.ts:hiCard`, `render-core.ts:cardDetailHtml` |
 | `.cycsel-opt` | 2 | `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.cycsel-tick` | 2 | `history.ts:headPickRow`, `history.ts:pickRow` |
-| `.cycsel-menu` | 2 | `history.ts:cyclePicker`, `history.ts:histHead` |
+| `.cycsel-menu` | 2 | `history.ts:cyclePicker`, `history.ts:headDots` |
 | `.cycsel-yr` | 2 | `history.ts:headMenuHtml`, `history.ts:nameAside` |
 | `.lag-row` | 2 | `render-pages.ts:deriveUninversionDetail`, `tabs-menu.ts:renderSeasonRows` |
 | `.lag-row-head` | 2 | `render-pages.ts:deriveUninversionDetail`, `tabs-menu.ts:renderSeasonRows` |
