@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -153,6 +153,23 @@ ok('the join is January 1990, the first month of the VIX', VOL_JOIN, '1990-01');
 ok('volatility is written after the Fed funds rate, and the fear curve no longer is',
    [Object.keys(J(emit([], [{ m: '1990-01', v: 17.24 }]))).slice(0, 2).join(' '), J(emit([], [{ m: '1990-01', v: 17.24 }])).volatilityHistory, 'fearCurve' in J(emit([], []))],
    ['fedFundsHistory volatilityHistory', [{ m: '1990-01', v: 17.24 }], false]);
+ok('the BIS gap is read from its gap rows only, by quarter, to one decimal',
+   bisGapRows('FREQ,BORROWERS_CTY,TC_BORROWERS,TC_LENDERS,CG_DTYPE,TIME_PERIOD,OBS_VALUE\nQ,US,P,A,B,1958-Q1,69.35\nQ,US,P,A,C,1958-Q1,0.5234\nQ,US,P,A,C,1957-Q4,0.7754\n'),
+   [{ q: '1957 Q4', v: 0.8 }, { q: '1958 Q1', v: 0.5 }]);
+throws('a BIS reply without the gap column is refused', () => bisGapRows('FREQ,TIME_PERIOD\nQ,1958-Q1'), /no OBS_VALUE|no CG_DTYPE/);
+ok('FINRA margin debt is the debit balances column, oldest month first',
+   marginRows([['Year-Month', 'Debit Balances in Customers\' Securities Margin Accounts', 'Free Credit Balances'], ['2026-08', 1453832, 207641], ['2026-07', 1417225, 205132]]),
+   [{ date: '2026-07-01', v: 1417225 }, { date: '2026-08-01', v: 1453832 }]);
+throws('a FINRA sheet without the debit balances is refused', () => marginRows([['Year-Month', 'Other'], ['2026-08', 1]]), /debit balances/);
+ok('the credit readings are written as the app reads them',
+   (({ creditGapHistory, marginHistory }) => ({ creditGapHistory, marginHistory }))(J(emit([], [], null, null, null, null, null, null, null, null, null, null, null,
+     { gap: [{ q: '2026 Q1', v: -11.3 }], delinquency: [], margin: [{ m: '2026-08', v: 37.19 }] }))),
+   { creditGapHistory: [{ q: '2026 Q1', v: -11.3 }], marginHistory: [{ m: '2026-08', v: 37.19 }] });
+ok('Debt to the Penny gives the latest total, in billions',
+   pennyRow({ data: [{ record_date: '2026-10-05', tot_pub_debt_out_amt: '40249104431078.48' }] }), { d: '2026-10-05', v: 40249 });
+throws('a Debt to the Penny reply without a row is refused', () => pennyRow({ data: [] }), /no usable latest row/);
+ok('federal interest is BEA\'s payments over nominal GDP, both at annual rates, quarter by quarter, to two decimals',
+   interestShare([{ q: '2026 Q2', v: 1279.734 }, { q: '2026 Q3', v: 1300 }], [{ q: '2026 Q2', v: 31800 }]), [{ q: '2026 Q2', v: 4.02 }]);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 

@@ -1,14 +1,15 @@
-import { atMonth, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf, titleCase } from "./format.ts";
+import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf, titleCase } from "./format.ts";
 import { addSources, byId, put } from "./dom.ts";
 import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.ts";
-import { fiscalHistory, grossDebtQuarterly } from "./history-fred.ts";
+import { debtDollarsQuarterly, debtToday, grossDebtQuarterly, interestDollarsQuarterly, interestQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { buffettHistory, CONFIDENCE_SRC, DESIRE_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
+import { buffettHistory, CONFIDENCE_SRC, DEBT_DOLLAR_SRC, DESIRE_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
 import { currentEra, cycleSlice } from "./model.ts";
 import { attachHistory, histControls, histHead, histNote, page, pageCycle, refitHistory, timelineWindow } from "./history.ts";
 import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, premiumReading, premiumRecord, productivityReading } from "./readings.ts";
-import { periodOf, ROSTER } from "./roster.ts";
+import { ROSTER } from "./roster.ts";
 import { metricSheet, sheetRenderers, timingPill } from "./render-core.ts";
+import { creditInsight, creditPages, creditReadings } from "./credit.ts";
 
 type SeriesPt = Point & { v: number };
 type SplitRow = { sub: string; note: string; meter: Meter; flagValue: string; flagState?: Tone; shortNote?: string };
@@ -23,24 +24,25 @@ var BUFFETT_2001 = [
   { t:"Berkshire Hathaway — the same Fortune article, Dec 10 2001 (PDF)",
     u:"https://www.berkshirehathaway.com/2001ar/FortuneMagazine%20DEC%2010%202001.pdf" }
 ];
+function dollars(billions: number){ return billions >= 1000 ? "$" + (billions / 1000).toFixed(billions < 10000 ? 2 : 1) + " trillion" : "$" + Math.round(billions) + " billion"; }
 function midOf(R: RosterRow): number { if (R.mid == null) throw new Error(R.id + " has no middle line"); return R.mid; }
 export function meterWord(m: Meter){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
 function splitPages(): Record<string, SplitPage> {
   var tenth = function(v: number){ return v.toFixed(1) + "%"; };
-  return {
+  return withCredit({
     "sheet-metric-buffett": { after:"sheet-metric-valuation", row:fileRow("buffett"), line:"Buffett’s line",
       fmt:function(v){ return Math.round(v) + "%"; }, src:BUFFETT_2001.concat(now.valuation.src.slice(0, 2)),
       band:"The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, " +
            "buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
       insight:buffettInsight },
     "sheet-metric-debt": { after:"sheet-metric-buffett", row:labRow("sheet-metric-debt"), line:"50-year average",
-      fmt:tenth, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3), insight:debtInsight },
+      fmt:tenth, at:function(d){ var b = debtDollarsQuarterly.filter(function(x){ return x.q === d.q; })[0]; return qPretty(d.q) + (b ? " \u00b7 " + dollars(b.v) : ""); }, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3).concat(DEBT_DOLLAR_SRC), insight:debtInsight },
     "sheet-metric-interest": { after:"sheet-metric-debt", row:labRow("sheet-metric-interest"), line:"50-year average",
-      fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
+      fmt:tenth, at:function(d){ var b = interestDollarsQuarterly.filter(function(x){ return x.q === d.q; })[0]; return qPretty(d.q) + (b ? " \u00b7 " + dollars(b.v) + " a year" : ""); }, src:[longCycleSrc[4], longCycleSrc[10]], insight:interestInsight },
     "sheet-sign-productivity-growth": productivityPage(tenth),
     "sheet-sign-desire": desirePage(), "sheet-sign-premium": premiumPage(), "sheet-sign-confidence": confidencePage(),
     "sheet-sign-market": marketPage()
-  };
+  });
 }
 type PageReading = { info: () => string; metricSub: string; caption: string; meter: Meter; metric: string; tag: { state?: Tone } };
 var signedPct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; }, wholePct = function(v: number){ return Math.round(v) + "%"; };
@@ -56,6 +58,13 @@ function premiumPage(){ return readingPage(premiumReading, { line:"No premium", 
 function marketPage(){
   return readingPage(marketReading, { line:"No change", fmt:signedPct, tick:wholePct, at:function(d){ return String(d.y); },
     src:sp500AnnualReturnSource, insight:marketInsight });
+}
+function withCredit(o: Record<string, SplitPage>){
+  Object.keys(creditPages).forEach(function(id){
+    var P = creditPages[id];
+    o[id] = readingPage(creditReadings[id], { goodAbove:false, line:P.line, fmt:P.fmt, tick:P.tick, src:P.src, insight:function(s){ return creditInsight(s, P); } });
+  });
+  return o;
 }
 function productivityPage(tenth: (v: number) => string){
   return readingPage(productivityReading, { line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight });
@@ -107,9 +116,17 @@ function mountSplit(s: SplitSpec){
   put(s.id + "-highlights", highlightsHtml(s.insight(s), "", ""));
   addSources(s.src);
 }
+function seatSplits(pages: Record<string, SplitPage>, todo: RosterRow[]){
+  while (todo.length){
+    var left = todo.filter(function(R){ var a = pages[R.id].after; return a && !document.getElementById(a); });
+    if (left.length === todo.length) throw new Error("no page to seat " + left.map(function(R){ return R.id; }).join(", ") + " after");
+    todo.forEach(function(R){ if (left.indexOf(R) === -1) mountSplit(splitSpec(R, pages[R.id])); });
+    todo = left;
+  }
+}
 export function mountSplits(){
   var pages = splitPages();
-  ROSTER.forEach(function(R){ if (pages[R.id]) mountSplit(splitSpec(R, pages[R.id])); });
+  seatSplits(pages, ROSTER.filter(function(R){ return pages[R.id]; }));
   if (ROSTER.some(function(R){ return R.door === "split" && !pages[R.id]; })) addSources(longCycleSrc);
 }
 // ---- The split indicators' insights ----
@@ -132,8 +149,8 @@ function debtInsight(s: SplitSpec){
   var now = metered(s.row.meter), rec = maxIn(grossDebtQuarterly, 1966, calendarTodayY); if (!rec) throw new Error("no gross debt record");
   var under = grossDebtQuarterly.filter(function(d){ return d.v <= s.mid; }).pop();
   var era = grossDebtQuarterly.filter(function(d){ return yearOf(d) === currentEra.from; })[0];
-  var cards = [lede('What the government owes, measured against what the whole economy makes in a ' +
-    'year. The larger the debt, the less room the body has to borrow when something goes wrong.'),
+  var cards = [lede('What the government owes, measured against what the whole economy makes in a year. The larger the debt, the less room the body has to borrow when something goes wrong.'),
+    hiCard("In Dollars", s.row.flagState || "serious", dollars(debtToday.v) + " owed on " + fmtAsOf(debtToday.d) + ", by the Treasury\u2019s Debt to the Penny."),
     hiCard("Against the Record", s.row.flagState || "serious", "At " + now.toFixed(1) + "% of GDP, " +
       (now >= rec.v ? "the highest reading since the quarterly series began in 1966." :
         (rec.v - now).toFixed(1) + " points below the record of " + rec.v.toFixed(1) + "% in " + rec.q + ".")),
@@ -197,14 +214,13 @@ function marketInsight(s: SplitSpec){
       bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.")];
 }
 function interestInsight(s: SplitSpec){
-  var now = metered(s.row.meter), hist = fiscalHistory.interest, last = hist[hist.length - 1];
-  var rec = hist.reduce(function(a, d){ return d.v > a.v ? d : a; });
-  var above = hist.filter(function(d){ return d.v > s.mid; }).length;
+  var hist = interestQuarterly, last = hist[hist.length - 1], paid = interestDollarsQuarterly[interestDollarsQuarterly.length - 1];
+  var rec = hist.reduce(function(a, d){ return d.v > a.v ? d : a; }), higher = hist.filter(function(d){ return d.v > last.v; }).length;
+  var above = hist.filter(function(d){ return d.v > s.mid; }).length, top = interestDollarsQuarterly.every(function(d){ return d.v <= paid.v; });
   return [lede('The yearly cost of carrying the debt. Money spent on interest is energy the body has ' +
       'already used, paid again every year.'),
-    hiCard("Against the Record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " +
-      now.toFixed(1) + "% " + (now > rec.v ? "is above every fiscal year since FY" + hist[0].y + "; the previous peak was " +
-        rec.v.toFixed(1) + "% in FY" + rec.y + "." : "compares with a record of " + rec.v.toFixed(1) + "% in FY" + rec.y + ".")),
-    hiCard("The Last Actual Year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " +
-      hist.length + " fiscal years on record, " + above + " ran above the " + s.mid.toFixed(1) + "% line.")];
+    hiCard("In Dollars", "", qPretty(paid.q) + ", the federal government paid interest at " + dollars(paid.v) + " a year" + (top ? ", the most it has ever paid." : ".")),
+    hiCard("Against the Record", s.row.flagState || "", "As a share of GDP, " + last.v.toFixed(1) + "% " + (higher ? "sits below " + higher + " of the " + hist.length +
+      " quarters since " + qPretty(hist[0].q) + "; the record is " + rec.v.toFixed(1) + "% in " + qPretty(rec.q) + "." : "is the highest since " + qPretty(hist[0].q) + ".") +
+      " " + above + " quarters ran above the " + s.mid.toFixed(1) + "% line.")];
 }

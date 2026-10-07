@@ -52,7 +52,8 @@ const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
   Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.6975, to: 2.1365 }, Volume: { from: 3.4, to: 10.3 }, Activity: { from: 3.5, to: 5 },
   Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
-  'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 2 }, 'sheet-marker-deficit': { lte: 3.8 }
+  'Credit gap': { lte: 2 }, 'Delinquency rate': { lte: 3.14 },
+  'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 3.5 }, 'sheet-marker-deficit': { lte: 3.8 }
 };
 
 function bands() {
@@ -286,7 +287,6 @@ test('each category’s insights follow the cycle on screen, and the old categor
   const mood = () => catInsight('mood');
   assert.equal(document.querySelectorAll('.cat-sheet .cat-item, [id^="sheet-cat-"], .sign-row, .peek').length, 0);
   for (const key of ['weather', 'mood', 'circulation']) assert.ok(catInsight(key), key);
-  assert.equal(catInsight('energy'), '');
   assert.match(mood(), /She\u2019s in .+AI Cycle/);
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.match(mood(), /She\u2019s in .+Big Tech Cycle/);

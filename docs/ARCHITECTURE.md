@@ -144,7 +144,7 @@ Diagnosis (two orders, both Keren's). A row's fields:
 id, name, cat, timing, mark   the page, the name on every door, the category, the timing chip, the glyph
 good                          the side that is good for it ("up" or "down"; none where neither is), which colours
                               a Cycle analysis result outside its range
-group                         consecutive rows with one group are one group (Valuations, Stress)
+group                         consecutive rows with one group are one group (Valuations, Debt)
 door                          where today's figure and the page come from: peek (an authored page, its figure
                               in OWN_FACE), pair and row (a reading object), split (a split page), subject (an
                               authored subject page, its figure in OWN_FACE)
@@ -369,7 +369,7 @@ the manifest's; now each module says what it imports.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
-  `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
+  `data` (the figures, their constants and sources), `credit` (the credit gap, margin debt and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
   and inner pages), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
@@ -387,8 +387,8 @@ The conversion was proved by the snapshot (every state identical) and the browse
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
 to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio (labels; the panels keep their keys `chart` and `analysis`. Cycle Statistics (Cycle analysis until 0.6.8) took Search's place in 0.6.1 and is labelled Analysis, and the cycle list is labelled Herstory; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
-Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Pressure · Pulse · Volume) ·
-Mood (Valuations · Volatility · Desire · Confidence) · Energy (Stress · Unemployment rate · Productivity growth). Named Weather, never
+Browse: Weather (Economic Season · Market · Activity) · Circulation (Pressure · Money · Credit · Debt) ·
+Mood (Valuations · Sentiment · Desire); three categories since 0.9.0, when the Activity category (key `energy`) became Weather's subcategory Activity. Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:
@@ -400,8 +400,8 @@ Rules that shape the pages:
 - **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),
   read by the category sheets, the past cycles, the Diagnosis and Cycle analysis.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
-  card (Valuations: Shiller CAPE · Buffett indicator; Stress: Federal debt · Interest payments · Federal
-  budget · Households). The split pages are
+  card (Valuations: Shiller CAPE · Buffett indicator; Debt: Margin debt · Federal debt · Federal interest payments
+  · Federal budget · Households · Delinquency rate). The split pages are
   built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, joined by
   `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
@@ -435,7 +435,7 @@ Rules that shape the pages:
   icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
   the color." `wearCategories` (`cycle-tab`) marks each reading's page with
   its category class, so the page head disc and the history head take `--cat`. Group rows keep a mark
-  of their own (`GROUP_MARK`: Stress the bolt; Valuations its first member's).
+  of their own (`GROUP_MARK`: Debt the bolt; Valuations its first member's).
   The two Treasury spreads (one view of Pressure) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
 - **Analysis shows every cycle as one `.era-row`** (V631), opening the cycle's page.
   Don't split it into list + overview.
@@ -533,7 +533,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 | Marker | Range (primary series) | Band |
 |---|---|---|
 | Federal debt (gross debt ÷ GDP, V643; "Debt burden" until V660) | 0% 1835 (Treasury Fiscal Data) – 125.9% FY2020 (OMB via FRED GFDGDPA188S); today GFDEGDQ188S, latest quarter | ≤ 70%, the series' own FY1976–2025 mean — CBO's 50-year rule applied to gross, since CBO states it only for held (51%); `checkGrossDebt` re-derives all of it |
-| Interest payments (÷ GDP; "Interest burden" until V660) | 0.63% FY1942 (FRED FYOIGDA188S) – 3.3% FY2026 CBO projection | ≤ 2.0% |
+| Federal interest payments (BEA gross interest ÷ GDP, 0.9.0; "Interest burden" until V660) | 1.8% 1952 Q4 – 5.0% 1991 Q1, quarterly from 1947 (FRED A091RC1Q027SBEA ÷ GDP); read from the record by `syncInterest` | ≤ 3.5%, the series' own 1976–2025 mean; `checkInterest` re-derives it |
 | Deficit rate (÷ GDP) | −2.3% FY2000 surplus – 26.9% FY1943 (FRED FYFSGDA188S); the low end departs the true-extreme rule (real max surplus FY1948 +4.3%), flagged, Keren's to settle | ≤ 3.8% |
 | Household debt service | 9.05% 2021 Q1 – 15.85% 2007 Q4; FRED TDSP, begins 2005 Q1, rebuilt 2024 on tradeline data — its 15.85% is not the retired series' 13.2%, never in one sentence | below its own mean, `DSR_MEAN` 12.4% |
 | Personal saving rate | 1.8% 2005 Q3 – 24.4% 2020 Q2; BEA via FRED A072RC1Q156SBEA | 4.5–12.2%, 10th–90th pct of 318 quarters |
@@ -1035,8 +1035,8 @@ by its own picture, by cycle = the average never the total.
 ## Wording
 
 Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
-or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Stress is the
-group of Federal debt, Interest payments, Federal budget and Households (V688; Economic power until then); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
+or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Debt is the
+group of Margin debt, Federal debt, Federal interest payments, Federal budget, Households and Delinquency rate (0.9.0; Stress from V688, Economic power before); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.

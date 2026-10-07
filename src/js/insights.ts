@@ -32,7 +32,7 @@ function insightCirculation(){
   var f1 = function(v: number){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
   var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' +
     'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
-    'resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
+    'resistance that flow meets, and the Federal funds rate is the signal that sets all three. Credit is the money lent into the flow, and Debt is what it leaves behind, the stress it puts on the flow: what is repaid today is money that cannot be spent.</p>';
   var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " +
     f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " +
     (up === vup ? "both are pushing the same way." : "they are pulling against each other.");

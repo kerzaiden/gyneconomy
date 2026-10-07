@@ -2,6 +2,7 @@ import { bootDom } from "./dom.ts";
 import { bootLive, bootDone, forgetLive } from "./live.ts";
 import { bootRefreshSeason } from "./refresh-season.ts";
 import { bootData } from "./data.ts";
+import { bootCredit } from "./credit.ts";
 import { bootModel } from "./model.ts";
 import { bootHistory } from "./history.ts";
 import { bootReadingRegistry, bootReadings } from "./readings.ts";
@@ -22,6 +23,7 @@ try {
   bootLive();
   bootReadingRegistry();
   bootData();
+  bootCredit();
   bootReadings();
   bootHistory();
   bootRoster();

@@ -299,7 +299,7 @@ function renderHormones(){
     var run = 0;
     for (var i = pk.indexOf(top) + 1; i < pk.length; i++){ if (pk[i].v < pk[i - 1].v) run++; else break; }
     var cards = [];
-    cards.push('<p class="hi-lede">Interest rates are the hormone: one signal, secreted on purpose, that the ' +
+    cards.push('<p class="hi-lede">The Federal funds rate is the hormone: one signal, secreted on purpose, that the ' +
       'whole body then runs at the tempo of. Nothing on this page is measured off the economy \u2014 this is the ' +
       'instruction it was given.</p>');
     cards.push(hiCard("Two Clocks", "",

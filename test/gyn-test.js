@@ -446,7 +446,7 @@ async function openPage(p, url, sheet) {
     await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p);
     const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
-    (all.title === 'Indicators' && all.shown === 'weather,mood,circulation,energy')
+    (all.title === 'Indicators' && all.shown === 'weather,mood,circulation')
       ? ok('the Insights head opens Indicators on All', all.shown)
       : bad('the Insights head opens Indicators on All', JSON.stringify(all));
     await p.goto('file://' + url); await ready(p); await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
@@ -454,8 +454,8 @@ async function openPage(p, url, sheet) {
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
-    (door.first === 'home-secs' && door.rows === 'weather,mood,circulation,energy' && weather.title === 'Indicators' && weather.shown === 'weather' &&
-     weather.subs === 'Economic Season 2,Market 1')
+    (door.first === 'home-secs' && door.rows === 'weather,mood,circulation' && weather.title === 'Indicators' && weather.shown === 'weather' &&
+     weather.subs === 'Economic Season 2,Market 1,Activity 2')
       ? ok('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', JSON.stringify({ door, weather }));
     await filt(p, '[data-pick-cat=""]'); await shut(p);
@@ -468,7 +468,7 @@ async function openPage(p, url, sheet) {
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.indCat).join(), regularity: !!h.querySelector('.cat-cycle, [data-ind-cat="cycle"]') };
     });
     (tab.title === 'Indicators' && tab.first === 'period-step' && tab.under && tab.chips === 0 && tab.menu && tab.rows > 15 && tab.doors &&
-     tab.cats === 'weather,mood,circulation,energy' && !tab.regularity)
+     tab.cats === 'weather,mood,circulation' && !tab.regularity)
       ? ok('Indicators opens on its period stepper, then its search box with the one filter, every reading and category a door', tab.rows + ' readings')
       : bad('Indicators opens on its period stepper, then its search box with the one filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {
@@ -480,7 +480,7 @@ async function openPage(p, url, sheet) {
       }));
     };
     const cpi = await shown('cpi'), mood = await shown('mood'), nil = await shown('zzzz'), back = await shown('');
-    (cpi.rows.join() === 'Temperature' && mood.cats.join() === 'mood' && mood.rows.length > 4 && nil.none && !nil.rows.length && !back.none && back.cats.length >= 4)
+    (cpi.rows.join() === 'Temperature' && mood.cats.join() === 'mood' && mood.rows.length > 4 && nil.none && !nil.rows.length && !back.none && back.cats.length >= 3)
       ? ok('the search box finds readings by name, measure and category', 'cpi → Temperature, mood → its ' + mood.rows.length + ' readings, none → a message')
       : bad('the search box finds readings by name, measure and category', JSON.stringify({ cpi, mood, nil, back }));
     await click(p, '#sheet-find .lab-filter'); await settle(p);
@@ -578,7 +578,7 @@ async function openPage(p, url, sheet) {
     if (wx) wx.cards = await p.evaluate(() => [...document.querySelectorAll('#detail-modal-body .hi-name')].map(n => n.textContent.trim()));
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (wx && wx.bar === 'Indicators' && wx.names === 'Temperature+Growth+S&P 500' && !wx.modal &&
+    (wx && wx.bar === 'Indicators' && wx.names === 'Temperature+Growth+S&P 500+Unemployment rate+Productivity growth' && !wx.modal &&
      wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
       ? ok('the season in the dial opens Indicators on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Indicators on Weather, with the market and what the season means', JSON.stringify(wx));

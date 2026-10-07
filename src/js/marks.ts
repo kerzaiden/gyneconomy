@@ -1,4 +1,6 @@
 export function debtSvg(){ return markSvg('<path d="M4 20h16M6.5 16h11M9 12h6M11 8h2" stroke-width="1.9"/>'); }
+export function creditSvg(){ return markSvg('<rect x="3.5" y="6" width="17" height="12" rx="2" stroke-width="1.8"/><path d="M3.5 10h17M7 14.5h4" stroke-width="1.7"/>'); }
+export function lateSvg(){ return markSvg('<rect x="3.5" y="6" width="17" height="12" rx="2" stroke-width="1.8"/><path d="M3.5 10h17M15 13l4 4M19 13l-4 4" stroke-width="1.7"/>'); }
 export function interestSvg(){ return markSvg('<path d="M18.5 5.5 5.5 18.5" stroke-width="1.9"/>' +
   '<circle cx="7.2" cy="7.2" r="2.3" stroke-width="1.7"/><circle cx="16.8" cy="16.8" r="2.3" stroke-width="1.7"/>'); }
 export function budgetSvg(){ return markSvg('<path d="M12 4v16M8 20h8M4.5 8h15" stroke-width="1.8"/>' +
