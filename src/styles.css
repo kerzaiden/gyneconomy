@@ -934,6 +934,7 @@
   .stat-tick{ display:inline-flex; color:var(--normal); }
   .stat-tick.odd{ color:var(--critical); }
   .stat-tick.warn{ color:var(--gold); }
+  .stat-note{ margin:-4px 0 10px; font-size:var(--type-meta); color:var(--text-muted); }
   .len-bars{ display:block; width:100%; margin:8px 0; }
   .len-bars rect.ok{ fill:var(--normal); }
   .len-bars rect.odd{ fill:var(--critical); }

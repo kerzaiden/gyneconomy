@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `c1dbfef` on 2026-10-07. **98 components**, **28 shared patterns**.
+Generated from commit `c8bef24` on 2026-10-07. **99 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -70,6 +70,7 @@ Generated from commit `c1dbfef` on 2026-10-07. **98 components**, **28 shared pa
 | **`scoreRing`** | `.lab-score-v` | `cycle-analysis.ts:scoreBox`, `cycle-analysis.ts:statRow` |
 | **`sheetSec`** | `.ind-sec` | `cycle-analysis.ts:filterSheet` |
 | **`statBody`** | `.stat-main` `.stat-side` | `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:statRow` |
+| **`statsHome`** | `.stat-note` | `cycle-analysis.ts:homeSections` |
 | **`stepper`** | `.period-step` | `cycle-analysis.ts:drawChart` |
 
 ## diagnosis.ts
@@ -223,7 +224,7 @@ renderer speaks. Listed most-used first.
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`histControls`** | history.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
-| **`closedCount`** | cycle-analysis.ts | 8 places |
+| **`word`** | cycle-analysis.ts | 9 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
@@ -243,7 +244,6 @@ renderer speaks. Listed most-used first.
 | **`qAtIndex`** | format.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
-| **`word`** | cycle-analysis.ts | 6 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`growthWord`** | model.ts | 5 places |
@@ -259,6 +259,7 @@ renderer speaks. Listed most-used first.
 | **`visits`** | cycle-analysis.ts | 5 places |
 | **`yearsWord`** | cycle-analysis.ts | 5 places |
 | **`bandEnds`** | format.ts | 4 places |
+| **`closedCount`** | cycle-analysis.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
 | **`cycleByName`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
@@ -277,7 +278,6 @@ renderer speaks. Listed most-used first.
 | **`pctl`** | format.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
-| **`score`** | cycle-analysis.ts | 4 places |
 | **`tier`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
@@ -305,6 +305,7 @@ renderer speaks. Listed most-used first.
 | **`regularity`** | cycle-analysis.ts | 3 places |
 | **`regularOk`** | cycle-analysis.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
+| **`score`** | cycle-analysis.ts | 3 places |
 | **`scoreTier`** | cycle-analysis.ts | 3 places |
 | **`scoreTile`** | cycle-analysis.ts | 3 places |
 | **`seasonPills`** | render-core.ts | 3 places |

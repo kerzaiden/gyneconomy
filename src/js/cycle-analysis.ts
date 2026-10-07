@@ -33,6 +33,8 @@ function normOf(vs: number[]): Norm | null {
   return { lo:lo, hi:hi, fence:hi + 1.5 * (hi - lo), floor:lo - 1.5 * (hi - lo) };
 }
 function closedCount(){ return marketCycles.filter(function(c){ return !c.ongoing; }).length; }
+function recent<T>(vs: T[]){ var k = closedCount(); return vs.slice(Math.max(0, k - BASELINE), k); }
+function recentFrom(){ return marketCycles[Math.max(0, closedCount() - BASELINE)].from; }
 function visitOf(m: CycleModel): Visit {
   var c = m.era, signs: boolean[] = [], bleed = 0;
   for (var y = c.from; y <= (m.ongoing ? Math.min(m.endYear, calendarTodayY - 1) : m.endYear); y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
@@ -49,7 +51,7 @@ function regularity(i: number){
 }
 function cycleLab(id: string, name: string, good: "up" | "down" | undefined, f: (v: Visit, i: number) => number | null, settled?: boolean): Lab {
   var per = visits().map(f), print = function(v: number){ return yearsWord(v) + " yr"; };
-  return { id:id, name:name, cat:"cycle", good:good, settled:settled, per:per, norm:normOf(present(per.slice(0, closedCount()))), now:null, print:print, span:spanOf(print) };
+  return { id:id, name:name, cat:"cycle", good:good, settled:settled, per:per, norm:normOf(present(recent(per))), now:null, print:print, span:spanOf(print) };
 }
 function cycleReadings(R: RosterRow){
   var h = keyed(R.hist).filter(function(d){ return d.v != null; }), first = +h[0].k.slice(0, 4);
@@ -166,15 +168,14 @@ function ring(v: number){
   var r = 21, c = 2 * Math.PI * r;
   return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + ' ' + c.toFixed(1) + '"/></svg>';
 }
+function pastScores(){ return recent(marketCycles).map(function(_, k){ return score(closedCount() - BASELINE + k).v; }); }
 function scoreTier(v: number){
-  var past: number[] = [];
-  for (var k = 0; k < closedCount(); k++) past.push(score(k).v);
-  var n = normOf(past) as Norm;
+  var n = normOf(pastScores()) as Norm;
   return v >= n.lo ? "Normal" : v >= n.floor ? "Attention" : "Risk";
 }
 function scoreBox(i: number){
   var s = score(i);
-  return scoreTile("span", "", "", '<span><b>Health Score</b><small>' + scoreTier(s.v) + ' against ' + word(closedCount()) + ' closed cycles</small></span>' + scoreRing(s.v, '<span>' + s.v + '</span>'));
+  return scoreTile("span", "", "", '<span><b>Health Score</b><small>' + scoreTier(s.v) + ' against her last ' + word(BASELINE) + ' cycles</small></span>' + scoreRing(s.v, '<span>' + s.v + '</span>'));
 }
 function scoreRing(v: number, label: string){ return '<span class="lab-score-v">' + ring(v) + label + '</span>'; }
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
@@ -327,19 +328,16 @@ function statRow(name: string, v: number, of: number, side: string, page: string
 function statBody(lead: string, main: string, side: string | null){
   return lead + '<span class="stat-main">' + main + '</span>' + (side == null ? "" : '<span class="stat-side">' + side + CHEV + '</span>');
 }
-function closedVisits(){ return visits().slice(0, closedCount()); }
 function meanOf(vs: number[]){ return vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; }
-function lengths(){ return closedVisits().map(function(v){ return v.years; }); }
+function lengths(){ return recent(visits()).map(function(v){ return v.years; }); }
 function typical(v: number, open?: boolean){ var n = normOf(lengths()) as Norm; return v <= n.fence && (open || v >= n.floor); }
 var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function verdict(ok: boolean){ return mark(ok ? "" : " odd", ok ? "Normal" : "Abnormal"); }
 function mark(cls: string, name: string){ return '<span class="stat-tick' + cls + '">' + TICK + '</span>' + name; }
 var RELATIVE = '<p>Normal is relative: it is read against her own past cycles, not a fixed standard.</p>';
 function healthPage(i: number){
-  var s = score(i), t = scoreTier(s.v), past: number[] = [];
-  for (var k = 0; k < closedCount(); k++) past.push(score(k).v);
-  var n = normOf(past) as Norm;
-  return '<h3>Her Health Score</h3><p>' + t + ': ' + s.v + ' out of 100, the share of her ' + s.of + ' results that are Normal. It is judged against the scores of her ' + closedCount() + ' closed cycles: Normal from ' + Math.round(n.lo) + ', Risk below ' + Math.max(0, Math.round(n.floor)) + ', past Tukey’s fence.</p>' + RELATIVE + srcBlock([FENCE_SRC]);
+  var s = score(i), t = scoreTier(s.v), n = normOf(pastScores()) as Norm;
+  return '<h3>Her Health Score</h3><p>' + t + ': ' + s.v + ' out of 100, the share of her ' + s.of + ' results that are Normal. It is judged against the scores of her last ' + word(BASELINE) + ' cycles, since ' + recentFrom() + ': Normal from ' + Math.round(n.lo) + ', Risk below ' + Math.max(0, Math.round(n.floor)) + ', past Tukey’s fence.</p>' + RELATIVE + srcBlock([FENCE_SRC]);
 }
 function healthRow(i: number){
   var v = score(i).v, t = scoreTier(v);
@@ -356,7 +354,7 @@ function cycleBars(vs: (number | null)[], cls: (v: number, i: number) => string,
 function barClass(ok: boolean, i: number){ return marketCycles[i].ongoing ? "now" : ok ? "ok" : "odd"; }
 function lengthPage(i: number){
   var n = normOf(lengths()) as Norm, v = visits()[i].years, open = !!marketCycles[i].ongoing, odd = marketCycles.filter(function(c, k){ return !c.ongoing && !typical(visits()[k].years); }).map(function(c){ return cycLabel(c).name; });
-  return '<h3>Her normal cycle</h3><p>' + (typical(v, open) ? 'Normal' : 'Abnormal') + ': the ' + marketCycles[i].name + (open ? ' has run ' : ' ran ') + yearsWord(v) + ' years. Her cycles average ' + yearsWord(meanOf(lengths())) + ' years, across her ' + lengths().length + ' closed cycles since ' + marketCycles[0].from + '. A normal one lasts ' + yearsWord(n.floor) + ' to ' + yearsWord(n.fence) + ' years: inside Tukey’s fences around the middle half of her ' + lengths().length + ' closed cycles, the standard rule for an outlier. ' + listWords(odd) + ' ran longer.</p>' +
+  return '<h3>Her normal cycle</h3><p>' + (typical(v, open) ? 'Normal' : 'Abnormal') + ': the ' + marketCycles[i].name + (open ? ' has run ' : ' ran ') + yearsWord(v) + ' years. Her last ' + word(BASELINE) + ' cycles, since ' + recentFrom() + ', average ' + yearsWord(meanOf(lengths())) + ' years. A normal one lasts ' + (n.floor > 0 ? yearsWord(n.floor) + ' to ' : 'up to ') + yearsWord(n.fence) + ' years: inside Tukey’s fences around the middle half of those cycles, the standard rule for an outlier.' + (odd.length ? ' ' + listWords(odd) + ' fell outside it.' : '') + '</p>' +
     '<p>Each bar is one cycle, from its first bull year to the bear year that closes it; the last is the cycle in progress.</p>' +
     RELATIVE + '<p class="len-key"><i class="ok"></i>Normal <i class="odd"></i>Abnormal</p>' + cycleBars(visits().map(function(x){ return x.years; }), function(x, k){ return barClass(typical(x), k); }, i, "Each cycle\u2019s length in years") + srcBlock([FENCE_SRC]);
 }
@@ -373,7 +371,7 @@ function variationPage(i: number){
 }
 function statsHome(i: number){
   var x = visits()[i], open = !!marketCycles[i].ongoing, r = regularity(i), all = visits(), top = function(f: (v: Visit) => number){ return Math.max.apply(null, all.map(f)); };
-  return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + healthRow(i) +
+  return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on the last ' + word(BASELINE) + ' market cycles.</p>' + healthRow(i) +
     statRow("Cycle length", x.years, top(function(v){ return v.years; }), verdict(typical(x.years, open)), lengthPage(i)) +
     (r == null ? "" : statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i))) +
     statRow("Period flow", x.bleed, top(function(v){ return v.bleed; }), "", "", "flow"));

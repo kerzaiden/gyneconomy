@@ -613,9 +613,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   flow"). (0.8.3, Oct 6, 2026)
 - **Cycle Statistics holds three cards, Cycle length, Cycle variation and Period flow, each a ring and a figure in
   years; the first two carry a dividing line, aligned across both, and open a page explaining their figure.** Every
-  average is over all her closed cycles since 1928, never the last six as Clue takes (Keren: "I don't like the
-  arbitrary 6 cycles. If we have a scientific model, let's use it"); that line sits on Cycle length's page, not on
-  the card. Cycle length's page draws every cycle as a bar, Normal or Abnormal. Cycle variation is FIGO's measure,
+  average and normal range in Cycle Statistics (the cycle results and the Health Score's tier) rests on her last six
+  closed cycles, as Clue takes, and a line under the title says so: "Averages are based on the last six market
+  cycles." Keren (0.8.12): "the market is not regular, like a female body … I know that clue says averages are based
+  on your last six cycles. So maybe we can do the same." This overturns 0.8.3's all-cycles rule ("I don't like the
+  arbitrary 6 cycles"). The readings in Indicators still rest on every closed cycle. Cycle length's page draws every cycle as a bar, Normal or Abnormal. Cycle variation is FIGO's measure,
   the gap between the shortest and longest of the six cycles before it, the same number as the Variation result (one
   figure, one number), so it reads her recent cycles (Keren: "maybe we should regard more recent cycles"). Period
   flow's ring is red and has no page. Keren: "they have like a dividing line … I want the dividing line to align
