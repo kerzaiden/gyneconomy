@@ -44236,22 +44236,6 @@
       mid: PAYROLLS_LINE,
       cardUnit: "YoY"
     }, {
-      id: "sheet-sign-retail",
-      name: "Retail sales",
-      cat: "weather",
-      sub: "Activity",
-      good: "up",
-      timing: "coincident",
-      door: "row",
-      term: "Retail sales",
-      head: "Retail Sales, YoY",
-      hist: {
-        s: retailHistory,
-        k: "m"
-      },
-      mid: RETAIL_LINE,
-      cardUnit: "YoY"
-    }, {
       id: "sheet-sign-hormones",
       name: "Federal funds rate",
       cat: "circulation",
@@ -44526,6 +44510,23 @@
       },
       mid: DESIRE_LINE,
       cardUnit: "durables, YoY"
+    }, {
+      id: "sheet-sign-retail",
+      name: "Retail sales",
+      cat: "mood",
+      sub: "Desire",
+      good: "up",
+      group: "Desire",
+      timing: "coincident",
+      door: "row",
+      term: "Retail sales",
+      head: "Retail Sales, YoY",
+      hist: {
+        s: retailHistory,
+        k: "m"
+      },
+      mid: RETAIL_LINE,
+      cardUnit: "YoY"
     }, {
       id: "sheet-sign-premium",
       name: "Equity risk premium",
