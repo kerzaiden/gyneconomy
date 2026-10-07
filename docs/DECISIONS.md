@@ -784,7 +784,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Investment Clock lives on the Portfolio tab only, read from the Season Model's regime and the direction of
   inflation; no season page points to an asset class.** The tilt on the season pages was dropped at Keren's
   instruction (Sep 17, 2026); she brought the clock back as a portfolio method (0.5.0, Oct 4, 2026). Steady prices
-  count with rising, since the clock has no steady phase (Claude's call).
+  keep the prior direction, as in the Season Model (Keren, 0.9.2; was "count with rising", Claude's call).
 - **Before quarterly GDP (1948), a season is read a year at a time: that year's real GDP growth against the
   1929–48 peak trend, with prices read monthly as always (CPIAUCNS before 1948), the December reading standing for
   the year.** Keren chose annual seasons for the older cycles (V690). From 1948 Q1 every quarter is read, against
