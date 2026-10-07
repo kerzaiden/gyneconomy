@@ -31669,9 +31669,9 @@
       return Math.abs(+s[1] - pct2) < Math.abs(+a[1] - pct2) ? s : a;
     })[0];
   }
-  function moodRead(x, before) {
-    var ago = before[before.length - MOOD_TURN];
-    x.pct = rankToDate(before.map(function(p) {
+  function moodRead(x, before2) {
+    var ago = before2[before2.length - MOOD_TURN];
+    x.pct = rankToDate(before2.map(function(p) {
       return p.score;
     }), x.score);
     x.change = ago ? x.score - ago.score : null;
@@ -31775,9 +31775,9 @@
       years: c.from + "–" + (c.to || "Today")
     };
   }
-  function cycleQtrIdx(y0, cyc, len) {
+  function cycleQtrIdx(y0, cyc, len2) {
     var to = cyc.to || calendarTodayY;
-    var a = Math.max(0, (cyc.from - y0) * 4), b = Math.min(len, (to - y0 + 1) * 4);
+    var a = Math.max(0, (cyc.from - y0) * 4), b = Math.min(len2, (to - y0 + 1) * 4);
     return b > a ? [ a, b ] : null;
   }
   function totalRiseIn(vals) {
@@ -32743,13 +32743,13 @@
       histLive(host).textContent = [ part(".hr-label"), part(".hr-value") ].filter(Boolean).join(", ");
     });
   }
-  function mWindowFrom(len, key) {
+  function mWindowFrom(len2, key) {
     var sp = timelineSpan(key);
-    return sp == null || sp === Infinity ? 0 : Math.max(0, len - sp * 12);
+    return sp == null || sp === Infinity ? 0 : Math.max(0, len2 - sp * 12);
   }
-  function qWindowFrom(len, key) {
+  function qWindowFrom(len2, key) {
     var sp = timelineSpan(key);
-    return sp == null || sp === Infinity ? 0 : Math.max(0, len - sp * 4);
+    return sp == null || sp === Infinity ? 0 : Math.max(0, len2 - sp * 4);
   }
   function defFrom(key) {
     var sp = timelineSpan(key);
@@ -35557,13 +35557,13 @@
     function drawM2Record() {
       var host = byId("m2-record");
       if (!host || !host.clientWidth) return;
-      var len = m2Yoy.length - 4, key = page.range["volume-range"];
+      var len2 = m2Yoy.length - 4, key = page.range["volume-range"];
       var volCyc = pageCycle("volume-range");
-      var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
+      var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len2) : null;
       put("volume-timeline", histControls("volume-range", {
-        depth: Math.floor(len / 4)
+        depth: Math.floor(len2 / 4)
       }));
-      var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : void 0;
+      var mFrom = volIdx ? volIdx[0] : qWindowFrom(len2, key), mTo = volIdx ? volIdx[1] : void 0;
       host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
       attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
       put("volume-trend", trendPill(trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v) {
@@ -37100,7 +37100,7 @@
     if (!years.length) return "";
     var bear = years.filter(function(d) {
       return d.v < 0;
-    }), before = sp500Years.filter(function(d) {
+    }), before2 = sp500Years.filter(function(d) {
       return d.y < m.era.from && d.v < 0;
     }).pop();
     var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d) {
@@ -37110,7 +37110,7 @@
       return (k ? [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ][k - 1] || k : "no") + " " + what + (k === 1 || !k ? " year" : " years");
     };
     var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
-    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."), "", true);
+    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before2 ? ". The last bear year before it was " + before2.y + ", at " + fmtSigned(before2.v, 1) + "%." : "."), "", true);
   }
   var MOOD_CHART = [ [ "Optimism", 168, 290, "cream", -23, 7, "end" ], [ "Excitement", 211, 221, "amber", -23, 0, "end" ], [ "Thrill", 279, 158, "orange", -21, 0, "end" ], [ "Euphoria", 362, 135, "red", 0, -25, "middle" ], [ "Anxiety", 438, 163, "wine", 24, -3, "start" ], [ "Denial", 500, 222, "slate", -23, 7, "end" ], [ "Fear", 548, 296, "cream", -21, 8, "end" ], [ "Desperation", 594, 374, "amber", -24, 7, "end" ], [ "Panic", 656, 443, "orange", -23, 13, "end" ], [ "Despair", 744, 475, "red", 0, 41, "middle" ], [ "Depression", 838, 458, "wine", 24, 14, "start" ], [ "Hope", 925, 393, "slate", 25, 9, "start" ], [ "Optimism", 978, 310, "cream", -28, -3, "end" ] ];
   var MOOD_SRC = [ {
@@ -37240,12 +37240,14 @@
       return !c.ongoing;
     }).length;
   }
-  function recent(vs) {
-    var k = closedCount();
-    return vs.slice(Math.max(0, k - BASELINE), k);
+  function len(v) {
+    return v.years;
   }
-  function recentFrom() {
-    return marketCycles[Math.max(0, closedCount() - BASELINE)].from;
+  function flow(v) {
+    return v.bleed;
+  }
+  function before(i) {
+    return i < BASELINE ? null : visits().slice(i - BASELINE, i);
   }
   function visitOf(m) {
     var c = m.era, signs = [], bleed = 0;
@@ -37286,7 +37288,7 @@
       good: good,
       settled: settled,
       per: per,
-      norm: normOf(present(recent(per))),
+      norm: normOf(present(per.slice(0, closedCount()))),
       now: null,
       print: print,
       span: spanOf(print)
@@ -37553,8 +37555,8 @@
     return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + " " + c.toFixed(1) + '"/></svg>';
   }
   function pastScores() {
-    return recent(marketCycles).map(function(_, k) {
-      return score(closedCount() - BASELINE + k).v;
+    return marketCycles.slice(0, closedCount()).map(function(_, k) {
+      return score(k).v;
     });
   }
   function scoreTier(v) {
@@ -37563,7 +37565,7 @@
   }
   function scoreBox(i) {
     var s = score(i);
-    return scoreTile("span", "", "", "<span><b>Health Score</b><small>" + scoreTier(s.v) + " against her last " + word(BASELINE) + " cycles</small></span>" + scoreRing(s.v, "<span>" + s.v + "</span>"));
+    return scoreTile("span", "", "", "<span><b>Health Score</b><small>" + scoreTier(s.v) + " against " + word(closedCount()) + " closed cycles</small></span>" + scoreRing(s.v, "<span>" + s.v + "</span>"));
   }
   function scoreRing(v, label) {
     return '<span class="lab-score-v">' + ring(v) + label + "</span>";
@@ -37815,13 +37817,13 @@
     }, 0) / vs.length;
   }
   function lengths() {
-    return recent(visits()).map(function(v) {
+    return visits().slice(0, closedCount()).map(function(v) {
       return v.years;
     });
   }
-  function typical(v, open) {
+  function typical(v) {
     var n = normOf(lengths());
-    return v <= n.fence && (open || v >= n.floor);
+    return v <= n.fence && v >= n.floor;
   }
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function verdict(ok) {
@@ -37833,7 +37835,7 @@
   var RELATIVE = "<p>Normal is relative: it is read against her own past cycles, not a fixed standard.</p>";
   function healthPage(i) {
     var s = score(i), t = scoreTier(s.v), n = normOf(pastScores());
-    return "<h3>Her Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of her " + s.of + " results that are Normal. It is judged against the scores of her last " + word(BASELINE) + " cycles, since " + recentFrom() + ": Normal from " + Math.round(n.lo) + ", Risk below " + Math.max(0, Math.round(n.floor)) + ", past Tukey’s fence.</p>" + RELATIVE + srcBlock([ FENCE_SRC ]);
+    return "<h3>Her Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of her " + s.of + " results that are Normal. It is judged against the scores of her " + closedCount() + " closed cycles: Normal from " + Math.round(n.lo) + ", Risk below " + Math.max(0, Math.round(n.floor)) + ", past Tukey’s fence.</p>" + RELATIVE + srcBlock([ FENCE_SRC ]);
   }
   function healthRow(i) {
     var v = score(i).v, t = scoreTier(v);
@@ -37843,23 +37845,34 @@
     var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;
     return '<svg class="len-bars" viewBox="0 ' + F.T + " " + W + " " + (H + 22) + '" role="img" aria-label="' + label + '">' + vs.map(function(v, i) {
       var h = v == null ? 0 : H * v / top, x = i * bw + 2, c = marketCycles[i];
-      return (v == null ? "" : '<rect class="' + cls(v, i) + '" x="' + x.toFixed(1) + '" y="' + (F.B - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/>') + "<text" + (i === at ? ' class="this"' : "") + ' x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (F.B + 14) + '">' + String(c.from).slice(2) + "</text>";
+      return (v == null ? "" : '<rect class="' + cls(v, i) + '" x="' + x.toFixed(1) + '" y="' + (F.B - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/>') + "<text" + (at.indexOf(i) !== -1 ? ' class="this"' : "") + ' x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (F.B + 14) + '">' + String(c.from).slice(2) + "</text>";
     }).join("") + "</svg>";
   }
   function barClass(ok, i) {
     return marketCycles[i].ongoing ? "now" : ok ? "ok" : "odd";
   }
+  function sixNames(i) {
+    var ns = marketCycles.slice(i - BASELINE, i).map(function(c) {
+      return cycLabel(c).name;
+    });
+    return "from " + ns[0] + " to " + ns[ns.length - 1];
+  }
   function lengthPage(i) {
-    var n = normOf(lengths()), v = visits()[i].years, open = !!marketCycles[i].ongoing, odd = marketCycles.filter(function(c, k) {
+    var n = normOf(lengths()), m = meanOf(before(i).map(function(x) {
+      return x.years;
+    })), v = visits()[i].years, six = marketCycles.map(function(_, k) {
+      return k;
+    }).slice(i - BASELINE, i + 1);
+    var odd = marketCycles.filter(function(c, k) {
       return !c.ongoing && !typical(visits()[k].years);
     }).map(function(c) {
       return cycLabel(c).name;
     });
-    return "<h3>Her normal cycle</h3><p>" + (typical(v, open) ? "Normal" : "Abnormal") + ": the " + marketCycles[i].name + (open ? " has run " : " ran ") + yearsWord(v) + " years. Her last " + word(BASELINE) + " cycles, since " + recentFrom() + ", average " + yearsWord(meanOf(lengths())) + " years. A normal one lasts " + (n.floor > 0 ? yearsWord(n.floor) + " to " : "up to ") + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of those cycles, the standard rule for an outlier." + (odd.length ? " " + listWords(odd) + " fell outside it." : "") + "</p><p>Each bar is one cycle, from its first bull year to the bear year that closes it; the last is the cycle in progress.</p>" + RELATIVE + '<p class="len-key"><i class="ok"></i>Normal <i class="odd"></i>Abnormal</p>' + cycleBars(visits().map(function(x) {
+    return "<h3>Her cycle length</h3><p>" + (typical(m) ? "Normal" : "Abnormal") + ": the " + word(BASELINE) + " cycles before the " + marketCycles[i].name + ", " + sixNames(i) + ", averaged " + yearsWord(m) + " years. A normal cycle lasts " + yearsWord(n.floor) + " to " + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of her " + lengths().length + " closed cycles since " + marketCycles[0].from + ", the standard rule for an outlier." + (odd.length ? " " + listWords(odd) + " ran longer." : "") + " The " + marketCycles[i].name + (marketCycles[i].ongoing ? " has run " : " ran ") + yearsWord(v) + " years.</p>" + RELATIVE + '<p class="len-key"><i class="ok"></i>Normal <i class="odd"></i>Abnormal</p>' + cycleBars(visits().map(function(x) {
       return x.years;
     }), function(x, k) {
       return barClass(typical(x), k);
-    }, i, "Each cycle’s length in years") + srcBlock([ FENCE_SRC ]);
+    }, six, "Each cycle’s length in years") + srcBlock([ FENCE_SRC ]);
   }
   function regLab() {
     return labs().find(function(l) {
@@ -37872,25 +37885,21 @@
   function spreadBars(i) {
     return "<p>It tells how steady her rhythm is: the narrower the spread, the closer her cycles keep to one length. Each bar is the spread of the " + word(BASELINE) + " cycles before a cycle.</p>" + cycleBars(regLab().per, function(x) {
       return regularOk(x) ? "ok" : "odd";
-    }, i, "The spread of the " + word(BASELINE) + " cycles before each cycle, in years");
+    }, [ i ], "The spread of the " + word(BASELINE) + " cycles before each cycle, in years");
   }
   function variationPage(i) {
     var v = regularity(i), ys = visits().slice(i - BASELINE, i).map(function(x) {
       return x.years;
-    }), names = marketCycles.slice(i - BASELINE, i).map(function(c) {
-      return cycLabel(c).name;
     });
-    return "<h3>Her cycle variation</h3><p>" + (regularOk(v) ? "Normal" : "Abnormal") + ": the " + word(BASELINE) + " cycles before the " + marketCycles[i].name + ", from " + names[0] + " to " + names[names.length - 1] + ", ran " + yearsWord(Math.min.apply(null, ys)) + " to " + yearsWord(Math.max.apply(null, ys)) + " years, a spread of " + yearsWord(v) + " years from the shortest to the longest. Up to " + yearsWord(regLab().norm.fence) + " years is normal for her.</p>" + RELATIVE + spreadBars(i) + "<h4>How it’s calculated</h4><p>FIGO, the world federation of gynaecologists, calls a cycle regular by the gap between the shortest and longest of the last few. Here it is the gap across the " + word(BASELINE) + " cycles before this one, judged against every such gap since " + marketCycles[0].from + " with Tukey’s fences.</p>" + srcBlock([ FIGO_SRC, FENCE_SRC ]);
+    return "<h3>Her cycle variation</h3><p>" + (regularOk(v) ? "Normal" : "Abnormal") + ": the " + word(BASELINE) + " cycles before the " + marketCycles[i].name + ", " + sixNames(i) + ", ran " + yearsWord(Math.min.apply(null, ys)) + " to " + yearsWord(Math.max.apply(null, ys)) + " years, a spread of " + yearsWord(v) + " years from the shortest to the longest. Up to " + yearsWord(regLab().norm.fence) + " years is normal for her.</p>" + RELATIVE + spreadBars(i) + "<h4>How it’s calculated</h4><p>FIGO, the world federation of gynaecologists, calls a cycle regular by the gap between the shortest and longest of the last few. Here it is the gap across the " + word(BASELINE) + " cycles before this one, judged against every such gap since " + marketCycles[0].from + " with Tukey’s fences.</p>" + srcBlock([ FIGO_SRC, FENCE_SRC ]);
   }
   function statsHome(i) {
-    var x = visits()[i], open = !!marketCycles[i].ongoing, r = regularity(i), all = visits(), top = function(f) {
-      return Math.max.apply(null, all.map(f));
+    var six = before(i), r = regularity(i), top = function(f) {
+      return Math.max.apply(null, visits().map(f));
+    }, avg = function(f) {
+      return meanOf(six.map(f));
     };
-    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on the last ' + word(BASELINE) + " market cycles.</p>" + healthRow(i) + statRow("Cycle length", x.years, top(function(v) {
-      return v.years;
-    }), verdict(typical(x.years, open)), lengthPage(i)) + (r == null ? "" : statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i))) + statRow("Period flow", x.bleed, top(function(v) {
-      return v.bleed;
-    }), "", "", "flow"));
+    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on the last ' + word(BASELINE) + " market cycles.</p>" + healthRow(i) + (!six || r == null ? "" : statRow("Cycle length", avg(len), top(len), verdict(typical(avg(len))), lengthPage(i)) + statRow("Cycle variation", r, Math.max.apply(null, present(regLab().per)), verdict(regularOk(r)), variationPage(i)) + statRow("Period flow", avg(flow), top(flow), "", "", "flow")));
   }
   function insightSec(k, ls) {
     return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));

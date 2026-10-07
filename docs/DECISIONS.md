@@ -612,24 +612,23 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   spacing that we determined in the app". Bleed is called Period flow everywhere ("Bleed should be called period
   flow"). (0.8.3, Oct 6, 2026)
 - **Cycle Statistics holds three cards, Cycle length, Cycle variation and Period flow, each a ring and a figure in
-  years; the first two carry a dividing line, aligned across both, and open a page explaining their figure.** Every
-  average and normal range in Cycle Statistics (the cycle results and the Health Score's tier) rests on her last six
-  closed cycles, as Clue takes, and a line under the title says so: "Averages are based on the last six market
-  cycles." Keren (0.8.12): "the market is not regular, like a female body … I know that clue says averages are based
-  on your last six cycles. So maybe we can do the same." This overturns 0.8.3's all-cycles rule ("I don't like the
-  arbitrary 6 cycles"). The readings in Indicators still rest on every closed cycle. Cycle length's page draws every cycle as a bar, Normal or Abnormal. Cycle variation is FIGO's measure,
+  years; the first two carry a dividing line, aligned across both, and open a page explaining their figure.** Each
+  card averages the six cycles before the cycle shown, as Clue averages the last six, and a line under the title says
+  so: "Averages are based on the last six market cycles." Keren (0.8.12): "cycle length should be the average cycle
+  length based on the last six market cycles. Same goes for cycle variation, same goes for average period length",
+  because "the market is not regular, like a female body." The normal range each average is judged by still comes
+  from all her closed cycles since 1928. This overturns 0.8.3's all-cycles average ("I don't like the arbitrary 6
+  cycles"). Cycle length's page draws every cycle as a bar, Normal or Abnormal. Cycle variation is FIGO's measure,
   the gap between the shortest and longest of the six cycles before it, the same number as the Variation result (one
   figure, one number), so it reads her recent cycles (Keren: "maybe we should regard more recent cycles"). Period
   flow's ring is red and has no page. Keren: "they have like a dividing line … I want the dividing line to align
   between cycle length and cycle variation … to look like basically the same component." (0.8.3, Oct 6, 2026)
-- **Cycle Statistics shows the figures of the cycle it shows, the open cycle's or a past one's; the norm sits behind
-  its verdict.** Cycle length is that cycle's own length (the open cycle's so far), Cycle variation the spread of the
-  six cycles before it, Period flow its own bear years; a cycle with fewer than six before it has no variation card.
-  Each card's side says Normal or Abnormal (an open cycle is Abnormal only once it outruns the fence) and opens a page
-  with the average, the normal range and every cycle as a bar, the one shown in bold. "More info" is gone. The
-  variation page says what the figure tells: how steady her rhythm is. Keren: "I think we need to see the current
-  cycle statistics and not the general cycle length … if I click on it, I see what the average cycle is." (0.8.12,
-  Oct 7, 2026)
+- **Cycle Statistics follows the cycle shown, the open one or a past one: its cards average the six cycles before it,
+  and a cycle with fewer than six before it shows only its Health Score.** Each card's side says Normal or Abnormal
+  and opens a page with the six-cycle figure, her normal range, the cycle's own length and every cycle as a bar, the
+  six and the cycle shown in bold. "More info" is gone. The variation page says what the figure tells: how steady her
+  rhythm is. Keren first asked for the cycle's own figures ("I think we need to see the current cycle statistics"),
+  then for the six-cycle averages (above). (0.8.12, Oct 7, 2026)
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
   against.** Keren: "put the health score inside cycle statistics, but keep it white with a gray border", "other

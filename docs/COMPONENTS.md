@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `c8bef24` on 2026-10-07. **99 components**, **28 shared patterns**.
+Generated from commit `d4db97f` on 2026-10-07. **99 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -224,12 +224,13 @@ renderer speaks. Listed most-used first.
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`histControls`** | history.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
-| **`word`** | cycle-analysis.ts | 9 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
+| **`word`** | cycle-analysis.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`atMonth`** | format.ts | 7 places |
+| **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`factsFrom`** | format.ts | 7 places |
@@ -237,7 +238,6 @@ renderer speaks. Listed most-used first.
 | **`histNote`** | history.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
-| **`cycLabel`** | model.ts | 6 places |
 | **`keyed`** | roster.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
 | **`normOf`** | cycle-analysis.ts | 6 places |
@@ -245,6 +245,7 @@ renderer speaks. Listed most-used first.
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
+| **`cycLabel`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`growthWord`** | model.ts | 5 places |
 | **`inflationFigure`** | model.ts | 5 places |
@@ -259,7 +260,6 @@ renderer speaks. Listed most-used first.
 | **`visits`** | cycle-analysis.ts | 5 places |
 | **`yearsWord`** | cycle-analysis.ts | 5 places |
 | **`bandEnds`** | format.ts | 4 places |
-| **`closedCount`** | cycle-analysis.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
 | **`cycleByName`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
@@ -292,6 +292,7 @@ renderer speaks. Listed most-used first.
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
+| **`meanOf`** | cycle-analysis.ts | 3 places |
 | **`monthIdx`** | fed-phases.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |

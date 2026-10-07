@@ -54,15 +54,17 @@ test('Temperature’s Normal is the Season Model’s 1–3% band, its Risk the f
   assert.equal(tier, v >= 1 && v <= 3 ? 'optimal' : v > l.now.fence || v < l.now.floor ? 'abnormal' : 'borderline');
 });
 
-test('Cycle Statistics reads the cycle it shows: its own length, variation and period flow', () => {
+test('Cycle Statistics averages the six cycles before the one it shows: length, variation and period flow', () => {
   const shown = name => {
     const d = document.createElement('button'); d.setAttribute('data-chart-cycle', name); document.body.appendChild(d); d.click(); d.remove();
     return [...document.querySelectorAll('#chart-home .lab-score-box ~ .stat-row b')].map(b => b.textContent);
   };
+  const mean = (id, k) => lab(id).per.slice(k - 6, k).reduce((a, b) => a + b, 0) / 6;
   const dotCom = marketCycles.find(c => /Dot-Com/.test(c.name)), k = marketCycles.indexOf(dotCom);
-  assert.deepEqual(shown(dotCom.name), [lab('length').per[k], lab('regularity').per[k], lab('bleed').per[k]].map(v => yearsWord(v) + ' years'));
-  assert.equal(shown(marketCycles[0].name).length, 2);
-  assert.equal(shown(marketCycles[open].name)[0], yearsWord(lab('length').per[open]) + ' years');
+  assert.deepEqual(shown(dotCom.name), [mean('length', k), lab('regularity').per[k], mean('bleed', k)].map(v => yearsWord(v) + ' years'));
+  assert.equal(shown(marketCycles[5].name).length, 0);
+  assert.equal(shown(marketCycles[open].name)[0], yearsWord(mean('length', open)) + ' years');
+  assert.match(document.querySelector('#chart-home .stat-note').textContent, /last six market cycles/);
   assert.match(document.querySelector('#chart-home .lab-score-box ~ button.stat-row .stat-side').textContent, /^(Normal|Abnormal)$/);
   assert.match(document.querySelector('#chart-home .lab-score-box .stat-side').textContent, /^(Normal|Attention|Risk)$/);
 });
