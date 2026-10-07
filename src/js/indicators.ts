@@ -42,34 +42,23 @@ function splitPages(): Record<string, SplitPage> {
     "sheet-sign-market": marketPage()
   };
 }
-function confidencePage(): SplitPage {
-  var r = confidenceReading;
-  return { goodAbove:true, line:"OECD average", fmt:function(v){ return v.toFixed(1); }, tick:function(v){ return String(Math.round(v)); },
-    src:CONFIDENCE_SRC, insight:confidenceInsight, info:r.info,
-    row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
+type PageReading = { info: () => string; metricSub: string; caption: string; meter: Meter; metric: string; tag: { state?: Tone } };
+var signedPct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; }, wholePct = function(v: number){ return Math.round(v) + "%"; };
+function readingPage(r: PageReading, o: Omit<SplitPage, "row" | "info">): SplitPage {
+  return Object.assign({ goodAbove:true, info:r.info, row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } }, o);
 }
-function desirePage(): SplitPage {
-  var r = desireReading, pct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
-  return { goodAbove:true, line:"No change", fmt:pct, tick:function(v){ return Math.round(v) + "%"; },
-    src:DESIRE_SRC, insight:desireInsight, info:r.info,
-    row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
+function confidencePage(){
+  return readingPage(confidenceReading, { line:"OECD average", fmt:function(v){ return v.toFixed(1); }, tick:function(v){ return String(Math.round(v)); },
+    src:CONFIDENCE_SRC, insight:confidenceInsight });
 }
-function premiumPage(): SplitPage {
-  var r = premiumReading, pct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
-  return { goodAbove:true, line:"No premium", fmt:pct, tick:function(v){ return Math.round(v) + "%"; },
-    src:PREMIUM_SRC, insight:premiumInsight, info:r.info,
-    row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
+function desirePage(){ return readingPage(desireReading, { line:"No change", fmt:signedPct, tick:wholePct, src:DESIRE_SRC, insight:desireInsight }); }
+function premiumPage(){ return readingPage(premiumReading, { line:"No premium", fmt:signedPct, tick:wholePct, src:PREMIUM_SRC, insight:premiumInsight }); }
+function marketPage(){
+  return readingPage(marketReading, { line:"No change", fmt:signedPct, tick:wholePct, at:function(d){ return String(d.y); },
+    src:sp500AnnualReturnSource, insight:marketInsight });
 }
-function marketPage(): SplitPage {
-  var r = marketReading, pct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
-  return { goodAbove:true, line:"No change", fmt:pct, tick:function(v){ return Math.round(v) + "%"; }, at:function(d){ return String(d.y); },
-    src:sp500AnnualReturnSource, insight:marketInsight, info:r.info,
-    row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
-}
-function productivityPage(tenth: (v: number) => string): SplitPage {
-  var r = productivityReading;
-  return { goodAbove:true, line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight, info:r.info,
-    row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
+function productivityPage(tenth: (v: number) => string){
+  return readingPage(productivityReading, { line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight });
 }
 export function splitRow(R: RosterRow): SplitRow { var P = splitPages()[R.id]; return P ? P.row : labRow(R.id); }
 function splitSpec(R: RosterRow, P: SplitPage): SplitSpec {
@@ -164,40 +153,35 @@ function productivityInsight(s: SplitSpec){
     hiCard("Against the Record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " +
       fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.")];
 }
-function confidenceInsight(s: SplitSpec){
+type LineWords = { lede: string; verb: string; line: string; fig: (v: number) => string; rec: { lo: MonthPoint; hi: MonthPoint }; tail: (above: number, h: SeriesPt[]) => string };
+function lineInsight(s: SplitSpec, o: LineWords){
   var h = s.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
   var side = function(d: SeriesPt){ return d.v >= s.mid; }, cross: SeriesPt | null = null;
   for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
-  return [lede('How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 ' +
-      'is the long-term average. Confident households spend; worried ones save.'),
-    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " read " + last.v.toFixed(1) + ", " +
-      (side(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
-    hiCard("Against the Record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " +
-      confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.")];
+  return [lede(o.lede),
+    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " " + o.verb + " " + o.fig(last.v) + ", " +
+      (side(last) ? "above" : "below") + " " + o.line + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
+    hiCard("Against the Record", "", "The series runs from " + o.fig(o.rec.lo.v) + " (" + atMonth(o.rec.lo) + ") to " +
+      o.fig(o.rec.hi.v) + " (" + atMonth(o.rec.hi) + "); " + o.tail(above, h))];
+}
+function signedFig(v: number){ return fmtSigned(v, 1) + "%"; }
+function confidenceInsight(s: SplitSpec){
+  return lineInsight(s, { lede:'How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 ' +
+      'is the long-term average. Confident households spend; worried ones save.', verb:"read", line:"the 100 line",
+    fig:function(v){ return v.toFixed(1); }, rec:confidenceRecord,
+    tail:function(above, h){ return above + " of its " + h.length + " months sat at or above 100."; } });
 }
 function desireInsight(s: SplitSpec){
-  var h = s.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
-  var side = function(d: SeriesPt){ return d.v >= s.mid; }, cross: SeriesPt | null = null;
-  for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
-  return [lede('What households spend on the things they could put off: cars, furniture, appliances, electronics. ' +
-      'Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low.'),
-    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " ran at " + fmtSigned(last.v, 1) + "%, " +
-      (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
-    hiCard("Against the Record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " +
-      fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.")];
+  return lineInsight(s, { lede:'What households spend on the things they could put off: cars, furniture, appliances, electronics. ' +
+      'Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low.', verb:"ran at", line:"zero",
+    fig:signedFig, rec:desireRecord, tail:function(above, h){ return above + " of its " + h.length + " months sat at or above zero."; } });
 }
 function premiumInsight(s: SplitSpec){
-  var h = s.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
-  var side = function(d: SeriesPt){ return d.v >= s.mid; }, cross: SeriesPt | null = null;
-  for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
-  var thinner = h.filter(function(d){ return d.v < last.v; }).length;
-  return [lede('What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. ' +
-      'The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it.'),
-    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " read " + fmtSigned(last.v, 1) + "%, " +
-      (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
-    hiCard("Against the Record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " +
-      fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " +
-      above + " sat at or above zero.")];
+  return lineInsight(s, { lede:'What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. ' +
+      'The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it.', verb:"read", line:"zero",
+    fig:signedFig, rec:premiumRecord, tail:function(above, h){
+      var last = h[h.length - 1], thinner = h.filter(function(d){ return d.v < last.v; }).length;
+      return thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero."; } });
 }
 var ORDINAL = ["", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth"];
 function marketInsight(s: SplitSpec){
