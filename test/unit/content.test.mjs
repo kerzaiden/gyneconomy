@@ -334,10 +334,7 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });
 
-test('Variation is the spread of the three cycles before each one, read on the open cycle too, and left to Cycle Statistics rather than Indicators', () => {
-  const L = marketCycles.filter(c => !c.ongoing).map(c => c.to - c.from + 1);
-  const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity'), three = L.slice(-3);
-  assert.equal(reg.per[open], Math.max(...three) - Math.min(...three));
-  assert.equal(reg.per[2], null);
+test('Cycle length is judged once, by Tukey’s fences, and variation is a figure left to Cycle Statistics rather than Indicators', () => {
+  assert.equal(labs().find(l => l.id === 'regularity'), undefined);
   assert.equal(document.querySelector('#sheet-find .cat-cycle, #sheet-find [data-ind-cat="cycle"]'), null);
 });
