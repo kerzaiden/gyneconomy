@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
 import { createRequire } from 'module';
-import { trendOf, histFrame, colPath, colWidth, AXIS } from '../../src/js/charts.ts';
+import { trendOf, histFrame, colPath, colWidth, AXIS, divergeChart } from '../../src/js/charts.ts';
 import { curveVerdict, valuationVerdict } from '../../src/js/readings.ts';
 import { titleCase, ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, fmtAsOf, isoDay, monthLabel } from '../../src/js/format.ts';
 import { CAPE_FAIR, fedFundsRange } from '../../src/js/data.ts';
@@ -17,6 +17,17 @@ test('trendOf fits a straight line and names its direction', () => {
   assert.equal(up.word, 'rising');
   assert.deepEqual(up.fit, { slope: 1, intercept: 1, n: 10 });
   assert.equal(trendOf([10, 9, 8, 7, 6, 5, 4, 3], 'pts').word, 'falling');
+});
+
+test('trendOf fits across a gap without reading it as zero', () => {
+  assert.deepEqual(trendOf([1, null, 3, 4, null, 6, 7, 8, 9, 10], 'pts', 'quarter').fit, { slope: 1, intercept: 1, n: 10 });
+});
+
+test('a quarter with no reading draws no column but keeps its slot', () => {
+  const svg = divergeChart({ vals: [{ q: '2019 Q1', v: 20 }, { q: '2019 Q2', v: null }, { q: '2019 Q3', v: 30 }], mid: 25, fmt: v => String(v) }, 340);
+  const cols = svg.match(/class="dv-bar hcol[^"]*"[^>]*/g);
+  assert.equal(cols.length, 3);
+  assert.match(cols[1], /d=""/);
 });
 
 test('trendOf refuses fewer than eight points', () => {

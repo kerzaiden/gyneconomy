@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `dc4935d` on 2026-10-07. **100 components**, **28 shared patterns**.
+Generated from commit `f30f25a` on 2026-10-07. **100 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -235,12 +235,12 @@ renderer speaks. Listed most-used first.
 | **`factsFrom`** | format.ts | 7 places |
 | **`fileRow`** | data.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
+| **`qAtIndex`** | format.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
 | **`keyed`** | roster.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
 | **`normOf`** | cycle-analysis.ts | 6 places |
-| **`qAtIndex`** | format.ts | 6 places |
 | **`qPretty`** | format.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |

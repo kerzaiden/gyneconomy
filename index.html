@@ -1372,7 +1372,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.9 (780)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.10 (781)</span></p>
     </div>
   </div>
 
@@ -4862,6 +4862,108 @@
       v: 2.1
     } ],
     topTenQuarterly: [ {
+      q: "1995 Q4",
+      v: 17.73
+    }, {
+      q: "1996 Q4",
+      v: 18.66
+    }, {
+      q: "1997 Q3",
+      v: 18.81
+    }, {
+      q: "1998 Q3",
+      v: 20.08
+    }, {
+      q: "1999 Q3",
+      v: 23.02
+    }, {
+      q: "2000 Q3",
+      v: 24.19
+    }, {
+      q: "2001 Q3",
+      v: 24.2
+    }, {
+      q: "2002 Q3",
+      v: 23.75
+    }, {
+      q: "2003 Q3",
+      v: 23.76
+    }, {
+      q: "2004 Q3",
+      v: 22.29
+    }, {
+      q: "2005 Q3",
+      v: 20.18
+    }, {
+      q: "2006 Q3",
+      v: 20.08
+    }, {
+      q: "2007 Q3",
+      v: 19.99
+    }, {
+      q: "2008 Q3",
+      v: 20.58
+    }, {
+      q: "2009 Q3",
+      v: 19.73
+    }, {
+      q: "2010 Q1",
+      v: 18.88
+    }, {
+      q: "2010 Q3",
+      v: 18.62
+    }, {
+      q: "2011 Q1",
+      v: 18.68
+    }, {
+      q: "2011 Q3",
+      v: 20.57
+    }, {
+      q: "2012 Q1",
+      v: 20.46
+    }, {
+      q: "2012 Q3",
+      v: 21.44
+    }, {
+      q: "2013 Q1",
+      v: 18.5
+    }, {
+      q: "2013 Q3",
+      v: 17.66
+    }, {
+      q: "2014 Q1",
+      v: 17.84
+    }, {
+      q: "2014 Q3",
+      v: 18.39
+    }, {
+      q: "2015 Q1",
+      v: 17.6
+    }, {
+      q: "2015 Q3",
+      v: 18.22
+    }, {
+      q: "2016 Q1",
+      v: 19.07
+    }, {
+      q: "2016 Q3",
+      v: 19.34
+    }, {
+      q: "2017 Q1",
+      v: 19.79
+    }, {
+      q: "2017 Q3",
+      v: 20.23
+    }, {
+      q: "2018 Q1",
+      v: 21.54
+    }, {
+      q: "2018 Q3",
+      v: 23.01
+    }, {
+      q: "2019 Q1",
+      v: 22.47
+    }, {
       q: "2019 Q3",
       v: 22.8
     }, {
@@ -41008,21 +41110,25 @@
       span: "",
       flat: true
     };
-    var n = vals.length, sx = 0, sy = 0, sxy = 0, sxx = 0;
+    var n = vals.length, m = 0, sx = 0, sy = 0, sxy = 0, sxx = 0;
     vals.forEach(function(v, i) {
-      var x = v == null ? 0 : v;
+      if (v == null) return;
+      m++;
       sx += i;
-      sy += x;
-      sxy += i * x;
+      sy += v;
+      sxy += i * v;
       sxx += i * i;
     });
-    var slope = (n * sxy - sx * sy) / (n * sxx - sx * sx || 1);
+    var slope = (m * sxy - sx * sy) / (m * sxx - sx * sx || 1);
     var dir = slope > 0 ? "rising" : "falling";
     var total = Math.abs(slope) * (n - 1);
-    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), spread = hi - lo || 1;
+    var got = vals.filter(function(v) {
+      return v != null;
+    });
+    var lo = Math.min.apply(null, got), hi = Math.max.apply(null, got), spread = hi - lo || 1;
     var fit = {
       slope: slope,
-      intercept: (sy - slope * sx) / n,
+      intercept: (sy - slope * sx) / (m || 1),
       n: n
     };
     var perYear = period === "month" ? 12 : period === "quarter" ? 4 : period === "day" ? 252 : 1;
@@ -41194,6 +41300,8 @@
     var padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B, iw = W - padL - padR, ih = H - padT - padB;
     var vs = o.vals.map(function(d) {
       return d.v;
+    }).filter(function(v) {
+      return v != null;
     });
     var lo = Math.min.apply(null, vs.concat([ o.mid ])), hi = Math.max.apply(null, vs.concat([ o.mid ]));
     var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / (above + below || 1);
@@ -41217,13 +41325,17 @@
     }) ];
     out.push('<path class="dv-mid" d="M' + padL + "," + midY.toFixed(1) + "L" + (W - padR) + "," + midY.toFixed(1) + '"/>');
     o.vals.forEach(function(d, i) {
-      var v = d.v == null ? 0 : d.v, cx = (padL + slot * (i + .5)).toFixed(1), y1 = parseFloat(y(v));
+      if (d.v == null) {
+        out.push('<path class="dv-bar hcol" d=""/>');
+        return;
+      }
+      var v = d.v, cx = (padL + slot * (i + .5)).toFixed(1), y1 = parseFloat(y(v));
       if (Math.abs(y1 - midY) < .6) y1 = midY + (v >= o.mid ? -.6 : .6);
       out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
     });
-    var dAvg = o.vals.reduce(function(a, d) {
-      return a + (d.v == null ? 0 : d.v);
-    }, 0) / (n || 1);
+    var dAvg = vs.reduce(function(a, v) {
+      return a + v;
+    }, 0) / (vs.length || 1);
     out.push(avgRule(padL, W - padR, y(dAvg)));
     if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * .5, padL + slot * (n - .5), y, W, padL, padR));
     o.vals.forEach(function(d, i) {
@@ -41424,12 +41536,16 @@
   var CONCENTRATION_TO = 2025;
   var CONCENTRATION_MEAN;
   var CONCENTRATION_SRC = [ {
+    t: "SEC EDGAR — SPDR S&P 500 ETF Trust (SPY), annual and semi-annual reports (Form N-30D), the full schedule of investments since December 1995",
+    u: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000884394&type=N-30D"
+  }, {
     t: "SEC EDGAR — SPDR S&P 500 ETF Trust (SPY), Form N-PORT, the full portfolio at each quarter end since September 2019",
     u: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000884394&type=NPORT-P"
   }, {
     t: "State Street Global Advisors — SPY daily holdings, the latest figure",
     u: "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"
   } ];
+  var topTenReadings = [];
   var topTenHistory = [];
   function concentrationSpan() {
     return topTenQuarterly[0].q.slice(0, 4) + "–" + CONCENTRATION_TO;
@@ -41447,26 +41563,46 @@
       says: "below its " + concentrationSpan() + " average of " + avg + ": the index is spread wider than usual"
     };
   }
-  function concentrationSpecs() {
-    var closed = topTenQuarterly.filter(function(d) {
-      return +d.q.slice(0, 4) <= CONCENTRATION_TO;
+  function concentrationRecord() {
+    var years = {};
+    topTenQuarterly.forEach(function(d) {
+      var y = d.q.slice(0, 4);
+      if (+y <= CONCENTRATION_TO) (years[y] = years[y] || []).push(d.v);
     });
-    CONCENTRATION_MEAN = Math.round(closed.reduce(function(a, d) {
-      return a + d.v;
-    }, 0) / closed.length * 10) / 10;
+    var means = Object.keys(years).map(function(y) {
+      return years[y].reduce(function(a, v) {
+        return a + v;
+      }, 0) / years[y].length;
+    });
+    CONCENTRATION_MEAN = Math.round(means.reduce(function(a, v) {
+      return a + v;
+    }, 0) / means.length * 10) / 10;
     var last = topTenQuarterly[topTenQuarterly.length - 1].q;
-    topTenHistory.length = 0;
+    topTenReadings.length = 0;
     topTenQuarterly.concat(topTenRecent.filter(function(d) {
       return d.q > last;
     })).forEach(function(d) {
-      topTenHistory.push(d);
+      topTenReadings.push(d);
     });
+    var at = {};
+    topTenReadings.forEach(function(d) {
+      at[d.q] = d.v;
+    });
+    topTenHistory.length = 0;
+    var y0 = +topTenReadings[0].q.slice(0, 4), end = topTenReadings[topTenReadings.length - 1].q;
+    for (var i = 0, q = qAtIndex(y0, 0); q <= end; q = qAtIndex(y0, ++i)) if (q >= topTenReadings[0].q) topTenHistory.push({
+      q: q,
+      v: q in at ? at[q] : null
+    });
+  }
+  function concentrationSpecs() {
+    concentrationRecord();
     return [ {
       id: "sheet-sign-concentration",
-      term: "Concentration",
-      econ: "Concentration",
+      term: "Concentration risk",
+      econ: "Concentration risk",
       unit: "top ten of the S&P 500",
-      series: topTenHistory,
+      series: topTenReadings,
       mid: CONCENTRATION_MEAN,
       line: concentrationSpan() + " average",
       optimal: {
@@ -41481,8 +41617,8 @@
       },
       word: concentrationWord,
       src: CONCENTRATION_SRC,
-      about: "The weight of the ten largest companies in the S&P 500, read from SPY, the oldest fund that tracks the index: their share of its net assets. A company with two share classes counts once, so Alphabet’s A and C shares are added together. Quarter ends come from SPY’s filings with the SEC; the latest figure is State Street’s own daily holdings file. When a few giants carry the index, its fortunes ride on theirs: the concentration risk.",
-      band: "<b>The line is the record’s own average</b>, every quarter from " + concentrationSpan() + ". The SEC publishes the full holdings only since 2019, and no convention sets a band for concentration, so the line is derived from that record and no other is drawn.",
+      about: "The ten largest companies' share of the S&P 500's market cap, read from SPY, the oldest fund that tracks the index, which holds each company by its weight in the index. A company with two share classes counts once, so Alphabet’s A and C shares are added together. The record comes from SPY’s filings with the SEC: its annual reports from 1995, twice a year from 2010 and every quarter from 2019; the latest figure is State Street’s own daily holdings file. When a few giants carry the index, its fortunes ride on theirs: the concentration risk.",
+      band: "<b>The line is the record’s own average</b> over " + concentrationSpan() + ", each year counted once, since the early years have one or two readings and the recent ones four. No convention sets a band for concentration, so the line is derived from that record and no other is drawn.",
       lede: "How much of the S&P 500 rests on its ten biggest stocks. The higher it runs, the more the whole market leans on a few names."
     } ];
   }
@@ -44697,15 +44833,15 @@
       cardUnit: "YoY"
     }, {
       id: "sheet-sign-concentration",
-      name: "Concentration",
+      name: "Concentration risk",
       cat: "desire",
       sub: "Risk",
       good: "down",
       group: "Risk",
       timing: "structural",
       door: "row",
-      term: "Concentration",
-      head: "S&P 500, Top 10 Weight",
+      term: "Concentration risk",
+      head: "S&P 500, Top 10 Share of Market Cap",
       hist: {
         s: topTenHistory,
         k: "q"

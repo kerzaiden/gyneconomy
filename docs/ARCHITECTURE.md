@@ -345,8 +345,9 @@ the manifest's; now each module says what it imports.
 - **Figures are data, not code** (V697). The hand-kept series are `src/data/series.json`; the FRED histories are
   `src/data/fred.json`, written by the backfill; `data`, `refresh-season` and `history-fred` import them and
   export each series by name. `test/series.test.js` checks that the code reads exactly the keys each file holds.
-  `topTenQuarterly` (SPY's SEC N-PORT quarter ends, 2019 Q3 to 2026 Q2) was written once by `tools/import-nport.js`
-  from filings downloaded outside the cloud, since the SEC refuses GitHub's runners; the Backfill carries it forward
+  `topTenQuarterly` (SPY's SEC annual reports from 1995 Q4, then its N-PORT quarter ends from 2019 Q3) was written once by
+  `tools/import-nport.js` from filings downloaded outside the cloud; the quarters between reports are gaps, which
+  `concentration.ts` fills with null so the chart keeps time and draws nothing there, since the SEC refuses GitHub's runners; the Backfill carries it forward
   from State Street's daily file as `topTenRecent` in `fred.json`, one figure per quarter.
 - **The modules are TypeScript, strict** (V702, Keren: "If that is typesetting, then do it"). `src/js/*.ts` uses
   only erasable syntax (`erasableSyntaxOnly`): annotations, `!`, `as`, generics and type declarations, never an enum

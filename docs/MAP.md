@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,060 lines** in 38 files, about 612 KB, roughly **174 thousand tokens**. No session can
+The source is **9,075 lines** in 38 files, about 613 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `c1464e2` on 2026-10-07.
+Generated from commit `f30f25a` on 2026-10-07.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `c1464e2` on 2026-10-07.
 | `js/main.ts` | 34 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **34** modules, **720** top-level functions, **123** top-level vars, **355** exported names, **20** boots.
+Counts: **34** modules, **721** top-level functions, **123** top-level vars, **355** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -49,8 +49,8 @@ Counts: **34** modules, **720** top-level functions, **123** top-level vars, **3
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 41 | 3 | `format`, `history-fred` |
 | `js/ai-insights.ts` | 181 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
-| `js/charts.ts` | 249 | 34 | — |
-| `js/concentration.ts` | 36 | 4 | `data`, `history-fred` |
+| `js/charts.ts` | 251 | 34 | — |
+| `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 482 | 130 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 23 | 2 | `data`, `dom`, `format`, `indicators`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 37 | 3 | `data`, `indicators`, `model`, `readings`, `render-core` |
@@ -903,54 +903,54 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 13 | `trendOf` · export | `function trendOf(` |
-| 32 | `trendPill` · export | `function trendPill(` |
+| 33 | `trendPill` · export | `function trendPill(` |
 
 #### The inner pages' charts
 
 | Line | Name | Anchor |
 |---|---|---|
-| 43 | `yearsAcross` | `function yearsAcross(` |
-| 44 | `xLabelOf` | `function xLabelOf(` |
-| 53 | `fitLine` · export | `function fitLine(` |
-| 57 | `fitGroup` · export | `function fitGroup(` |
+| 44 | `yearsAcross` | `function yearsAcross(` |
+| 45 | `xLabelOf` | `function xLabelOf(` |
+| 54 | `fitLine` · export | `function fitLine(` |
+| 58 | `fitGroup` · export | `function fitGroup(` |
 
 #### The history component's axes
 
 | Line | Name | Anchor |
 |---|---|---|
-| 74 | `vGrid` · export | `function vGrid(` |
-| 78 | `COL_FILL` | `var COL_FILL =` |
-| 79 | `colPath` · export | `function colPath(` |
-| 84 | `colWidth` · export | `function colWidth(` |
-| 89 | `AXIS` · export | `var AXIS =` |
-| 90 | `histFrame` · export | `function histFrame(` |
-| 97 | `xLabel` · export | `function xLabel(` |
-| 100 | `crossLine` · export | `function crossLine(` |
-| 103 | `zeroRule` · export | `function zeroRule(` |
-| 106 | `meanRule` · export | `function meanRule(` |
-| 108 | `publishGeom` · export | `function publishGeom(` |
-| 109 | `histBar` · export | `function histBar(` |
-| 112 | `histTip` · export | `function histTip(` |
-| 113 | `avgRule` · export | `function avgRule(` |
-| 116 | `vhOpen` · export | `function vhOpen(` |
-| 117 | `autoTicks` | `function autoTicks(` |
-| 125 | `chartAxes` · export | `function chartAxes(` |
-| 150 | `divergeChart` · export | `function divergeChart(` |
+| 75 | `vGrid` · export | `function vGrid(` |
+| 79 | `COL_FILL` | `var COL_FILL =` |
+| 80 | `colPath` · export | `function colPath(` |
+| 85 | `colWidth` · export | `function colWidth(` |
+| 90 | `AXIS` · export | `var AXIS =` |
+| 91 | `histFrame` · export | `function histFrame(` |
+| 98 | `xLabel` · export | `function xLabel(` |
+| 101 | `crossLine` · export | `function crossLine(` |
+| 104 | `zeroRule` · export | `function zeroRule(` |
+| 107 | `meanRule` · export | `function meanRule(` |
+| 109 | `publishGeom` · export | `function publishGeom(` |
+| 110 | `histBar` · export | `function histBar(` |
+| 113 | `histTip` · export | `function histTip(` |
+| 114 | `avgRule` · export | `function avgRule(` |
+| 117 | `vhOpen` · export | `function vhOpen(` |
+| 118 | `autoTicks` | `function autoTicks(` |
+| 126 | `chartAxes` · export | `function chartAxes(` |
+| 151 | `divergeChart` · export | `function divergeChart(` |
 
 #### A series' highest reading within a span
 
 | Line | Name | Anchor |
 |---|---|---|
-| 184 | `PEEK_MARKS` | `var PEEK_MARKS =` |
-| 185 | `PEEK_W` | `var PEEK_W =` |
-| 186 | `PEEK_H` | `var PEEK_H =` |
-| 187 | `colPeek` · export | `function colPeek(` |
-| 204 | `windowYears` · export | `function windowYears(` |
-| 212 | `refName` | `function refName(` |
-| 216 | `PULSE_WINDOW` · export | `var PULSE_WINDOW =` |
-| 217 | `pulseClipN` | `var pulseClipN =` |
-| 218 | `beatPath` | `function beatPath(` |
-| 235 | `pulseTraceSvg` · export | `function pulseTraceSvg(` |
+| 186 | `PEEK_MARKS` | `var PEEK_MARKS =` |
+| 187 | `PEEK_W` | `var PEEK_W =` |
+| 188 | `PEEK_H` | `var PEEK_H =` |
+| 189 | `colPeek` · export | `function colPeek(` |
+| 206 | `windowYears` · export | `function windowYears(` |
+| 214 | `refName` | `function refName(` |
+| 218 | `PULSE_WINDOW` · export | `var PULSE_WINDOW =` |
+| 219 | `pulseClipN` | `var pulseClipN =` |
+| 220 | `beatPath` | `function beatPath(` |
+| 237 | `pulseTraceSvg` · export | `function pulseTraceSvg(` |
 
 ### `js/concentration.ts`
 
@@ -958,10 +958,11 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 5 | `CONCENTRATION_TO` · export | `var CONCENTRATION_TO =` |
-| 13 | `concentrationSpan` | `function concentrationSpan(` |
-| 14 | `concentrationWord` | `function concentrationWord(` |
-| 20 | `concentrationSpecs` · export | `function concentrationSpecs(` |
+| 6 | `CONCENTRATION_TO` · export | `var CONCENTRATION_TO =` |
+| 16 | `concentrationSpan` | `function concentrationSpan(` |
+| 17 | `concentrationWord` | `function concentrationWord(` |
+| 23 | `concentrationRecord` | `function concentrationRecord(` |
+| 37 | `concentrationSpecs` · export | `function concentrationSpecs(` |
 
 ### `js/cycle-analysis.ts`
 
