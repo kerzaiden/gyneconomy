@@ -488,7 +488,7 @@ async function main() {
   const heavy = { today: await spyToday() };
   say('SPY top ten   ' + heavy.today.d + ' ' + heavy.today.v + '% (State Street daily holdings)');
   for (const u of ['https://data.sec.gov/submissions/CIK0000884394.json', 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000884394&type=NPORT-P&count=40&output=atom', 'https://www.sec.gov/Archives/edgar/data/884394/'])
-    for (const ua of [SEC_UA.headers['user-agent'], 'Gyneconomy Research admin@gyneconomy.app', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36']) {
+    for (const ua of [SEC_UA.headers['user-agent'], 'Gyneconomy kerzaiden github.com/kerzaiden/gyneconomy', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36']) {
       const r = await fetch(u, { headers: { 'user-agent': ua, 'accept-encoding': 'gzip, deflate', accept: '*/*' } });
       say('probe ' + r.status + ' ' + u.slice(8, 60) + ' | ' + ua.slice(0, 30) + ' | ' + (await r.text()).replace(/\s+/g, ' ').slice(0, 160));
     }
