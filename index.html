@@ -1365,7 +1365,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.10 (768)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.11 (769)</span></p>
     </div>
   </div>
 
@@ -36466,10 +36466,27 @@
       "sheet-sign-market": marketPage()
     };
   }
-  function confidencePage() {
-    var r = confidenceReading;
-    return {
+  var signedPct = function(v) {
+    return v ? fmtSigned(v, 1) + "%" : "0%";
+  };
+  var wholePct = function(v) {
+    return Math.round(v) + "%";
+  };
+  function readingPage(r, o) {
+    return Object.assign({
       goodAbove: true,
+      info: r.info,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    }, o);
+  }
+  function confidencePage() {
+    return readingPage(confidenceReading, {
       line: "OECD average",
       fmt: function(v) {
         return v.toFixed(1);
@@ -36478,106 +36495,46 @@
         return String(Math.round(v));
       },
       src: CONFIDENCE_SRC,
-      insight: confidenceInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
+      insight: confidenceInsight
+    });
   }
   function desirePage() {
-    var r = desireReading, pct2 = function(v) {
-      return v ? fmtSigned(v, 1) + "%" : "0%";
-    };
-    return {
-      goodAbove: true,
+    return readingPage(desireReading, {
       line: "No change",
-      fmt: pct2,
-      tick: function(v) {
-        return Math.round(v) + "%";
-      },
+      fmt: signedPct,
+      tick: wholePct,
       src: DESIRE_SRC,
-      insight: desireInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
+      insight: desireInsight
+    });
   }
   function premiumPage() {
-    var r = premiumReading, pct2 = function(v) {
-      return v ? fmtSigned(v, 1) + "%" : "0%";
-    };
-    return {
-      goodAbove: true,
+    return readingPage(premiumReading, {
       line: "No premium",
-      fmt: pct2,
-      tick: function(v) {
-        return Math.round(v) + "%";
-      },
+      fmt: signedPct,
+      tick: wholePct,
       src: PREMIUM_SRC,
-      insight: premiumInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
+      insight: premiumInsight
+    });
   }
   function marketPage() {
-    var r = marketReading, pct2 = function(v) {
-      return v ? fmtSigned(v, 1) + "%" : "0%";
-    };
-    return {
-      goodAbove: true,
+    return readingPage(marketReading, {
       line: "No change",
-      fmt: pct2,
-      tick: function(v) {
-        return Math.round(v) + "%";
-      },
+      fmt: signedPct,
+      tick: wholePct,
       at: function(d) {
         return String(d.y);
       },
       src: sp500AnnualReturnSource,
-      insight: marketInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
+      insight: marketInsight
+    });
   }
   function productivityPage(tenth) {
-    var r = productivityReading;
-    return {
-      goodAbove: true,
+    return readingPage(productivityReading, {
       line: "slowdown average",
       fmt: tenth,
       src: PRODUCTIVITY_SRC,
-      insight: productivityInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
+      insight: productivityInsight
+    });
   }
   function splitRow(R) {
     var P = splitPages()[R.id];
@@ -36696,7 +36653,7 @@
     });
     return [ lede("Output per hour worked, against the same quarter a year earlier. An economy can grow by working more hours or by getting more from each one, and only the second kind compounds."), hiCard("The Latest Quarter", s.row.flagState || "", qPretty(last.q) + " ran at " + fmtSigned(last.v, 1) + "%, " + (last.v >= s.mid ? "above" : "below") + " the " + s.mid.toFixed(1) + "% line."), hiCard("Against the Record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " + fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.") ];
   }
-  function confidenceInsight(s) {
+  function lineInsight(s, o) {
     var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
       return d.v >= s.mid;
     }).length;
@@ -36704,30 +36661,51 @@
       return d.v >= s.mid;
     }, cross = null;
     for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
-    return [ lede("How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 is the long-term average. Confident households spend; worried ones save."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + last.v.toFixed(1) + ", " + (side2(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " + confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.") ];
+    return [ lede(o.lede), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " " + o.verb + " " + o.fig(last.v) + ", " + (side2(last) ? "above" : "below") + " " + o.line + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + o.fig(o.rec.lo.v) + " (" + atMonth(o.rec.lo) + ") to " + o.fig(o.rec.hi.v) + " (" + atMonth(o.rec.hi) + "); " + o.tail(above, h)) ];
+  }
+  function signedFig(v) {
+    return fmtSigned(v, 1) + "%";
+  }
+  function confidenceInsight(s) {
+    return lineInsight(s, {
+      lede: "How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 is the long-term average. Confident households spend; worried ones save.",
+      verb: "read",
+      line: "the 100 line",
+      fig: function(v) {
+        return v.toFixed(1);
+      },
+      rec: confidenceRecord,
+      tail: function(above, h) {
+        return above + " of its " + h.length + " months sat at or above 100.";
+      }
+    });
   }
   function desireInsight(s) {
-    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
-      return d.v >= s.mid;
-    }).length;
-    var side2 = function(d) {
-      return d.v >= s.mid;
-    }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
-    return [ lede("What households spend on the things they could put off: cars, furniture, appliances, electronics. Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " ran at " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " + fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.") ];
+    return lineInsight(s, {
+      lede: "What households spend on the things they could put off: cars, furniture, appliances, electronics. Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low.",
+      verb: "ran at",
+      line: "zero",
+      fig: signedFig,
+      rec: desireRecord,
+      tail: function(above, h) {
+        return above + " of its " + h.length + " months sat at or above zero.";
+      }
+    });
   }
   function premiumInsight(s) {
-    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
-      return d.v >= s.mid;
-    }).length;
-    var side2 = function(d) {
-      return d.v >= s.mid;
-    }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
-    var thinner = h.filter(function(d) {
-      return d.v < last.v;
-    }).length;
-    return [ lede("What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " + fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero.") ];
+    return lineInsight(s, {
+      lede: "What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it.",
+      verb: "read",
+      line: "zero",
+      fig: signedFig,
+      rec: premiumRecord,
+      tail: function(above, h) {
+        var last = h[h.length - 1], thinner = h.filter(function(d) {
+          return d.v < last.v;
+        }).length;
+        return thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero.";
+      }
+    });
   }
   var ORDINAL = [ "", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth" ];
   function marketInsight(s) {

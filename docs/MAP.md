@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,771 lines** in 35 files, about 585 KB, roughly **166 thousand tokens**. No session can
+The source is **8,755 lines** in 35 files, about 583 KB, roughly **166 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `87a45a4` on 2026-10-06.
+Generated from commit `85f1693` on 2026-10-07.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `87a45a4` on 2026-10-06.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **683** top-level functions, **120** top-level vars, **352** exported names, **19** boots.
+Counts: **31** modules, **686** top-level functions, **121** top-level vars, **352** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -55,7 +55,7 @@ Counts: **31** modules, **683** top-level functions, **120** top-level vars, **3
 | `js/format.ts` | 80 | 35 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 20 | 14 | — |
-| `js/indicators.ts` | 227 | 26 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
+| `js/indicators.ts` | 211 | 30 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 182 | 17 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/marks.ts` | 69 | 28 | — |
@@ -1185,33 +1185,37 @@ falls in. **export** marks a name other modules import.
 | 26 | `midOf` | `function midOf(` |
 | 27 | `meterWord` · export | `function meterWord(` |
 | 28 | `splitPages` | `function splitPages(` |
-| 45 | `confidencePage` | `function confidencePage(` |
-| 51 | `desirePage` | `function desirePage(` |
-| 57 | `premiumPage` | `function premiumPage(` |
-| 63 | `marketPage` | `function marketPage(` |
-| 69 | `productivityPage` | `function productivityPage(` |
-| 74 | `splitRow` · export | `function splitRow(` |
-| 75 | `splitSpec` | `function splitSpec(` |
-| 81 | `splitInfo` | `function splitInfo(` |
-| 85 | `periodTicks` | `function periodTicks(` |
-| 90 | `periodOfSeries` | `function periodOfSeries(` |
-| 91 | `drawSplit` | `function drawSplit(` |
-| 108 | `mountSplit` | `function mountSplit(` |
-| 121 | `mountSplits` · export | `function mountSplits(` |
+| 46 | `signedPct` | `var signedPct =` |
+| 47 | `readingPage` | `function readingPage(` |
+| 50 | `confidencePage` | `function confidencePage(` |
+| 54 | `desirePage` | `function desirePage(` |
+| 55 | `premiumPage` | `function premiumPage(` |
+| 56 | `marketPage` | `function marketPage(` |
+| 60 | `productivityPage` | `function productivityPage(` |
+| 63 | `splitRow` · export | `function splitRow(` |
+| 64 | `splitSpec` | `function splitSpec(` |
+| 70 | `splitInfo` | `function splitInfo(` |
+| 74 | `periodTicks` | `function periodTicks(` |
+| 79 | `periodOfSeries` | `function periodOfSeries(` |
+| 80 | `drawSplit` | `function drawSplit(` |
+| 97 | `mountSplit` | `function mountSplit(` |
+| 110 | `mountSplits` · export | `function mountSplits(` |
 
 #### The split indicators' insights
 
 | Line | Name | Anchor |
 |---|---|---|
-| 127 | `buffettInsight` | `function buffettInsight(` |
-| 142 | `debtInsight` | `function debtInsight(` |
-| 157 | `productivityInsight` | `function productivityInsight(` |
-| 167 | `confidenceInsight` | `function confidenceInsight(` |
-| 178 | `desireInsight` | `function desireInsight(` |
-| 189 | `premiumInsight` | `function premiumInsight(` |
-| 202 | `ORDINAL` | `var ORDINAL =` |
-| 203 | `marketInsight` | `function marketInsight(` |
-| 215 | `interestInsight` | `function interestInsight(` |
+| 116 | `buffettInsight` | `function buffettInsight(` |
+| 131 | `debtInsight` | `function debtInsight(` |
+| 146 | `productivityInsight` | `function productivityInsight(` |
+| 157 | `lineInsight` | `function lineInsight(` |
+| 167 | `signedFig` | `function signedFig(` |
+| 168 | `confidenceInsight` | `function confidenceInsight(` |
+| 174 | `desireInsight` | `function desireInsight(` |
+| 179 | `premiumInsight` | `function premiumInsight(` |
+| 186 | `ORDINAL` | `var ORDINAL =` |
+| 187 | `marketInsight` | `function marketInsight(` |
+| 199 | `interestInsight` | `function interestInsight(` |
 
 ### `js/inner-pages.ts`
 
