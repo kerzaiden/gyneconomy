@@ -307,6 +307,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   analysis page, I don't need the search indicators because I already have this in the insight page." (0.8.8)
   **Analysis's container of categories is called Vitals, not Insights;** Keren: "instead of insights call the container
   in analysis 'vitals'". Insights stays the name of the commentary box on every reading page. (0.9.5)
+  **The Indicators page is called Vitals too;** Keren: "indicators should be vitals too". Its search box reads
+  "Search vitals". Older entries here that say Indicators mean this page. (0.9.5)
 - **Each year in Year by Year opens Indicators on that year, and Indicators moves between cycles, years and quarters
   with a stepper under its title: the period large, its place in its cycle under it, arrows either side.** Keren: "what
   I would want is to be referred to the indicators page under that date … so that we would have the ability to

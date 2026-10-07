@@ -149,7 +149,7 @@ function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, o
 function hubOpen(open: HubOpen){
   var b = byId("season-wheel-hub-open") as HTMLButtonElement;
   b.removeAttribute("data-ind-cat");
-  b.disabled = !open; b.setAttribute("data-open", IND); b.setAttribute("data-title", "Indicators"); b.setAttribute("data-ind-when", open ? open.when : "");
+  b.disabled = !open; b.setAttribute("data-open", IND); b.setAttribute("data-title", "Vitals"); b.setAttribute("data-ind-when", open ? open.when : "");
   if (open && open.cat) b.setAttribute("data-ind-cat", open.cat.key);
 }
 function hubShowDefault(){

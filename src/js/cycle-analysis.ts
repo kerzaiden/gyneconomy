@@ -213,7 +213,7 @@ function filterTag(id: string){
 }
 function finder(id: string, slot: number){
   var f = findOf(id);
-  return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search indicators" aria-label="Search indicators" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
+  return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search vitals" aria-label="Search vitals" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
     filterDoor("lab-filter", slot, ' aria-label="Filter"', slidersSvg() + filterTag(id))) + '</div>';
 }
 function stepBtn(row: PeriodRow | undefined, cls: string, label: string){
@@ -366,11 +366,11 @@ function statsHome(i: number){
     statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
 }
 function insightSec(k: string, ls: Lab[]){
-  return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b>', countTag(ls.length)));
+  return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Vitals" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b>', countTag(ls.length)));
 }
 function catName(k: string){ return markName(CAT_MARK[k], catTitle(k)); }
 function markName(mark: () => string, name: string){ return '<span class="lab-mark">' + mark() + '</span>' + name; }
-function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' indicators">' + n + '</small>'; }
+function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' vitals">' + n + '</small>'; }
 function insightsHome(i: number){
   var at = atCycle(i), j = judged(at), rank = TIERS.map(function(t){ return t.key; });
   return categoriesShown().map(function(c){
@@ -400,7 +400,7 @@ function drawChart(id: string){
   narrow(host, id);
 }
 export var IND = "sheet-find";
-var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
+var IND_ALL = ' data-open="' + IND + '" data-title="Vitals" data-ind-cat=""';
 function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
 function pickCat(t: Element, id: string){
   var b = t.closest && t.closest("[data-ind-cat]"); if (!b) return false;
