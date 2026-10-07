@@ -283,6 +283,61 @@ async function finraMargin() {
   return marginRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
 }
 
+const SPY_CIK = '884394';
+const SEC_UA = { headers: { 'user-agent': 'gyneconomy-backfill github.com/kerzaiden/gyneconomy', accept: '*/*' } };
+const SPY_DAILY = 'https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx';
+function topTen(weights) {
+  const w = weights.filter(v => band(v, 0, 100)).sort((x, y) => y - x);
+  if (w.length < 400) throw new Error('top ten: only ' + w.length + ' holdings, an S&P 500 fund holds about 500');
+  return Math.round(w.slice(0, 10).reduce((a, v) => a + v, 0) * 100) / 100;
+}
+
+function nportFilings(sub) {
+  const r = (sub && sub.filings && sub.filings.recent) || {}, last = {};
+  (r.form || []).forEach((f, i) => {
+    if (!/^NPORT-P(\/A)?$/.test(f) || !/^\d{4}-(03|06|09|12)-\d{2}$/.test(r.reportDate[i])) return;
+    const d = r.reportDate[i];
+    if (!last[d] || r.filingDate[i] >= last[d].filed) last[d] = { d, filed: r.filingDate[i], acc: r.accessionNumber[i].replace(/-/g, '') };
+  });
+  return Object.values(last).sort((x, y) => (x.d < y.d ? -1 : 1));
+}
+
+function nportWeights(xml) {
+  return [...xml.matchAll(/<invstOrSec>[\s\S]*?<pctVal>(-?[\d.Ee+-]+)<\/pctVal>[\s\S]*?<\/invstOrSec>/g)].map(m => Number(m[1]));
+}
+
+async function spyQuarters() {
+  const sub = await fetch('https://data.sec.gov/submissions/CIK' + SPY_CIK.padStart(10, '0') + '.json', SEC_UA);
+  if (!sub.ok) throw new Error('SEC submissions: HTTP ' + sub.status);
+  const out = [];
+  for (const f of nportFilings(await sub.json())) {
+    const r = await fetch('https://www.sec.gov/Archives/edgar/data/' + SPY_CIK + '/' + f.acc + '/primary_doc.xml', SEC_UA);
+    if (!r.ok) throw new Error('SEC N-PORT ' + f.d + ': HTTP ' + r.status);
+    out.push({ q: f.d.slice(0, 4) + ' Q' + (Number(f.d.slice(5, 7)) / 3), v: topTen(nportWeights(await r.text())), d: f.d });
+    await new Promise(ok => setTimeout(ok, 250));
+  }
+  if (!out.length) throw new Error('SEC N-PORT: no quarter-end filing for SPY');
+  return out;
+}
+
+function spyDailyRows(rows) {
+  const hdr = rows.findIndex(r => (r || []).some(c => /^weight$/i.test(String(c).trim())));
+  if (hdr < 0) throw new Error('SPY holdings: no Weight column');
+  const col = rows[hdr].findIndex(c => /^weight$/i.test(String(c).trim()));
+  const asOf = rows.slice(0, hdr).map(r => String((r || []).join(' '))).map(t => (t.match(/as of (\d{2}-[A-Za-z]{3}-\d{4})/i) || [])[1]).find(Boolean);
+  if (!asOf) throw new Error('SPY holdings: no "As of" date above the table');
+  const d = new Date(asOf + ' UTC').toISOString().slice(0, 10);
+  return { d, v: topTen(rows.slice(hdr + 1).map(r => Number((r || [])[col]))) };
+}
+
+async function spyToday() {
+  const r = await fetch(SPY_DAILY, { headers: { 'user-agent': 'Mozilla/5.0 (gyneconomy-backfill; github.com/kerzaiden/gyneconomy)' } });
+  if (!r.ok) throw new Error('SPY holdings: HTTP ' + r.status);
+  const XLSX = require('xlsx');
+  const wb = XLSX.read(Buffer.from(await r.arrayBuffer()));
+  return spyDailyRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
+}
+
 function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
@@ -429,6 +484,10 @@ async function main() {
     throw new Error('activity: expected payroll growth from 1940-01 and retail sales growth from 1993-01');
   say('PAYEMS YoY    ' + activity.payrolls.length + ' months, ' + activity.payrolls[0].m + ' → ' + activity.payrolls[activity.payrolls.length - 1].m);
   say('RSAFS YoY     ' + activity.retail.length + ' months, ' + activity.retail[0].m + ' → ' + activity.retail[activity.retail.length - 1].m);
+
+  const heavy = { quarters: await spyQuarters(), today: await spyToday() };
+  say('SPY top ten   ' + heavy.quarters.length + ' quarters, ' + heavy.quarters.map(d => d.d + ' ' + d.v).join(', '));
+  say('SPY top ten   ' + heavy.today.d + ' ' + heavy.today.v + '% (State Street daily holdings)');
 
   fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
