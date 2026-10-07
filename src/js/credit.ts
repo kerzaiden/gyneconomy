@@ -49,9 +49,9 @@ function marginWord(v: number): CreditWord {
   return { state:"norm", text:"Borrowing less", says:"below zero: investors owe their brokers less than a year earlier" };
 }
 function lendingWord(v: number): CreditWord {
-  if (v > LENDING_LINE) return { state:"warning", text:"Tightening",
-    says:"above zero: more banks tightened their standards for business loans than eased them" };
-  return { state:"good", text:"Easing", says:"at or below zero: as many banks eased their standards for business loans as tightened them, or more" };
+  var w = v > LENDING_LINE ? ["warning", "Tightening", "above zero: more banks tightened their standards for business loans than eased them"] : v < LENDING_LINE ? ["good", "Easing", "below zero: more banks eased their standards for business loans than tightened them"]
+    : ["good", "No change", "at zero: as many banks eased their standards for business loans as tightened them"];
+  return { state:w[0] as State, text:w[1], says:w[2] };
 }
 function demandAt(){
   var at: Record<string, number> = {};
@@ -130,8 +130,8 @@ export function creditInsight(s: { series: readonly Point[]; mid: number; name: 
   for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
   var higher = h.filter(function(d){ return d.v > last.v; }).length;
   return [lede(P.lede),
-    hiCard("The Latest Reading", s.row.flagState || "", pointLabel(last) + " read " + P.fmt(last.v) + ", " + (side(last) ? "above" : "below") + " the line at " +
-      P.fmt(s.mid) + (cross ? ", where it has been since " + pointLabel(cross) + "." : ".")),
+    hiCard("The Latest Reading", s.row.flagState || "", pointLabel(last) + " read " + P.fmt(last.v) + ", " + (last.v === s.mid ? "on" : side(last) ? "above" : "below") + " the line at " +
+      P.fmt(s.mid) + (cross && last.v !== s.mid ? ", where it has been since " + pointLabel(cross) + "." : ".")),
     hiCard("Against the Record", "", higher + " of its " + h.length + " readings since " + pointLabel(h[0]) + " ran higher, and " + above + " sat at or above the line.")];
 }
 export function bootCredit(){

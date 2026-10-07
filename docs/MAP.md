@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,996 lines** in 36 files, about 606 KB, roughly **172 thousand tokens**. No session can
+The source is **8,996 lines** in 36 files, about 607 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `9aee726` on 2026-10-07.
+Generated from commit `33db474` on 2026-10-07.
 
 ## The page
 
