@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `a3ca3be` on 2026-10-07. **99 components**, **28 shared patterns**.
+Generated from commit `5062f2d` on 2026-10-07. **99 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -101,7 +101,7 @@ Generated from commit `a3ca3be` on 2026-10-07. **99 components**, **28 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`bandsHtml`** | `.fp-band` `.fp-ph` | `fed-phases.ts:fedPhasesCard` |
-| **`fedPhasesCard`** | `.fp-marks` `.fp-phases` `.fp-plot` `.fp-years` | `cycle-analysis.ts:homeSections`, `diagnosis.ts:diagnosisHtml` |
+| **`fedPhasesCard`** | `.fp-marks` `.fp-phases` `.fp-plot` `.fp-years` | `fed-phases.ts:fedEnvironment` |
 | **`levelsHtml`** | `.fp-levels` | `fed-phases.ts:fedPhasesCard` |
 | **`plotSvg`** | `.fp-line` `.fp-ov-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
@@ -174,7 +174,7 @@ Generated from commit `a3ca3be` on 2026-10-07. **99 components**, **28 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:foldSec` |
-| **`dxHead`** | `.dx-sys-head` | `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
+| **`dxHead`** | `.dx-sys-head` | `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
 | **`econChips`** | `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:buildAiPage`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |

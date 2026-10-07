@@ -3,6 +3,9 @@ import { now, usRealGdpGrowth } from "./data.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { cpiDirectionAt, growthWord, inflationFigure } from "./model.ts";
 import { fmtSigned, isoDay, MONTHS_SHORT } from "./format.ts";
+import { orbitSvg } from "./marks.ts";
+import { dxHead, dxSys } from "./render-core.ts";
+import { ROSTER_BY } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
 type Phase = { m: string; s: number };
@@ -114,7 +117,7 @@ function endMonthOf(m: CycleModel){
   var ff = fedFundsHistory[fedFundsHistory.length - 1];
   return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
 }
-export function fedPhasesCard(m: CycleModel){
+function fedPhasesCard(m: CycleModel){
   var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
   var peak = cyclePeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
   var lines = [growthPoints(from, to), monthPoints(inflationHistory, from, to), monthPoints(fedFundsHistory, from, to)];
@@ -122,4 +125,8 @@ export function fedPhasesCard(m: CycleModel){
   var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + 0.5) / (to - from + 1)) + '">' + (m.ongoing ? "Peak so far" : "Peak") + '</span>' : "";
   return (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
     '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at, peakLevel(m, peak));
+}
+export function fedEnvironment(m: CycleModel){
+  var rate = ROSTER_BY["sheet-sign-hormones"];
+  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment", ' data-open="' + rate.id + '" data-title="' + rate.name + '"') + fedPhasesCard(m));
 }

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,934 lines** in 36 files, about 601 KB, roughly **171 thousand tokens**. No session can
+The source is **8,941 lines** in 36 files, about 601 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `a3ca3be` on 2026-10-07.
+Generated from commit `5062f2d` on 2026-10-07.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `a3ca3be` on 2026-10-07.
 | `js/main.ts` | 32 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **32** modules, **710** top-level functions, **121** top-level vars, **356** exported names, **20** boots.
+Counts: **32** modules, **711** top-level functions, **121** top-level vars, **356** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -52,7 +52,7 @@ Counts: **32** modules, **710** top-level functions, **121** top-level vars, **3
 | `js/cycle-analysis.ts` | 482 | 128 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 23 | 2 | `data`, `dom`, `format`, `indicators`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 37 | 3 | `data`, `indicators`, `model`, `readings`, `render-core` |
-| `js/fed-phases.ts` | 126 | 21 | `data`, `format`, `history-fred`, `model`, `refresh-season` |
+| `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 80 | 35 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 27 | 14 | — |
@@ -1093,32 +1093,33 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 12 | `monthIdx` | `function monthIdx(` |
-| 13 | `monthName` | `function monthName(` |
-| 14 | `fedPhases` · export | `function fedPhases(` |
-| 23 | `phaseAt` | `function phaseAt(` |
-| 28 | `topOf` | `function topOf(` |
-| 30 | `runTops` | `function runTops(` |
-| 35 | `findRuns` | `function findRuns(` |
-| 42 | `cyclePeak` · export | `function cyclePeak(` |
+| 15 | `monthIdx` | `function monthIdx(` |
+| 16 | `monthName` | `function monthName(` |
+| 17 | `fedPhases` · export | `function fedPhases(` |
+| 26 | `phaseAt` | `function phaseAt(` |
+| 31 | `topOf` | `function topOf(` |
+| 33 | `runTops` | `function runTops(` |
+| 38 | `findRuns` | `function findRuns(` |
+| 45 | `cyclePeak` · export | `function cyclePeak(` |
 
 #### The phases chart
 
 | Line | Name | Anchor |
 |---|---|---|
-| 49 | `VIEW_W` | `var VIEW_W =` |
-| 50 | `growthPoints` | `function growthPoints(` |
-| 56 | `monthPoints` | `function monthPoints(` |
-| 63 | `curve` | `function curve(` |
-| 73 | `pct` | `function pct(` |
-| 74 | `bandsHtml` | `function bandsHtml(` |
-| 85 | `yearsHtml` | `function yearsHtml(` |
-| 90 | `plotSvg` | `function plotSvg(` |
-| 100 | `level` | `function level(` |
-| 101 | `peakLevel` | `function peakLevel(` |
-| 104 | `levelsHtml` | `function levelsHtml(` |
-| 112 | `endMonthOf` | `function endMonthOf(` |
-| 117 | `fedPhasesCard` · export | `function fedPhasesCard(` |
+| 52 | `VIEW_W` | `var VIEW_W =` |
+| 53 | `growthPoints` | `function growthPoints(` |
+| 59 | `monthPoints` | `function monthPoints(` |
+| 66 | `curve` | `function curve(` |
+| 76 | `pct` | `function pct(` |
+| 77 | `bandsHtml` | `function bandsHtml(` |
+| 88 | `yearsHtml` | `function yearsHtml(` |
+| 93 | `plotSvg` | `function plotSvg(` |
+| 103 | `level` | `function level(` |
+| 104 | `peakLevel` | `function peakLevel(` |
+| 107 | `levelsHtml` | `function levelsHtml(` |
+| 115 | `endMonthOf` | `function endMonthOf(` |
+| 120 | `fedPhasesCard` | `function fedPhasesCard(` |
+| 129 | `fedEnvironment` · export | `function fedEnvironment(` |
 
 ### `js/format.ts`
 

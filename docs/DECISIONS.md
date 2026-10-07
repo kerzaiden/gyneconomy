@@ -289,6 +289,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   indicator, Federal debt, Interest payments and Federal budget each have their own; the two Treasury spreads
   stay one view, Households' debt service and saving rate stay one page, and Pressure stays one card with its
   maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
+- **The Interest Rates Environment head is a door to the Federal funds rate page, with a chevron, wherever it stands:**
+  Current Cycle, every past cycle and Analysis. Keren: "add a chevron to the interest rates environment container, both
+  in the current cycle and in analysis, and let it land in the federal funds rate page." (0.9.1)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** Keren: "if I go to
   the health chart page and I click on, let's say, temperature, I would get to the temperature page"; "the filter
