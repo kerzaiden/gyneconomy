@@ -906,13 +906,17 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
   spread, went with it. Keren: "use appetite as the keyword". (V709)
 - **Concentration risk is the ten largest S&P 500 companies' share of the index's market cap, read from SPY, under
-  Desire > Risk, against its record's own 2019–2025 average (31.2%).** Keren named it "Concentration risk" and its
+  Desire > Risk, against its record's own 1995–2025 average (22.8%), each year counted once.** Keren named it "Concentration risk" and its
   history "Top 10 Share of Market Cap" rather than "weight" (0.9.10). Keren asked to "track the top heavy weights of the S&P 500" and chose
   "Import once": the quarter ends since 2019 Q3 are SPY's SEC N-PORT filings, downloaded once from her own computer
   (the SEC refuses GitHub's servers and the cloud allowlist) and kept in `series.json` by `tools/import-nport.js`;
   from then on the Backfill reads State Street's daily SPY holdings file and keeps its latest figure for each quarter
-  (`topTenRecent`). A company counts once: share classes are joined by the issuer's six-character CUSIP, so Alphabet's A and C
-  are one holding. Keren: "it makes sense that Alphabet A and Alphabet C … would be the same company because it is
+  (`topTenRecent`). Keren asked whether the record could reach before 2019 and chose to fold it into 0.9.10: SPY's
+  annual reports (Form N-30D, yearly from 1995, twice a year from 2010) carry the full schedule of investments, read as
+  each holding's value over net assets; they agree with N-PORT to the hundredth in both quarters where the two meet
+  (2019 Q3, 2020 Q1). The quarters between reports have no reading and are drawn as gaps, never filled in. Each year
+  counts once in the average so the quarterly years don't outweigh the yearly ones. A company counts once: share classes are joined by the issuer's six-character CUSIP, so Alphabet's A and C
+  are one holding, and in the old reports, which carry no CUSIP, by the company's name. Keren: "it makes sense that Alphabet A and Alphabet C … would be the same company because it is
   the same company." (The index and State Street list the classes separately; JPMorgan's footnote could not be read
   from the cloud.)
   The average line and its Normal side are Claude's call under the derive-it-from-the-data rule; no convention sets

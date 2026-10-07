@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { topTen, spyDailyRows, keepQuarter, bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
-const { nportQuarter, quarters, withKey } = require('../tools/import-nport.js');
+const { nportQuarter, reportQuarter, quarters, withKey } = require('../tools/import-nport.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -183,6 +183,16 @@ const filing = (d, ws) => '<genInfo><repPdDate>' + d + '</repPdDate></genInfo>' 
 ok('an N-PORT filing gives its quarter and the top ten share of net assets', nportQuarter(filing('2026-06-30', fund)), { q: '2026 Q2', v: 40 });
 throws('an N-PORT filing for a month inside a quarter is refused', () => nportQuarter(filing('2026-05-31', fund)), /quarter-end/);
 ok('the filings line up oldest quarter first, one row each', quarters([filing('2026-06-30', fund), filing('2019-09-30', fund), filing('2026-06-30', fund)]).map(r => r.q), ['2019 Q3', '2026 Q2']);
+const book = (d, ws) => 'SCHEDULE OF INVESTMENTS\n' + d + '\nCOMMON STOCKS SHARES VALUE\n' +
+  ws.map((h, i) => ({ 2: 'Alphabet, Inc. (Class A) ...', 3: 'Alphabet, Inc.\n  (Class C) ...' })[i] || 'Company ' + i + ' ...').map((n, i) => n + ' 1,000 ' + (ws[i].v * 1e7).toLocaleString('en-US')).join('\n') +
+  '\nTOTAL COMMON STOCKS\nNET ASSETS ........ $1,000,000,000\n';
+ok('an annual report gives its quarter and the top ten share of net assets, joining a name wrapped onto two lines and the classes of one company',
+   reportQuarter(book('SEPTEMBER 30, 1999', fund)), { q: '1999 Q3', v: 36 + 4 + 0.12 });
+ok('a report in HTML tables reads the same',
+   reportQuarter('<TR><TD>Schedule of Investments March 31, 2012</TD></TR>' + fund.map((h, i) => '<TR><TD>Company ' + i + '</TD><TD>1,000</TD><TD>$&#160;' + (h.v * 1e7).toLocaleString('en-US') + '</TD></TR>').join('') +
+     '<TR><TD>TOTAL COMMON STOCKS</TD></TR><TR><TD>NET ASSETS</TD><TD>$ 1,000,000,000</TD></TR>'), { q: '2012 Q1', v: 40 });
+throws('a report without its net assets is refused', () => reportQuarter('SCHEDULE OF INVESTMENTS\nSEPTEMBER 30, 1999\n'), /no net assets/);
+ok('an N-PORT filing wins over a report for the same quarter', quarters([filing('2019-09-30', fund)], [book('SEPTEMBER 30, 2019', fund.slice(5))]), [{ q: '2019 Q3', v: 40 }]);
 ok('the import adds its key to the hand-kept series, and replaces it on a second run',
    [withKey('{\n  "a": [1]\n}\n', [{ q: '2026 Q2', v: 40 }]), withKey('{\n  "a": [1],\n  "topTenQuarterly": []\n}\n', [{ q: '2026 Q2', v: 40 }])],
    ['{\n  "a": [1],\n  "topTenQuarterly": [{"q":"2026 Q2","v":40}]\n}\n', '{\n  "a": [1],\n  "topTenQuarterly": [{"q":"2026 Q2","v":40}]\n}\n']);

@@ -13,13 +13,14 @@ export type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: n
 export function trendOf(vals: (number | null)[] | null | undefined, unit?: string, period?: string): Trend {
   period = period || "period";
   if (!vals || vals.length < 8) return { word:"unavailable", span:"", flat:true };
-  var n = vals.length, sx = 0, sy = 0, sxy = 0, sxx = 0;
-  vals.forEach(function(v, i){ var x = v == null ? 0 : v; sx += i; sy += x; sxy += i * x; sxx += i * i; });
-  var slope = (n * sxy - sx * sy) / ((n * sxx - sx * sx) || 1);
+  var n = vals.length, m = 0, sx = 0, sy = 0, sxy = 0, sxx = 0;
+  vals.forEach(function(v, i){ if (v == null) return; m++; sx += i; sy += v; sxy += i * v; sxx += i * i; });
+  var slope = (m * sxy - sx * sy) / ((m * sxx - sx * sx) || 1);
   var dir = slope > 0 ? "rising" : "falling";
   var total = Math.abs(slope) * (n - 1);
-  var lo = Math.min.apply(null, vals as number[]), hi = Math.max.apply(null, vals as number[]), spread = (hi - lo) || 1;
-  var fit = { slope:slope, intercept:(sy - slope * sx) / n, n:n };
+  var got = vals.filter(function(v){ return v != null; }) as number[];
+  var lo = Math.min.apply(null, got), hi = Math.max.apply(null, got), spread = (hi - lo) || 1;
+  var fit = { slope:slope, intercept:(sy - slope * sx) / (m || 1), n:n };
   var perYear = period === "month" ? 12 : period === "quarter" ? 4 : period === "day" ? 252 : 1;
   var span = "across " + Math.max(1, Math.round(n / perYear)) + "Y";
   if (total < spread * 0.1) return { word:"flat", span:span, flat:true, fit:fit };
@@ -151,7 +152,7 @@ export function divergeChart(o: DivergeOpts, W?: number){
   W = Math.max(280, W || 340);
   var F = histFrame(W), H = F.H;
   var padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B, iw = W - padL - padR, ih = H - padT - padB;
-  var vs = o.vals.map(function(d){ return d.v; });
+  var vs = o.vals.map(function(d){ return d.v; }).filter(function(v){ return v != null; });
   var lo = Math.min.apply(null, (vs as number[]).concat([o.mid])), hi = Math.max.apply(null, (vs as number[]).concat([o.mid]));
   var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / ((above + below) || 1);
   var midY = padT + above * unit;
@@ -161,11 +162,12 @@ export function divergeChart(o: DivergeOpts, W?: number){
                          base:(padT + ih), skipNear:midY, step:o.step, fmt:(o.tickFmt || o.fmt) })];
   out.push('<path class="dv-mid" d="M' + padL + ',' + midY.toFixed(1) + 'L' + (W - padR) + ',' + midY.toFixed(1) + '"/>');
   o.vals.forEach(function(d, i){
-    var v = d.v == null ? 0 : d.v, cx = (padL + slot * (i + 0.5)).toFixed(1), y1 = parseFloat(y(v));
+    if (d.v == null){ out.push('<path class="dv-bar hcol" d=""/>'); return; }
+    var v = d.v, cx = (padL + slot * (i + 0.5)).toFixed(1), y1 = parseFloat(y(v));
     if (Math.abs(y1 - midY) < 0.6) y1 = midY + (v >= o.mid ? -0.6 : 0.6);
     out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
   });
-  var dAvg = o.vals.reduce(function(a, d){ return a + (d.v == null ? 0 : d.v); }, 0) / (n || 1);
+  var dAvg = (vs as number[]).reduce(function(a, v){ return a + v; }, 0) / (vs.length || 1);
   out.push(avgRule(padL, (W - padR), y(dAvg)));
   if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * 0.5, padL + slot * (n - 0.5), y, W, padL, padR));
   o.vals.forEach(function(d, i){

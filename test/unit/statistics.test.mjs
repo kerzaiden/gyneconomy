@@ -31,7 +31,7 @@ test('a cycle counts only its closed years as bull years', () => {
 
 test('the (i) says how many closed cycles each short range rests on', () => {
   const all = detailTexts.join(' ').replace(/<[^>]+>/g, '');
-  assert.match(all, /Depth: a range rests[^.]*\. Concentration risk on one; US 10-year Treasury[^;]* on two/);
+  assert.match(all, /Depth: a range rests[^.]*\. US 10-year Treasury[^;]* on two; [^;]*Concentration risk on three/);
 });
 
 test('a live reading moves Cycle Statistics and AI Insights with its figure', async () => {

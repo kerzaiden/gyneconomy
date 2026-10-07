@@ -24,7 +24,8 @@ const step = {
   y: k => Number(k)
 };
 
-const KNOWN_GAPS = { cpiYoYHistory: '2025-09 -> 2025-11' };
+const REPORTS = ['1995 Q4', '1996 Q4'].concat(Array.from({ length: 13 }, (_, i) => (1997 + i) + ' Q3'), ...Array.from({ length: 10 }, (_, i) => [(2010 + i) + ' Q1', (2010 + i) + ' Q3']));
+const KNOWN_GAPS = { cpiYoYHistory: '2025-09 -> 2025-11', topTenQuarterly: REPORTS.slice(1).map((q, i) => REPORTS[i] + ' -> ' + q).join(', ') };
 
 const KEYED = [
   ['series.json', 'cpiYoYHistory',           'm', 440, [-5, 20]],
@@ -54,7 +55,7 @@ const KEYED = [
   ['fred.json',   'gdpGrowthBefore',         'y',  60, [-20, 25]],
   ['series.json', 'buffettHistory',          'q', 220, [10, 400]],
   ['series.json', 'capeHistory',             'y',  55, [4, 60]],
-  ['series.json', 'topTenQuarterly',         'q',  28, [10, 60]],
+  ['series.json', 'topTenQuarterly',         'q',  62, [10, 60]],
 ];
 const COMPILED = /DATA_COMPILED = new Date\((\d+), (\d+), (\d+)\)/.exec(fs.readFileSync(path.join(__dirname, '..', 'src', 'js', 'refresh-season.ts'), 'utf8'));
 const TODAY = new Date(Date.UTC(+COMPILED[1], +COMPILED[2], +COMPILED[3]));
