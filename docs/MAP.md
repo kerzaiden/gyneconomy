@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,755 lines** in 35 files, about 583 KB, roughly **166 thousand tokens**. No session can
+The source is **8,763 lines** in 35 files, about 586 KB, roughly **166 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `85f1693` on 2026-10-07.
+Generated from commit `df0dd46` on 2026-10-07.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `85f1693` on 2026-10-07.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,215 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,221 | the whole stylesheet, every token and rule |
 | `page-body.html` | 325 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **686** top-level functions, **121** top-level vars, **352** exported names, **19** boots.
+Counts: **31** modules, **694** top-level functions, **120** top-level vars, **352** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -48,7 +48,7 @@ Counts: **31** modules, **686** top-level functions, **121** top-level vars, **3
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/ai-insights.ts` | 181 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 249 | 34 | — |
-| `js/cycle-analysis.ts` | 480 | 121 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/cycle-analysis.ts` | 482 | 128 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 23 | 2 | `data`, `dom`, `format`, `indicators`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 37 | 3 | `data`, `indicators`, `model`, `readings`, `render-core` |
 | `js/fed-phases.ts` | 126 | 21 | `data`, `format`, `history-fred`, `model`, `refresh-season` |
@@ -919,126 +919,133 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 21 | `NUM` | `var NUM =` |
-| 24 | `BASELINE` | `var BASELINE =` |
-| 26 | `quartile` | `function quartile(` |
-| 30 | `normOf` | `function normOf(` |
-| 35 | `closedCount` | `function closedCount(` |
-| 36 | `visitOf` | `function visitOf(` |
-| 43 | `visits` | `function visits(` |
-| 44 | `present` | `function present(` |
-| 45 | `regularity` | `function regularity(` |
-| 50 | `cycleLab` | `function cycleLab(` |
-| 54 | `cycleReadings` | `function cycleReadings(` |
-| 60 | `readingsNorm` | `function readingsNorm(` |
-| 63 | `spanOf` | `function spanOf(` |
-| 66 | `cardPrint` | `function cardPrint(` |
-| 75 | `readingLab` | `function readingLab(` |
-| 83 | `forgetLabs` · export | `function forgetLabs(` |
-| 84 | `cycleLabs` | `function cycleLabs(` |
-| 92 | `labs` · export | `function labs(` |
-| 93 | `normAt` | `function normAt(` |
-| 94 | `unread` | `function unread(` |
-| 96 | `atCycle` | `function atCycle(` |
-| 99 | `atWhen` | `function atWhen(` |
-| 104 | `nowWhen` · export | `function nowWhen(` |
-| 105 | `yearly` | `function yearly(` |
-| 107 | `whenValue` | `function whenValue(` |
-| 114 | `quarterKey` | `function quarterKey(` |
-| 115 | `whenMeans` | `function whenMeans(` |
-| 126 | `hasWhen` | `function hasWhen(` |
-| 127 | `periodRows` | `function periodRows(` |
-| 136 | `state` | `function state(` |
-| 141 | `yearsWord` · export | `function yearsWord(` |
-| 142 | `fmt` · export | `function fmt(` |
-| 143 | `TIERS` | `var TIERS =` |
-| 144 | `tier` | `function tier(` |
-| 148 | `catTitle` | `function catTitle(` |
-| 149 | `side` | `function side(` |
-| 150 | `findWords` | `function findWords(` |
-| 154 | `rowTag` | `function rowTag(` |
-| 155 | `cardWord` | `function cardWord(` |
-| 159 | `labItem` | `function labItem(` |
-| 165 | `ring` | `function ring(` |
-| 169 | `scoreTier` | `function scoreTier(` |
-| 175 | `scoreBox` | `function scoreBox(` |
-| 179 | `scoreRing` | `function scoreRing(` |
-| 180 | `scoreTile` | `function scoreTile(` |
-| 183 | `foldSec` | `function foldSec(` |
-| 188 | `labSec` | `function labSec(` |
-| 192 | `subSec` | `function subSec(` |
-| 195 | `bySub` | `function bySub(` |
-| 203 | `bySystem` | `function bySystem(` |
-| 212 | `findOf` | `function findOf(` |
-| 213 | `LENS` | `var LENS =` |
-| 214 | `tierOpts` | `function tierOpts(` |
-| 217 | `filterTag` | `function filterTag(` |
-| 221 | `finder` | `function finder(` |
-| 226 | `stepBtn` | `function stepBtn(` |
-| 229 | `stepper` | `function stepper(` |
-| 235 | `filterDoor` | `function filterDoor(` |
-| 238 | `sheetSec` | `function sheetSec(` |
-| 239 | `calBtn` | `function calBtn(` |
-| 242 | `calOff` | `function calOff(` |
-| 243 | `calQuarter` | `function calQuarter(` |
-| 247 | `calYear` | `function calYear(` |
-| 251 | `calCycle` | `function calCycle(` |
-| 256 | `periodCal` | `function periodCal(` |
-| 260 | `shown` | `function shown(` |
-| 261 | `filterSheet` | `function filterSheet(` |
-| 269 | `RESULT` | `var RESULT =` |
-| 270 | `narrow` | `function narrow(` |
-| 282 | `riskLabs` · export | `function riskLabs(` |
-| 283 | `judged` | `function judged(` |
-| 284 | `score` | `function score(` |
-| 285 | `listWords` · export | `function listWords(` |
-| 286 | `word` | `function word(` |
-| 287 | `cap` | `function cap(` |
-| 289 | `depthWords` | `function depthWords(` |
-| 298 | `pinnedFacts` | `function pinnedFacts(` |
-| 304 | `methodFacts` | `function methodFacts(` |
-| 307 | `chartDetail` | `function chartDetail(` |
-| 316 | `cycleScore` · export | `function cycleScore(` |
-| 317 | `chartDoor` · export | `function chartDoor(` |
-| 321 | `HOME_ID` | `var HOME_ID =` |
-| 322 | `statRow` | `function statRow(` |
-| 327 | `statBody` | `function statBody(` |
-| 330 | `closedVisits` | `function closedVisits(` |
-| 331 | `meanOf` | `function meanOf(` |
-| 332 | `lengths` | `function lengths(` |
-| 333 | `typical` | `function typical(` |
-| 334 | `INFO` | `var INFO =` |
-| 335 | `TICK` | `var TICK =` |
-| 336 | `lengthBars` | `function lengthBars(` |
-| 344 | `lengthPage` | `function lengthPage(` |
-| 350 | `figo` | `function figo(` |
-| 354 | `variationPage` | `function variationPage(` |
-| 359 | `statsHome` | `function statsHome(` |
-| 366 | `insightSec` | `function insightSec(` |
-| 369 | `catName` | `function catName(` |
-| 370 | `markName` | `function markName(` |
-| 371 | `countTag` | `function countTag(` |
-| 372 | `insightsHome` | `function insightsHome(` |
-| 379 | `homeSections` | `function homeSections(` |
-| 383 | `whenPicked` | `function whenPicked(` |
-| 387 | `pickedKey` | `function pickedKey(` |
-| 388 | `periodAt` | `function periodAt(` |
-| 392 | `drawChart` | `function drawChart(` |
-| 400 | `IND` · export | `var IND =` |
-| 401 | `IND_ALL` | `var IND_ALL =` |
-| 402 | `searchShell` | `function searchShell(` |
-| 403 | `pickCat` | `function pickCat(` |
-| 409 | `buildFind` | `function buildFind(` |
-| 410 | `fold` | `function fold(` |
-| 414 | `wireFinder` | `function wireFinder(` |
-| 427 | `setPeriod` | `function setPeriod(` |
-| 432 | `pick` | `function pick(` |
-| 438 | `refreshSheet` | `function refreshSheet(` |
-| 443 | `PICKS` | `var PICKS =` |
-| 444 | `centreList` | `function centreList(` |
-| 448 | `wirePicks` | `function wirePicks(` |
-| 458 | `openWhen` | `function openWhen(` |
-| 463 | `wireCatDoors` | `function wireCatDoors(` |
-| 469 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 25 | `quartile` | `function quartile(` |
+| 29 | `normOf` | `function normOf(` |
+| 34 | `closedCount` | `function closedCount(` |
+| 35 | `len` | `function len(` |
+| 36 | `flow` | `function flow(` |
+| 37 | `visitOf` | `function visitOf(` |
+| 44 | `visits` | `function visits(` |
+| 45 | `present` | `function present(` |
+| 46 | `sdOf` | `function sdOf(` |
+| 47 | `drift` | `function drift(` |
+| 48 | `cycleLab` | `function cycleLab(` |
+| 52 | `cycleReadings` | `function cycleReadings(` |
+| 58 | `readingsNorm` | `function readingsNorm(` |
+| 61 | `spanOf` | `function spanOf(` |
+| 64 | `cardPrint` | `function cardPrint(` |
+| 73 | `readingLab` | `function readingLab(` |
+| 81 | `forgetLabs` · export | `function forgetLabs(` |
+| 82 | `cycleLabs` | `function cycleLabs(` |
+| 89 | `labs` · export | `function labs(` |
+| 90 | `normAt` | `function normAt(` |
+| 91 | `unread` | `function unread(` |
+| 93 | `atCycle` | `function atCycle(` |
+| 96 | `atWhen` | `function atWhen(` |
+| 101 | `nowWhen` · export | `function nowWhen(` |
+| 102 | `yearly` | `function yearly(` |
+| 104 | `whenValue` | `function whenValue(` |
+| 111 | `quarterKey` | `function quarterKey(` |
+| 112 | `whenMeans` | `function whenMeans(` |
+| 123 | `hasWhen` | `function hasWhen(` |
+| 124 | `periodRows` | `function periodRows(` |
+| 133 | `state` | `function state(` |
+| 138 | `yearsWord` · export | `function yearsWord(` |
+| 139 | `fmt` · export | `function fmt(` |
+| 140 | `TIERS` | `var TIERS =` |
+| 141 | `tier` | `function tier(` |
+| 145 | `catTitle` | `function catTitle(` |
+| 146 | `side` | `function side(` |
+| 147 | `findWords` | `function findWords(` |
+| 151 | `rowTag` | `function rowTag(` |
+| 152 | `cardWord` | `function cardWord(` |
+| 156 | `labItem` | `function labItem(` |
+| 162 | `ring` | `function ring(` |
+| 166 | `pastScores` | `function pastScores(` |
+| 167 | `scoreTier` | `function scoreTier(` |
+| 171 | `scoreBox` | `function scoreBox(` |
+| 175 | `scoreRing` | `function scoreRing(` |
+| 176 | `scoreTile` | `function scoreTile(` |
+| 179 | `foldSec` | `function foldSec(` |
+| 184 | `labSec` | `function labSec(` |
+| 188 | `subSec` | `function subSec(` |
+| 191 | `bySub` | `function bySub(` |
+| 199 | `bySystem` | `function bySystem(` |
+| 208 | `findOf` | `function findOf(` |
+| 209 | `LENS` | `var LENS =` |
+| 210 | `tierOpts` | `function tierOpts(` |
+| 213 | `filterTag` | `function filterTag(` |
+| 217 | `finder` | `function finder(` |
+| 222 | `stepBtn` | `function stepBtn(` |
+| 225 | `stepper` | `function stepper(` |
+| 231 | `filterDoor` | `function filterDoor(` |
+| 234 | `sheetSec` | `function sheetSec(` |
+| 235 | `calBtn` | `function calBtn(` |
+| 238 | `calOff` | `function calOff(` |
+| 239 | `calQuarter` | `function calQuarter(` |
+| 243 | `calYear` | `function calYear(` |
+| 247 | `calCycle` | `function calCycle(` |
+| 252 | `periodCal` | `function periodCal(` |
+| 256 | `shown` | `function shown(` |
+| 257 | `filterSheet` | `function filterSheet(` |
+| 265 | `RESULT` | `var RESULT =` |
+| 266 | `narrow` | `function narrow(` |
+| 278 | `riskLabs` · export | `function riskLabs(` |
+| 279 | `judged` | `function judged(` |
+| 280 | `score` | `function score(` |
+| 281 | `listWords` · export | `function listWords(` |
+| 282 | `word` | `function word(` |
+| 283 | `cap` | `function cap(` |
+| 285 | `depthWords` | `function depthWords(` |
+| 294 | `pinnedFacts` | `function pinnedFacts(` |
+| 300 | `methodFacts` | `function methodFacts(` |
+| 303 | `chartDetail` | `function chartDetail(` |
+| 312 | `cycleScore` · export | `function cycleScore(` |
+| 313 | `chartDoor` · export | `function chartDoor(` |
+| 317 | `HOME_ID` | `var HOME_ID =` |
+| 318 | `statRow` | `function statRow(` |
+| 323 | `statBody` | `function statBody(` |
+| 326 | `meanOf` | `function meanOf(` |
+| 327 | `lengths` | `function lengths(` |
+| 328 | `typical` | `function typical(` |
+| 329 | `TICK` | `var TICK =` |
+| 330 | `tone` | `function tone(` |
+| 331 | `mark` | `function mark(` |
+| 332 | `RELATIVE` | `var RELATIVE =` |
+| 333 | `healthPage` | `function healthPage(` |
+| 337 | `healthRow` | `function healthRow(` |
+| 341 | `cycleBars` | `function cycleBars(` |
+| 349 | `barClass` | `function barClass(` |
+| 350 | `lengthPage` | `function lengthPage(` |
+| 355 | `driftWord` | `function driftWord(` |
+| 356 | `variationPage` | `function variationPage(` |
+| 361 | `statsHome` | `function statsHome(` |
+| 368 | `insightSec` | `function insightSec(` |
+| 371 | `catName` | `function catName(` |
+| 372 | `markName` | `function markName(` |
+| 373 | `countTag` | `function countTag(` |
+| 374 | `insightsHome` | `function insightsHome(` |
+| 381 | `homeSections` | `function homeSections(` |
+| 385 | `whenPicked` | `function whenPicked(` |
+| 389 | `pickedKey` | `function pickedKey(` |
+| 390 | `periodAt` | `function periodAt(` |
+| 394 | `drawChart` | `function drawChart(` |
+| 402 | `IND` · export | `var IND =` |
+| 403 | `IND_ALL` | `var IND_ALL =` |
+| 404 | `searchShell` | `function searchShell(` |
+| 405 | `pickCat` | `function pickCat(` |
+| 411 | `buildFind` | `function buildFind(` |
+| 412 | `fold` | `function fold(` |
+| 416 | `wireFinder` | `function wireFinder(` |
+| 429 | `setPeriod` | `function setPeriod(` |
+| 434 | `pick` | `function pick(` |
+| 440 | `refreshSheet` | `function refreshSheet(` |
+| 445 | `PICKS` | `var PICKS =` |
+| 446 | `centreList` | `function centreList(` |
+| 450 | `wirePicks` | `function wirePicks(` |
+| 460 | `openWhen` | `function openWhen(` |
+| 465 | `wireCatDoors` | `function wireCatDoors(` |
+| 471 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/cycle-tab.ts`
 
@@ -1337,15 +1344,15 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 741 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 889 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
 | 898 | The symptoms: a cycle's years against today |
-| 1,039 | hero: yield curve |
-| 1,069 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,088 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,107 | un-inversion-to-recession historical lag panel |
-| 1,115 | long cycle (structural layer) |
-| 1,120 | the reading's tag |
-| 1,128 | info icon + popover (progressive disclosure for longer notes) |
-| 1,142 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,205 | footer |
+| 1,045 | hero: yield curve |
+| 1,075 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,094 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,113 | un-inversion-to-recession historical lag panel |
+| 1,121 | long cycle (structural layer) |
+| 1,126 | the reading's tag |
+| 1,134 | info icon + popover (progressive disclosure for longer notes) |
+| 1,148 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,211 | footer |
 
 ## Markup landmarks
 

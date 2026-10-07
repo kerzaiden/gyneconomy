@@ -592,37 +592,59 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The cycle results' drawer is titled Regularity, after FIGO's two measures of a regular cycle, length and
   variation; it holds Length, Variation, Bull years and Period flow.** Keren: "I would think that the title would be
   regularity and length would be the parameters that we're looking in terms of regular cycles." (0.8.3, Oct 6, 2026)
-- **Variation (named Regularity until the drawer took that name) is a cycle result: the spread from the shortest to the longest of the three cycles before it.** FIGO
-  measures how regular cycles are by the gap between the shortest and the longest (Munro, Critchley and Fraser,
-  2018). FIGO looks over a year of cycles; hers last years, so three is the app's choice. Lower
-  is its good side, and its range is the middle
-  half of all her closed cycles, like every other result. It is the one cycle result
-  read on the open cycle, since the three cycles before it have closed. Keren: "I think we should show track
-  regularity." (0.8.3, Oct 5, 2026)
+- **Cycle variation is the standard deviation of her closed cycles' lengths (±2¾ years), a figure, not a second
+  verdict; a cycle's distance from the average sits beside it, judged by the same Tukey fences as its length.** Keren
+  chose the deviation over FIGO's spread (0.8.12): across all 18 cycles the spread is 10 years, while 5¼ ± 2¾ matches
+  the four to eight years analysts quote. Twice the deviation was tried as variation's own cut-off and dropped the same
+  day: it judged length a second way and disagreed with Tukey on the Buyout and Big Tech cycles. Keren: "Are we sure we
+  want to use different models for length and variation? What is the benefit of this?" One rule, Tukey's, also suits
+  lopsided lengths better than a bell-curve rule. The Variation result is gone; until 0.8.12 it was FIGO's spread of
+  the cycles before each one.
 - **Cycle Statistics' (i) names FIGO only as the source of Regularity's measure, one line and one link; it does not
   explain FIGO or compare the app with cycle-tracking apps.** Keren: "I think we overcomplicated things with the FIGO
   thing." The ±0.47 band stays "Sensitivity" (Keren: "I think sensitivity is a better word", after "margin for
   noise" was tried). (0.8.3, Oct 6, 2026)
 - **The Analysis tab reads in Clue's order, one container after another at the app's one gap: the search box, the
-  Health Score (white), Cycle Statistics, Interest Environment, then Insights.** Keren, from Clue's analysis screen:
+  Cycle Statistics (the Health Score, white, first inside it), Interest Rates Environment, then Insights.** Keren, from Clue's analysis screen:
   "cycle statistics, period flow … insights divided according to categories", the health score and search "stay in
   the main analysis page", the health score "should have a white background", and "the spacing is always equal to the
   spacing that we determined in the app". Bleed is called Period flow everywhere ("Bleed should be called period
   flow"). (0.8.3, Oct 6, 2026)
 - **Cycle Statistics holds three cards, Cycle length, Cycle variation and Period flow, each a ring and a figure in
-  years; the first two carry a dividing line, aligned across both, and open a page explaining their figure.** Every
-  average is over all her closed cycles since 1928, never the last six as Clue takes (Keren: "I don't like the
-  arbitrary 6 cycles. If we have a scientific model, let's use it"); that line sits on Cycle length's page, not on
-  the card. Cycle length's page draws every cycle as a bar, Typical or Atypical. Cycle variation is FIGO's measure,
-  the gap between the shortest and longest of her last three cycles, the same number as the Variation result (one
-  figure, one number), so it reads her recent cycles (Keren: "maybe we should regard more recent cycles"). Period
+  years; the first two carry a dividing line, aligned across both, and open a page explaining their figure.** Each
+  card is the average of every closed cycle since 1928, and a line under the title says so: "Averages are based on 18
+  closed market cycles since 1928." Keren (0.8.12), after trying the last six as Clue does: "the majority of analysts
+  and economists would say that the average market cycle runs between four and eight years. So I don't want to be the
+  outlier … I guess we should base all our averages on … 18 market cycles." The line speaks of market cycles, not
+  "her": "users would not understand because they need the book as a guide." Cycle length's page draws every cycle as a bar, Typical or Atypical. Cycle variation is the
+  standard deviation (above). Period
   flow's ring is red and has no page. Keren: "they have like a dividing line … I want the dividing line to align
   between cycle length and cycle variation … to look like basically the same component." (0.8.3, Oct 6, 2026)
-- **Cycle Statistics says Typical or Atypical; Normal stays the word for readings.** Typical is within Tukey's fences
-  of her closed cycles, the app's outlier rule; a page says how in a line or two, because the model is new. Keren:
-  "typical is the right word … because normal is something that we use for parameters … regular cycles are
-  typical", and "we should explain how it's calculated … in a line or two … because this is a novelty, this model."
-  (0.8.3, Oct 6, 2026)
+- **Beside each average, Cycle Statistics shows the cycle on screen, the open one or a past one: its length (3¾ yrs)
+  and how far it ran from the average (−1½ yrs), each with a green or red tick for Typical or Atypical.** Each card
+  opens a page saying so in a line or two, with every cycle as a bar and the one shown in bold. "More info" is gone.
+  The Health Score counts the cycle's length once, Normal when Typical, Risk when not; an open cycle's length is
+  Typical until it passes the fence. Keren: "I think we need to see the current cycle statistics", and "a
+  health score should incorporate if the cycle length is typical and cycle variation is typical." (0.8.12, Oct 7, 2026)
+- **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
+  height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
+  against.** Keren: "put the health score inside cycle statistics, but keep it white with a gray border", "other
+  than color … it needs to be the same, the same height, same text", and "against 18 closed cycles … show it in more
+  details … because I don't need to see it every time I look at the health score." (0.8.12, Oct 7, 2026)
+- **The interest-rate container is titled Interest Rates Environment, on the cycle pages and on Analysis.** Keren:
+  "Instead of interest environment, write interest rates environment because most people recognize interest
+  rates." (0.8.12, Oct 7, 2026)
+- **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
+  adds that the verdict is relative to the market's own past cycles.** Typical is within Tukey's fences of her closed cycles,
+  the app's outlier rule; a page says how in a line or two, because the model is new. Keren (0.8.3): "typical is the
+  right word … because normal is something that we use for parameters", and "we should explain how it's calculated
+  … in a line or two." On Oct 7, 2026 she tried Normal/Abnormal and went back within the hour: "I don't like the
+  words normal and abnormal. Use typical and atypical." The relative line is hers: "briefly explain that normal is
+  subjective or relative to her own past cycles." (0.8.12, Oct 7, 2026)
+- **Cycle Statistics' verdicts carry the tier colours: green (`--good`) for Typical or Normal, yellow (`--gold`) for
+  Attention, red (`--critical`) for Atypical or Risk, on the tick and the ring; the length bars follow.** Period flow's
+  ring stays red. Keren: "if a stat is typical, meaning normal, then it should be green. Attention is yellow and risk
+  is red." (0.8.12, Oct 7, 2026)
 - **Insights lists only the categories; each opens one Indicators page on that category, where every reading is
   searched, filtered by tier and cycle, and switched between categories by a bar (All, Regularity, Weather, Mood,
   Circulation, Energy).** The search box on Analysis opens the same page on All. Keren: "put only the categories
@@ -1384,7 +1406,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   top of the AI Insights page, with one line saying what it is.** Keren: "we don't need the cycle statistics card on
   the current cycle. What we do need is the health score moved to the AI Insights container in the preview and be put
   inside the page as well with some kind of explanation, very short one." (0.6.13)
-- **A past cycle's page is laid out like the current one: Interest Environment, one card, Year by Year. Its card is
+- **A past cycle's page is laid out like the current one: Interest Rates Environment, one card, Year by Year. Its card is
   Cycle Statistics, the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that
   cycle; the separate story card is gone.** Keren: "looking at past cycles, I see that we still have cycle statistics
   and cycle story, meaning it's not up to date with recent changes … you should have cycle statistics just as a
@@ -1393,7 +1415,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   Keren: "all current cycle pages are supposed to be updated just one time." 0.6.13 changed only today's: the
   Diagnosis branched on whether the cycle is open, the change went into the open branch, and the browser suite had
-  the past cycle's old layout written down as expected. Now the page is one sequence (Interest Environment, the
+  the past cycle's old layout written down as expected. Now the page is one sequence (Interest Rates Environment, the
   cycle's card, Year by Year) with a single slot, `cycleCard`, that differs only in what its card opens, and a unit
   test fails if any closed cycle's page differs in shape from today's. (0.6.17)
 - **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Keren: "some

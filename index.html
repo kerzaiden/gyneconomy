@@ -922,16 +922,22 @@
   button.stat-row .stat-side{ flex:0 0 auto; width:8em; }
   .stat-row .lab-score-v{ width:46px; height:46px; }
   .stat-side .peek-chev{ margin-left:auto; }
-  .stat-tick{ display:inline-flex; color:var(--normal); }
+  .stat-tick{ display:inline-flex; color:var(--good); }
+  .stat-row.t-ok .lab-ring circle.on{ stroke:var(--good); }
+  .stat-row.t-warn .lab-ring circle.on{ stroke:var(--gold); }
+  .stat-row.t-odd .lab-ring circle.on{ stroke:var(--critical); }
   .stat-tick.odd{ color:var(--critical); }
+  .stat-tick.warn{ color:var(--gold); }
+  .stat-note{ margin:-4px 0 10px; font-size:var(--type-meta); color:var(--text-muted); }
   .len-bars{ display:block; width:100%; margin:8px 0; }
-  .len-bars rect.ok{ fill:var(--normal); }
+  .len-bars rect.ok{ fill:var(--good); }
   .len-bars rect.odd{ fill:var(--critical); }
-  .len-bars rect.now{ fill:var(--normal); opacity:0.45; }
+  .len-bars rect.now{ fill:var(--good); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
+  .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
   .len-key i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 12px; vertical-align:-1px; }
   .len-key i:first-child{ margin-left:0; }
-  .len-key i.ok{ background:var(--normal); }
+  .len-key i.ok{ background:var(--good); }
   .len-key i.odd{ background:var(--critical); }
   .insight-mark{ display:flex; flex:none; color:var(--accent); }
   .insight-mark svg{ width:18px; height:18px; }
@@ -1365,7 +1371,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.11 (769)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.12 (770)</span></p>
     </div>
   </div>
 
@@ -1772,23 +1778,23 @@
   function trendText(t, cls) {
     return '<span class="trend-text' + (cls ? " " + cls : "") + '">' + t + "</span>";
   }
-  function trendHead(mark, head, end) {
-    return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + titleCase(head) + end + "</span>";
+  function trendHead(mark2, head, end) {
+    return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark2 + "</span>" + titleCase(head) + end + "</span>";
   }
-  function trendCard(tag, cls, attrs, mark, head, end, body) {
-    return "<" + tag + ' class="trend-card cat-mood' + cls + '"' + attrs + ">" + trendHead(mark, head, end) + body + "</" + tag + ">";
+  function trendCard(tag, cls, attrs, mark2, head, end, body) {
+    return "<" + tag + ' class="trend-card cat-mood' + cls + '"' + attrs + ">" + trendHead(mark2, head, end) + body + "</" + tag + ">";
   }
-  function trendDoor(open, title, mark, head, body) {
-    return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark, head, CHEV, body);
+  function trendDoor(open, title, mark2, head, body) {
+    return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark2, head, CHEV, body);
   }
-  function trendJump(attrs, mark, head, body) {
-    return trendCard("button", "", ' type="button"' + attrs, mark, head, CHEV, body);
+  function trendJump(attrs, mark2, head, body) {
+    return trendCard("button", "", ' type="button"' + attrs, mark2, head, CHEV, body);
   }
-  function trendBox(mark, head, body) {
-    return trendCard("section", " is-box", "", mark, head, "", body);
+  function trendBox(mark2, head, body) {
+    return trendCard("section", " is-box", "", mark2, head, "", body);
   }
-  function trendSoon(mark, head, body) {
-    return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);
+  function trendSoon(mark2, head, body) {
+    return trendCard("div", " is-soon", "", mark2, head, '<span class="soon-pill">Coming soon</span>', body);
   }
   function moreRow(fullHtml, label) {
     if (!fullHtml) return "";
@@ -31772,9 +31778,9 @@
       years: c.from + "–" + (c.to || "Today")
     };
   }
-  function cycleQtrIdx(y0, cyc, len) {
+  function cycleQtrIdx(y0, cyc, len2) {
     var to = cyc.to || calendarTodayY;
-    var a = Math.max(0, (cyc.from - y0) * 4), b = Math.min(len, (to - y0 + 1) * 4);
+    var a = Math.max(0, (cyc.from - y0) * 4), b = Math.min(len2, (to - y0 + 1) * 4);
     return b > a ? [ a, b ] : null;
   }
   function totalRiseIn(vals) {
@@ -32740,13 +32746,13 @@
       histLive(host).textContent = [ part(".hr-label"), part(".hr-value") ].filter(Boolean).join(", ");
     });
   }
-  function mWindowFrom(len, key) {
+  function mWindowFrom(len2, key) {
     var sp = timelineSpan(key);
-    return sp == null || sp === Infinity ? 0 : Math.max(0, len - sp * 12);
+    return sp == null || sp === Infinity ? 0 : Math.max(0, len2 - sp * 12);
   }
-  function qWindowFrom(len, key) {
+  function qWindowFrom(len2, key) {
     var sp = timelineSpan(key);
-    return sp == null || sp === Infinity ? 0 : Math.max(0, len - sp * 4);
+    return sp == null || sp === Infinity ? 0 : Math.max(0, len2 - sp * 4);
   }
   function defFrom(key) {
     var sp = timelineSpan(key);
@@ -35401,8 +35407,8 @@
     }
     return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") + chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + "</span></span>";
   }
-  function dxHead(mark, title, open) {
-    var inner = '<span class="dx-mark" aria-hidden="true">' + mark + "</span>" + titleCase(title);
+  function dxHead(mark2, title, open) {
+    var inner = '<span class="dx-mark" aria-hidden="true">' + mark2 + "</span>" + titleCase(title);
     return open ? '<button type="button" class="dx-sys-head"' + open + ">" + inner + CHEV + "</button>" : '<div class="dx-sys-head">' + inner + "</div>";
   }
   function dxSys(cls, inner) {
@@ -35554,13 +35560,13 @@
     function drawM2Record() {
       var host = byId("m2-record");
       if (!host || !host.clientWidth) return;
-      var len = m2Yoy.length - 4, key = page.range["volume-range"];
+      var len2 = m2Yoy.length - 4, key = page.range["volume-range"];
       var volCyc = pageCycle("volume-range");
-      var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
+      var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len2) : null;
       put("volume-timeline", histControls("volume-range", {
-        depth: Math.floor(len / 4)
+        depth: Math.floor(len2 / 4)
       }));
-      var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : void 0;
+      var mFrom = volIdx ? volIdx[0] : qWindowFrom(len2, key), mTo = volIdx ? volIdx[1] : void 0;
       host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
       attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
       put("volume-trend", trendPill(trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v) {
@@ -36954,12 +36960,12 @@
       return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / (hi - lo || 1));
     };
     var zero = lo < 0 ? '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
-    var mark = peak ? '<line class="fp-ov-line" x1="' + x(peak.i).toFixed(1) + '" x2="' + x(peak.i).toFixed(1) + '" y1="0" y2="' + VIEW_H + '" vector-effect="non-scaling-stroke"/>' : "";
+    var mark2 = peak ? '<line class="fp-ov-line" x1="' + x(peak.i).toFixed(1) + '" x2="' + x(peak.i).toFixed(1) + '" y1="0" y2="' + VIEW_H + '" vector-effect="non-scaling-stroke"/>' : "";
     var paths = [ "fp-growth", "fp-prices", "fp-rate" ].map(function(cls, k) {
       return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>';
     }).join("");
     var dot = peak ? '<span class="fp-ov' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark + paths + "</svg>" + dot;
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark2 + paths + "</svg>" + dot;
   }
   function level(cls, label, text) {
     return '<li class="' + cls + '"><b>' + label + ":</b> " + text + "</li>";
@@ -37189,11 +37195,10 @@
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
     u: "https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm"
   };
-  var FIGO_SRC = {
-    t: "Munro, Critchley & Fraser — The two FIGO systems for normal and abnormal uterine bleeding symptoms: 2018 revisions (normal length and regularity)",
-    u: "https://obgyn.onlinelibrary.wiley.com/doi/10.1002/ijgo.12666"
+  var SD_SRC = {
+    t: "NIST/SEMATECH e-Handbook of Statistical Methods — Measures of Scale (standard deviation)",
+    u: "https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm"
   };
-  var BASELINE = 3;
   function quartile(vs, p) {
     var s = vs.slice().sort(function(a, b) {
       return a - b;
@@ -37214,6 +37219,12 @@
     return marketCycles.filter(function(c) {
       return !c.ongoing;
     }).length;
+  }
+  function len(v) {
+    return v.years;
+  }
+  function flow(v) {
+    return v.bleed;
   }
   function visitOf(m) {
     var c = m.era, signs = [], bleed = 0;
@@ -37236,12 +37247,14 @@
       return v != null;
     });
   }
-  function regularity(i) {
-    if (i < BASELINE) return null;
-    var ys = visits().slice(i - BASELINE, i).map(function(v) {
-      return v.years;
-    });
-    return Math.max.apply(null, ys) - Math.min.apply(null, ys);
+  function sdOf(vs) {
+    var m = meanOf(vs);
+    return Math.sqrt(vs.reduce(function(a, v) {
+      return a + (v - m) * (v - m);
+    }, 0) / (vs.length - 1));
+  }
+  function drift(i) {
+    return Math.abs(visits()[i].years - meanOf(lengths()));
   }
   function cycleLab(id, name, good, f, settled) {
     var per = visits().map(f), print = function(v) {
@@ -37348,13 +37361,11 @@
   function cycleLabs() {
     return [ cycleLab("length", "Length", void 0, function(v) {
       return v.years;
-    }), cycleLab("bull", "Bull years", "up", function(v) {
+    }, true), cycleLab("bull", "Bull years", "up", function(v) {
       return v.bull;
     }), cycleLab("bleed", "Period flow", "down", function(v) {
       return v.bleed;
-    }), cycleLab("regularity", "Variation", "down", function(_, i) {
-      return regularity(i);
-    }, true) ];
+    }) ];
   }
   function labs() {
     return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab)));
@@ -37488,7 +37499,7 @@
   } ];
   function tier(l, at) {
     var v = at.v(l), n = at.n(l), up = v > n.hi, down = v < n.lo;
-    return !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, at) ? "abnormal" : "borderline";
+    return l.id === "length" ? v <= n.fence && (at.open || v >= n.floor) ? "optimal" : "abnormal" : !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, at) ? "abnormal" : "borderline";
   }
   function catTitle(key) {
     return categoriesShown().filter(function(c) {
@@ -37520,10 +37531,13 @@
     var r = 21, c = 2 * Math.PI * r;
     return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + " " + c.toFixed(1) + '"/></svg>';
   }
+  function pastScores() {
+    return marketCycles.slice(0, closedCount()).map(function(_, k) {
+      return score(k).v;
+    });
+  }
   function scoreTier(v) {
-    var past = [];
-    for (var k = 0; k < closedCount(); k++) past.push(score(k).v);
-    var n = normOf(past);
+    var n = normOf(pastScores());
     return v >= n.lo ? "Normal" : v >= n.floor ? "Attention" : "Risk";
   }
   function scoreBox(i) {
@@ -37752,10 +37766,10 @@
     }).join(" ");
   }
   function methodFacts() {
-    return [ "<b>Regularity</b> follows FIGO’s two measures of a regular cycle: its length, and its variation, the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it." ];
+    return [ "<b>Length</b> is Typical inside Tukey’s fences of her closed cycles; <b>variation</b> is the standard deviation of their lengths." ];
   }
   function chartDetail() {
-    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, FIGO_SRC ]);
+    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, SD_SRC ]);
   }
   function cycleScore(m) {
     var i = marketCycles.indexOf(m.era);
@@ -37766,16 +37780,13 @@
     return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(m.era.story, "ai-clamp") + scoreBox(i));
   }
   var HOME_ID = "chart-home";
-  function statRow(name, v, of, side2, page2, cls) {
-    var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), "<small>" + name + "</small><b>" + yearsWord(v) + " years</b>", page2 ? side2 : null);
+  function statRow(name, v, of, side2, page2, cls, text) {
+    var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), "<small>" + name + "</small><b>" + (text || yearsWord(v) + " years") + "</b>", page2 ? side2 : null);
     var c = " stat-row" + (cls ? " " + cls : "");
     return page2 ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page2) + '"', inner) : scoreTile("span", c, "", inner);
   }
   function statBody(lead, main, side2) {
     return lead + '<span class="stat-main">' + main + "</span>" + (side2 == null ? "" : '<span class="stat-side">' + side2 + CHEV + "</span>");
-  }
-  function closedVisits() {
-    return visits().slice(0, closedCount());
   }
   function meanOf(vs) {
     return vs.reduce(function(a, b) {
@@ -37783,57 +37794,71 @@
     }, 0) / vs.length;
   }
   function lengths() {
-    return closedVisits().map(function(v) {
+    return visits().slice(0, closedCount()).map(function(v) {
       return v.years;
     });
   }
-  function typical(v) {
+  function typical(v, open) {
     var n = normOf(lengths());
-    return v >= n.floor && v <= n.fence;
+    return v <= n.fence && (open || v >= n.floor);
   }
-  var INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>';
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function lengthBars() {
-    var vs = visits(), F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, vs.map(function(v) {
-      return v.years;
-    })), bw = W / vs.length;
-    return '<svg class="len-bars" viewBox="0 ' + F.T + " " + W + " " + (H + 22) + '" role="img" aria-label="Each cycle’s length in years">' + vs.map(function(v, i) {
-      var h = H * v.years / top, x = i * bw + 2, c = marketCycles[i], cls = c.ongoing ? "now" : typical(v.years) ? "ok" : "odd";
-      return '<rect class="' + cls + '" x="' + x.toFixed(1) + '" y="' + (F.B - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/><text x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (F.B + 14) + '">' + String(c.from).slice(2) + "</text>";
+  function tone(ok) {
+    return ok ? "t-ok" : "t-odd";
+  }
+  function mark(cls, name) {
+    return '<span class="stat-tick' + cls + '">' + TICK + "</span>" + name;
+  }
+  var RELATIVE = "<p>Typical is relative: it is read against the market’s own past cycles, not a fixed standard.</p>";
+  function healthPage(i) {
+    var s = score(i), t = scoreTier(s.v), n = normOf(pastScores());
+    return "<h3>Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of the " + s.of + " results that are Normal. It is judged against the scores of the " + closedCount() + " closed cycles: Normal from " + Math.round(n.lo) + ", Risk below " + Math.max(0, Math.round(n.floor)) + ", past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>" + srcBlock([ FENCE_SRC ]);
+  }
+  function healthRow(i) {
+    var v = score(i).v, t = scoreTier(v), k = {
+      Normal: [ "ok", "t-ok" ],
+      Attention: [ "warn", "t-warn" ],
+      Risk: [ "odd", "t-odd" ]
+    }[t];
+    return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(" " + k[0], t), healthPage(i), k[1], String(v)) + "</div>";
+  }
+  function cycleBars(vs, cls, at, label) {
+    var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;
+    return '<svg class="len-bars" viewBox="0 ' + F.T + " " + W + " " + (H + 22) + '" role="img" aria-label="' + label + '">' + vs.map(function(v, i) {
+      var h = v == null ? 0 : H * v / top, x = i * bw + 2, c = marketCycles[i];
+      return (v == null ? "" : '<rect class="' + cls(v, i) + '" x="' + x.toFixed(1) + '" y="' + (F.B - h).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3"/>') + "<text" + (at.indexOf(i) !== -1 ? ' class="this"' : "") + ' x="' + (x + (bw - 4) / 2).toFixed(1) + '" y="' + (F.B + 14) + '">' + String(c.from).slice(2) + "</text>";
     }).join("") + "</svg>";
   }
-  function lengthPage() {
-    var n = normOf(lengths()), odd = marketCycles.filter(function(c, i) {
-      return !c.ongoing && !typical(visits()[i].years);
+  function barClass(ok, i) {
+    return marketCycles[i].ongoing ? "now" : ok ? "ok" : "odd";
+  }
+  function lengthPage(i) {
+    var n = normOf(lengths()), v = visits()[i].years, open = !!marketCycles[i].ongoing, odd = marketCycles.filter(function(c, k) {
+      return !c.ongoing && !typical(visits()[k].years);
     }).map(function(c) {
       return cycLabel(c).name;
     });
-    return "<h3>Her cycle length</h3><p>Each bar is one cycle, from its first bull year to the bear year that closes it; the last is the cycle in progress.</p><p>Her cycles average " + yearsWord(meanOf(lengths())) + " years, across her " + lengths().length + " closed cycles since " + marketCycles[0].from + ". A typical one lasts " + yearsWord(n.floor) + " to " + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of her " + lengths().length + " closed cycles, the standard rule for an outlier. " + listWords(odd) + ' ran longer.</p><p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>' + lengthBars() + srcBlock([ FENCE_SRC ]);
+    return "<h3>Cycle length</h3><p>" + (typical(v, open) ? "Typical" : "Atypical") + ": the " + marketCycles[i].name + (open ? " has run " : " ran ") + yearsWord(v) + " years. The " + lengths().length + " closed cycles since " + marketCycles[0].from + " average " + yearsWord(meanOf(lengths())) + " years. A typical one lasts " + yearsWord(n.floor) + " to " + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of the closed cycles, the standard rule for an outlier." + (odd.length ? " " + listWords(odd) + " ran longer." : "") + "</p>" + RELATIVE + '<p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>' + cycleBars(visits().map(len), function(x, k) {
+      return barClass(typical(x), k);
+    }, [ i ], "Each cycle’s length in years") + srcBlock([ FENCE_SRC ]);
   }
-  function figo() {
-    var reg = labs().find(function(l) {
-      return l.id === "regularity";
-    }), n = reg.norm, v = reg.per[reg.per.length - 1];
-    return {
-      v: v,
-      n: n,
-      ok: v <= n.fence,
-      top: Math.max.apply(null, present(reg.per))
+  function driftWord(i) {
+    var d = visits()[i].years - meanOf(lengths());
+    return Math.round(Math.abs(d) * 4) === 0 ? "on average" : (d < 0 ? "−" : "+") + yearsWord(Math.abs(d)) + " yrs";
+  }
+  function variationPage(i) {
+    var L = lengths(), sd = sdOf(L), c = marketCycles[i], d = visits()[i].years - meanOf(L), off = Math.round(Math.abs(d) * 4) === 0 ? "right on the average" : yearsWord(Math.abs(d)) + " years " + (d < 0 ? "under" : "over") + " the average";
+    return "<h3>Cycle variation</h3><p>" + (typical(visits()[i].years, c.ongoing) ? "Typical" : "Atypical") + ": market cycles run " + yearsWord(meanOf(L)) + " years, give or take " + yearsWord(sd) + ", the standard deviation of the " + L.length + " closed cycles since " + marketCycles[0].from + ". The " + c.name + (c.ongoing ? " has run " : " ran ") + yearsWord(visits()[i].years) + " years, " + off + ". Typical or not is read as for cycle length, inside Tukey’s fences.</p>" + RELATIVE + "<p>Each bar is how far a cycle ran from the average.</p>" + cycleBars(marketCycles.map(function(_, k) {
+      return drift(k);
+    }), function(x, k) {
+      return barClass(typical(visits()[k].years), k);
+    }, [ i ], "How far each cycle ran from the average length, in years") + srcBlock([ SD_SRC, FENCE_SRC ]);
+  }
+  function statsHome(i) {
+    var x = visits()[i], open = !!marketCycles[i].ongoing, closed = visits().slice(0, closedCount()), top = function(f) {
+      return Math.max.apply(null, visits().map(f));
     };
-  }
-  function variationPage() {
-    var f = figo(), k = closedCount(), three = marketCycles.slice(k - BASELINE, k), ys = closedVisits().slice(k - BASELINE).map(function(v) {
-      return yearsWord(v.years);
-    });
-    return "<h3>Her cycle variation</h3><p>" + (f.ok ? "Typical" : "Atypical") + ": her last three cycles, " + listWords(three.map(function(c) {
-      return cycLabel(c).name;
-    })) + ", ran " + listWords(ys) + " years, a spread of " + yearsWord(f.v) + " years. Up to " + yearsWord(f.n.fence) + " years is typical for her.</p><h4>How it’s calculated</h4><p>FIGO, the world federation of gynaecologists, calls a cycle regular by the gap between the shortest and longest of the last few. Here it is the gap across her last three cycles, judged against every such gap since " + marketCycles[0].from + " with Tukey’s fences.</p>" + srcBlock([ FIGO_SRC, FENCE_SRC ]);
-  }
-  function statsHome() {
-    var vs = closedVisits(), L = lengths(), B = vs.map(function(v) {
-      return v.bleed;
-    }), longest = Math.max.apply(null, L), f = figo(), ok = f.ok;
-    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + statRow("Cycle length", meanOf(L), longest, INFO + "More info", lengthPage()) + statRow("Cycle variation", f.v, f.top, '<span class="stat-tick' + (ok ? "" : " odd") + '">' + TICK + "</span>" + (ok ? "Typical" : "Atypical"), variationPage()) + statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow"));
+    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on ' + closedCount() + " closed market cycles since " + marketCycles[0].from + ".</p>" + healthRow(i) + statRow("Cycle length", meanOf(closed.map(len)), top(len), mark(typical(x.years, open) ? " ok" : " odd", yearsWord(x.years) + " yrs"), lengthPage(i), tone(typical(x.years, open))) + statRow("Cycle variation", sdOf(lengths()), meanOf(lengths()), mark(typical(x.years, open) ? " ok" : " odd", driftWord(i)), variationPage(i), tone(typical(x.years, open)), "±" + yearsWord(sdOf(lengths())) + " years") + statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
   }
   function insightSec(k, ls) {
     return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
@@ -37841,8 +37866,8 @@
   function catName(k) {
     return markName(CAT_MARK[k], catTitle(k));
   }
-  function markName(mark, name) {
-    return '<span class="lab-mark">' + mark() + "</span>" + name;
+  function markName(mark2, name) {
+    return '<span class="lab-mark">' + mark2() + "</span>" + name;
   }
   function countTag(n) {
     return '<small class="lab-n" aria-label="' + n + ' indicators">' + n + "</small>";
@@ -37861,7 +37886,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
+    return statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -38343,7 +38368,7 @@
   } ];
   function diagnosisHtml(m) {
     if (m.ongoing && !diagnoseToday()) return "";
-    return dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
+    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
   }
   function cycleCard(m) {
     return m.ongoing ? aiInsights() : chartDoor(m);
@@ -38630,7 +38655,7 @@
   function renderCycleDial() {
     var dial = need("cycle-dial"), hub = one(".season-wheel-hub");
     var active = null;
-    function mark(i) {
+    function mark2(i) {
       if (active) active.forEach(function(el) {
         el.classList.remove("active");
       });
@@ -38646,10 +38671,10 @@
       var q = t.getAttribute("data-q");
       if (q != null) {
         var i = +q;
-        mark(i);
+        mark2(i);
         hubShowQuarter(i);
       } else {
-        mark(null);
+        mark2(null);
         hubShowYear(+(t.getAttribute("data-year") || ""));
       }
       shown2 = true;
@@ -38658,7 +38683,7 @@
     function reset() {
       if (scrubbing || !dialState || !shown2) return;
       shown2 = false;
-      mark(dialState.parked);
+      mark2(dialState.parked);
       hubShowDefault();
     }
     dial.addEventListener("mousemove", function(e) {
@@ -38722,11 +38747,11 @@
     function goTo(i) {
       dialState.parked = i >= 0 ? i : null;
       if (i >= 0) {
-        mark(i);
+        mark2(i);
         hubShowQuarter(i);
         badgeTo(dialState.quarters[i].mid, Math.floor(dialState.quarters[i].seg.from) + 1);
       } else {
-        mark(null);
+        mark2(null);
         hubShowDefault();
         badgeTo(dialState.badgeDeg);
       }
@@ -38743,7 +38768,7 @@
       var b = dial.querySelector(".dial-today-badge");
       if (b) b.classList.remove("scrubbing");
       hub.classList.remove("scrubbing");
-      if (dialState.parked != null) mark(dialState.parked);
+      if (dialState.parked != null) mark2(dialState.parked);
     }
     [ "pointerup", "pointercancel" ].forEach(function(t) {
       dial.addEventListener(t, endScrub);
