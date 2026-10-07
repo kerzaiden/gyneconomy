@@ -169,8 +169,9 @@ function scoreTier(v: number){
   return v >= n.lo ? "Normal" : v >= n.floor ? "Attention" : "Risk";
 }
 function scoreBox(i: number){
-  var s = score(i);
-  return scoreTile("span", "", "", '<span><b>Health Score</b><small>' + scoreTier(s.v) + ' against ' + word(closedCount()) + ' closed cycles</small></span>' + scoreRing(s.v, '<span>' + s.v + '</span>'));
+  var v = score(i).v, k = healthTone(v);
+  return '<span class="lab-score-box">' + scoreTile("span", " stat-row " + k[1], "", statBody(scoreRing(v, ""), '<small>Health Score</small><b>' + v + '</b>', null) +
+    '<span class="stat-side">' + mark(" " + k[0], scoreTier(v)) + '</span>') + '</span>';
 }
 function scoreRing(v: number, label: string){ return '<span class="lab-score-v">' + ring(v) + label + '</span>'; }
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
@@ -334,9 +335,10 @@ function healthPage(i: number){
   var s = score(i), t = scoreTier(s.v), n = normOf(pastScores()) as Norm;
   return '<h3>Health Score</h3><p>' + t + ': ' + s.v + ' out of 100, the share of the ' + s.of + ' results that are Normal. It is judged against the scores of the ' + closedCount() + ' closed cycles: Normal from ' + Math.round(n.lo) + ', Risk below ' + Math.max(0, Math.round(n.floor)) + ', past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>' + srcBlock([FENCE_SRC]);
 }
+function healthTone(v: number){ return ({ Normal:["ok", "t-ok"], Attention:["warn", "t-warn"], Risk:["odd", "t-odd"] } as Record<string, string[]>)[scoreTier(v)]; }
 function healthRow(i: number){
-  var v = score(i).v, t = scoreTier(v), k = ({ Normal:["ok", "t-ok"], Attention:["warn", "t-warn"], Risk:["odd", "t-odd"] } as Record<string, string[]>)[t];
-  return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(" " + k[0], t), healthPage(i), k[1], String(v)) + '</div>';
+  var v = score(i).v, k = healthTone(v);
+  return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(" " + k[0], scoreTier(v)), healthPage(i), k[1], String(v)) + '</div>';
 }
 function cycleBars(vs: (number | null)[], cls: (v: number, i: number) => string, at: number[], label: string){
   var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;

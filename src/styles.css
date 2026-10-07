@@ -917,6 +917,7 @@
   .home-secs{ display:flex; flex-direction:column; gap:var(--gap); }
   .home-secs > *{ margin-top:0; margin-bottom:0; }
   .home-secs > .lab-sec + .lab-sec{ margin-top:0; }
+  span.lab-score-box{ display:block; margin-top:12px; }
   .lab-score-box .lab-ring circle{ stroke:var(--border); }
   .lab-score-box .lab-ring circle.on{ stroke:var(--normal); }
   .lab-score-box .lab-score{ margin:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
