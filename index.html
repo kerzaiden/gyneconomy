@@ -1371,7 +1371,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.0 (771)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.2 (773)</span></p>
     </div>
   </div>
 
@@ -35780,7 +35780,7 @@
     },
     autumn: {
       body: "Early luteal. Progesterone takes over from estrogen; temperature is up and stays up, energy is steady but turns inward, and the body settles into consolidation rather than display.",
-      economy: "Disinflation. Growth has slipped below the economy’s potential and prices are cooling or holding steady, though still at or above target. Rates stop rising and eventually fall, and the curve steepens."
+      economy: "Disinflation. Growth has slipped below the economy’s potential and prices are cooling, though still at or above target. Rates stop rising and eventually fall, and the curve steepens."
     },
     lateautumn: {
       body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
@@ -35796,7 +35796,7 @@
     },
     spring: {
       body: "Follicular. Estrogen rises, the lining rebuilds, and energy returns day by day. Nothing is at its peak yet, but the direction is unmistakable.",
-      economy: "Reflation. The economy is growing at or above its potential and prices are rising with it or holding steady, still below or within target — the comfortable stretch before anything overheats."
+      economy: "Reflation. The economy is growing at or above its potential and prices are rising with it, still below or within target — the comfortable stretch before anything overheats."
     }
   };
   var frameworkRows = [ {
@@ -36731,19 +36731,20 @@
   function regimeOf(g, p, prevRegime) {
     return g > p + HOLD_BAND ? "expansion" : g < p - HOLD_BAND ? "contraction" : prevRegime || (g >= p ? "expansion" : "contraction");
   }
-  function readSeason(cpi12, gdp, potential, prevRegime, annual) {
+  function readSeason(cpi12, gdp, potential, prevRegime, annual, prevHeading) {
     var cpiNow2 = cpi12[cpi12.length - 1].v;
     var cpiSlope = cpiTrend(cpi12);
-    var cpiDirection = cpiDirectionOf(cpiSlope);
+    var cpiDirection = cpiDirectionOf(cpiSlope), heading = cpiDirection === "steady" ? prevHeading || cpiDirection : cpiDirection;
     var cpiHot = cpiNow2 > 3, cpiCold = cpiNow2 < 1;
     var regime = regimeOf(gdp.v, potential, prevRegime), season;
-    if (regime === "expansion") season = cpiHot ? "summer" : cpiDirection === "falling" ? "springdeflation" : "spring"; else season = cpiCold ? "winter" : cpiDirection === "rising" ? "lateautumn" : "autumn";
+    if (regime === "expansion") season = cpiHot ? "summer" : heading === "falling" ? "springdeflation" : "spring"; else season = cpiCold ? "winter" : heading === "rising" ? "lateautumn" : "autumn";
     return {
       season: season,
       regime: regime,
       cpiNow: cpiNow2,
       cpiSlope: cpiSlope,
       cpiDirection: cpiDirection,
+      heading: heading,
       cpiHot: cpiHot,
       cpiCold: cpiCold,
       potential: potential,
@@ -36872,7 +36873,7 @@
       if (parseInt(d.q.slice(0, 4), 10) <= endYear) gdpEnd = i;
     });
     var prevEntry = seasonTrackAll[gdpEnd - 1], gq = gdpQuarterlyYoY[gdpEnd];
-    var reading = ongoing ? readSeason(cpi12, gq, potentialOf(gq.q), prevEntry && prevEntry.reading.regime) : seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : closingReading(endYear);
+    var reading = ongoing ? readSeason(cpi12, gq, potentialOf(gq.q), prevEntry && prevEntry.reading.regime, false, prevEntry && prevEntry.reading.heading) : seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : closingReading(endYear);
     var season = ongoing && seasonOverride || reading.season;
     var track = [];
     seasonTrack.forEach(function(entry) {
@@ -36925,10 +36926,10 @@
     };
   }
   var seasonRuleSentence = {
-    spring: "Expansion with prices heating or steady, within or below the range, is reflation — Spring.",
+    spring: "Expansion with prices heating, within or below the range, is reflation — Spring.",
     springdeflation: "Expansion with prices cooling, within or below the range, is Spring — deflation.",
     summer: "Expansion with prices above the range — hot — is inflation, Summer.",
-    autumn: "Contraction with prices cooling or steady, within or above the range, is disinflation — Autumn.",
+    autumn: "Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
     lateautumn: "Contraction with prices heating, within or above the range, is Autumn — stagflation.",
     winter: "Contraction with prices below the range — cold — is deflation, Winter."
   };
@@ -36938,7 +36939,13 @@
   }
   function seasonWhyFor(m) {
     var r = m.reading;
-    return "Today the economy is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + inflationFigure(r.cpiNow) + "%). " + seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
+    return "Today the economy is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " + pricesWord(r) + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + inflationFigure(r.cpiNow) + "%). " + seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
+  }
+  function pricesWord(r) {
+    var word2 = function(d) {
+      return d === "rising" ? "heating" : d === "falling" ? "cooling" : "steady";
+    };
+    return word2(r.cpiDirection) + (r.heading !== r.cpiDirection ? ", so still " + word2(r.heading) : "");
   }
   function inflationFigure(v) {
     var s = (Math.round(v * 10) / 10 || 0).toFixed(1);
@@ -37262,7 +37269,7 @@
   var seasonByQ;
   var readingNow;
   function seasonYears() {
-    var firstY = parseInt(gdpQuarterlyYoY[0].q, 10), out = [], prevRegime;
+    var firstY = parseInt(gdpQuarterlyYoY[0].q, 10), out = [], prevRegime, prevHeading;
     Object.keys(usRealGdpGrowth).map(Number).sort(function(a, b) {
       return a - b;
     }).forEach(function(y) {
@@ -37271,8 +37278,9 @@
       var r = readSeason(c12, {
         q: String(y),
         v: usRealGdpGrowth[y]
-      }, PEAK_TREND, prevRegime, true);
+      }, PEAK_TREND, prevRegime, true, prevHeading);
       prevRegime = r.regime;
+      prevHeading = r.heading;
       [ "Q1", "Q2", "Q3", "Q4" ].forEach(function(qn) {
         out.push({
           q: y + " " + qn,
@@ -37284,14 +37292,15 @@
     });
     return out;
   }
-  function seasonQuarters(prevRegime) {
+  function seasonQuarters(prevRegime, prevHeading) {
     var out = [];
     gdpQuarterlyYoY.forEach(function(d, i) {
       var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
       var c12 = cpiYear(y + "-" + QUARTER_END_MONTH[qn]);
       if (c12.length < 11) return;
-      var r = readSeason(c12, d, potentialOf(d.q), prevRegime);
+      var r = readSeason(c12, d, potentialOf(d.q), prevRegime, false, prevHeading);
       prevRegime = r.regime;
+      prevHeading = r.heading;
       out[i] = {
         i: i,
         q: d.q,
@@ -37313,7 +37322,7 @@
     PEAK_TREND = peakTrend();
     seasonTrackYears = seasonYears();
     var lastYear = seasonTrackYears[seasonTrackYears.length - 1];
-    seasonTrackAll = seasonQuarters(lastYear && lastYear.reading.regime);
+    seasonTrackAll = seasonQuarters(lastYear && lastYear.reading.regime, lastYear && lastYear.reading.heading);
     seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
     seasonByQ = {};
     seasonTrack.forEach(function(e) {
@@ -44231,13 +44240,13 @@
     when: "Prices heating",
     holds: "Gold, commodities",
     test: function(r) {
-      return r.cpiDirection === "rising";
+      return r.heading === "rising";
     }
   }, {
     when: "Prices cooling",
     holds: "Stocks, Treasuries",
     test: function(r) {
-      return r.cpiDirection === "falling";
+      return r.heading === "falling";
     }
   } ];
   var PHASES = [ {
@@ -44283,7 +44292,7 @@
     }).join(""));
   }
   function weatherDetail() {
-    return "<h4>How All Weather Reads</h4>" + facts([ "Bridgewater built All Weather in 1996 on one idea: every asset does well in some economic weather and badly in another, so a portfolio that balances its risk across all four, growth picking up or slowing, prices heating or cooling, needs no one to call the next season.", "These weights are the version Ray Dalio gave individual investors in Tony Robbins’s Money: Master the Game (2014). Bridgewater’s own fund uses leverage and different weights. The mix is held all the time and brought back to its weights from time to time; it is never timed.", "Which assets each weather favours is Bridgewater’s grid, cut to the five assets the mix holds. Today’s weather is marked from the Season Model: growth by its regime, prices by the direction of inflation. Prices holding steady mark neither.", "This is a published allocation, not advice." ]) + srcBlock(WEATHER_SRC);
+    return "<h4>How All Weather Reads</h4>" + facts([ "Bridgewater built All Weather in 1996 on one idea: every asset does well in some economic weather and badly in another, so a portfolio that balances its risk across all four, growth picking up or slowing, prices heating or cooling, needs no one to call the next season.", "These weights are the version Ray Dalio gave individual investors in Tony Robbins’s Money: Master the Game (2014). Bridgewater’s own fund uses leverage and different weights. The mix is held all the time and brought back to its weights from time to time; it is never timed.", "Which assets each weather favours is Bridgewater’s grid, cut to the five assets the mix holds. Today’s weather is marked from the Season Model: growth by its regime, prices by the direction of inflation. Prices holding steady keep the prior direction, as in the Season Model.", "This is a published allocation, not advice." ]) + srcBlock(WEATHER_SRC);
   }
   function drawWeather() {
     var r = nowModel.reading;
@@ -44303,7 +44312,7 @@
     methodPage(WEATHER_ID, say("Something for every kind of economic weather, held all the time, so no season has to be called. The mix Ray Dalio gave individual investors:") + weatherStrip() + weights + say("What each kind of weather has favoured:") + weather, weatherDetail());
   }
   function phaseOf(r) {
-    var up = r.regime === "expansion", cooling = r.cpiDirection === "falling";
+    var up = r.regime === "expansion", cooling = r.heading === "falling";
     return PHASES[up ? cooling ? 1 : 2 : cooling ? 0 : 3];
   }
   function arc(a0, a1) {
@@ -44321,7 +44330,7 @@
     return '<svg class="clock" viewBox="0 0 300 260" role="img" aria-label="The Investment Clock, at ' + now2.name + '">' + parts.join("") + axes + "</svg>";
   }
   function clockDetail() {
-    return "<h4>How the Clock Reads</h4>" + facts([ "Merrill Lynch’s Investment Clock (2004) splits the economy into four phases by two questions: is growth above or below its trend, and are prices rising or falling? Across its record, each phase had an asset that led: bonds in Reflation, stocks in Recovery, commodities in Overheat and cash in Stagflation. The clock usually turns Reflation, Recovery, Overheat, Stagflation, but it can skip a phase or turn back.", "Today’s phase is read from the Season Model, over the same windows: growth by its regime, at or above its potential or below it, and prices by the direction of inflation. Prices holding steady count with rising, since the clock has no steady phase; that is Claude’s call.", "The clock names one asset for each phase, not a mix; a portfolio that follows it moves between them as the phases turn. This is a published method, not advice." ]) + srcBlock(CLOCK_SRC);
+    return "<h4>How the Clock Reads</h4>" + facts([ "Merrill Lynch’s Investment Clock (2004) splits the economy into four phases by two questions: is growth above or below its trend, and are prices rising or falling? Across its record, each phase had an asset that led: bonds in Reflation, stocks in Recovery, commodities in Overheat and cash in Stagflation. The clock usually turns Reflation, Recovery, Overheat, Stagflation, but it can skip a phase or turn back.", "Today’s phase is read from the Season Model, over the same windows: growth by its regime, at or above its potential or below it, and prices by the direction of inflation. Prices holding steady keep the prior direction, as in the Season Model.", "The clock names one asset for each phase, not a mix; a portfolio that follows it moves between them as the phases turn. This is a published method, not advice." ]) + srcBlock(CLOCK_SRC);
   }
   function drawClock() {
     var now2 = phaseOf(nowModel.reading);
@@ -44332,7 +44341,7 @@
         wordy: true
       });
     }).join("");
-    methodPage(CLOCK_ID, say("Today reads " + now2.name + ": growth " + now2.growth + " and prices " + (now2.prices === "rising" && nowModel.reading.cpiDirection === "steady" ? "holding steady" : now2.prices) + ". In this phase the clock holds " + now2.holds.toLowerCase() + ".") + clockFace(now2) + rows, clockDetail());
+    methodPage(CLOCK_ID, say("Today reads " + now2.name + ": growth " + now2.growth + " and prices " + (nowModel.reading.cpiDirection === "steady" ? "holding steady, still " + now2.prices : now2.prices) + ". In this phase the clock holds " + now2.holds.toLowerCase() + ".") + clockFace(now2) + rows, clockDetail());
   }
   function homeHtml() {
     var now2 = phaseOf(nowModel.reading);
@@ -45067,14 +45076,14 @@
     var head = function(name, sub) {
       return '<div class="sg-head"><b>' + name + "</b><small>" + sub + "</small></div>";
     };
-    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1–3%") + head("Hot", "above 3%") + head("Expansion", "at or above potential") + cell("spring", 2, "Spring", [ "Reflation · heating, steady", "Deflation · cooling" ]) + cell("summer", 1, "Summer", [ "Inflation · any" ]) + head("Contraction", "below potential") + cell("winter", 1, "Winter", [ "Deflation · any" ]) + cell("autumn", 2, "Autumn", [ "Stagflation · heating", "Disinflation · cooling, steady" ]) + "</div>";
+    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1–3%") + head("Hot", "above 3%") + head("Expansion", "at or above potential") + cell("spring", 2, "Spring", [ "Reflation · heating", "Deflation · cooling" ]) + cell("summer", 1, "Summer", [ "Inflation" ]) + head("Contraction", "below potential") + cell("winter", 1, "Winter", [ "Deflation" ]) + cell("autumn", 2, "Autumn", [ "Stagflation · heating", "Disinflation · cooling" ]) + "</div>";
   }
   function recessionLine() {
     var r = recessionRecord();
     return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of the " + r.total + " quarters of the " + r.recessions + " NBER recessions fell in Autumn or Winter (" + r.autumn + " Autumn, " + r.winter + " Winter), seasons that hold " + r.share + "% of all quarters.";
   }
   function seasonModelNote() {
-    return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock’s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.", "<b>Sensitivity</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model’s 1–3% band, a point either side of the Fed’s 2% target.", "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.", recessionLine(), seasonWhy ]) + srcBlock([ CLOCK_SRC[0] ]);
+    return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock’s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.", "<b>Sensitivity</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model’s 1–3% band, a point either side of the Fed’s 2% target.", "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn. A trend that moves less than about a quarter point over the year is steady and keeps the prior direction.", recessionLine(), seasonWhy ]) + srcBlock([ CLOCK_SRC[0] ]);
   }
   function rangePos(v) {
     if (v < 1) return .28 * Math.max(0, Math.min(1, (v + 1) / 2));
@@ -45094,14 +45103,40 @@
   }
   function renderSeasonRows() {
     var seasonRules = [ {
+      key: "springdeflation",
+      growth: "Expansion",
+      temp: "Cooling",
+      zones: {
+        within: 1,
+        below: 1
+      },
+      range: "Cooling — within or below the range"
+    }, {
+      key: "spring",
+      growth: "Expansion",
+      temp: "Heating",
+      zones: {
+        within: 1,
+        below: 1
+      },
+      range: "Heating — within or below the range"
+    }, {
+      key: "summer",
+      growth: "Expansion",
+      temp: "Hot",
+      zones: {
+        above: 1
+      },
+      range: "Above the range — hot"
+    }, {
       key: "autumn",
       growth: "Contraction",
-      temp: "Cooling or steady",
+      temp: "Cooling",
       zones: {
         within: 1,
         above: 1
       },
-      range: "Cooling or steady — within or above the range"
+      range: "Cooling — within or above the range"
     }, {
       key: "lateautumn",
       growth: "Contraction",
@@ -45119,32 +45154,6 @@
         below: 1
       },
       range: "Below the range — cold"
-    }, {
-      key: "springdeflation",
-      growth: "Expansion",
-      temp: "Cooling",
-      zones: {
-        within: 1,
-        below: 1
-      },
-      range: "Cooling — within or below the range"
-    }, {
-      key: "spring",
-      growth: "Expansion",
-      temp: "Heating or steady",
-      zones: {
-        within: 1,
-        below: 1
-      },
-      range: "Heating or steady — within or below the range"
-    }, {
-      key: "summer",
-      growth: "Expansion",
-      temp: "Hot",
-      zones: {
-        above: 1
-      },
-      range: "Above the range — hot"
     } ];
     var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
     var FLAME = '<svg class="hot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.4 0 7-2.9 7-6.6 0-3.2-2-5.3-3.6-7.2-.6 1.4-1.4 2.2-2.4 2.6.3-3-1-6.3-4-8.8-.2 3-1.6 4.6-3 6.3C4.6 10.1 5 12 5 15.4 5 19.1 7.6 22 12 22z"/><path d="M12 22c-1.9 0-3-1.4-3-3 0-1.5.9-2.4 1.8-3.4.6 1 1.4 1.5 2.2 1.7.4-1 .3-2.1.1-3.1 1.5 1.3 1.9 2.7 1.9 4.2 0 1.8-1.1 3.6-3 3.6z"/></svg>';
