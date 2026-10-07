@@ -37897,7 +37897,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
+    return statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -38379,7 +38379,7 @@
   } ];
   function diagnosisHtml(m) {
     if (m.ongoing && !diagnoseToday()) return "";
-    return dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
+    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
   }
   function cycleCard(m) {
     return m.ongoing ? aiInsights() : chartDoor(m);

@@ -18,7 +18,7 @@ var DIAG_SRC = [
 ];
 function diagnosisHtml(m: CycleModel){
   if (m.ongoing && !diagnoseToday()) return "";
-  return dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
+  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
 }
 function cycleCard(m: CycleModel){ return m.ongoing ? aiInsights() : chartDoor(m); }
 function yearByYear(m: CycleModel){

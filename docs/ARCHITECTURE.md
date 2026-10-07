@@ -452,7 +452,7 @@ Rules that shape the pages:
   designs we made, we can throw them out").
 - **Cycle analysis is a blood test of each cycle** (`cycle-analysis`), and since 0.6.1 the tab where every
   reading is found (Search's job before it). One renderer, `drawChart(id)`, draws two hosts: `#chart-home`, the
-  tab's home (a search box that is a door, the Health Score, Cycle Statistics, Interest Environment and Insights, the
+  tab's home (a search box that is a door, Cycle Statistics with the Health Score inside it, Interest Rates Environment and Insights, the
   category rows, 0.8.3), and `#sheet-find`, the Indicators page, built at boot by `buildFind` and redrawn when it opens
   or a live reading lands (`repaint`). Every Insights row and the home's search box open it, setting its category
   (`finds[IND].cat`, a `tabBar`); the two share one cycle through `page.cycles`. Cycle Statistics reads the cycle it shows

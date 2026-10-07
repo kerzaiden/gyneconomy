@@ -604,7 +604,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   thing." The ±0.47 band stays "Sensitivity" (Keren: "I think sensitivity is a better word", after "margin for
   noise" was tried). (0.8.3, Oct 6, 2026)
 - **The Analysis tab reads in Clue's order, one container after another at the app's one gap: the search box, the
-  Health Score (white), Cycle Statistics, Interest Environment, then Insights.** Keren, from Clue's analysis screen:
+  Cycle Statistics (the Health Score, white, first inside it), Interest Rates Environment, then Insights.** Keren, from Clue's analysis screen:
   "cycle statistics, period flow … insights divided according to categories", the health score and search "stay in
   the main analysis page", the health score "should have a white background", and "the spacing is always equal to the
   spacing that we determined in the app". Bleed is called Period flow everywhere ("Bleed should be called period
@@ -629,6 +629,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Health Score sits inside Cycle Statistics, first under its title, white with a grey border to set it apart
   from the statistics.** Keren: "put the health score inside cycle statistics, but keep it white with a gray border
   because it's a bit different from the rest of the statistics." (0.8.12, Oct 7, 2026)
+- **The interest-rate container is titled Interest Rates Environment, on the cycle pages and on Analysis.** Keren:
+  "Instead of interest environment, write interest rates environment because most people recognize interest
+  rates." (0.8.12, Oct 7, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings.** Typical is within Tukey's fences
   of her closed cycles, the app's outlier rule; a page says how in a line or two, because the model is new. Keren:
   "typical is the right word … because normal is something that we use for parameters … regular cycles are
@@ -1395,7 +1398,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   top of the AI Insights page, with one line saying what it is.** Keren: "we don't need the cycle statistics card on
   the current cycle. What we do need is the health score moved to the AI Insights container in the preview and be put
   inside the page as well with some kind of explanation, very short one." (0.6.13)
-- **A past cycle's page is laid out like the current one: Interest Environment, one card, Year by Year. Its card is
+- **A past cycle's page is laid out like the current one: Interest Rates Environment, one card, Year by Year. Its card is
   Cycle Statistics, the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that
   cycle; the separate story card is gone.** Keren: "looking at past cycles, I see that we still have cycle statistics
   and cycle story, meaning it's not up to date with recent changes … you should have cycle statistics just as a
@@ -1404,7 +1407,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   Keren: "all current cycle pages are supposed to be updated just one time." 0.6.13 changed only today's: the
   Diagnosis branched on whether the cycle is open, the change went into the open branch, and the browser suite had
-  the past cycle's old layout written down as expected. Now the page is one sequence (Interest Environment, the
+  the past cycle's old layout written down as expected. Now the page is one sequence (Interest Rates Environment, the
   cycle's card, Year by Year) with a single slot, `cycleCard`, that differs only in what its card opens, and a unit
   test fails if any closed cycle's page differs in shape from today's. (0.6.17)
 - **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Keren: "some

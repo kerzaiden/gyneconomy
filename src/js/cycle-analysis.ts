@@ -380,7 +380,7 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  return statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
+  return statsHome(i) + dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(nowModel)) +
     dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){
