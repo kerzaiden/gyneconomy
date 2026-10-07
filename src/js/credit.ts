@@ -64,6 +64,16 @@ function delinquencyWord(v: number): CreditWord {
     says:"above its " + avgSpan() + " average of " + avg + ": more loans are going unpaid than usual" };
   return { state:"good", text:"Below average", says:"below its " + avgSpan() + " average of " + avg + ": fewer loans are going unpaid than usual" };
 }
+function lendingSpec(): CreditSpec {
+  return { id:"sheet-sign-lending", term:"Lending standards", econ:"Lending standards", unit:"net tightening", series:lendingHistory, mid:LENDING_LINE, line:"No change",
+    fmt:function(v){ return fmtSigned(v, 1) + "%"; }, word:lendingWord, src:LENDING_SRC, pair:{ label:"Loan demand", at:demandAt() },
+    about:"Each quarter the Federal Reserve asks senior loan officers at large US banks whether they tightened or eased their standards for " +
+      "business loans, and whether demand for those loans grew stronger or weaker. The reading is the share of banks that tightened less the share that eased; " +
+      "the second line is the same count for demand, stronger less weaker. Both are for loans to large and middle-market firms.",
+    band:"<b>Zero is the only line.</b> Above it more banks are tightening than easing; below it more are easing. No convention sets a band. " +
+      "Research at the Fed found that tightening standards come before falls in lending and output (Lown and Morgan, 2006; Bassett and others, 2012).",
+    lede:"Whether banks are willing to lend, set against whether firms want to borrow. When banks tighten while demand holds, credit is being withdrawn: the crunch." };
+}
 function specs(): CreditSpec[] {
   var pts = function(v: number){ return fmtSigned(v, 1) + " pt"; };
   return [
@@ -81,14 +91,7 @@ function specs(): CreditSpec[] {
         "against the same month a year earlier.",
       band:"<b>Zero is the only line.</b> Above it investors are borrowing more to own stocks than a year ago; below it they are paying it back.",
       lede:"Money borrowed to buy stocks, against the same month a year earlier: the market’s own appetite for credit." },
-    { id:"sheet-sign-lending", term:"Lending standards", econ:"Lending standards", unit:"net tightening", series:lendingHistory, mid:LENDING_LINE, line:"No change",
-      fmt:function(v){ return fmtSigned(v, 1) + "%"; }, word:lendingWord, src:LENDING_SRC, pair:{ label:"Loan demand", at:demandAt() },
-      about:"Each quarter the Federal Reserve asks senior loan officers at large US banks whether they tightened or eased their standards for " +
-        "business loans, and whether demand for those loans grew stronger or weaker. The reading is the share of banks that tightened less the share that eased; " +
-        "the second line is the same count for demand, stronger less weaker. Both are for loans to large and middle-market firms.",
-      band:"<b>Zero is the only line.</b> Above it more banks are tightening than easing; below it more are easing. No convention sets a band. " +
-        "Research at the Fed found that tightening standards come before falls in lending and output (Lown and Morgan, 2006; Bassett and others, 2012).",
-      lede:"Whether banks are willing to lend, set against whether firms want to borrow. When banks tighten while demand holds, credit is being withdrawn: the crunch." },
+    lendingSpec(),
     { id:"sheet-metric-delinquency", term:"Delinquency rate", econ:"Delinquency rate", unit:"of bank loans", series:delinquencyHistory, mid:DELINQUENCY_MEAN,
       line:avgSpan() + " average", optimal:{ lte:DELINQUENCY_MEAN, label:"≤ " + DELINQUENCY_MEAN.toFixed(2) + "%" }, ends:{ high:"Above average" },
       fmt:function(v){ return v.toFixed(2) + "%"; }, word:delinquencyWord, src:DELINQUENCY_SRC,

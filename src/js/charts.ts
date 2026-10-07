@@ -182,8 +182,7 @@ export function divergeChart(o: DivergeOpts, W?: number){
     out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
   });
   var dAvg = o.vals.reduce(function(a, d){ return a + (d.v == null ? 0 : d.v); }, 0) / (n || 1);
-  out.push(avgRule(padL, (W - padR), y(dAvg)));
-  if (o.pair) out.push(pairPath(o, padL, slot, y));
+  out.push(avgRule(padL, (W - padR), y(dAvg))); if (o.pair) out.push(pairPath(o, padL, slot, y));
   if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * 0.5, padL + slot * (n - 0.5), y, W, padL, padR));
   o.vals.forEach(function(d, i){
     var lab = xLabelOf(o, d, i, o.vals); if (!lab) return;

@@ -1373,7 +1373,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.3 (774)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.4 (775)</span></p>
     </div>
   </div>
 
@@ -36613,6 +36613,29 @@
       says: "below its " + avgSpan() + " average of " + avg + ": fewer loans are going unpaid than usual"
     };
   }
+  function lendingSpec() {
+    return {
+      id: "sheet-sign-lending",
+      term: "Lending standards",
+      econ: "Lending standards",
+      unit: "net tightening",
+      series: lendingHistory,
+      mid: LENDING_LINE,
+      line: "No change",
+      fmt: function(v) {
+        return fmtSigned(v, 1) + "%";
+      },
+      word: lendingWord,
+      src: LENDING_SRC,
+      pair: {
+        label: "Loan demand",
+        at: demandAt()
+      },
+      about: "Each quarter the Federal Reserve asks senior loan officers at large US banks whether they tightened or eased their standards for business loans, and whether demand for those loans grew stronger or weaker. The reading is the share of banks that tightened less the share that eased; the second line is the same count for demand, stronger less weaker. Both are for loans to large and middle-market firms.",
+      band: "<b>Zero is the only line.</b> Above it more banks are tightening than easing; below it more are easing. No convention sets a band. Research at the Fed found that tightening standards come before falls in lending and output (Lown and Morgan, 2006; Bassett and others, 2012).",
+      lede: "Whether banks are willing to lend, set against whether firms want to borrow. When banks tighten while demand holds, credit is being withdrawn: the crunch."
+    };
+  }
   function specs() {
     var pts = function(v) {
       return fmtSigned(v, 1) + " pt";
@@ -36654,27 +36677,7 @@
       about: "Margin debt is money investors borrow from their brokers to buy shares, with the shares as collateral. When prices fall, brokers call for cash or sell the shares, and the forced selling deepens the fall. The figure is FINRA’s total of debit balances in margin accounts, against the same month a year earlier.",
       band: "<b>Zero is the only line.</b> Above it investors are borrowing more to own stocks than a year ago; below it they are paying it back.",
       lede: "Money borrowed to buy stocks, against the same month a year earlier: the market’s own appetite for credit."
-    }, {
-      id: "sheet-sign-lending",
-      term: "Lending standards",
-      econ: "Lending standards",
-      unit: "net tightening",
-      series: lendingHistory,
-      mid: LENDING_LINE,
-      line: "No change",
-      fmt: function(v) {
-        return fmtSigned(v, 1) + "%";
-      },
-      word: lendingWord,
-      src: LENDING_SRC,
-      pair: {
-        label: "Loan demand",
-        at: demandAt()
-      },
-      about: "Each quarter the Federal Reserve asks senior loan officers at large US banks whether they tightened or eased their standards for business loans, and whether demand for those loans grew stronger or weaker. The reading is the share of banks that tightened less the share that eased; the second line is the same count for demand, stronger less weaker. Both are for loans to large and middle-market firms.",
-      band: "<b>Zero is the only line.</b> Above it more banks are tightening than easing; below it more are easing. No convention sets a band. Research at the Fed found that tightening standards come before falls in lending and output (Lown and Morgan, 2006; Bassett and others, 2012).",
-      lede: "Whether banks are willing to lend, set against whether firms want to borrow. When banks tighten while demand holds, credit is being withdrawn: the crunch."
-    }, {
+    }, lendingSpec(), {
       id: "sheet-metric-delinquency",
       term: "Delinquency rate",
       econ: "Delinquency rate",
@@ -42800,8 +42803,7 @@
     return v >= n.lo ? "Normal" : v >= n.floor ? "Attention" : "Risk";
   }
   function scoreBox(i) {
-    var v = score(i).v, k = healthTone(v);
-    return '<span class="lab-score-box">' + scoreTile("span", " stat-row " + k[1], "", statBody(scoreRing(v, ""), "<small>Health Score</small><b>" + v + "</b>", null) + '<span class="stat-side">' + mark(" " + k[0], scoreTier(v)) + "</span>") + "</span>";
+    return healthTile(i, "span");
   }
   function scoreRing(v, label) {
     return '<span class="lab-score-v">' + ring(v) + label + "</span>";
@@ -43044,8 +43046,8 @@
     var c = " stat-row" + (cls ? " " + cls : "");
     return page2 ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page2) + '"', inner) : scoreTile("span", c, "", inner);
   }
-  function statBody(lead, main, side2) {
-    return lead + '<span class="stat-main">' + main + "</span>" + (side2 == null ? "" : '<span class="stat-side">' + side2 + CHEV + "</span>");
+  function statBody(lead, main, side2, still) {
+    return lead + '<span class="stat-main">' + main + "</span>" + (side2 == null ? "" : '<span class="stat-side">' + side2 + (still ? "" : CHEV) + "</span>");
   }
   function meanOf(vs) {
     return vs.reduce(function(a, b) {
@@ -43081,8 +43083,11 @@
     }[scoreTier(v)];
   }
   function healthRow(i) {
-    var v = score(i).v, k = healthTone(v);
-    return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(" " + k[0], scoreTier(v)), healthPage(i), k[1], String(v)) + "</div>";
+    return healthTile(i, "div");
+  }
+  function healthTile(i, tag) {
+    var v = score(i).v, k = healthTone(v), side2 = mark(" " + k[0], scoreTier(v));
+    return "<" + tag + ' class="lab-score-box">' + (tag === "div" ? statRow("Health Score", v, 100, side2, healthPage(i), k[1], String(v)) : scoreTile("span", " stat-row " + k[1], "", statBody(scoreRing(v, ""), "<small>Health Score</small><b>" + v + "</b>", side2, true))) + "</" + tag + ">";
   }
   function cycleBars(vs, cls, at, label) {
     var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;

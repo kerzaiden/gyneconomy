@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f959022` on 2026-10-07. **99 components**, **28 shared patterns**.
+Generated from commit `9aee726` on 2026-10-07. **100 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -40,6 +40,7 @@ Generated from commit `f959022` on 2026-10-07. **99 components**, **28 shared pa
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.ts:divergeChart`, `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `render-core.ts:ylmFitLine` |
 | **`histBar`** | `.hist-bar` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | **`histTip`** | `.gdp-tooltip` `.hist-tip` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
+| **`pairPath`** | `.dv-pair` | `charts.ts:divergeChart` |
 | **`pulseTraceSvg`** | `.pt-svg` | `readings.ts:pulseBlock` |
 | **`trendOf`** | `.tp-arrow` | `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `indicators.ts:drawSplit`, `inner-pages.ts:registerActivityPowerDeficitPages`, `inner-pages.ts:registerHouseholdsValuationPages`, `inner-pages.ts:registerTempGdpPages`, `render-core.ts:registerFlowPages`, `render-core.ts:renderPressurePage`, `render-core.ts:ylmFitLine`, `render-pages.ts:renderHorizonPage`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.ts:drawSplit`, `inner-pages.ts:registerActivityPowerDeficitPages`, `inner-pages.ts:registerHouseholdsValuationPages`, `inner-pages.ts:registerTempGdpPages`, `render-core.ts:registerFlowPages`, `render-core.ts:renderPressurePage`, `render-pages.ts:renderHorizonPage`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
@@ -58,7 +59,7 @@ Generated from commit `f959022` on 2026-10-07. **99 components**, **28 shared pa
 | **`filterSheet`** | `.ind-filter` `.ind-filter-head` `.ind-reset` `.ind-show` | `cycle-analysis.ts:drawChart` |
 | **`finder`** | `.lab-find` | `cycle-analysis.ts:drawChart` |
 | **`foldSec`** | `.lab-fold` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:subSec` |
-| **`healthRow`** | `.lab-score-box` | `cycle-analysis.ts:statsHome` |
+| **`healthTile`** | `.lab-score-box` | — |
 | **`insightSec`** | `.insight-mark` | `cycle-analysis.ts:insightsHome` |
 | **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:foldSec` |
 | **`labSec`** | `.lab-cat` | `cycle-analysis.ts:bySystem` |
@@ -67,9 +68,9 @@ Generated from commit `f959022` on 2026-10-07. **99 components**, **28 shared pa
 | **`periodCal`** | `.cal-key` `.period-cal` | `cycle-analysis.ts:filterSheet` |
 | **`ring`** | `.lab-ring` | — |
 | **`rowTag`** | `.lab-row` | `cycle-analysis.ts:labItem` |
-| **`scoreRing`** | `.lab-score-v` | `cycle-analysis.ts:scoreBox`, `cycle-analysis.ts:statRow` |
+| **`scoreRing`** | `.lab-score-v` | `cycle-analysis.ts:healthTile`, `cycle-analysis.ts:statRow` |
 | **`sheetSec`** | `.ind-sec` | `cycle-analysis.ts:filterSheet` |
-| **`statBody`** | `.stat-main` `.stat-side` | `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:statRow` |
+| **`statBody`** | `.stat-main` `.stat-side` | `cycle-analysis.ts:healthTile`, `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:statRow` |
 | **`statsHome`** | `.stat-note` | `cycle-analysis.ts:homeSections` |
 | **`stepper`** | `.period-step` | `cycle-analysis.ts:drawChart` |
 
@@ -210,7 +211,7 @@ renderer speaks. Listed most-used first.
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 22 places |
 | **`titleCase`** | format.ts | 19 places |
-| **`fmtSigned`** | format.ts | 17 places |
+| **`fmtSigned`** | format.ts | 18 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`metered`** | format.ts | 11 places |
 | **`pageCycle`** | history.ts | 11 places |
@@ -224,11 +225,11 @@ renderer speaks. Listed most-used first.
 | **`histControls`** | history.ts | 9 places |
 | **`lede`** | format.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
-| **`closedCount`** | cycle-analysis.ts | 8 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
+| **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`factsFrom`** | format.ts | 7 places |
@@ -281,7 +282,6 @@ renderer speaks. Listed most-used first.
 | **`side`** | cycle-analysis.ts | 4 places |
 | **`tier`** | cycle-analysis.ts | 4 places |
 | **`visits`** | cycle-analysis.ts | 4 places |
-| **`word`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`calBtn`** | cycle-analysis.ts | 3 places |
@@ -308,8 +308,6 @@ renderer speaks. Listed most-used first.
 | **`rankToDate`** | model.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
-| **`score`** | cycle-analysis.ts | 3 places |
-| **`scoreTier`** | cycle-analysis.ts | 3 places |
 | **`scoreTile`** | cycle-analysis.ts | 3 places |
 | **`seasonPills`** | render-core.ts | 3 places |
 | **`seasonRuns`** | render-core.ts | 3 places |
@@ -323,6 +321,7 @@ renderer speaks. Listed most-used first.
 | **`trendText`** | dom.ts | 3 places |
 | **`typical`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
+| **`word`** | cycle-analysis.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
 
 ## Shared patterns
