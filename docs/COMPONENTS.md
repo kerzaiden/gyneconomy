@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d4db97f` on 2026-10-07. **99 components**, **28 shared patterns**.
+Generated from commit `c0395f3` on 2026-10-07. **99 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -111,7 +111,7 @@ Generated from commit `d4db97f` on 2026-10-07. **99 components**, **28 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`facts`** | `.facts` | `cycle-analysis.ts:chartDetail`, `dial-cycle.ts:bootDialCycle`, `format.ts:factsFrom`, `insights.ts:moodInfo`, `portfolio.ts:clockDetail`, `portfolio.ts:weatherDetail`, `readings.ts:bootReadings`, `readings.ts:deficitBlock`, `readings.ts:volatilityDetailHtml`, `tabs-menu.ts:renderSeasonRows`, `tabs-menu.ts:seasonModelNote` |
-| **`hiCard`** | `.hi-name` | `indicators.ts:buffettInsight`, `indicators.ts:confidenceInsight`, `indicators.ts:debtInsight`, `indicators.ts:desireInsight`, `indicators.ts:interestInsight`, `indicators.ts:marketInsight`, `indicators.ts:premiumInsight`, `indicators.ts:productivityInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `insights.ts:marketCycleCard`, `insights.ts:moodCard`, `insights.ts:seasonCards`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
+| **`hiCard`** | `.hi-name` | `indicators.ts:buffettInsight`, `indicators.ts:debtInsight`, `indicators.ts:interestInsight`, `indicators.ts:lineInsight`, `indicators.ts:marketInsight`, `indicators.ts:productivityInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `insights.ts:marketCycleCard`, `insights.ts:moodCard`, `insights.ts:seasonCards`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
 | **`highlightsHtml`** | `.peek-chev` | `indicators.ts:mountSplit`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `render-pages.ts:volatilityHighlights` |
 | **`hubLine`** | `.hub-line` | `dial-cycle.ts:hubSet`, `dial-cycle.ts:hubShowYear` |
 | **`ledeHtml`** | `.lede` | `dial-cycle.ts:bootDialCycle`, `readings.ts:bootReadings`, `readings.ts:deficitBlock`, `tabs-menu.ts:renderSeasonRows`, `tabs-menu.ts:seasonModelNote` |
@@ -209,8 +209,8 @@ renderer speaks. Listed most-used first.
 | **`byId`** | dom.ts | 28 places |
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 22 places |
-| **`fmtSigned`** | format.ts | 20 places |
 | **`titleCase`** | format.ts | 18 places |
+| **`fmtSigned`** | format.ts | 16 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`metered`** | format.ts | 12 places |
 | **`pageCycle`** | history.ts | 11 places |
@@ -218,18 +218,17 @@ renderer speaks. Listed most-used first.
 | **`addSources`** | dom.ts | 10 places |
 | **`colPath`** | charts.ts | 10 places |
 | **`colWidth`** | charts.ts | 10 places |
-| **`lede`** | format.ts | 10 places |
 | **`attachHistory`** | history.ts | 9 places |
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`histControls`** | history.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
 | **`fitLine`** | charts.ts | 8 places |
+| **`lede`** | format.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
 | **`word`** | cycle-analysis.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
-| **`atMonth`** | format.ts | 7 places |
 | **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
@@ -244,6 +243,7 @@ renderer speaks. Listed most-used first.
 | **`qAtIndex`** | format.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
+| **`atMonth`** | format.ts | 5 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`cycLabel`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
@@ -255,7 +255,6 @@ renderer speaks. Listed most-used first.
 | **`openCycle`** | model.ts | 5 places |
 | **`pct`** | fed-phases.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
-| **`side`** | cycle-analysis.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`visits`** | cycle-analysis.ts | 5 places |
 | **`yearsWord`** | cycle-analysis.ts | 5 places |
@@ -291,6 +290,7 @@ renderer speaks. Listed most-used first.
 | **`expandBtn`** | dom.ts | 3 places |
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
+| **`lineInsight`** | indicators.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`meanOf`** | cycle-analysis.ts | 3 places |
 | **`monthIdx`** | fed-phases.ts | 3 places |
@@ -301,6 +301,7 @@ renderer speaks. Listed most-used first.
 | **`potentialGap`** | model.ts | 3 places |
 | **`present`** | cycle-analysis.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
+| **`readingPage`** | indicators.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`regLab`** | cycle-analysis.ts | 3 places |
 | **`regularity`** | cycle-analysis.ts | 3 places |
@@ -314,6 +315,7 @@ renderer speaks. Listed most-used first.
 | **`seasonRunsLabel`** | render-core.ts | 3 places |
 | **`seasonTitle`** | model.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
+| **`side`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tabBar`** | history.ts | 3 places |
 | **`tagFor`** | format.ts | 3 places |
