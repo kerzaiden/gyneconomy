@@ -2,7 +2,7 @@ import { CHEV, facts, qLabel, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
-import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, slidersSvg, weatherSvg } from "./marks.ts";
+import { boltSvg, calendarSvg, chartSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayFace, todayValue } from "./era.ts";
@@ -172,7 +172,7 @@ function scoreBox(i: number){ return healthTile(i, "span"); }
 function scoreRing(v: number, label: string){ return '<span class="lab-score-v">' + ring(v) + label + '</span>'; }
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
 }
-var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, stress:boltSvg };
+var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, mood:moodSvg, desire:flameSvg, circulation:circulationSvg, stress:boltSvg };
 function foldSec(k: string, title: string, name: string, ls: Lab[], at: At){
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"", name:name,
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + countTag(ls.length) + CHEV + '</button>' },

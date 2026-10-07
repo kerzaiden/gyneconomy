@@ -1,6 +1,6 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
-import { creditSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
+import { bagSvg, creditSvg, debtSvg, diamondSvg, diceSvg, ecgSvg, gaugeSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { confidenceHistory, creditGapHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
@@ -18,13 +18,14 @@ export var TIMING: Record<RosterTiming, { label: string }> = {
 };
 export var CATEGORIES: Category[] = [
   { key:"weather", title:"Weather", shown:0, onDial:true },
-  { key:"circulation", title:"Circulation", shown:2 },
+  { key:"circulation", title:"Circulation", shown:3 },
   { key:"mood", title:"Mood", shown:1 },
-  { key:"stress", title:"Stress", shown:3 }
+  { key:"desire", title:"Desire", shown:2 },
+  { key:"stress", title:"Stress", shown:4 }
 ];
 export var SUB_MARK: Record<string, () => string> = {
   "Economic Season":thermoSvg, "Market":marketSvg, "Activity":personSvg, "Pressure":gaugeSvg, "Money":ecgSvg,
-  "Credit":creditSvg, "Debt":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Desire":flameSvg
+  "Credit":creditSvg, "Debt":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
 };
 export var ROSTER_BY: Record<string, RosterRow> = {};
 function pageState<T>(of: (R: RosterRow) => T | undefined): Record<string, T> {
@@ -112,12 +113,12 @@ function declareRoster(): RosterRow[] {
       cardUnit:"of GDP", live:["valuation"] },
     { id:"sheet-sign-sentiment", name:"Fear", cat:"mood", sub:"Sentiment", good:"down", timing:"leading", door:"subject", hk:"fear-range",
       head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, cardUnit:"VIX", live:["sentiment", "vixClose", "vix3mClose"] },
-    { id:"sheet-sign-desire", name:"Discretionary spending", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"coincident", door:"row", term:"Desire",
+    { id:"sheet-sign-desire", name:"Discretionary spending", cat:"desire", sub:"Demand", good:"up", group:"Demand", timing:"coincident", door:"row", term:"Desire",
       head:"Discretionary Spending", hist:{ s:durablesHistory, k:"m" }, mid:DESIRE_LINE,
       cardUnit:"durables, YoY" },
-    { id:"sheet-sign-retail", name:"Retail sales", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"coincident", door:"row",
+    { id:"sheet-sign-retail", name:"Retail sales", cat:"desire", sub:"Demand", good:"up", group:"Demand", timing:"coincident", door:"row",
       term:"Retail sales", head:"Retail Sales, YoY", hist:{ s:retailHistory, k:"m" }, mid:RETAIL_LINE, cardUnit:"YoY" },
-    { id:"sheet-sign-premium", name:"Equity risk premium", cat:"mood", sub:"Desire", good:"up", group:"Desire", timing:"structural", door:"row",
+    { id:"sheet-sign-premium", name:"Equity risk premium", cat:"desire", sub:"Risk", good:"up", group:"Risk", timing:"structural", door:"row",
       term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE,
       cardUnit:"over bonds" },
     { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", sub:"Sentiment", good:"up", timing:"leading", door:"row", term:"Confidence",

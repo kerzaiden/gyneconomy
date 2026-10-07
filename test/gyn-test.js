@@ -467,7 +467,7 @@ async function openPage(p, url, sheet) {
     await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p);
     const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
-    (all.title === 'Vitals' && all.shown === 'weather,mood,circulation,stress')
+    (all.title === 'Vitals' && all.shown === 'weather,mood,desire,circulation,stress')
       ? ok('the Vitals head opens the Vitals page on All', all.shown)
       : bad('the Vitals head opens the Vitals page on All', JSON.stringify(all));
     await p.goto('file://' + url); await ready(p); await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
@@ -475,7 +475,7 @@ async function openPage(p, url, sheet) {
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
-    (door.first === 'home-secs' && door.rows === 'weather,mood,circulation,stress' && weather.title === 'Vitals' && weather.shown === 'weather' &&
+    (door.first === 'home-secs' && door.rows === 'weather,mood,desire,circulation,stress' && weather.title === 'Vitals' && weather.shown === 'weather' &&
      weather.subs === 'Economic Season 2,Market 1,Activity 3')
       ? ok('Vitals lists the categories, each opening Vitals on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Vitals lists the categories, each opening Vitals on its own, grouped by subcategory', JSON.stringify({ door, weather }));
@@ -489,7 +489,7 @@ async function openPage(p, url, sheet) {
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.indCat).join(), regularity: !!h.querySelector('.cat-cycle, [data-ind-cat="cycle"]') };
     });
     (tab.title === 'Vitals' && tab.first === 'period-step' && tab.under && tab.chips === 0 && tab.menu && tab.rows > 15 && tab.doors &&
-     tab.cats === 'weather,mood,circulation,stress' && !tab.regularity)
+     tab.cats === 'weather,mood,desire,circulation,stress' && !tab.regularity)
       ? ok('Vitals opens on its period stepper, then its search box with the one filter, every reading and category a door', tab.rows + ' readings')
       : bad('Vitals opens on its period stepper, then its search box with the one filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {
@@ -501,7 +501,7 @@ async function openPage(p, url, sheet) {
       }));
     };
     const cpi = await shown('cpi'), mood = await shown('mood'), nil = await shown('zzzz'), back = await shown('');
-    (cpi.rows.join() === 'Temperature' && mood.cats.join() === 'mood' && mood.rows.length > 4 && nil.none && !nil.rows.length && !back.none && back.cats.length >= 3)
+    (cpi.rows.join() === 'Temperature' && mood.cats.join() === 'mood' && mood.rows.length === 4 && nil.none && !nil.rows.length && !back.none && back.cats.length >= 3)
       ? ok('the search box finds readings by name, measure and category', 'cpi → Temperature, mood → its ' + mood.rows.length + ' readings, none → a message')
       : bad('the search box finds readings by name, measure and category', JSON.stringify({ cpi, mood, nil, back }));
     await click(p, '#sheet-find .lab-filter'); await settle(p);

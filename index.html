@@ -888,7 +888,7 @@
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
 
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
-  .cat-mood{ --cat:var(--accent); } .cat-stress{ --cat:var(--gold); }
+  .cat-mood{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
   .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
@@ -1372,7 +1372,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.7 (778)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.8 (779)</span></p>
     </div>
   </div>
 
@@ -43990,6 +43990,12 @@
   function flameSvg() {
     return markSvg('<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/><path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>');
   }
+  function bagSvg() {
+    return markSvg('<path d="M5.6 8.4h12.8l-1 11.2H6.6z" stroke-width="1.9"/><path d="M9.2 8.4V7a2.8 2.8 0 0 1 5.6 0v1.4" stroke-width="1.8"/>');
+  }
+  function diceSvg() {
+    return markSvg('<rect x="4" y="4" width="16" height="16" rx="3.6" stroke-width="1.8"/><circle cx="8.6" cy="8.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none"/><circle cx="15.4" cy="15.4" r="1.25" fill="currentColor" stroke="none"/>');
+  }
   function clockSvg() {
     return markSvg('<circle cx="12" cy="12" r="8.4" stroke-width="1.8"/><path d="M12 7.4V12l3.1 2.1" stroke-width="1.8"/>');
   }
@@ -44057,15 +44063,19 @@
   }, {
     key: "circulation",
     title: "Circulation",
-    shown: 2
+    shown: 3
   }, {
     key: "mood",
     title: "Mood",
     shown: 1
   }, {
+    key: "desire",
+    title: "Desire",
+    shown: 2
+  }, {
     key: "stress",
     title: "Stress",
-    shown: 3
+    shown: 4
   } ];
   var SUB_MARK = {
     "Economic Season": thermoSvg,
@@ -44077,7 +44087,8 @@
     Debt: debtSvg,
     Valuations: diamondSvg,
     Sentiment: volatilitySvg,
-    Desire: flameSvg
+    Demand: bagSvg,
+    Risk: diceSvg
   };
   var ROSTER_BY = {};
   function pageState(of) {
@@ -44496,10 +44507,10 @@
     }, {
       id: "sheet-sign-desire",
       name: "Discretionary spending",
-      cat: "mood",
-      sub: "Desire",
+      cat: "desire",
+      sub: "Demand",
       good: "up",
-      group: "Desire",
+      group: "Demand",
       timing: "coincident",
       door: "row",
       term: "Desire",
@@ -44513,10 +44524,10 @@
     }, {
       id: "sheet-sign-retail",
       name: "Retail sales",
-      cat: "mood",
-      sub: "Desire",
+      cat: "desire",
+      sub: "Demand",
       good: "up",
-      group: "Desire",
+      group: "Demand",
       timing: "coincident",
       door: "row",
       term: "Retail sales",
@@ -44530,10 +44541,10 @@
     }, {
       id: "sheet-sign-premium",
       name: "Equity risk premium",
-      cat: "mood",
-      sub: "Desire",
+      cat: "desire",
+      sub: "Risk",
       good: "up",
-      group: "Desire",
+      group: "Risk",
       timing: "structural",
       door: "row",
       term: "Equity risk premium",
@@ -47633,6 +47644,7 @@
   var CAT_MARK = {
     weather: weatherSvg,
     mood: moodSvg,
+    desire: flameSvg,
     circulation: circulationSvg,
     stress: boltSvg
   };
