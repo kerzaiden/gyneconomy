@@ -162,9 +162,9 @@ ok('FINRA margin debt is the debit balances column, oldest month first',
    [{ date: '2026-07-01', v: 1417225 }, { date: '2026-08-01', v: 1453832 }]);
 throws('a FINRA sheet without the debit balances is refused', () => marginRows([['Year-Month', 'Other'], ['2026-08', 1]]), /debit balances/);
 ok('the credit readings are written as the app reads them',
-   (({ creditGapHistory, marginHistory }) => ({ creditGapHistory, marginHistory }))(J(emit([], [], null, null, null, null, null, null, null, null, null, null, null,
-     { gap: [{ q: '2026 Q1', v: -11.3 }], delinquency: [], margin: [{ m: '2026-08', v: 37.19 }] }))),
-   { creditGapHistory: [{ q: '2026 Q1', v: -11.3 }], marginHistory: [{ m: '2026-08', v: 37.19 }] });
+   (({ creditGapHistory, marginHistory, lendingHistory, loanDemandHistory }) => ({ creditGapHistory, marginHistory, lendingHistory, loanDemandHistory }))(J(emit([], [], null, null, null, null, null, null, null, null, null, null, null,
+     { gap: [{ q: '2026 Q1', v: -11.3 }], delinquency: [], margin: [{ m: '2026-08', v: 37.19 }], standards: [{ q: '2026 Q3', v: 5.1 }], demand: [{ q: '2026 Q3', v: -3.2 }] }))),
+   { creditGapHistory: [{ q: '2026 Q1', v: -11.3 }], marginHistory: [{ m: '2026-08', v: 37.19 }], lendingHistory: [{ q: '2026 Q3', v: 5.1 }], loanDemandHistory: [{ q: '2026 Q3', v: -3.2 }] });
 ok('Debt to the Penny gives the latest total, in billions',
    pennyRow({ data: [{ record_date: '2026-10-05', tot_pub_debt_out_amt: '40249104431078.48' }] }), { d: '2026-10-05', v: 40249 });
 throws('a Debt to the Penny reply without a row is refused', () => pennyRow({ data: [] }), /no usable latest row/);
