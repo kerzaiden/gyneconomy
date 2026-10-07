@@ -284,7 +284,7 @@ async function finraMargin() {
 }
 
 const SPY_CIK = '884394';
-const SEC_UA = { headers: { 'user-agent': 'gyneconomy-backfill github.com/kerzaiden/gyneconomy', accept: '*/*' } };
+const SEC_UA = { headers: { 'user-agent': 'gyneconomy-backfill ' + (process.env.GITHUB_REPOSITORY_OWNER || 'kerzaiden') + '@' + 'users.noreply.github.com', accept: '*/*' } };
 const SPY_DAILY = 'https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx';
 function topTen(weights) {
   const w = weights.filter(v => band(v, 0, 100)).sort((x, y) => y - x);
@@ -485,9 +485,10 @@ async function main() {
   say('PAYEMS YoY    ' + activity.payrolls.length + ' months, ' + activity.payrolls[0].m + ' → ' + activity.payrolls[activity.payrolls.length - 1].m);
   say('RSAFS YoY     ' + activity.retail.length + ' months, ' + activity.retail[0].m + ' → ' + activity.retail[activity.retail.length - 1].m);
 
-  const heavy = { quarters: await spyQuarters(), today: await spyToday() };
-  say('SPY top ten   ' + heavy.quarters.length + ' quarters, ' + heavy.quarters.map(d => d.d + ' ' + d.v).join(', '));
+  const heavy = { today: await spyToday() };
   say('SPY top ten   ' + heavy.today.d + ' ' + heavy.today.v + '% (State Street daily holdings)');
+  heavy.quarters = await spyQuarters();
+  say('SPY top ten   ' + heavy.quarters.length + ' quarters, ' + heavy.quarters.map(d => d.d + ' ' + d.v).join(', '));
 
   fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
