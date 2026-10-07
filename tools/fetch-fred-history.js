@@ -283,7 +283,40 @@ async function finraMargin() {
   return marginRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity) {
+const SPY_DAILY = 'https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx';
+function topTen(holdings) {
+  const kept = holdings.filter(h => band(h.v, 0, 100));
+  if (kept.length < 400) throw new Error('top ten: only ' + kept.length + ' holdings, an S&P 500 fund holds about 500');
+  const by = {};
+  kept.forEach((h, i) => { const k = /^(?!000000)[0-9A-Z]{9}$/.test(h.cusip || '') ? h.cusip.slice(0, 6) : '#' + i; by[k] = (by[k] || 0) + h.v; });
+  return Math.round(Object.values(by).sort((x, y) => y - x).slice(0, 10).reduce((a, v) => a + v, 0) * 100) / 100;
+}
+
+function spyDailyRows(rows) {
+  const hdr = rows.findIndex(r => (r || []).some(c => /^weight$/i.test(String(c).trim())));
+  if (hdr < 0) throw new Error('SPY holdings: no Weight column');
+  const col = rows[hdr].findIndex(c => /^weight$/i.test(String(c).trim())), id = rows[hdr].findIndex(c => /^identifier$/i.test(String(c).trim()));
+  if (id < 0) throw new Error('SPY holdings: no Identifier (CUSIP) column, so share classes cannot be joined into companies');
+  const asOf = rows.slice(0, hdr).map(r => String((r || []).join(' '))).map(t => (t.match(/as of (\d{2}-[A-Za-z]{3}-\d{4})/i) || [])[1]).find(Boolean);
+  if (!asOf) throw new Error('SPY holdings: no "As of" date above the table');
+  const d = new Date(asOf + ' UTC').toISOString().slice(0, 10);
+  return { d, v: topTen(rows.slice(hdr + 1).map(r => ({ cusip: String((r || [])[id] || '').trim(), v: Number((r || [])[col]) }))) };
+}
+
+function keepQuarter(kept, today) {
+  const q = today.d.slice(0, 4) + ' Q' + Math.ceil(Number(today.d.slice(5, 7)) / 3);
+  return (kept || []).filter(r => r.q !== q).concat([{ q, d: today.d, v: today.v }]).sort((a, b) => (a.q < b.q ? -1 : 1));
+}
+
+async function spyToday() {
+  const r = await fetch(SPY_DAILY, { headers: { 'user-agent': 'Mozilla/5.0 (gyneconomy-backfill; github.com/kerzaiden/gyneconomy)' } });
+  if (!r.ok) throw new Error('SPY holdings: HTTP ' + r.status);
+  const XLSX = require('xlsx');
+  const wb = XLSX.read(Buffer.from(await r.arrayBuffer()));
+  return spyDailyRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
+}
+
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -310,6 +343,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v },
     interestQuarterly: q(dollars.share), interestDollarsQuarterly: q(dollars.interest) });
   if (activity) Object.assign(out, { payrollsHistory: m(activity.payrolls), retailHistory: m(activity.retail) });
+  if (heavy) out.topTenRecent = heavy.map(r => ({ q: r.q, d: r.d, v: r.v }));
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -430,7 +464,13 @@ async function main() {
   say('PAYEMS YoY    ' + activity.payrolls.length + ' months, ' + activity.payrolls[0].m + ' → ' + activity.payrolls[activity.payrolls.length - 1].m);
   say('RSAFS YoY     ' + activity.retail.length + ' months, ' + activity.retail[0].m + ' → ' + activity.retail[activity.retail.length - 1].m);
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity));
+  const spy = await spyToday();
+  let kept = [];
+  try { kept = JSON.parse(fs.readFileSync(OUT, 'utf8')).topTenRecent; } catch (e) {}
+  const heavy = keepQuarter(kept, spy);
+  say('SPY top ten   ' + spy.d + ' ' + spy.v + '% (State Street daily holdings), kept for ' + heavy.length + ' quarter(s) since the SEC import');
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
@@ -465,5 +505,5 @@ async function earlySeasons() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { topTen, spyDailyRows, keepQuarter, bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

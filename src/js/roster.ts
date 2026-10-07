@@ -7,6 +7,7 @@ import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, 
 import { page } from "./history.ts";
 import { DELINQUENCY_MEAN, GAP_BUILD, LENDING_LINE, MARGIN_LINE } from "./credit.ts";
 import { PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
+import { CONCENTRATION_MEAN, topTenHistory } from "./concentration.ts";
 
 // ---- The roster: every reading, declared once ----
 type Category = { key: string; title: string; shown: number; onDial?: boolean };
@@ -118,6 +119,9 @@ function declareRoster(): RosterRow[] {
       cardUnit:"durables, YoY" },
     { id:"sheet-sign-retail", name:"Retail sales", cat:"desire", sub:"Demand", good:"up", group:"Demand", timing:"coincident", door:"row",
       term:"Retail sales", head:"Retail Sales, YoY", hist:{ s:retailHistory, k:"m" }, mid:RETAIL_LINE, cardUnit:"YoY" },
+    { id:"sheet-sign-concentration", name:"Concentration", cat:"desire", sub:"Risk", good:"down", group:"Risk", timing:"structural", door:"row",
+      term:"Concentration", head:"S&P 500, Top 10 Weight", hist:{ s:topTenHistory, k:"q" }, mid:CONCENTRATION_MEAN,
+      cardUnit:"top ten of the S&P 500" },
     { id:"sheet-sign-premium", name:"Equity risk premium", cat:"desire", sub:"Risk", good:"up", group:"Risk", timing:"structural", door:"row",
       term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE,
       cardUnit:"over bonds" },

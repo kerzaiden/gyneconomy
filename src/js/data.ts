@@ -362,6 +362,7 @@ export var DSR_FROM_YEAR = 2005;
 export var dsrHistory = SERIES.dsrHistory;
 export var SAV_FROM_YEAR = 1947;
 export var savHistory = SERIES.savHistory;
+export var topTenQuarterly: QuarterPoint[] = SERIES.topTenQuarterly;
 export var SAV_THIN = pctl(savHistory, 0.05), SAV_LOW = pctl(savHistory, 0.1), SAV_MID = pctl(savHistory, 0.5);
 function checkHouseholdHistories(){
   var dHi = Math.max.apply(null, dsrHistory), dLo = Math.min.apply(null, dsrHistory);

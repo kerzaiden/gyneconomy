@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,017 lines** in 37 files, about 608 KB, roughly **173 thousand tokens**. No session can
+The source is **9,060 lines** in 38 files, about 612 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `289097b` on 2026-10-07.
+Generated from commit `c1464e2` on 2026-10-07.
 
 ## The page
 
@@ -20,10 +20,10 @@ Generated from commit `289097b` on 2026-10-07.
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
 | `styles.css` | 1,222 | the whole stylesheet, every token and rule |
 | `page-body.html` | 325 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| `js/main.ts` | 33 modules | the entry: imports every module and calls their boots in order |
+| `js/main.ts` | 34 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **33** modules, **717** top-level functions, **122** top-level vars, **353** exported names, **20** boots.
+Counts: **34** modules, **720** top-level functions, **123** top-level vars, **355** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -32,12 +32,12 @@ Counts: **33** modules, **717** top-level functions, **122** top-level vars, **3
 | `js/dom.ts` | 169 | 25 | `format` |
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 41 | 5 | `format`, `history-fred` |
-| `js/data.ts` | 571 | 81 | `format`, `history-fred`, `live` |
-| `js/credit.ts` | 133 | 11 | `activity`, `charts`, `format`, `history-fred` |
+| `js/data.ts` | 572 | 81 | `format`, `history-fred`, `live` |
+| `js/credit.ts` | 134 | 11 | `activity`, `charts`, `concentration`, `format`, `history-fred` |
 | `js/model.ts` | 382 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 802 | 69 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 142 | 5 | `activity`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
+| `js/roster.ts` | 146 | 5 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 500 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 417 | 10 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.ts` | 88 | 13 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
@@ -50,13 +50,14 @@ Counts: **33** modules, **717** top-level functions, **122** top-level vars, **3
 | `js/activity.ts` | 41 | 3 | `format`, `history-fred` |
 | `js/ai-insights.ts` | 181 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 249 | 34 | — |
+| `js/concentration.ts` | 36 | 4 | `data`, `history-fred` |
 | `js/cycle-analysis.ts` | 482 | 130 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 23 | 2 | `data`, `dom`, `format`, `indicators`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 37 | 3 | `data`, `indicators`, `model`, `readings`, `render-core` |
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 80 | 35 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
-| `js/history-fred.ts` | 30 | 14 | — |
+| `js/history-fred.ts` | 31 | 14 | — |
 | `js/indicators.ts` | 227 | 33 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 182 | 17 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
@@ -75,13 +76,13 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 2 | `bootDone` | `js/live.ts:198`–200 |
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–40 |
-| 5 | `bootData` | `js/data.ts:519`–570 |
-| 6 | `bootCredit` | `js/credit.ts:125`–132 |
+| 5 | `bootData` | `js/data.ts:520`–571 |
+| 6 | `bootCredit` | `js/credit.ts:126`–133 |
 | 7 | `bootModel` | `js/model.ts:357`–381 |
 | 8 | `bootHistory` | `js/history.ts:452`–475 |
 | 9 | `bootReadings` | `js/readings.ts:625`–693 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:736`–801 |
-| 11 | `bootRoster` | `js/roster.ts:129`–141 |
+| 11 | `bootRoster` | `js/roster.ts:133`–145 |
 | 12 | `bootRenderCore` | `js/render-core.ts:490`–499 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:401`–416 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:84`–87 |
@@ -288,15 +289,15 @@ falls in. **export** marks a name other modules import.
 | 362 | `dsrHistory` · export | `var dsrHistory =` |
 | 363 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
 | 364 | `savHistory` · export | `var savHistory =` |
-| 365 | `SAV_THIN` · export | `var SAV_THIN =` |
-| 366 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
-| 374 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
-| 375 | `dsrNow` · export | `var dsrNow =` |
-| 376 | `savNow` · export | `var savNow =` |
-| 377 | `DSR_MEAN` · export | `var DSR_MEAN =` |
-| 378 | `curveNoteFull` · export | `var curveNoteFull =` |
-| 389 | `VOL_JOIN` · export | `var VOL_JOIN =` |
-| 511 | `typicalCycleYears` · export | `var typicalCycleYears =` |
+| 366 | `SAV_THIN` · export | `var SAV_THIN =` |
+| 367 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
+| 375 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
+| 376 | `dsrNow` · export | `var dsrNow =` |
+| 377 | `savNow` · export | `var savNow =` |
+| 378 | `DSR_MEAN` · export | `var DSR_MEAN =` |
+| 379 | `curveNoteFull` · export | `var curveNoteFull =` |
+| 390 | `VOL_JOIN` · export | `var VOL_JOIN =` |
+| 512 | `typicalCycleYears` · export | `var typicalCycleYears =` |
 
 ### `js/credit.ts`
 
@@ -304,17 +305,17 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 10 | `GAP_BUILD` · export | `var GAP_BUILD =` |
-| 31 | `avgSpan` | `function avgSpan(` |
-| 32 | `pointLabel` | `function pointLabel(` |
-| 33 | `gapWord` | `function gapWord(` |
-| 40 | `marginWord` | `function marginWord(` |
-| 45 | `lendingWord` | `function lendingWord(` |
-| 50 | `delinquencyWord` | `function delinquencyWord(` |
-| 56 | `lendingSpec` | `function lendingSpec(` |
-| 65 | `specs` | `function specs(` |
-| 92 | `readingOf` | `function readingOf(` |
-| 115 | `creditInsight` · export | `function creditInsight(` |
+| 11 | `GAP_BUILD` · export | `var GAP_BUILD =` |
+| 32 | `avgSpan` | `function avgSpan(` |
+| 33 | `pointLabel` | `function pointLabel(` |
+| 34 | `gapWord` | `function gapWord(` |
+| 41 | `marginWord` | `function marginWord(` |
+| 46 | `lendingWord` | `function lendingWord(` |
+| 51 | `delinquencyWord` | `function delinquencyWord(` |
+| 57 | `lendingSpec` | `function lendingSpec(` |
+| 66 | `specs` | `function specs(` |
+| 93 | `readingOf` | `function readingOf(` |
+| 116 | `creditInsight` · export | `function creditInsight(` |
 
 ### `js/model.ts`
 
@@ -540,11 +541,11 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 36 | `keyed` · export | `function keyed(` |
-| 42 | `rosterFor` · export | `function rosterFor(` |
-| 43 | `checkRoster` | `function checkRoster(` |
-| 61 | `categoriesShown` · export | `function categoriesShown(` |
-| 65 | `declareRoster` | `function declareRoster(` |
+| 37 | `keyed` · export | `function keyed(` |
+| 43 | `rosterFor` · export | `function rosterFor(` |
+| 44 | `checkRoster` | `function checkRoster(` |
+| 62 | `categoriesShown` · export | `function categoriesShown(` |
+| 66 | `declareRoster` | `function declareRoster(` |
 
 ### `js/render-core.ts`
 
@@ -950,6 +951,17 @@ falls in. **export** marks a name other modules import.
 | 217 | `pulseClipN` | `var pulseClipN =` |
 | 218 | `beatPath` | `function beatPath(` |
 | 235 | `pulseTraceSvg` · export | `function pulseTraceSvg(` |
+
+### `js/concentration.ts`
+
+#### Concentration: the ten largest S&P 500 holdings' share of the index
+
+| Line | Name | Anchor |
+|---|---|---|
+| 5 | `CONCENTRATION_TO` · export | `var CONCENTRATION_TO =` |
+| 13 | `concentrationSpan` | `function concentrationSpan(` |
+| 14 | `concentrationWord` | `function concentrationWord(` |
+| 20 | `concentrationSpecs` · export | `function concentrationSpecs(` |
 
 ### `js/cycle-analysis.ts`
 

@@ -905,11 +905,18 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
   spread, went with it. Keren: "use appetite as the keyword". (V709)
-- **Concentration risk waits for a measure that tracks the top-ten share.** The largest tenth's share of market cap
-  (from Kenneth French's size portfolios) was built and dropped in 0.9.8: it rose from 48% to 66% between 1985 and 2015
-  while the S&P 500's top-ten share, the figure the market quotes, stayed at 18–21%. Keren: "it doesn't really show the
-  concentration of risk in the market." The top-ten history is S&P's and JPMorgan's and is not free; don't re-propose
-  the decile share. (0.9.8)
+- **Concentration is the weight of the S&P 500's ten largest holdings, read from SPY, under Desire > Risk, against
+  its record's own 2019–2025 average (31.2%).** Keren asked to "track the top heavy weights of the S&P 500" and chose
+  "Import once": the quarter ends since 2019 Q3 are SPY's SEC N-PORT filings, downloaded once from her own computer
+  (the SEC refuses GitHub's servers and the cloud allowlist) and kept in `series.json` by `tools/import-nport.js`;
+  from then on the Backfill reads State Street's daily SPY holdings file and keeps its latest figure for each quarter
+  (`topTenRecent`). A company counts once: share classes are joined by the issuer's six-character CUSIP, so Alphabet's A and C
+  are one holding. Keren: "it makes sense that Alphabet A and Alphabet C … would be the same company because it is
+  the same company." (The index and State Street list the classes separately; JPMorgan's footnote could not be read
+  from the cloud.)
+  The average line and its Normal side are Claude's call under the derive-it-from-the-data rule; no convention sets
+  a band. The largest tenth's share of market cap (Kenneth French's size portfolios) was built and dropped in 0.9.8:
+  Keren, "it doesn't really show the concentration of risk in the market"; don't re-propose it. (0.9.9)
 - **The durables card is called Discretionary spending, and its (i) says no official series measures discretionary
   spending, so the app measures it by durable goods.** Keren chose the name over Consumer demand when Retail sales
   arrived, to keep apart what households spend in dollars and what they could do without. The series is unchanged. (0.9.7)

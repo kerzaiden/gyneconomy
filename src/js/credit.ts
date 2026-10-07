@@ -1,7 +1,8 @@
-import { atMonth, fmtSigned, hiCard, lede, qPretty, srcBlock, titleCase } from "./format.ts";
+import { atMonth, fmtAsOf, fmtSigned, hiCard, lede, qPretty, srcBlock, titleCase } from "./format.ts";
 import { colPeek } from "./charts.ts";
 import { creditGapHistory, delinquencyHistory, lendingHistory, marginHistory } from "./history-fred.ts";
 import { activitySpecs } from "./activity.ts";
+import { concentrationSpecs } from "./concentration.ts";
 
 // ---- Credit and debt: the credit gap, margin debt, lending standards and delinquencies ----
 export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; page: IndicatorPage; wordSays: string };
@@ -29,7 +30,7 @@ export var DELINQUENCY_SRC: Src[] = [
 export var DELINQUENCY_MEAN: number;
 
 function avgSpan(){ return delinquencyHistory[0].q.slice(0, 4) + "\u2013" + DELINQUENCY_TO; }
-function pointLabel(d: CreditPoint){ return d.m ? atMonth(d as MonthPoint) : qPretty(d.q); }
+function pointLabel(d: CreditPoint){ return d.d ? fmtAsOf(d.d) : d.m ? atMonth(d as MonthPoint) : qPretty(d.q); }
 function gapWord(v: number): CreditWord {
   if (v >= GAP_BOOM) return { state:"serious", text:"Credit boom",
     says:"at or above 10 points over trend, where Basel III asks banks to hold the full countercyclical buffer" };
@@ -125,7 +126,7 @@ export function creditInsight(s: { series: readonly Point[]; mid: number; name: 
 export function bootCredit(){
   var closed = delinquencyHistory.filter(function(d){ return +d.q.slice(0, 4) <= DELINQUENCY_TO; });
   DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d){ return a + d.v; }, 0) / closed.length * 100) / 100;
-  specs().concat(activitySpecs()).forEach(function(S){
+  specs().concat(activitySpecs(), concentrationSpecs()).forEach(function(S){
     creditReadings[S.id] = readingOf(S);
     creditPages[S.id] = { goodAbove:S.goodAbove, line:S.line, fmt:S.fmt, tick:S.fmt, src:S.src, lede:S.lede, series:S.series };
   });
