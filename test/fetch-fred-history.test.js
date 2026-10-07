@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { topTen, nportFilings, nportWeights, spyDailyRows, bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -170,6 +170,19 @@ ok('Debt to the Penny gives the latest total, in billions',
 throws('a Debt to the Penny reply without a row is refused', () => pennyRow({ data: [] }), /no usable latest row/);
 ok('federal interest is BEA\'s payments over nominal GDP, both at annual rates, quarter by quarter, to two decimals',
    interestShare([{ q: '2026 Q2', v: 1279.734 }, { q: '2026 Q3', v: 1300 }], [{ q: '2026 Q2', v: 31800 }]), [{ q: '2026 Q2', v: 4.02 }]);
+const fund = Array.from({ length: 500 }, (_, i) => i < 10 ? 4 : 0.12);
+ok('the top ten share sums the ten largest weights, to two decimals', topTen(fund.slice().reverse()), 40);
+throws('a holdings list far short of the index is refused', () => topTen([5, 4, 3]), /only 3 holdings/);
+ok('N-PORT keeps quarter ends and the latest amendment of each',
+   nportFilings({ filings: { recent: { form: ['NPORT-P', 'NPORT-P/A', 'NPORT-P', 'N-CSR'], reportDate: ['2026-06-30', '2026-06-30', '2026-03-31', '2026-03-31'],
+     filingDate: ['2026-08-20', '2026-09-01', '2026-05-20', '2026-05-30'], accessionNumber: ['0001-26-1', '0001-26-2', '0001-26-3', '0001-26-4'] } } }),
+   [{ d: '2026-03-31', filed: '2026-05-20', acc: '0001263' }, { d: '2026-06-30', filed: '2026-09-01', acc: '0001262' }]);
+ok('N-PORT weights are each holding\'s percent of net assets',
+   nportWeights('<invstOrSec><name>Apple Inc</name><pctVal>6.9</pctVal></invstOrSec><invstOrSec><name>Microsoft</name><pctVal>6.512</pctVal></invstOrSec>'), [6.9, 6.512]);
+ok('State Street\'s daily file gives its date and the top ten share',
+   spyDailyRows([['Fund Name:', 'SPDR S&P 500 ETF Trust'], ['Holdings:', 'As of 06-Oct-2026'], [], ['Name', 'Ticker', 'Weight'], ...fund.map((w, i) => ['N' + i, 'T' + i, w])]),
+   { d: '2026-10-06', v: 40 });
+throws('a State Street file without its date is refused', () => spyDailyRows([['Name', 'Weight'], ['A', 4]]), /As of/);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 
