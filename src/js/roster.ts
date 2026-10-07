@@ -1,11 +1,11 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
 import { bagSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, interestSvg, creditSvg, lateSvg, marketSvg, personSvg, sproutSvg, thermoSvg, volatilitySvg } from "./marks.ts";
-import { confidenceHistory, creditGapHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, creditGapHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
-import { DELINQUENCY_MEAN, GAP_BUILD, MARGIN_LINE } from "./credit.ts";
+import { DELINQUENCY_MEAN, GAP_BUILD, LENDING_LINE, MARGIN_LINE } from "./credit.ts";
 
 // ---- The roster: every reading, declared once ----
 type Category = { key: string; title: string; shown: number; onDial?: boolean };
@@ -80,10 +80,12 @@ function declareRoster(): RosterRow[] {
       cardUnit:"M2 velocity", live:["coincident"] },
     { id:"sheet-sign-volume", name:"Volume", cat:"circulation", sub:"Money", timing:"leading", mark:circulationSvg, door:"pair", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, cardUnit:"M2, YoY", live:["coincident"] },
-    { id:"sheet-sign-credit-gap", name:"Credit gap", cat:"circulation", sub:"Credit", good:"down", group:"Credit", timing:"leading", mark:creditSvg, door:"row",
+    { id:"sheet-sign-credit-gap", name:"Credit gap", cat:"stress", sub:"Credit", good:"down", group:"Credit", timing:"leading", mark:creditSvg, door:"row",
       term:"Credit gap", head:"Credit-to-GDP Gap, Private Sector", hist:{ s:creditGapHistory, k:"q" }, mid:GAP_BUILD, cardUnit:"over trend" },
-    { id:"sheet-sign-margin", name:"Margin debt", cat:"stress", sub:"Debt", group:"Debt", timing:"leading", mark:creditSvg, door:"row",
+    { id:"sheet-sign-margin", name:"Margin debt", cat:"stress", sub:"Credit", group:"Credit", timing:"leading", mark:creditSvg, door:"row",
       term:"Margin debt", head:"Margin Debt, Year over Year", hist:{ s:marginHistory, k:"m" }, mid:MARGIN_LINE, cardUnit:"YoY" },
+    { id:"sheet-sign-lending", name:"Lending standards", cat:"stress", sub:"Credit", good:"down", group:"Credit", timing:"leading", mark:creditSvg, door:"row",
+      term:"Lending standards", head:"Banks Tightening Loan Standards", hist:{ s:lendingHistory, k:"q" }, mid:LENDING_LINE, cardUnit:"net tightening" },
     { id:"sheet-metric-debt", name:"Federal debt", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"structural", mark:debtSvg, door:"split",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:DEBT_LINE, cardUnit:"of GDP" },
     { id:"sheet-metric-interest", name:"Federal interest payments", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"structural", mark:interestSvg,

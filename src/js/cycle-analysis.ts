@@ -168,10 +168,7 @@ function scoreTier(v: number){
   var n = normOf(pastScores()) as Norm;
   return v >= n.lo ? "Normal" : v >= n.floor ? "Attention" : "Risk";
 }
-function scoreBox(i: number){
-  var s = score(i);
-  return scoreTile("span", "", "", '<span><b>Health Score</b><small>' + scoreTier(s.v) + ' against ' + word(closedCount()) + ' closed cycles</small></span>' + scoreRing(s.v, '<span>' + s.v + '</span>'));
-}
+function scoreBox(i: number){ return healthTile(i, "span"); }
 function scoreRing(v: number, label: string){ return '<span class="lab-score-v">' + ring(v) + label + '</span>'; }
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
 }
@@ -320,8 +317,8 @@ function statRow(name: string, v: number, of: number, side: string, page: string
   var c = " stat-row" + (cls ? " " + cls : "");
   return page ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page) + '"', inner) : scoreTile("span", c, "", inner);
 }
-function statBody(lead: string, main: string, side: string | null){
-  return lead + '<span class="stat-main">' + main + '</span>' + (side == null ? "" : '<span class="stat-side">' + side + CHEV + '</span>');
+function statBody(lead: string, main: string, side: string | null, still?: boolean){
+  return lead + '<span class="stat-main">' + main + '</span>' + (side == null ? "" : '<span class="stat-side">' + side + (still ? "" : CHEV) + '</span>');
 }
 function meanOf(vs: number[]){ return vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; }
 function lengths(){ return visits().slice(0, closedCount()).map(function(v){ return v.years; }); }
@@ -334,9 +331,12 @@ function healthPage(i: number){
   var s = score(i), t = scoreTier(s.v), n = normOf(pastScores()) as Norm;
   return '<h3>Health Score</h3><p>' + t + ': ' + s.v + ' out of 100, the share of the ' + s.of + ' results that are Normal. It is judged against the scores of the ' + closedCount() + ' closed cycles: Normal from ' + Math.round(n.lo) + ', Risk below ' + Math.max(0, Math.round(n.floor)) + ', past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>' + srcBlock([FENCE_SRC]);
 }
-function healthRow(i: number){
-  var v = score(i).v, t = scoreTier(v), k = ({ Normal:["ok", "t-ok"], Attention:["warn", "t-warn"], Risk:["odd", "t-odd"] } as Record<string, string[]>)[t];
-  return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(" " + k[0], t), healthPage(i), k[1], String(v)) + '</div>';
+function healthTone(v: number){ return ({ Normal:["ok", "t-ok"], Attention:["warn", "t-warn"], Risk:["odd", "t-odd"] } as Record<string, string[]>)[scoreTier(v)]; }
+function healthRow(i: number){ return healthTile(i, "div"); }
+function healthTile(i: number, tag: string){
+  var v = score(i).v, k = healthTone(v), side = mark(" " + k[0], scoreTier(v));
+  return '<' + tag + ' class="lab-score-box">' + (tag === "div" ? statRow("Health Score", v, 100, side, healthPage(i), k[1], String(v))
+    : scoreTile("span", " stat-row " + k[1], "", statBody(scoreRing(v, ""), '<small>Health Score</small><b>' + v + '</b>', side, true))) + '</' + tag + '>';
 }
 function cycleBars(vs: (number | null)[], cls: (v: number, i: number) => string, at: number[], label: string){
   var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;

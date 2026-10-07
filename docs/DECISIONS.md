@@ -27,10 +27,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
 - **There are four categories: Weather, Mood, Circulation and Stress. The work readings are Weather's subcategory Activity;
-  the debt readings are Stress's subcategory Debt, and Stress's mark is the lightning bolt.** Keren: "stress should have its own
-  category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3).
+  Stress holds two subcategories, Credit and Debt, and its mark is the lightning bolt.** Keren: "stress should have its own
+  category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3); "Under stress category, put credit
+  and debt" (0.9.4).
   Keren: "we don't need a category named activity. I think it's a subcategory under weather … economy, market, work", then "instead of work, write activity"
-  (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3.
+  (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3; Credit followed in 0.9.4.
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)
@@ -325,10 +326,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "All the previous designs we made, we can throw them out." A closed cycle's figures are Cycle Statistics'. This
   replaced the group card (V688), the category page's ground (0.6.2), its cards and More details (1.5.0, 0.6.1), the
   equal-height cards (V688) and the past cycle's category cards (V660, V665). (0.8.6, Oct 6, 2026)
-- **Debt is one group, Debt (Margin debt, Federal debt, Federal interest payments, Federal budget, Households,
-  Delinquency rate); the names Economic power and Stress are retired.** Keren: "the terminology is stress because
+- **Debt is one group, Debt (Federal debt, Federal interest payments, Federal budget, Households, Delinquency rate);
+  the name Economic power is retired.** Keren: "the terminology is stress because
   debts are stress" (V688, Stress); "everything related to debt should be in the stress category", then "the title in
-  circulation should be debt (stress). And margin debt should be under debt" (0.9.0, Debt).
+  circulation should be debt (stress). And margin debt should be under debt" (0.9.0, Debt). Margin debt moved to Credit
+  in 0.9.4 (below).
 - **No season says what comes next or what to watch for the turn.** Both read as forecasts; Keren: "drop the forecast"
   (1.5.0). They went with the season pop-up, and the book quotes it never had with them; Keren: "don't need it, we have
   it in About" (0.8.9).
@@ -646,7 +648,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
   against.** Keren: "put the health score inside cycle statistics, but keep it white with a gray border", "other
   than color … it needs to be the same, the same height, same text", and "against 18 closed cycles … show it in more
-  details … because I don't need to see it every time I look at the health score." (0.8.12, Oct 7, 2026)
+  details … because I don't need to see it every time I look at the health score." (0.8.12, Oct 7, 2026) The cycle pages
+  show the same tile, ring, score and tier, inside their AI Insights and Cycle Statistics cards; it opens nothing of its
+  own there, since the card it sits in is the door. Keren: "Make sure in the current cycle page that the health score
+  looks like how it is looked in the analysis page." (0.9.4)
 - **The interest-rate container is titled Interest Rates Environment, on the cycle pages and on Analysis.** Keren:
   "Instead of interest environment, write interest rates environment because most people recognize interest
   rates." (0.8.12, Oct 7, 2026)
@@ -676,7 +681,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
   Weather also holds Activity (Unemployment rate, Productivity growth); Mood: Valuations, Sentiment (Confidence, Fear) and Desire; Circulation: Pressure (Federal funds rate,
-  US 10-year Treasury), Money (Pulse, Volume), Credit (Credit gap) and Debt. There is no Activity category (Keren, 0.9.0). The
+  US 10-year Treasury), Money (Pulse, Volume); Stress: Credit (Credit gap, Margin debt, Lending standards) and Debt. There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". Keren renamed
@@ -814,9 +819,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
-- **Credit and debt are one system, and both live in Circulation: Credit is the flow, Debt is the stock.** Credit
-  (Credit gap) is borrowing as it builds; Debt (Margin debt, Federal debt, Federal interest payments, Federal budget,
-  Households, Delinquency rate) is what the borrowing leaves owed, margin debt included (Keren, 0.9.0). Keren: "Dalio says that debt service squeezes out
+- **Credit and debt are one system, and both live in Stress: Credit is the appetite, Debt is the burden.** Credit
+  (Credit gap, Margin debt, Lending standards) is borrowing as it builds and banks' willingness to lend; Debt (Federal debt,
+  Federal interest payments, Federal budget, Households, Delinquency rate) is what the borrowing leaves owed. Keren: "I think
+  credit is more of an appetite … to take risk", then "Under stress category, put credit and debt. And under credit, I will
+  follow your recommendation" (0.9.4). The credit gap is the BIS's early warning of stress, the build-up before the strain,
+  so it sits with Credit, not Debt. Earlier (0.9.0) both lived in Circulation. Keren: "Dalio says that debt service squeezes out
   spending, so we should see it in the same place"; "margin debt has everything to do with credit because they use
   credit to buy stocks". Activity (Unemployment rate, Productivity growth) moved to Weather. This overturns V457/V462/V660's
   Stress under Energy; there is still no separate Load or debt category. (0.9.0)
@@ -826,9 +834,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   growth against a year earlier, zero its only line. The Delinquency rate is the Fed's all-loans rate at commercial
   banks; no convention bands it, so its line is the record's own 1985–2025 average (Keren's rule: derive it from the
   record and say so). (0.9.0)
-- **Lending standards (the Fed's Senior Loan Officer Survey) are left out for now.** Keren: "drop the lending
-  standards for now. Maybe we'll get back to it later." It tightened before 1990, 2001 and 2008, but also in
-  2015–16 and to 51% in 2022–24 with no recession. No credit spread came back with the credit readings (V709). (0.9.0)
+- **Lending standards (the Fed's Senior Loan Officer Survey) is a Credit reading, drawn alone like Margin debt: no loan
+  demand line.** Keren asked which was more informative; Claude recommended standards, the survey's early signal in the
+  Fed's own research (Lown and Morgan 2006; Bassett and others 2012), and Keren: "I will follow your recommendation"
+  (0.9.4). A loan-demand second line was tried and taken off: "I don't get the lending standards chart. It's confusing." It is the net share of banks tightening C&I standards for large and
+  middle-market firms (DRTSCILM, quarterly from 1990), zero its only line; it tightened before 1990, 2001 and 2008, but
+  also in 2015–16 and 2022–24 with no recession. It was left out in 0.9.0 ("drop the lending standards for now"). No
+  credit spread came back with the credit readings (V709).
 - **The Power score is gone: its card, page, composite and history. Don't re-add it.** Keren: "remove the
   power score". (V660)
 - **Unemployment rate and Productivity growth (its history is OPHNFB, through the Backfill) each have their own
