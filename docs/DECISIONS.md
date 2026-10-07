@@ -905,8 +905,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
   spread, went with it. Keren: "use appetite as the keyword". (V709)
-- **Concentration is the weight of the S&P 500's ten largest holdings, read from SPY, under Desire > Risk, against
-  its record's own 2019–2025 average (31.2%).** Keren asked to "track the top heavy weights of the S&P 500" and chose
+- **Concentration risk is the ten largest S&P 500 companies' share of the index's market cap, read from SPY, under
+  Desire > Risk, against its record's own 2019–2025 average (31.2%).** Keren named it "Concentration risk" and its
+  history "Top 10 Share of Market Cap" rather than "weight" (0.9.10). Keren asked to "track the top heavy weights of the S&P 500" and chose
   "Import once": the quarter ends since 2019 Q3 are SPY's SEC N-PORT filings, downloaded once from her own computer
   (the SEC refuses GitHub's servers and the cloud allowlist) and kept in `series.json` by `tools/import-nport.js`;
   from then on the Backfill reads State Street's daily SPY holdings file and keeps its latest figure for each quarter
@@ -916,7 +917,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   from the cloud.)
   The average line and its Normal side are Claude's call under the derive-it-from-the-data rule; no convention sets
   a band. The largest tenth's share of market cap (Kenneth French's size portfolios) was built and dropped in 0.9.8:
-  Keren, "it doesn't really show the concentration of risk in the market"; don't re-propose it. (0.9.9)
+  Keren, "it doesn't really show the concentration of risk in the market"; don't re-propose it. (0.9.9, 0.9.10)
 - **The durables card is called Discretionary spending, and its (i) says no official series measures discretionary
   spending, so the app measures it by durable goods.** Keren chose the name over Consumer demand when Retail sales
   arrived, to keep apart what households spend in dollars and what they could do without. The series is unchanged. (0.9.7)

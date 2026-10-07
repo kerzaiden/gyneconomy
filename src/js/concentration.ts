@@ -23,10 +23,10 @@ export function concentrationSpecs(): CreditSpec[] {
   var last = topTenQuarterly[topTenQuarterly.length - 1].q;
   topTenHistory.length = 0;
   (topTenQuarterly as CreditPoint[]).concat(topTenRecent.filter(function(d){ return d.q > last; })).forEach(function(d){ topTenHistory.push(d); });
-  return [{ id:"sheet-sign-concentration", term:"Concentration", econ:"Concentration", unit:"top ten of the S&P 500", series:topTenHistory,
+  return [{ id:"sheet-sign-concentration", term:"Concentration risk", econ:"Concentration risk", unit:"top ten of the S&P 500", series:topTenHistory,
     mid:CONCENTRATION_MEAN, line:concentrationSpan() + " average", optimal:{ lte:CONCENTRATION_MEAN, label:"≤ " + CONCENTRATION_MEAN.toFixed(1) + "%" },
     ends:{ high:"Concentrated" }, fmt:function(v){ return v.toFixed(1) + "%"; }, word:concentrationWord, src:CONCENTRATION_SRC,
-    about:"The weight of the ten largest companies in the S&P 500, read from SPY, the oldest fund that tracks the index: their share of its net assets. " +
+    about:"The ten largest companies' share of the S&P 500's market cap, read from SPY, the oldest fund that tracks the index, which holds each company by its weight in the index. " +
       "A company with two share classes counts once, so Alphabet’s A and C shares are added together. Quarter ends come from SPY’s filings with the SEC; " +
       "the latest figure is State Street’s own daily holdings file. When a few giants carry the index, its fortunes ride on theirs: the concentration risk.",
     band:"<b>The line is the record’s own average</b>, every quarter from " + concentrationSpan() + ". The SEC publishes the full holdings only since 2019, " +
