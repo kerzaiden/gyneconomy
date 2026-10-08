@@ -59,7 +59,7 @@ function spanOf(print: (v: number) => string){
   return function(lo: number, hi: number){ return print(lo) === print(hi) ? print(lo) : print(lo) + " – " + print(hi); };
 }
 function cardPrint(R: RosterRow){
-  var g = eraFig(todayFace(R).text), pc = R.pair ? "%" : "", f = function(v: number){ return g(v) + pc; };
+  var g = eraFig(todayFace(R).text), f = g;
   return { print:function(v: number){ return f(v); }, span:spanOf(function(v){ return f(v); }) };
 }
 function readingLab(R: RosterRow): Lab {

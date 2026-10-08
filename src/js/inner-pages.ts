@@ -1,12 +1,12 @@
-import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, monthLabel, ordinal, qAtIndex, qLabel, stateOf, tagFor, titleCase, yearOf } from "./format.ts";
+import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, monthLabel, ordinal, qLabel, stateOf, tagFor, titleCase, yearOf } from "./format.ts";
 import { addSources, byId, focusQuiet, layer, moreRow } from "./dom.ts";
 import { divergeChart, trendOf, trendPill } from "./charts.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { CAPE_FAIR, capeHistory, DEFICIT_LINE, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fileRow, labRow, longCycleSrc, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, syncCapeHistory, unempHistory } from "./data.ts";
-import { currentEra, cycleQtrIdx, cycleSlice, growthWord, inflationFigure, nowModel, potentialGap, totalGrowthYears, totalRiseIn } from "./model.ts";
+import { CAPE_FAIR, capeHistory, DEFICIT_LINE, DEF_FROM_YEAR, deficitHistory, fileRow, labRow, longCycleSrc, now, syncCapeHistory, unempHistory } from "./data.ts";
+import { currentEra, cycleSlice, growthWord, inflationFigure, nowModel, potentialGap, totalGrowthYears, totalRiseIn } from "./model.ts";
 import { controlKeys, defFrom, histControls, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, timelineSpan, timelineWindow } from "./history.ts";
-import { activityInfoHtml, deficitInfoHtml, dsrInfoHtml, gdpWord, growthInfoHtml, householdsNow, lagging, phaseClass, savInfoHtml, tempInfo, temperatureInfoHtml } from "./readings.ts";
-import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, unempHistoryChart } from "./history-charts.ts";
+import { activityInfoHtml, deficitInfoHtml, gdpWord, growthInfoHtml, lagging, phaseClass, tempInfo, temperatureInfoHtml } from "./readings.ts";
+import { cpiHistoryChart, deficitChart, gdpHistoryChart, unempHistoryChart } from "./history-charts.ts";
 import { gdpFigure, sheetRenderers, tempWord } from "./render-core.ts";
 import { growthDetail } from "./dial-cycle.ts";
 import { meterWord } from "./indicators.ts";
@@ -21,25 +21,6 @@ function actCycleMonths(c: Cycle){
     if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
   });
   return a === -1 ? null : [a, b];
-}
-function householdsHighlights(){
-  var peak = Math.max.apply(null, dsrHistory), peakAt = qAtIndex(DSR_FROM_YEAR, dsrHistory.indexOf(peak));
-  var offPeak = (1 - dsrNow / peak) * 100;
-  var lower = savHistory.map(function(v, i){ return { v:v, i:i }; })
-                        .filter(function(d){ return d.v <= savNow && d.i < savHistory.length - 1; });
-  var run = lower.filter(function(d){ var y = SAV_FROM_YEAR + Math.floor(d.i / 4); return y >= 2005 && y <= 2008; });
-  var years = SAV_FROM_YEAR + Math.floor((savHistory.length - 1) / 4) - SAV_FROM_YEAR;
-  var hhLede = lede('Two halves of one household: what it owes every month, and what is left ' +
-    'after. The bill is the load the body carries; the cushion is what it has stored against a month that ' +
-    'goes wrong.');
-  var billTxt = "Households pay " + dsrNow.toFixed(1) + "% of what they take home to service debt, against " +
-    DSR_MEAN.toFixed(1) + "% on average since " + DSR_FROM_YEAR + " and a peak of " + peak.toFixed(1) + "% in " +
-    peakAt + ". That is " + offPeak.toFixed(0) + "% below the peak, and flat for two years.";
-  var keptTxt = "What is left over is " + savNow.toFixed(1) + "% of income — only " + lower.length +
-    " quarters in the " + years + " years since " + SAV_FROM_YEAR + " have been lower, and " + run.length +
-    " of them ran from 2005 to early 2008. The bill is not the strain here; the cushion is.";
-  return highlightsHtml([hhLede, hiCard("The Bill", "", billTxt),
-                         hiCard("The Cushion", householdsNow.state, keptTxt)]);
 }
 function redrawSheet(id: string){
   var h = byId("metric-page"), d = sheetRenderers[id], keys = controlKeys(document.activeElement);
@@ -120,21 +101,6 @@ function defineDeficit(){
       mid:-DEFICIT_LINE, line:"the 50-year average of " + fmtSigned(-DEFICIT_LINE, 1) + "%" }); }, src:longCycleSrc
   });
 }
-function defineHouseholds(){
-  var id = "sheet-metric-households";
-  defineReading(id, {
-    face:function(){ return [dsrNow.toFixed(1) + "/" + savNow.toFixed(1), householdsNow.word]; },
-    info:function(){ return dsrInfoHtml() + savInfoHtml(); },
-    controls:function(){ return histControls(id, { depth:Math.floor(dsrHistory.length / 4) }, DSR_FROM_YEAR); },
-    history:function(){
-      var cyc = pageCycle(id, DSR_FROM_YEAR), idx = cyc ? cycleQtrIdx(DSR_FROM_YEAR, cyc, dsrHistory.length) : null;
-      var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, page.range[id]), to = idx ? idx[1] : dsrHistory.length;
-      return { geom:"householdsChart", chart:function(W: number){ return householdsChart(W, from, to); },
-        trend:trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"), "Saving", true, { rising:"keeping more", falling:"keeping less" }) };
-    },
-    insight:householdsHighlights
-  });
-}
 function valuationInfo(){ var cape = fileRow("cape"); return '<h4>' + titleCase(cape.marker) + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note); }
 function defineValuation(){
   var id = "sheet-metric-valuation";
@@ -159,7 +125,7 @@ function defineValuation(){
 }
 export function defineInnerReadings(){
   syncCapeHistory();
-  defineTemp(); defineGdp(); defineActivity(); defineDeficit(); defineHouseholds(); defineValuation();
+  defineTemp(); defineGdp(); defineActivity(); defineDeficit(); defineValuation();
   addSources(now.valuation.src);
 }
 function wireMetricPageControls(){

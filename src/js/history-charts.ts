@@ -3,7 +3,7 @@ import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex } from "./format.ts";
 import { type HistFrame, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
 import { fedFundsHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
+import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
 import { quarterRegime } from "./model.ts";
 import { windowScale } from "./history.ts";
 import { unempState } from "./readings.ts";
@@ -222,48 +222,6 @@ export function fedFundsHistoryChart(Wpx: number, from: number, o?: HistOpts){
                    fmt:function(v: number){ return v.toFixed(2) + "%"; } });
   return vhOpen(W, H) +
     'aria-label="The effective federal funds rate, every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
-}
-export function householdsChart(Wpx: number, from: number, to?: number | null){
-  var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
-      L = F.L, R = F.R, T = F.T, B = F.B;
-  from = from || 0;
-  var hi = to == null ? dsrHistory.length : to;
-  var bill = dsrHistory.slice(from, hi);
-  var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
-  var n = bill.length;
-  var sc = windowScale(bill.concat(kept), [0]);
-  var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
-  var f = function(v: number){ return v.toFixed(1); };
-  var out: string[] = [];
-  var y0 = DSR_FROM_YEAR + Math.floor(from / 4);
-  var y1 = DSR_FROM_YEAR + Math.floor((hi - 1) / 4);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g: number){ return g.toFixed(0) + "%"; } }));
-  windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
-    var i = (yr - DSR_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
-    out.unshift(vGrid(X(i), T, B));
-    out.push(xLabel(f(X(i)), yr, B + 17));
-  });
-  out.push(crossLine(T, B));
-  var hhSlot = (R - L) / Math.max(1, n);
-  var hhSw = colWidth(hhSlot / 2), hhOff = Math.max(0.7, hhSw * 0.62);
-  bill.forEach(function(v, i){
-    var cx = X(i);
-    out.push('<g class="hcol">' +
-      '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx - hhOff, Y(0), Y(v), hhSw) + '"/>' +
-      '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx + hhOff, Y(0), Y(kept[i]), hhSw) + '"/>' +
-    '</g>');
-  });
-  out.push(fitLine(kept, "quarter", function(v: number){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
-  var hovAt = 0;
-  publishGeom("householdsChart", { L:L, R:R, T:T, B:B, W:W, n:n,
-    refs:[{ label:"Paid out on debt", cls:"hh-bill" }, { label:"Kept as saving", cls:"hh-kept" }],
-    at:function(d: unknown, i: number){ hovAt = i; return qAtIndex(DSR_FROM_YEAR, from + i); },
-    fmt:function(v: number){ return v.toFixed(1) + "% out \u00b7 " + kept[hovAt].toFixed(1) + "% kept"; },
-    vals:bill.map(function(v: number){ return { v:v }; }) });
-  return '<svg class="hist-svg vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
-    'aria-label="Household debt service and the personal saving rate, both as a share of disposable ' +
-    'income, every quarter from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
 }
 export function cpiHistoryChart(Wpx: number, from: number, o?: HistOpts){
   o = o || {};

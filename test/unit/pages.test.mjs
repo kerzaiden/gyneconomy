@@ -6,7 +6,7 @@ import { ROSTER } from '../../src/js/roster.ts';
 import { page, pickerOpen } from '../../src/js/history.ts';
 import { cycleByName } from '../../src/js/model.ts';
 import { histFrame } from '../../src/js/charts.ts';
-import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, householdsChart, m2GrowthChart, deficitChart, velocityHistoryChart } from '../../src/js/history-charts.ts';
+import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, m2GrowthChart, deficitChart, velocityHistoryChart } from '../../src/js/history-charts.ts';
 
 const BROKEN = ['NaN', 'undefined', 'Infinity', '[object Object]'];
 const broken = html => BROKEN.filter(b => html.includes(b));
@@ -46,7 +46,7 @@ test('every history chart on a page sits in the one frame', () => {
   }
 });
 
-const CHARTS = { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, householdsChart, m2GrowthChart,
+const CHARTS = { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, m2GrowthChart,
   deficitChart, velocityHistoryChart };
 for (const [name, chart] of Object.entries(CHARTS)) {
   test(name + ' is drawn to the frame it is given, with every value readable', () => {
