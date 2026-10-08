@@ -364,7 +364,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "All the previous designs we made, we can throw them out." A closed cycle's figures are Cycle Statistics'. This
   replaced the group card (V688), the category page's ground (0.6.2), its cards and More details (1.5.0, 0.6.1), the
   equal-height cards (V688) and the past cycle's category cards (V660, V665). (0.8.6, Oct 6, 2026)
-- **Debt is one group, Debt (Federal debt, Federal interest payments, Federal budget, Households, Delinquency rate);
+- **Debt is one group, Debt (Federal debt, Federal interest payments, Federal budget, Households, Delinquencies);
   the name Economic power is retired.** Keren: "the terminology is stress because
   debts are stress" (V688, Stress); "everything related to debt should be in the stress category", then "the title in
   circulation should be debt (stress). And margin debt should be under debt" (0.9.0, Debt). Margin debt moved to Credit
@@ -719,7 +719,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth gap, Federal funds rate, 0.9.16) and Market (S&P 500);
   Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium, Concentration risk); Circulation: Pressure (US 10-year
-  Treasury, Treasury spreads), Money (Pulse, Volume); Stress: Credit (Credit gap, Margin debt, Lending standards) and Debt. There is no Activity category (Keren, 0.9.0). The
+  Treasury, Treasury spreads), Money (Pulse, Volume); Stress: Credit (Margin debt) and Debt. There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". Keren renamed
@@ -866,26 +866,23 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   the Cycles window. (0.9.19)
 
 - **Credit and debt are one system, and both live in Stress: Credit is the appetite, Debt is the burden.** Credit
-  (Credit gap, Margin debt, Lending standards) is borrowing as it builds and banks' willingness to lend; Debt (Federal debt,
-  Federal interest payments, Federal budget, Households, Delinquency rate) is what the borrowing leaves owed. Keren: "I think
+  (Margin debt, 0.9.21) is borrowing as it builds; Debt (Federal debt,
+  Federal interest payments, Federal budget, Households, Delinquencies) is what the borrowing leaves owed. Keren: "I think
   credit is more of an appetite … to take risk", then "Under stress category, put credit and debt. And under credit, I will
-  follow your recommendation" (0.9.4). The credit gap is the BIS's early warning of stress, the build-up before the strain,
-  so it sits with Credit, not Debt. Earlier (0.9.0) both lived in Circulation. Keren: "Dalio says that debt service squeezes out
+  follow your recommendation" (0.9.4). Earlier (0.9.0) both lived in Circulation. Keren: "Dalio says that debt service squeezes out
   spending, so we should see it in the same place"; "margin debt has everything to do with credit because they use
   credit to buy stocks". Activity (Unemployment rate, Productivity growth) moved to Weather. This overturns V457/V462/V660's
   Stress under Energy; there is still no separate Load or debt category. (0.9.0)
-- **The credit readings are the popular, published ones, and few.** Keren: "I want to use popular metrics,
-  conventional metrics, and not too many of them." The Credit gap is the BIS's own published gap (the app does not
-  compute it), with Basel III's lines at 2 and 10 points. Margin debt is FINRA's monthly debit balances, read as
-  growth against a year earlier, zero its only line. The Delinquency rate is the Fed's all-loans rate at commercial
+- **The credit readings are the popular, published ones, and few: ones a viewer hears about on CNBC.** Keren: "I want to use popular metrics,
+  conventional metrics, and not too many of them"; "We want things that people know" (0.9.21). Margin debt is FINRA's monthly debit balances, read as
+  growth against a year earlier, zero its only line. Delinquencies (renamed from Delinquency rate, Keren, 0.9.21) is the Fed's all-loans rate at commercial
   banks; no convention bands it, so its line is the record's own 1985–2025 average (Keren's rule: derive it from the
   record and say so). (0.9.0)
-- **Lending standards (the Fed's Senior Loan Officer Survey) is a Credit reading, drawn alone like Margin debt: no loan
-  demand line.** Keren asked which was more informative; Claude recommended standards, the survey's early signal in the
-  Fed's own research (Lown and Morgan 2006; Bassett and others 2012), and Keren: "I will follow your recommendation"
-  (0.9.4). A loan-demand second line was tried and taken off: "I don't get the lending standards chart. It's confusing." It is the net share of banks tightening C&I standards for large and
-  middle-market firms (DRTSCILM, quarterly from 1990), zero its only line; it tightened before 1990, 2001 and 2008, but
-  also in 2015–16 and 2022–24 with no recession. It was left out in 0.9.0 ("drop the lending standards for now"). No
+- **The Credit gap and Lending standards are gone: their cards, pages, sources and Backfill fetches. Don't re-add
+  them.** Keren: "I still don't understand what is credit gap, lending standards … Is this things that I would hear
+  about in CNBC? We want things that people know", then "get rid of lending standards and credit gap" (0.9.21). Both
+  were central bankers' and loan officers' tools (the BIS gap with Basel III's lines; the Fed's Senior Loan Officer
+  Survey, tried from 0.9.4). A credit impulse and a credit-growth probe were also proposed and dropped as too deep. No
   credit spread came back with the credit readings (V709).
 - **The Power score is gone: its card, page, composite and history. Don't re-add it.** Keren: "remove the
   power score". (V660)

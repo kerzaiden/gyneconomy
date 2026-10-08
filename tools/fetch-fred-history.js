@@ -223,24 +223,6 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-const BIS_GAP = 'https://stats.bis.org/api/v1/data/WS_CREDIT_GAP/Q.US.P.A.C?format=csv';
-function bisGapRows(csv) {
-  const lines = csv.trim().split(/\r?\n/);
-  const head = lines[0].split(',');
-  const at = k => { const i = head.indexOf(k); if (i < 0) throw new Error('BIS credit gap: no ' + k + ' column in ' + lines[0].slice(0, 200)); return i; };
-  const per = at('TIME_PERIOD'), val = at('OBS_VALUE'), kind = at('CG_DTYPE');
-  const out = lines.slice(1).map(l => l.split(',')).filter(c => c[kind] === 'C' && /^\d{4}-Q[1-4]$/.test(c[per]) && band(Number(c[val]), -60, 60))
-    .map(c => ({ q: c[per].replace('-', ' '), v: Math.round(Number(c[val]) * 10) / 10 })).sort((x, y) => (x.q < y.q ? -1 : 1));
-  if (!out.length) throw new Error('BIS credit gap: no gap rows in the reply');
-  return out;
-}
-
-async function bisGap() {
-  const r = await fetch(BIS_GAP, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
-  if (!r.ok) throw new Error('BIS credit gap: HTTP ' + r.status);
-  return bisGapRows(await r.text());
-}
-
 function interestShare(interest, gdp) {
   const g = new Map(gdp.map(d => [d.q, d.v]));
   return interest.filter(d => g.has(d.q)).map(d => ({ q: d.q, v: Math.round(d.v / g.get(d.q) * 10000) / 100 }));
@@ -338,8 +320,8 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (moves) out.fedMoves = m(moves);
   if (pce) out.pceYoYHistory = m(pce);
   if (potential) out.potentialYoYHistory = q(potential);
-  if (credit) Object.assign(out, { creditGapHistory: q(credit.gap), delinquencyHistory: q(credit.delinquency), marginHistory: m(credit.margin) });
-  if (credit && credit.standards) Object.assign(out, { lendingHistory: q(credit.standards) });
+  if (credit) Object.assign(out, { delinquencyHistory: q(credit.delinquency), marginHistory: m(credit.margin) });
+  if (credit && credit.consumer) out.consumerCreditHistory = m(credit.consumer);
   if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v },
     interestQuarterly: q(dollars.share), interestDollarsQuarterly: q(dollars.interest) });
   if (activity) Object.assign(out, { payrollsHistory: m(activity.payrolls), retailHistory: m(activity.retail) });
@@ -429,15 +411,13 @@ async function main() {
   say('GDPPOT YoY    ' + potential.length + ' quarters, ' + potential[0].q + ' → ' + potential[potential.length - 1].q + ' (CBO, through the last full quarter)');
 
   const credit = {
-    gap: await bisGap(),
     delinquency: quarterly(await fredSeries('DRALACBS', '1985-01-01'), 0, 20),
     margin: yoyMonthly(await finraMargin(), -80, 200),
-    standards: quarterly(await fredSeries('DRTSCILM', '1990-01-01'), -100, 100)
+    consumer: yoyMonthly(await fredSeries('TOTALSL', '1943-01-01'), -40, 80)
   };
-  if (credit.gap[0].q > '1958 Q1' || credit.delinquency[0].q !== '1985 Q1' || credit.margin[0].m !== '1998-01' ||
-      credit.standards[0].q > '1990 Q4')
-    throw new Error('credit: expected the BIS gap from 1957, delinquency from 1985 Q1, margin growth from 1998-01 and the loan officer survey from the early 1990s');
-  for (const k of ['gap', 'delinquency', 'margin', 'standards']) {
+  if (credit.delinquency[0].q !== '1985 Q1' || credit.margin[0].m !== '1998-01' || credit.consumer[0].m !== '1944-01')
+    throw new Error('credit: expected delinquency from 1985 Q1, margin growth from 1998-01 and consumer credit growth from 1944-01');
+  for (const k of ['delinquency', 'margin', 'consumer']) {
     const a = credit[k];
     say(('credit ' + k).padEnd(13) + ' ' + a.length + ' periods, ' + (a[0].q || a[0].m) + ' → ' + (a[a.length - 1].q || a[a.length - 1].m));
   }
@@ -505,5 +485,5 @@ async function earlySeasons() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { topTen, spyDailyRows, keepQuarter, bisGapRows, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

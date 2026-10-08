@@ -1,11 +1,11 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
 import { bagSvg, creditSvg, debtSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
-import { confidenceHistory, creditGapHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
-import { DELINQUENCY_MEAN, GAP_BUILD, LENDING_LINE, MARGIN_LINE } from "./credit.ts";
+import { DELINQUENCY_MEAN, MARGIN_LINE } from "./credit.ts";
 import { GAP_LINE, growthGapHistory, PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
 import { CONCENTRATION_MEAN, topTenHistory } from "./concentration.ts";
 import { realYears } from "./readings.ts";
@@ -95,12 +95,8 @@ function declareRoster(): RosterRow[] {
       cardUnit:"M2 velocity", live:["coincident"] },
     { id:"sheet-sign-volume", name:"Volume", cat:"circulation", sub:"Money", timing:"leading", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, cardUnit:"M2, YoY", live:["coincident"] },
-    { id:"sheet-sign-credit-gap", name:"Credit gap", cat:"stress", sub:"Credit", good:"down", group:"Credit", timing:"leading",
-      term:"Credit gap", head:"Credit-to-GDP Gap, Private Sector", hist:{ s:creditGapHistory, k:"q" }, mid:GAP_BUILD, cardUnit:"over trend" },
     { id:"sheet-sign-margin", name:"Margin debt", cat:"stress", sub:"Credit", group:"Credit", timing:"leading",
       term:"Margin debt", head:"Margin Debt, YoY", hist:{ s:marginHistory, k:"m" }, mid:MARGIN_LINE, cardUnit:"YoY" },
-    { id:"sheet-sign-lending", name:"Lending standards", cat:"stress", sub:"Credit", good:"down", group:"Credit", timing:"leading",
-      term:"Lending standards", head:"Banks Tightening Loan Standards", hist:{ s:lendingHistory, k:"q" }, mid:LENDING_LINE, cardUnit:"net tightening" },
     { id:"sheet-metric-debt", name:"Federal debt", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"structural",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:DEBT_LINE, cardUnit:"of GDP" },
     { id:"sheet-metric-interest", name:"Federal interest payments", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"structural",
@@ -112,8 +108,8 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-metric-households", name:"Households", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"structural",
       head:"Debt Service, Share of Income", stops:["5y", "10y", "max"], hist:{ s:dsrHistory, k:"qi", y0:DSR_FROM_YEAR },
       pair:{ s:savHistory, k:"qi", y0:SAV_FROM_YEAR }, cardUnit:"% paid / kept" },
-    { id:"sheet-metric-delinquency", name:"Delinquency rate", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"lagging",
-      term:"Delinquency rate", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
+    { id:"sheet-metric-delinquency", name:"Delinquencies", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"lagging",
+      term:"Delinquencies", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
     { id:"sheet-metric-valuation", name:"Shiller CAPE", cat:"mood", sub:"Valuations", good:"down", group:"Valuations", timing:"structural",
       head:"Shiller CAPE, Against Fair Value", hist:{ s:capeHistory, k:"y" }, mid:CAPE_FAIR, cardUnit:"CAPE", live:["valuation", "capeValue"] },
     { id:"sheet-metric-buffett", name:"Buffett indicator", cat:"mood", sub:"Valuations", good:"down", group:"Valuations", timing:"structural",

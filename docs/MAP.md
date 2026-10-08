@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,870 lines** in 39 files, about 607 KB, roughly **172 thousand tokens**. No session can
+The source is **8,823 lines** in 39 files, about 602 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `d813ba0` on 2026-10-08.
+Generated from commit `14750a2` on 2026-10-08.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `d813ba0` on 2026-10-08.
 | `js/main.ts` | 35 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **35** modules, **744** top-level functions, **121** top-level vars, **369** exported names, **20** boots.
+Counts: **35** modules, **741** top-level functions, **121** top-level vars, **369** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -33,11 +33,11 @@ Counts: **35** modules, **744** top-level functions, **121** top-level vars, **3
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 44 | 6 | `format`, `history-fred` |
 | `js/data.ts` | 573 | 82 | `format`, `history-fred`, `live` |
-| `js/credit.ts` | 122 | 9 | `activity`, `charts`, `concentration`, `format`, `history-fred` |
+| `js/credit.ts` | 81 | 6 | `activity`, `charts`, `concentration`, `format`, `history-fred` |
 | `js/model.ts` | 384 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 784 | 68 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 153 | 4 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
+| `js/roster.ts` | 149 | 4 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 376 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
 | `js/diagnosis.ts` | 88 | 13 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
@@ -56,7 +56,7 @@ Counts: **35** modules, **744** top-level functions, **121** top-level vars, **3
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
-| `js/history-fred.ts` | 31 | 14 | — |
+| `js/history-fred.ts` | 29 | 14 | — |
 | `js/indicators.ts` | 195 | 32 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 264 | 20 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/insights.ts` | 185 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
@@ -78,12 +78,12 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:36`–43 |
 | 5 | `bootData` | `js/data.ts:521`–572 |
-| 6 | `bootCredit` | `js/credit.ts:114`–121 |
+| 6 | `bootCredit` | `js/credit.ts:73`–80 |
 | 7 | `bootModel` | `js/model.ts:359`–383 |
 | 8 | `bootHistory` | `js/history.ts:452`–475 |
 | 9 | `bootReadings` | `js/readings.ts:599`–655 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:718`–783 |
-| 11 | `bootRoster` | `js/roster.ts:140`–152 |
+| 11 | `bootRoster` | `js/roster.ts:136`–148 |
 | 12 | `bootRenderCore` | `js/render-core.ts:150`–155 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:367`–372 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:84`–87 |
@@ -304,19 +304,16 @@ falls in. **export** marks a name other modules import.
 
 ### `js/credit.ts`
 
-#### Credit and debt: the credit gap, margin debt, lending standards and delinquencies
+#### Credit and debt: margin debt and delinquencies
 
 | Line | Name | Anchor |
 |---|---|---|
-| 11 | `GAP_BUILD` · export | `var GAP_BUILD =` |
-| 32 | `avgSpan` | `function avgSpan(` |
-| 33 | `gapWord` | `function gapWord(` |
-| 40 | `marginWord` | `function marginWord(` |
-| 45 | `lendingWord` | `function lendingWord(` |
-| 50 | `delinquencyWord` | `function delinquencyWord(` |
-| 56 | `lendingSpec` | `function lendingSpec(` |
-| 65 | `specs` | `function specs(` |
-| 92 | `readingOf` | `function readingOf(` |
+| 11 | `MARGIN_LINE` · export | `var MARGIN_LINE =` |
+| 21 | `avgSpan` | `function avgSpan(` |
+| 22 | `marginWord` | `function marginWord(` |
+| 27 | `delinquencyWord` | `function delinquencyWord(` |
+| 33 | `specs` | `function specs(` |
+| 51 | `readingOf` | `function readingOf(` |
 
 ### `js/model.ts`
 
