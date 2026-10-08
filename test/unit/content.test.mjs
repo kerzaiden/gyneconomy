@@ -16,7 +16,7 @@ import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/reading.ts';
 import { rhythmRecord, RHYTHM_WINDOW } from '../../src/js/rhythm.ts';
-import { pulseStrips, velocityHistoryChart } from '../../src/js/history-charts.ts';
+import { pulseYearsChart, velocityHistoryChart } from '../../src/js/history-charts.ts';
 import { catInsight } from '../../src/js/insights.ts';
 import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 
@@ -398,10 +398,8 @@ test('the Pulse page reads its rhythm: two years of quarterly changes, cut at th
   assert.match(page, /1981–1984, 2008–2010 and 2020–2022/);
   const svg = velocityHistoryChart(360, 0);
   assert.equal((svg.match(/class="pv-col hcol/g) || []).length, m2vHistory.length);
-  assert.equal((svg.match(/class="pv-col hcol \w+ odd"/g) || []).length, r.history.filter(d => d.v > r.edge).length);
-  const strips = pulseStrips(0);
-  assert.equal((strips.match(/class="pt-head"/g) || []).length, 12);
-  assert.match(strips, /2026 so far/);
-  assert.match(strips, /2020<\/span><span class="pt-v mono">[\d.]+× · Irregular/);
-  assert.match(strips, /2016<\/span><span class="pt-v mono">[\d.]+× · Steady/);
+  const years = pulseYearsChart(0);
+  assert.deepEqual([...years.matchAll(/class="bt-yl"[^>]*>(\d{4})</g)].map(m => +m[1]), Array.from({ length: 12 }, (_, k) => 2015 + k));
+  assert.equal((years.match(/class="pt-now"/g) || []).length, 12);
+  assert.match(pulseYearsChart(240, 256), /from 2019 to 2022/);
 });

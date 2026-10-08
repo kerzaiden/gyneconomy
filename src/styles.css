@@ -631,9 +631,6 @@
     stroke-linecap:round; stroke-linejoin:round; }
   .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
   .pv-col.over{ stroke:var(--good); }
-  .pv-col.odd{ stroke:var(--critical); }
-  .pulsetrace .pt-svg.solo.odd .pt-now{ stroke:var(--critical); }
-  .pv-odd{ fill:var(--critical); opacity:0.08; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -676,10 +673,9 @@
   .pulsetrace{ margin:0; }
   .pulsetrace .spread-history-head + .pt-head{ margin-top:12px; }
   .pulsetrace .pt-svg.solo{ height:42px; }
-  .pulse-strips{ margin-top:16px; }
-  .pulse-strips .pt-svg.q1{ width:25%; }
-  .pulse-strips .pt-svg.q2{ width:50%; }
-  .pulse-strips .pt-svg.q3{ width:75%; }
+  .pulse-years{ margin-top:16px; }
+  .pulse-years-svg{ display:block; width:100%; height:auto; }
+  .pulse-years-svg .pt-now{ fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
   .pt-head:first-child{ margin-top:0; }
