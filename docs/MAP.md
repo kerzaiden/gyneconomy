@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,759 lines** in 39 files, about 599 KB, roughly **170 thousand tokens**. No session can
+The source is **8,812 lines** in 40 files, about 603 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `4bd8a23` on 2026-10-08.
+Generated from commit `2a3042f` on 2026-10-08.
 
 ## The page
 
@@ -20,10 +20,10 @@ Generated from commit `4bd8a23` on 2026-10-08.
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
 | `styles.css` | 1,194 | the whole stylesheet, every token and rule |
 | `page-body.html` | 251 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| `js/main.ts` | 35 modules | the entry: imports every module and calls their boots in order |
+| `js/main.ts` | 36 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **35** modules, **740** top-level functions, **118** top-level vars, **364** exported names, **20** boots.
+Counts: **36** modules, **747** top-level functions, **119** top-level vars, **367** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -49,7 +49,7 @@ Counts: **35** modules, **740** top-level functions, **118** top-level vars, **3
 | `js/repaint.ts` | 38 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 62 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 181 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
-| `js/charts.ts` | 251 | 34 | — |
+| `js/charts.ts` | 257 | 35 | — |
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 474 | 129 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 16 | 2 | `reading` |
@@ -60,9 +60,10 @@ Counts: **35** modules, **740** top-level functions, **118** top-level vars, **3
 | `js/indicators.ts` | 195 | 32 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/insights.ts` | 185 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
-| `js/marks.ts` | 61 | 28 | — |
-| `js/pressure.ts` | 319 | 13 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `reading`, `readings`, `roster` |
+| `js/marks.ts` | 60 | 27 | — |
+| `js/pressure.ts` | 320 | 13 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `reading`, `readings`, `rhythm`, `roster` |
 | `js/reading.ts` | 94 | 12 | `charts`, `dom`, `format`, `history`, `render-core`, `roster` |
+| `js/rhythm.ts` | 47 | 8 | `data`, `format` |
 | `js/main.ts` | 44 | 0 | `analysis`, `credit`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
 
 ## The boots
@@ -920,7 +921,8 @@ falls in. **export** marks a name other modules import.
 | 218 | `PULSE_WINDOW` · export | `var PULSE_WINDOW =` |
 | 219 | `pulseClipN` | `var pulseClipN =` |
 | 220 | `beatPath` | `function beatPath(` |
-| 237 | `pulseTraceSvg` · export | `function pulseTraceSvg(` |
+| 239 | `lanePeriod` | `function lanePeriod(` |
+| 243 | `pulseTraceSvg` · export | `function pulseTraceSvg(` |
 
 ### `js/concentration.ts`
 
@@ -1299,32 +1301,31 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 1 | `debtSvg` · export | `function debtSvg(` |
 | 2 | `homeSvg` · export | `function homeSvg(` |
-| 3 | `creditSvg` · export | `function creditSvg(` |
-| 4 | `dropSvg` | `function dropSvg(` |
-| 6 | `gaugeSvg` · export | `function gaugeSvg(` |
-| 10 | `diamondSvg` · export | `function diamondSvg(` |
-| 14 | `markSvg` | `function markSvg(` |
-| 17 | `orbitSvg` · export | `function orbitSvg(` |
-| 18 | `flameSvg` · export | `function flameSvg(` |
-| 21 | `bagSvg` · export | `function bagSvg(` |
-| 24 | `diceSvg` · export | `function diceSvg(` |
-| 28 | `clockSvg` · export | `function clockSvg(` |
-| 29 | `thermoSvg` · export | `function thermoSvg(` |
-| 32 | `personSvg` · export | `function personSvg(` |
-| 34 | `calendarSvg` · export | `function calendarSvg(` |
-| 35 | `sparkleSvg` · export | `function sparkleSvg(` |
-| 37 | `umbrellaSvg` · export | `function umbrellaSvg(` |
-| 39 | `slidersSvg` · export | `function slidersSvg(` |
-| 41 | `chartSvg` · export | `function chartSvg(` |
-| 43 | `heartSvg` · export | `function heartSvg(` |
-| 45 | `weatherSvg` · export | `function weatherSvg(` |
-| 47 | `moodSvg` · export | `function moodSvg(` |
-| 48 | `sproutSvg` · export | `function sproutSvg(` |
-| 50 | `factorySvg` · export | `function factorySvg(` |
-| 51 | `circulationSvg` · export | `function circulationSvg(` |
-| 52 | `boltSvg` · export | `function boltSvg(` |
-| 53 | `marketSvg` · export | `function marketSvg(` |
-| 56 | `volatilitySvg` · export | `function volatilitySvg(` |
+| 3 | `dropSvg` | `function dropSvg(` |
+| 5 | `gaugeSvg` · export | `function gaugeSvg(` |
+| 9 | `diamondSvg` · export | `function diamondSvg(` |
+| 13 | `markSvg` | `function markSvg(` |
+| 16 | `orbitSvg` · export | `function orbitSvg(` |
+| 17 | `flameSvg` · export | `function flameSvg(` |
+| 20 | `bagSvg` · export | `function bagSvg(` |
+| 23 | `diceSvg` · export | `function diceSvg(` |
+| 27 | `clockSvg` · export | `function clockSvg(` |
+| 28 | `thermoSvg` · export | `function thermoSvg(` |
+| 31 | `personSvg` · export | `function personSvg(` |
+| 33 | `calendarSvg` · export | `function calendarSvg(` |
+| 34 | `sparkleSvg` · export | `function sparkleSvg(` |
+| 36 | `umbrellaSvg` · export | `function umbrellaSvg(` |
+| 38 | `slidersSvg` · export | `function slidersSvg(` |
+| 40 | `chartSvg` · export | `function chartSvg(` |
+| 42 | `heartSvg` · export | `function heartSvg(` |
+| 44 | `weatherSvg` · export | `function weatherSvg(` |
+| 46 | `moodSvg` · export | `function moodSvg(` |
+| 47 | `sproutSvg` · export | `function sproutSvg(` |
+| 49 | `factorySvg` · export | `function factorySvg(` |
+| 50 | `circulationSvg` · export | `function circulationSvg(` |
+| 51 | `boltSvg` · export | `function boltSvg(` |
+| 52 | `marketSvg` · export | `function marketSvg(` |
+| 55 | `volatilitySvg` · export | `function volatilitySvg(` |
 
 ### `js/pressure.ts`
 
@@ -1332,24 +1333,24 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 18 | `latestYieldPoint` | `function latestYieldPoint(` |
-| 25 | `withLatestPoint` | `function withLatestPoint(` |
-| 30 | `tendencyNote` | `function tendencyNote(` |
-| 40 | `pressureMaturities` | `function pressureMaturities(` |
-| 66 | `flowRow` | `function flowRow(` |
-| 67 | `defineFlow` | `function defineFlow(` |
-| 98 | `ylmYearMarks` | `function ylmYearMarks(` |
-| 117 | `ylmColumns` | `function ylmColumns(` |
-| 137 | `ylmFitLine` | `function ylmFitLine(` |
-| 149 | `pressureHead` | `function pressureHead(` |
-| 161 | `definePressure` | `function definePressure(` |
+| 19 | `latestYieldPoint` | `function latestYieldPoint(` |
+| 26 | `withLatestPoint` | `function withLatestPoint(` |
+| 31 | `tendencyNote` | `function tendencyNote(` |
+| 41 | `pressureMaturities` | `function pressureMaturities(` |
+| 67 | `flowRow` | `function flowRow(` |
+| 68 | `defineFlow` | `function defineFlow(` |
+| 99 | `ylmYearMarks` | `function ylmYearMarks(` |
+| 118 | `ylmColumns` | `function ylmColumns(` |
+| 138 | `ylmFitLine` | `function ylmFitLine(` |
+| 150 | `pressureHead` | `function pressureHead(` |
+| 162 | `definePressure` | `function definePressure(` |
 
 #### Pressure's Insights
 
 | Line | Name | Anchor |
 |---|---|---|
-| 282 | `pressureInsights` | `function pressureInsights(` |
-| 316 | `defineMarketReadings` · export | `function defineMarketReadings(` |
+| 283 | `pressureInsights` | `function pressureInsights(` |
+| 317 | `defineMarketReadings` · export | `function defineMarketReadings(` |
 
 ### `js/reading.ts`
 
@@ -1374,6 +1375,21 @@ falls in. **export** marks a name other modules import.
 | 68 | `recordPoints` · export | `function recordPoints(` |
 | 74 | `recordInsight` · export | `function recordInsight(` |
 | 87 | `indicatorInsight` · export | `function indicatorInsight(` |
+
+### `js/rhythm.ts`
+
+#### Rhythm: how evenly the pulse of money changes pace
+
+| Line | Name | Anchor |
+|---|---|---|
+| 5 | `RHYTHM_WINDOW` · export | `var RHYTHM_WINDOW =` |
+| 9 | `spread` | `function spread(` |
+| 13 | `rhythmRecord` · export | `function rhythmRecord(` |
+| 21 | `pts` | `function pts(` |
+| 22 | `stretches` | `function stretches(` |
+| 33 | `listed` | `function listed(` |
+| 34 | `rhythmCard` · export | `function rhythmCard(` |
+| 41 | `rhythmInfo` · export | `function rhythmInfo(` |
 
 ## Registries — the lookup tables that route behaviour
 

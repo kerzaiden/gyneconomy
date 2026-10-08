@@ -15,6 +15,7 @@ import { nowModel, growthWord, cycleNowNote, realReturn, yearInflation } from '.
 import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/reading.ts';
+import { rhythmRecord, RHYTHM_WINDOW } from '../../src/js/rhythm.ts';
 import { catInsight } from '../../src/js/insights.ts';
 import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 
@@ -381,4 +382,17 @@ test('Stress has its insight, naming credit and debt, and Circulation no longer 
   ['weather', 'circulation', 'mood', 'stress'].forEach(k => assert.ok(catInsight(k).length > 0, k));
   assert.match(catInsight('stress'), /Credit[^<]*debt/);
   assert.doesNotMatch(catInsight('circulation'), /Credit is the money lent/);
+});
+
+test('the Pulse page reads its rhythm: two years of quarterly changes, cut at the pre-2008 ninetieth percentile', () => {
+  const r = rhythmRecord(), last = r.history.at(-1);
+  assert.equal(r.history.length, m2vHistory.length - RHYTHM_WINDOW);
+  assert.equal(r.history[0].q, '1961 Q1');
+  assert.ok(Math.abs(r.edge - 1.309) < 0.001, String(r.edge));
+  assert.ok(Math.abs(last.v - 0.296) < 0.001, String(last.v));
+  sheetRenderers['sheet-sign-pulse'](360);
+  const page = document.getElementById('sheet-sign-pulse').textContent;
+  assert.match(page, /Rhythm/);
+  assert.match(page, /Steady: in the two years to Q2 2026 velocity’s quarterly changes spread by 0\.30 points, the steadiest of the 262/);
+  assert.match(page, /1981–1984, 2008–2010 and 2020–2022/);
 });

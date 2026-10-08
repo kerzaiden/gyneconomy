@@ -3,7 +3,7 @@ import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, PULSE_WINDOW, pulseTraceSvg } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY, yearDone } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, m2vHistory, SAHM_TRIGGER, unempSahm, sahmOf } from "./data.ts";
 import { cpiNow, growthWord, inflationFigure, nowModel, potentialGap, realReturn, yearInflation } from "./model.ts";
 import type { ModelReading } from "./model.ts";
 import { creditReadings } from "./credit.ts";
@@ -416,11 +416,11 @@ export function pulseBlock(rate: number, ref: number, ind: Indicator){
     '<span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + '</span></div>';
   return '<div class="page-chart pulsebox"><div class="pulsetrace">' + title +
     '<div class="pt-head"><span class="pt-k">Now</span><span class="pt-v mono">' + rate.toFixed(2) + '× a year</span></div>' +
-    pulseTraceSvg(rate, null, 520, 34, 11, "solo") +
+    pulseTraceSvg(rate, null, 520, 34, 11, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) +
     '<div class="pt-head past"><span class="pt-k">Her pre-2008 pace</span><span class="pt-v mono">' + ref.toFixed(2) + '× a year</span></div>' +
     pulseTraceSvg(ref, null, 520, 34, 11, "solo past") +
     '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW +
-    ' years — so the gap you can see is the gap in the number. She turns her money over about ' + slower +
+    ' years — so the gap you can see is the gap in the number. The top trace beats at each quarter\u2019s own pace, so its spacing is her rhythm: even when steady, uneven when not. She turns her money over about ' + slower +
     '% less often than she did across 1959–2007.</p>' +
   '</div></div>';
 }

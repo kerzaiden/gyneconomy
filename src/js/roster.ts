@@ -1,6 +1,6 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
-import { bagSvg, creditSvg, debtSvg, homeSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
+import { bagSvg, debtSvg, homeSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { confidenceHistory, payrollsHistory, retailHistory, consumerCreditHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_MEAN, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_MID, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
@@ -28,7 +28,7 @@ export var CATEGORIES: Category[] = [
 ];
 export var SUB_MARK: Record<string, () => string> = {
   "Economic Season":thermoSvg, "Market":marketSvg, "Labor":personSvg, "Output":factorySvg, "Pressure":gaugeSvg, "Money":heartSvg,
-  "Credit":creditSvg, "Households":homeSvg, "Government":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
+  "Households":homeSvg, "Government":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
 };
 export var ROSTER_BY: Record<string, RosterRow> = {};
 function pageState<T>(of: (R: RosterRow) => T | undefined): Record<string, T> {
@@ -95,7 +95,7 @@ function declareRoster(): RosterRow[] {
       cardUnit:"M2 velocity", live:["coincident"] },
     { id:"sheet-sign-volume", name:"Volume", cat:"circulation", sub:"Money", timing:"leading", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, cardUnit:"M2, YoY", live:["coincident"] },
-    { id:"sheet-sign-consumer-credit", name:"Consumer credit", cat:"circulation", sub:"Credit", timing:"lagging",
+    { id:"sheet-sign-consumer-credit", name:"Consumer credit", cat:"circulation", sub:"Money", timing:"lagging",
       term:"Consumer credit", head:"Consumer Credit, YoY", hist:{ s:consumerCreditHistory, k:"m" }, mid:CONSUMER_LINE, cardUnit:"YoY" },
     { id:"sheet-sign-saving", name:"Saving rate", cat:"stress", sub:"Households", good:"up", group:"Households", timing:"structural",
       term:"Saving rate", head:"Personal Saving Rate, Share of Income", hist:{ s:savingPoints, k:"q" }, mid:SAV_MID, cardUnit:"of income" },

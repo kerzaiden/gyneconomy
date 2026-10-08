@@ -217,10 +217,12 @@ function refName(t?: string | null){
 }
 export var PULSE_WINDOW = 5;
 var pulseClipN = 0;
-function beatPath(x0: number, x1: number, y: number, period: number, amp: number){
+function beatPath(x0: number, x1: number, y: number, period: number | ((x: number) => number), amp: number){
   var f = function(n: number){ return n.toFixed(1); };
-  var d = ["M" + f(x0) + "," + f(y)], x = x0, p = period, A = amp;
+  var at = function(x: number){ return typeof period === "number" ? period : period(x); };
+  var d = ["M" + f(x0) + "," + f(y)], x = x0, p = at(x0), A = amp;
   while (x < x1 + p){
+    p = at(x);
     d.push("H" + f(x + p * 0.08));
     d.push("Q" + f(x + p * 0.15) + "," + f(y - A * 0.24) + " " + f(x + p * 0.22) + "," + f(y));
     d.push("H" + f(x + p * 0.30));
@@ -234,7 +236,11 @@ function beatPath(x0: number, x1: number, y: number, period: number, amp: number
   }
   return d.join("");
 }
-export function pulseTraceSvg(rate: number | null, ref: number | null | undefined, W: number, H: number, amp: number, cls?: string, years?: number){
+function lanePeriod(even: number, W: number, span: number, pace?: readonly number[]){
+  if (!pace || !pace.length) return even;
+  return function(x: number){ return W / (span * pace[Math.max(0, Math.min(pace.length - 1, Math.floor(x / W * pace.length)))]); };
+}
+export function pulseTraceSvg(rate: number | null, ref: number | null | undefined, W: number, H: number, amp: number, cls?: string, years?: number, pace?: readonly number[]){
   var id = "pulseclip" + (++pulseClipN);
   var span = years || PULSE_WINDOW;
   var lanes = ref == null
@@ -242,7 +248,7 @@ export function pulseTraceSvg(rate: number | null, ref: number | null | undefine
     : [{ r:ref, y:H * 0.76, c:"pt-ref" }, { r:rate, y:H * 0.30, c:"pt-now" }];
   var paths = lanes.map(function(L){
     var beats = Math.max(0.5, (L.r == null ? 0 : L.r) * span);
-    return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, W / beats, amp) + '"/>';
+    return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, lanePeriod(W / beats, W, span, L.c === "pt-now" ? pace : undefined), amp) + '"/>';
   }).join("");
   return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
     '<defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs>' +

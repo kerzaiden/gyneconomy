@@ -1268,7 +1268,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.21 (792)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.22 (793)</span></p>
     </div>
   </div>
 
@@ -42747,7 +42747,7 @@
     var got = vals.filter(function(v) {
       return v != null;
     });
-    var lo = Math.min.apply(null, got), hi = Math.max.apply(null, got), spread = hi - lo || 1;
+    var lo = Math.min.apply(null, got), hi = Math.max.apply(null, got), spread2 = hi - lo || 1;
     var fit = {
       slope: slope,
       intercept: (sy - slope * sx) / (m || 1),
@@ -42755,7 +42755,7 @@
     };
     var perYear = period === "month" ? 12 : period === "quarter" ? 4 : period === "day" ? 252 : 1;
     var span = "across " + Math.max(1, Math.round(n / perYear)) + "Y";
-    if (total < spread * .1) return {
+    if (total < spread2 * .1) return {
       word: "flat",
       span: span,
       flat: true,
@@ -43038,8 +43038,12 @@
     var f = function(n) {
       return n.toFixed(1);
     };
-    var d = [ "M" + f(x0) + "," + f(y) ], x = x0, p = period, A = amp;
+    var at = function(x2) {
+      return typeof period === "number" ? period : period(x2);
+    };
+    var d = [ "M" + f(x0) + "," + f(y) ], x = x0, p = at(x0), A = amp;
     while (x < x1 + p) {
+      p = at(x);
       d.push("H" + f(x + p * .08));
       d.push("Q" + f(x + p * .15) + "," + f(y - A * .24) + " " + f(x + p * .22) + "," + f(y));
       d.push("H" + f(x + p * .3));
@@ -43053,7 +43057,13 @@
     }
     return d.join("");
   }
-  function pulseTraceSvg(rate, ref, W, H, amp, cls, years) {
+  function lanePeriod(even, W, span, pace) {
+    if (!pace || !pace.length) return even;
+    return function(x) {
+      return W / (span * pace[Math.max(0, Math.min(pace.length - 1, Math.floor(x / W * pace.length)))]);
+    };
+  }
+  function pulseTraceSvg(rate, ref, W, H, amp, cls, years, pace) {
     var id = "pulseclip" + ++pulseClipN;
     var span = years || PULSE_WINDOW;
     var lanes = ref == null ? [ {
@@ -43071,7 +43081,7 @@
     } ];
     var paths = lanes.map(function(L) {
       var beats = Math.max(.5, (L.r == null ? 0 : L.r) * span);
-      return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, W / beats, amp) + '"/>';
+      return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, lanePeriod(W / beats, W, span, L.c === "pt-now" ? pace : void 0), amp) + '"/>';
     }).join("");
     return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs><g clip-path="url(#' + id + ')">' + paths + "</g></svg>";
   }
@@ -45329,7 +45339,7 @@
   function pulseBlock(rate, ref, ind) {
     var slower = Math.round((1 - rate / ref) * 100);
     var title = '<div class="spread-history-head"><h4>' + titleCase(ind.econTerm) + '</h4><span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + "</span></div>";
-    return '<div class="page-chart pulsebox"><div class="pulsetrace">' + title + '<div class="pt-head"><span class="pt-k">Now</span><span class="pt-v mono">' + rate.toFixed(2) + "× a year</span></div>" + pulseTraceSvg(rate, null, 520, 34, 11, "solo") + '<div class="pt-head past"><span class="pt-k">Her pre-2008 pace</span><span class="pt-v mono">' + ref.toFixed(2) + "× a year</span></div>" + pulseTraceSvg(ref, null, 520, 34, 11, "solo past") + '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW + " years — so the gap you can see is the gap in the number. She turns her money over about " + slower + "% less often than she did across 1959–2007.</p></div></div>";
+    return '<div class="page-chart pulsebox"><div class="pulsetrace">' + title + '<div class="pt-head"><span class="pt-k">Now</span><span class="pt-v mono">' + rate.toFixed(2) + "× a year</span></div>" + pulseTraceSvg(rate, null, 520, 34, 11, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) + '<div class="pt-head past"><span class="pt-k">Her pre-2008 pace</span><span class="pt-v mono">' + ref.toFixed(2) + "× a year</span></div>" + pulseTraceSvg(ref, null, 520, 34, 11, "solo past") + '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW + " years — so the gap you can see is the gap in the number. The top trace beats at each quarter’s own pace, so its spacing is her rhythm: even when steady, uneven when not. She turns her money over about " + slower + "% less often than she did across 1959–2007.</p></div></div>";
   }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
@@ -45931,9 +45941,6 @@
   function homeSvg() {
     return markSvg('<path d="M4 11.2 12 4.5l8 6.7" stroke-width="1.9"/><path d="M6.5 9.6V19.5h11V9.6M10.2 19.5v-5h3.6v5" stroke-width="1.8"/>');
   }
-  function creditSvg() {
-    return markSvg('<rect x="3.5" y="6" width="17" height="12" rx="2" stroke-width="1.8"/><path d="M3.5 10h17M7 14.5h4" stroke-width="1.7"/>');
-  }
   function dropSvg(sw) {
     return markSvg('<path d="M12 3.2C12 3.2 6.5 10.8 6.5 14.9A5.5 5.5 0 0 0 17.5 14.9C17.5 10.8 12 3.2 12 3.2Z" stroke-width="' + (sw || 1.7) + '"/>');
   }
@@ -46056,7 +46063,6 @@
     Output: factorySvg,
     Pressure: gaugeSvg,
     Money: heartSvg,
-    Credit: creditSvg,
     Households: homeSvg,
     Government: debtSvg,
     Valuations: diamondSvg,
@@ -46317,7 +46323,7 @@
       id: "sheet-sign-consumer-credit",
       name: "Consumer credit",
       cat: "circulation",
-      sub: "Credit",
+      sub: "Money",
       timing: "lagging",
       term: "Consumer credit",
       head: "Consumer Credit, YoY",
@@ -47498,9 +47504,9 @@
     var higher = h.filter(function(d) {
       return d.v > last.v;
     }).length, n = h.filter(held).length;
-    return highlightsHtml([ lede(o.lede), hiCard("The Latest Reading", o.state || "", pointLabel(last) + " read " + o.fmt(last.v) + ", " + side2(last) + " " + line + (cross && side2(last) !== "on" ? ", where it has been since " + pointLabel(cross) + "." : ".")), hiCard("Against the Record", "", higher + " of its " + h.length + " readings since " + pointLabel(h[0]) + " ran higher, and " + n + (b ? " sat inside the band." : " sat at or above the line.")) ], o.facts || "");
+    return highlightsHtml([ lede(o.lede), hiCard("The Latest Reading", o.state || "", pointLabel(last) + " read " + o.fmt(last.v) + ", " + side2(last) + " " + line + (cross && side2(last) !== "on" ? ", where it has been since " + pointLabel(cross) + "." : ".")), hiCard("Against the Record", "", higher + " of its " + h.length + " readings since " + pointLabel(h[0]) + " ran higher, and " + n + (b ? " sat inside the band." : " sat at or above the line.")), o.more || "" ], o.facts || "");
   }
-  function indicatorInsight(R, ind, fmt2) {
+  function indicatorInsight(R, ind, fmt2, more) {
     var caption = String(ind.caption || ""), first = ind.shortCaption || (/^[\s\S]*?[.!?](?=\s|$)/.exec(caption) || [ caption ])[0], band = ind.meter.optimal;
     if (!band || !("from" in band)) throw new Error(R.id + " has no band to read its record against");
     return recordInsight(recordPoints(R), {
@@ -47510,6 +47516,7 @@
       band: [ band.from, band.to ],
       line: "the band at " + band.label,
       state: ind.tag ? ind.tag.state : "",
+      more: more,
       facts: [].concat(ind.facts || [], ind.aux || []).map(auxStat).join("")
     });
   }
@@ -47602,7 +47609,7 @@
     function y(v) {
       return padT + innerH - (v - minV) / (maxV - minV) * innerH;
     }
-    function pts(v) {
+    function pts2(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2) + " pts";
     }
     var s = spreadSeries()[key];
@@ -47670,7 +47677,7 @@
     });
     appendSvgMarkup(svg, fitLine(data.map(function(d) {
       return d.v;
-    }), "quarter", pts, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
+    }), "quarter", pts2, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
     svg.appendChild(el("line", {
       x1: 0,
       x2: 0,
@@ -47689,7 +47696,7 @@
       at: function(d) {
         return qLabel(d.q);
       },
-      fmt: pts,
+      fmt: pts2,
       refs: [ {
         label: "NBER recession",
         swatch: "var(--border-strong)"
@@ -48102,20 +48109,20 @@
   var VIEW_H = 300;
   var INSET = 18;
   function growthPoints(from, to) {
-    var pts = [], firstQ = gdpQuarterlyYoY.length ? Number(gdpQuarterlyYoY[0].q.slice(0, 4)) : Infinity;
+    var pts2 = [], firstQ = gdpQuarterlyYoY.length ? Number(gdpQuarterlyYoY[0].q.slice(0, 4)) : Infinity;
     Object.keys(usRealGdpGrowth).forEach(function(y) {
-      if (Number(y) < firstQ) pts.push({
+      if (Number(y) < firstQ) pts2.push({
         i: Number(y) * 12 + 6,
         v: usRealGdpGrowth[y]
       });
     });
     gdpQuarterlyYoY.forEach(function(d) {
-      pts.push({
+      pts2.push({
         i: Number(d.q.slice(0, 4)) * 12 + (Number(d.q.slice(6)) - 1) * 3 + 1,
         v: d.v
       });
     });
-    return pts.filter(function(p) {
+    return pts2.filter(function(p) {
       return p.i >= from && p.i <= to;
     }).sort(function(a, b) {
       return a.i - b.i;
@@ -48138,8 +48145,8 @@
       };
     });
   }
-  function curve(pts, x, y) {
-    var p = pts.map(function(d2) {
+  function curve(pts2, x, y) {
+    var p = pts2.map(function(d2) {
       return [ x(d2.i), y(d2.v) ];
     });
     if (p.length < 2) return "";
@@ -48333,13 +48340,13 @@
     t: "Russell Investments — the cycle of market emotions",
     u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
   } ];
-  function curvePath(pts) {
+  function curvePath(pts2) {
     var f = function(p) {
       return p[0].toFixed(1) + "," + p[1].toFixed(1);
     };
-    return pts.map(function(p, i) {
+    return pts2.map(function(p, i) {
       if (!i) return "M" + f(p);
-      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
+      var a = pts2[Math.max(0, i - 2)], b = pts2[i - 1], d = pts2[Math.min(pts2.length - 1, i + 1)];
       return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
     }).join("");
   }
@@ -48349,10 +48356,10 @@
     }).join("");
   }
   function moodCycleSvg(now2) {
-    var pts = MOOD_CHART.map(function(s) {
+    var pts2 = MOOD_CHART.map(function(s) {
       return [ +s[1], +s[2] ];
     });
-    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
+    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts2, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
     MOOD_CHART.forEach(function(s) {
       var on = s[0] === now2 ? " now" : "";
       out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
@@ -50441,6 +50448,70 @@
   function bootPortfolio() {
     buildPortfolio();
   }
+  var RHYTHM_WINDOW = 8;
+  var RHYTHM_BEFORE = 2008;
+  var RHYTHM_PCTL = .9;
+  var RHYTHM_STRETCH = 4;
+  var rhythm = null;
+  function spread(xs) {
+    var m = xs.reduce(function(a, x) {
+      return a + x;
+    }, 0) / xs.length;
+    return Math.sqrt(xs.reduce(function(a, x) {
+      return a + (x - m) * (x - m);
+    }, 0) / xs.length);
+  }
+  function rhythmRecord() {
+    if (rhythm) return rhythm;
+    var moves = [], history2 = [];
+    for (var i = 1; i < m2vHistory.length; i++) moves.push((m2vHistory[i] / m2vHistory[i - 1] - 1) * 100);
+    for (var j = RHYTHM_WINDOW; j <= moves.length; j++) history2.push({
+      q: qAtIndex(M2V_FROM_YEAR, j),
+      v: spread(moves.slice(j - RHYTHM_WINDOW, j))
+    });
+    var edge = pctl(history2.filter(function(d) {
+      return +d.q.slice(0, 4) < RHYTHM_BEFORE;
+    }).map(function(d) {
+      return d.v;
+    }), RHYTHM_PCTL);
+    return rhythm = {
+      history: history2,
+      edge: edge
+    };
+  }
+  function pts(v) {
+    return v.toFixed(2) + " points";
+  }
+  function stretches(r) {
+    var runs = [];
+    r.history.forEach(function(d, i) {
+      if (d.v <= r.edge) return;
+      var last = runs[runs.length - 1];
+      if (last && i - last.b <= 2) last.b = i; else runs.push({
+        a: i,
+        b: i
+      });
+    });
+    return runs.filter(function(s) {
+      return s.b - s.a + 1 >= RHYTHM_STRETCH;
+    }).map(function(s) {
+      return r.history[s.a].q.slice(0, 4) + "–" + r.history[s.b].q.slice(0, 4);
+    });
+  }
+  function listed(xs) {
+    return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || "";
+  }
+  function rhythmCard() {
+    var r = rhythmRecord(), h = r.history, last = h[h.length - 1], odd = last.v > r.edge;
+    var steadier = h.filter(function(d) {
+      return d.v < last.v;
+    }).length;
+    return hiCard("Rhythm", odd ? "warning" : "good", (odd ? "Irregular" : "Steady") + ": in the two years to " + pointLabel(last) + " velocity’s quarterly changes spread by " + pts(last.v) + ", " + (steadier ? "steadier than all but " + steadier + " of the " + h.length + " two-year windows since " + pointLabel(h[0]) : "the steadiest of the " + h.length + " two-year windows since " + pointLabel(h[0])) + ". Past " + pts(r.edge) + " the rhythm is irregular; it ran irregular for a year or more in " + listed(stretches(r)) + ".");
+  }
+  function rhythmInfo() {
+    var r = rhythmRecord();
+    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ", the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p>";
+  }
   var CURVE_KEY = {
     "3m": "3M",
     "2y": "2Y",
@@ -50542,7 +50613,7 @@
         return [ ind.metric, ind.tag ? ind.tag.text : "" ];
       },
       info: function() {
-        return pulseInfoHtml(flowRow("Pulse"));
+        return pulseInfoHtml(flowRow("Pulse")) + rhythmInfo();
       },
       controls: function() {
         return histControls("pulse-range", {
@@ -50571,7 +50642,7 @@
       insight: function() {
         return indicatorInsight(ROSTER_BY["sheet-sign-pulse"], flowRow("Pulse"), function(v) {
           return v.toFixed(2) + "×";
-        });
+        }, rhythmCard());
       },
       src: flowRow("Pulse").src
     });

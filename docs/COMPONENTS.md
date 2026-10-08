@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `4bd8a23` on 2026-10-08. **100 components**, **20 shared patterns**.
+Generated from commit `2a3042f` on 2026-10-08. **100 components**, **20 shared patterns**.
 
 ## ai-insights.ts
 
@@ -112,7 +112,7 @@ Generated from commit `4bd8a23` on 2026-10-08. **100 components**, **20 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`facts`** | `.facts` | `cycle-analysis.ts:chartDetail`, `dial-cycle.ts:bootDialCycle`, `format.ts:factsFrom`, `insights.ts:moodInfo`, `portfolio.ts:clockDetail`, `portfolio.ts:weatherDetail`, `readings.ts:bootReadings`, `readings.ts:deficitInfoHtml`, `readings.ts:volatilityDetailHtml`, `tabs-menu.ts:renderSeasonRows`, `tabs-menu.ts:seasonModelNote` |
-| **`hiCard`** | `.hi-card` `.hi-name` | `indicators.ts:buffettInsight`, `indicators.ts:debtInsight`, `indicators.ts:interestInsight`, `indicators.ts:marketInsight`, `indicators.ts:realInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `insights.ts:marketCycleCard`, `insights.ts:moodCard`, `insights.ts:seasonCards`, `pressure.ts:pressureInsights`, `reading.ts:recordInsight`, `render-pages.ts:hormonesInsight`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
+| **`hiCard`** | `.hi-card` `.hi-name` | `indicators.ts:buffettInsight`, `indicators.ts:debtInsight`, `indicators.ts:interestInsight`, `indicators.ts:marketInsight`, `indicators.ts:realInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `insights.ts:marketCycleCard`, `insights.ts:moodCard`, `insights.ts:seasonCards`, `pressure.ts:pressureInsights`, `reading.ts:recordInsight`, `render-pages.ts:hormonesInsight`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights`, `rhythm.ts:rhythmCard` |
 | **`highlightsHtml`** | `.hi-head` `.highlights` `.insights` `.peek-chev` | `indicators.ts:buffettInsight`, `indicators.ts:debtInsight`, `indicators.ts:interestInsight`, `indicators.ts:marketInsight`, `indicators.ts:realInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `pressure.ts:pressureInsights`, `reading.ts:recordInsight`, `render-pages.ts:hormonesInsight`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
 | **`hubLine`** | `.hub-line` | `dial-cycle.ts:hubSet`, `dial-cycle.ts:hubShowYear` |
 | **`lede`** | `.hi-lede` | `indicators.ts:buffettInsight`, `indicators.ts:debtInsight`, `indicators.ts:interestInsight`, `indicators.ts:marketInsight`, `indicators.ts:realInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightMood`, `insights.ts:insightStress`, `insights.ts:insightWeather`, `pressure.ts:pressureInsights`, `reading.ts:recordInsight`, `render-pages.ts:hormonesInsight`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
@@ -236,6 +236,7 @@ renderer speaks. Listed most-used first.
 | **`labRow`** | data.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
 | **`normOf`** | cycle-analysis.ts | 6 places |
+| **`qAtIndex`** | format.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
 | **`windowScale`** | history.ts | 6 places |
@@ -252,7 +253,7 @@ renderer speaks. Listed most-used first.
 | **`meanRule`** | charts.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
 | **`pct`** | fed-phases.ts | 5 places |
-| **`qAtIndex`** | format.ts | 5 places |
+| **`pctl`** | format.ts | 5 places |
 | **`qPretty`** | format.ts | 5 places |
 | **`readingPage`** | indicators.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
@@ -273,7 +274,6 @@ renderer speaks. Listed most-used first.
 | **`moodTrack`** | model.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`panel`** | ai-insights.ts | 4 places |
-| **`pctl`** | format.ts | 4 places |
 | **`qWindowFrom`** | history.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
 | **`tier`** | cycle-analysis.ts | 4 places |
@@ -298,7 +298,9 @@ renderer speaks. Listed most-used first.
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
+| **`pointLabel`** | format.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
+| **`pts`** | rhythm.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
 | **`readingFor`** | reading.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
@@ -328,8 +330,8 @@ records these counts and `npm run check` fails if any of them grows. This list c
 
 | Class | Places | Written by |
 |---|---|---|
-| `.caption` | 19 | `credit.ts:readingOf`, `dial-cycle.ts:renderCycleKicker`, `pressure.ts:pressureMaturities`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `readings.ts:yearLead`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadDetail`, `render-pages.ts:spreadSeries` |
-| `.follow` | 15 | `credit.ts:readingOf`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries` |
+| `.caption` | 20 | `credit.ts:readingOf`, `dial-cycle.ts:renderCycleKicker`, `pressure.ts:pressureMaturities`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `readings.ts:yearLead`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
+| `.follow` | 16 | `credit.ts:readingOf`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
 | `.hcol` | 6 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart` |
 | `.mono` | 3 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock` |
 | `.cycsel-nm` | 3 | `history.ts:headMenuHtml`, `history.ts:headPickRow`, `history.ts:nameAside` |
