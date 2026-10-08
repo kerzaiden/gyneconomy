@@ -1074,9 +1074,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   connected to EKG". Rhythm is the standard deviation of the last eight quarterly changes in M2 velocity; it reads
   Irregular past the 90th percentile of every two-year window from 1959 to 2007 (1.31 points). No convention sets it, so it is
   derived and the (i) says so; the window and the percentile are Claude's. The Now trace beats at each quarter's own
-  velocity across its five years, so its spacing shows the rhythm. The Pulse history is an EKG too (Keren chose "EKG history"
-  over a Rate/Rhythm picker): one line at each quarter's velocity, a beat per turnover of a dollar, red on a shaded band where
-  the rhythm is irregular. A cycle holds only about a dozen beats, so the red band, not the spacing, carries the abnormality. Familiar metrics are a guideline, not a rule: Keren,
+  velocity across its five years, so its spacing shows the rhythm. The Pulse history is a Holter report (Keren chose "Holter report",
+  after "it's hard to put the EKG on a graph across time … hospitals have like a long history of EKG"; one long EKG line
+  was built and dropped): the rate columns, red on a shaded band where the rhythm is irregular, and under them one EKG strip
+  per year (the last twelve of the window), beating at each quarter's pace, ten beats per turnover so a year is readable. Familiar metrics are a guideline, not a rule: Keren,
   "If you think that some KPI would shed light on our Gyneconomy model, then let's think about it." Told Keren, not printed:
   Irregular quarters fall in Spring 4 of 96 times, against Summer 14 of 61, Autumn 15 of 96 and Winter 5 of 9. (0.9.22)
 - **Pulse's verdict is five bands against the 1959–2007 mean, both extremes flagged; the spectrum's ends say

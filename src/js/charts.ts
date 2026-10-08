@@ -240,6 +240,10 @@ function lanePeriod(even: number, W: number, span: number, pace?: readonly numbe
   if (!pace || !pace.length) return even;
   return function(x: number){ return W / (span * pace[Math.max(0, Math.min(pace.length - 1, Math.floor(x / W * pace.length)))]); };
 }
+export function pulseLane(k: string, v: string, rate: number, cls: string, years?: number, pace?: readonly number[], head?: string){
+  return '<div class="pt-head' + (head ? " " + head : "") + '"><span class="pt-k">' + k + '</span><span class="pt-v mono">' + v + '</span></div>' +
+    pulseTraceSvg(rate, null, 520, 34, 11, cls, years, pace);
+}
 export function pulseTraceSvg(rate: number | null, ref: number | null | undefined, W: number, H: number, amp: number, cls?: string, years?: number, pace?: readonly number[]){
   var id = "pulseclip" + (++pulseClipN);
   var span = years || PULSE_WINDOW;

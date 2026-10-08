@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `db92b0e` on 2026-10-08. **100 components**, **20 shared patterns**.
+Generated from commit `48c9893` on 2026-10-08. **103 components**, **21 shared patterns**.
 
 ## ai-insights.ts
 
@@ -40,7 +40,8 @@ Generated from commit `db92b0e` on 2026-10-08. **100 components**, **20 shared p
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.ts:divergeChart`, `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `pressure.ts:ylmFitLine` |
 | **`histBar`** | `.hist-bar` | `reading.ts:drawReading` |
 | **`histTip`** | `.gdp-tooltip` `.hist-tip` | `reading.ts:historyHtml` |
-| **`pulseTraceSvg`** | `.pt-svg` | `readings.ts:pulseBlock` |
+| **`pulseLane`** | `.pt-k` `.pt-v` | `history-charts.ts:pulseStrips`, `readings.ts:pulseBlock` |
+| **`pulseTraceSvg`** | `.pt-svg` | `charts.ts:pulseLane` |
 | **`trendOf`** | `.tp-arrow` | `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:definePressure`, `pressure.ts:ylmFitLine`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
 | **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:definePressure`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
 | **`vGrid`** | `.bt-vgrid` | `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:velocityHistoryChart`, `history-charts.ts:yearTicks`, `render-pages.ts:paintSpreads` |
@@ -125,11 +126,13 @@ Generated from commit `db92b0e` on 2026-10-08. **100 components**, **20 shared p
 |---|---|---|
 | **`cpiHistoryChart`** | `.temp-col` | `inner-pages.ts:defineTemp` |
 | **`deficitChart`** | `.def-col` `.spread-history-band` | `inner-pages.ts:defineDeficit` |
-| **`ekgTrace`** | `.pv-beat` `.pv-odd` | `history-charts.ts:velocityHistoryChart` |
 | **`fedFundsHistoryChart`** | `.ff-col` | `render-pages.ts:defineHormones` |
 | **`gdpHistoryChart`** | `.growth-col` | `inner-pages.ts:defineGdp` |
+| **`irregularBands`** | `.pv-odd` | `history-charts.ts:velocityHistoryChart` |
 | **`m2GrowthChart`** | `.m2-col` | `pressure.ts:defineFlow` |
+| **`pulseStrips`** | `.pulse-strips` | `pressure.ts:defineFlow` |
 | **`unempHistoryChart`** | `.unemp-col` | `inner-pages.ts:defineActivity` |
+| **`velocityHistoryChart`** | `.pv-col` | `pressure.ts:defineFlow` |
 
 ## history.ts
 
@@ -169,7 +172,7 @@ Generated from commit `db92b0e` on 2026-10-08. **100 components**, **20 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`pulseBlock`** | `.past` `.pt-head` `.pt-k` `.pt-note` `.pt-v` `.pulsebox` `.pulsetrace` `.spread-history-head` `.tag` | `pressure.ts:defineFlow` |
+| **`pulseBlock`** | `.pt-note` `.pulsebox` `.spread-history-head` `.tag` | `pressure.ts:defineFlow` |
 
 ## render-core.ts
 
@@ -217,12 +220,12 @@ renderer speaks. Listed most-used first.
 | **`histFrame`** | charts.ts | 11 places |
 | **`metered`** | format.ts | 11 places |
 | **`publishGeom`** | charts.ts | 10 places |
+| **`colPath`** | charts.ts | 9 places |
+| **`colWidth`** | charts.ts | 9 places |
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
 | **`addSources`** | dom.ts | 8 places |
-| **`colPath`** | charts.ts | 8 places |
-| **`colWidth`** | charts.ts | 8 places |
 | **`cycleSlice`** | model.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
@@ -290,6 +293,7 @@ renderer speaks. Listed most-used first.
 | **`fmtAsOf`** | format.ts | 3 places |
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
+| **`irregularAt`** | history-charts.ts | 3 places |
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
@@ -333,8 +337,8 @@ records these counts and `npm run check` fails if any of them grows. This list c
 |---|---|---|
 | `.caption` | 20 | `credit.ts:readingOf`, `dial-cycle.ts:renderCycleKicker`, `pressure.ts:pressureMaturities`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `readings.ts:yearLead`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
 | `.follow` | 16 | `credit.ts:readingOf`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
-| `.hcol` | 5 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart` |
-| `.mono` | 3 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock` |
+| `.hcol` | 6 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart` |
+| `.mono` | 3 | `charts.ts:fitGroup`, `charts.ts:histTip`, `charts.ts:pulseLane` |
 | `.cycsel-nm` | 3 | `history.ts:headMenuHtml`, `history.ts:headPickRow`, `history.ts:nameAside` |
 | `.marker-sub` | 3 | `indicators.ts:splitInfo`, `inner-pages.ts:valuationInfo`, `readings.ts:volatilityDetailHtml` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
@@ -344,6 +348,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.season-sw` | 2 | `dial-cycle.ts:renderCycleKicker`, `portfolio.ts:drawWeather` |
 | `.expand-btn` | 2 | `dial-cycle.ts:renderCycleKicker`, `dom.ts:expandBtn` |
 | `.dx-mark` | 2 | `dom.ts:trendHead`, `render-core.ts:dxHead` |
+| `.pulsetrace` | 2 | `history-charts.ts:pulseStrips`, `readings.ts:pulseBlock` |
 | `.cycsel-opt` | 2 | `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.cycsel-tick` | 2 | `history.ts:headPickRow`, `history.ts:pickRow` |
 | `.cycsel-menu` | 2 | `history.ts:cyclePicker`, `history.ts:headDots` |

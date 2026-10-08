@@ -1,6 +1,6 @@
 type HistOpts = { to?: number | null; cycle?: boolean };
 import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex } from "./format.ts";
-import { type HistFrame, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
+import { type HistFrame, avgRule, pulseLane, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
 import { fedFundsHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
@@ -81,34 +81,28 @@ function colScale(F: HistFrame, n: number, lo: number, hi: number){
   return { X:function(i: number){ return F.L + h + (F.R - F.L - 2 * h) * i / Math.max(1, n - 1); },
            Y:function(v: number){ return F.B - (F.B - F.T) * (v - lo) / (hi - lo); } };
 }
+export var PULSE_STRIP_YEARS = 12, PULSE_STRIP_BEATS = 10;
 function irregularAt(i: number){
   var r = rhythmRecord(), d = r.history[i - RHYTHM_WINDOW];
   return !!d && d.v > r.edge;
 }
-function beatAt(xb: number, base: number, w: number, A: number){
-  var f = function(n: number){ return n.toFixed(1); };
-  return "L" + f(xb - w / 2) + "," + f(base) + "L" + f(xb - w * 0.2) + "," + f(base + A * 0.15) + "L" + f(xb) + "," + f(base - A) +
-    "L" + f(xb + w * 0.2) + "," + f(base + A * 0.34) + "L" + f(xb + w / 2) + "," + f(base);
+function irregularBands(n: number, from: number, X: (i: number) => number, slot: number, T: number, B: number){
+  var runs: number[][] = [], run: number[] | null = null, f = function(v: number){ return v.toFixed(1); };
+  for (var i = 0; i < n; i++){
+    var xl = X(i) - slot / 2, xr = X(i) + slot / 2;
+    if (!irregularAt(from + i)) run = null; else if (run) run[1] = xr; else runs.push(run = [xl, xr]);
+  }
+  return runs.map(function(r){ return '<rect class="pv-odd" x="' + f(r[0]) + '" y="' + f(T) + '" width="' + f(r[1] - r[0]) + '" height="' + f(B - T) + '"/>'; }).join("");
 }
-function ekgTrace(ser: number[], from: number, X: (i: number) => number, Y: (v: number) => number, F: { T: number; B: number; slot: number }){
-  var c = m2vHistory.slice(0, from).reduce(function(a, v){ return a + v / 4; }, 0), out: string[] = [], runs: number[][] = [], run: number[] | null = null;
-  var w = Math.max(2, Math.min(9, F.slot * 1.1)), A = (F.B - F.T) * 0.07, f = function(n: number){ return n.toFixed(1); };
-  var base = function(x: number){
-    var j = Math.max(0, Math.min(ser.length - 1, Math.floor((x - X(0)) / F.slot))), k = Math.min(ser.length - 1, j + 1), t = Math.max(0, Math.min(1, (x - X(j)) / F.slot));
-    return Y(ser[j]) + (Y(ser[k]) - Y(ser[j])) * t;
-  };
-  ser.forEach(function(v, i){
-    var xl = Math.max(X(0), X(i) - F.slot / 2), xr = Math.min(X(ser.length - 1), X(i) + F.slot / 2), odd = irregularAt(from + i);
-    var at: string[] = [], pts = [xl, X(i), xr];
-    for (var k = Math.floor(c) + 1; k <= c + v / 4; k++){ var xb = X(i) - F.slot / 2 + (k - c) / (v / 4) * F.slot; pts.push(xb); at.push(f(xb)); }
-    c += v / 4;
-    var d = pts.sort(function(a, b){ return a - b; }).map(function(x, j){
-      return at.indexOf(f(x)) !== -1 ? beatAt(x, base(x), w, A) : (j ? "L" : "M") + f(x) + "," + f(base(x));
-    }).join("").replace(/^L/, "M");
-    if (odd && run) run[1] = xr; else if (odd) runs.push(run = [xl, xr]); else run = null;
-    out.push('<path class="pv-beat hcol' + (odd ? " odd" : "") + '" d="' + d + '"/>');
-  });
-  return runs.map(function(r){ return '<rect class="pv-odd" x="' + f(r[0]) + '" y="' + f(F.T) + '" width="' + f(Math.max(1.5, r[1] - r[0])) + '" height="' + f(F.B - F.T) + '"/>'; }).join("") + out.join("");
+export function pulseStrips(from: number, to?: number){
+  var end = to == null ? m2vHistory.length : to, first = Math.max(from, (Math.floor((end - 1) / 4) - PULSE_STRIP_YEARS + 1) * 4), rows: string[] = [];
+  for (var y = M2V_FROM_YEAR + Math.floor(first / 4); y <= M2V_FROM_YEAR + Math.floor((end - 1) / 4); y++){
+    var a = Math.max(first, (y - M2V_FROM_YEAR) * 4), b = Math.min(end, (y - M2V_FROM_YEAR + 1) * 4), pace = m2vHistory.slice(a, b), odd = false;
+    for (var i = a; i < b; i++) odd = odd || irregularAt(i);
+    var avg = pace.reduce(function(s, v){ return s + v; }, 0) / pace.length;
+    rows.push(pulseLane(y + (b - a < 4 ? " so far" : ""), avg.toFixed(2) + "× · " + (odd ? "Irregular" : "Steady"), avg, "solo" + (odd ? " odd" : "") + ["", " q1", " q2", " q3", ""][b - a], PULSE_STRIP_BEATS * (b - a) / 4, pace));
+  }
+  return '<div class="pulsetrace pulse-strips">' + rows.reverse().join("") + '</div>';
 }
 export function velocityHistoryChart(Wpx: number, from: number, to?: number | null){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
@@ -143,13 +137,21 @@ export function velocityHistoryChart(Wpx: number, from: number, to?: number | nu
                    vals:ser.map(function(v: number){ return { v:v }; }) });
   out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
 
-  out.push(ekgTrace(ser, from, X, Y, { T:T, B:B, slot:(R - L) / Math.max(1, n) }));
+  var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
+  var pMidY = Y(PULSE_PRE2008);
+  out.unshift(irregularBands(n, from, X, pSlot, T, B));
+  ser.forEach(function(v, i){
+    var y1 = Y(v);
+    if (Math.abs(y1 - pMidY) < 0.6) y1 = pMidY + (v >= PULSE_PRE2008 ? -0.6 : 0.6);
+    out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + (irregularAt(from + i) ? " odd" : "") + '" stroke-width="' +
+      pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y1, pSw) + '"/>');
+  });
 
   out.push(fitLine(ser, "quarter", function(v: number){ return v.toFixed(2) + "\u00d7"; }, X(0), X(n - 1), Y, R, L, 0));
 
   return vhOpen(W, H) +
     'aria-label="Velocity of M2, every quarter from ' + y0 + ' to ' + y1 +
-    ' as a heartbeat trace: it runs at the quarter\u2019s velocity, beats once per turnover of a dollar, and turns red where the rhythm is irregular, against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times">' +
+    ', against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times, with the quarters of irregular rhythm in red">' +
     out.join("") + '</svg>';
 }
 function yearTicks(out: string[], vals: { m: string }[], w: { y0: number; y1: number; cycle?: boolean; narrow: boolean }, X: (i: number) => number, T: number, B: number, f: (v: number) => string){

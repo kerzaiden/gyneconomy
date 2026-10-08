@@ -626,8 +626,10 @@
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .pv-beat{ fill:none; stroke:var(--accent); stroke-width:1.5; stroke-linejoin:round; stroke-linecap:round; }
-  .pv-beat.odd{ stroke:var(--critical); }
+  .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
+  .pv-col.over{ stroke:var(--good); }
+  .pv-col.odd{ stroke:var(--critical); }
+  .pulsetrace .pt-svg.solo.odd .pt-now{ stroke:var(--critical); }
   .pv-odd{ fill:var(--critical); opacity:0.08; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
@@ -670,6 +672,10 @@
   .pulsetrace{ margin:0; }
   .pulsetrace .spread-history-head + .pt-head{ margin-top:12px; }
   .pulsetrace .pt-svg.solo{ height:42px; }
+  .pulse-strips{ margin-top:16px; }
+  .pulse-strips .pt-svg.q1{ width:25%; }
+  .pulse-strips .pt-svg.q2{ width:50%; }
+  .pulse-strips .pt-svg.q3{ width:75%; }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
   .pt-head:first-child{ margin-top:0; }
@@ -701,7 +707,7 @@
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
   .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
-  .trend-on .pv-beat{ stroke:var(--border-strong) !important; opacity:0.45; }
+  .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
   .trend-on .temp-avg{ opacity:0.16; }
   .trend-on .dv-mid{ opacity:0.4; }
 
@@ -43064,6 +43070,9 @@
       return W / (span * pace[Math.max(0, Math.min(pace.length - 1, Math.floor(x / W * pace.length)))]);
     };
   }
+  function pulseLane(k, v, rate, cls, years, pace, head) {
+    return '<div class="pt-head' + (head ? " " + head : "") + '"><span class="pt-k">' + k + '</span><span class="pt-v mono">' + v + "</span></div>" + pulseTraceSvg(rate, null, 520, 34, 11, cls, years, pace);
+  }
   function pulseTraceSvg(rate, ref, W, H, amp, cls, years, pace) {
     var id = "pulseclip" + ++pulseClipN;
     var span = years || PULSE_WINDOW;
@@ -45340,7 +45349,7 @@
   function pulseBlock(rate, ref, ind) {
     var slower = Math.round((1 - rate / ref) * 100);
     var title = '<div class="spread-history-head"><h4>' + titleCase(ind.econTerm) + '</h4><span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + "</span></div>";
-    return '<div class="page-chart pulsebox"><div class="pulsetrace">' + title + '<div class="pt-head"><span class="pt-k">Now</span><span class="pt-v mono">' + rate.toFixed(2) + "× a year</span></div>" + pulseTraceSvg(rate, null, 520, 34, 11, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) + '<div class="pt-head past"><span class="pt-k">Her pre-2008 pace</span><span class="pt-v mono">' + ref.toFixed(2) + "× a year</span></div>" + pulseTraceSvg(ref, null, 520, 34, 11, "solo past") + '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW + " years — so the gap you can see is the gap in the number. The top trace beats at each quarter’s own pace, so its spacing is her rhythm: even when steady, uneven when not. She turns her money over about " + slower + "% less often than she did across 1959–2007.</p></div></div>";
+    return '<div class="page-chart pulsebox"><div class="pulsetrace">' + title + pulseLane("Now", rate.toFixed(2) + "× a year", rate, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) + pulseLane("Her pre-2008 pace", ref.toFixed(2) + "× a year", ref, "solo past", void 0, void 0, "past") + '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW + " years — so the gap you can see is the gap in the number. The top trace beats at each quarter’s own pace, so its spacing is her rhythm: even when steady, uneven when not. She turns her money over about " + slower + "% less often than she did across 1959–2007.</p></div></div>";
   }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
@@ -46853,7 +46862,7 @@
   }
   function rhythmInfo() {
     var r = rhythmRecord();
-    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>The history is a heartbeat</b>: the line runs at each quarter’s velocity and beats once each time a dollar turns over, so a faster pulse beats closer together. It turns red, on a shaded band, wherever the rhythm is irregular.</p>';
+    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>The history reads like a Holter report</b>, the way a hospital reads a day of heartbeats: the columns are her rate, quarter by quarter, red on a shaded band wherever the rhythm is irregular; under them, one strip per year (the last twelve of the period you choose) beats at each quarter’s own pace, ten beats for every turnover so a year can be read.</p>';
   }
   function deficitChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
@@ -46973,47 +46982,35 @@
       }
     };
   }
+  var PULSE_STRIP_YEARS = 12;
+  var PULSE_STRIP_BEATS = 10;
   function irregularAt(i) {
     var r = rhythmRecord(), d = r.history[i - RHYTHM_WINDOW];
     return !!d && d.v > r.edge;
   }
-  function beatAt(xb, base, w, A) {
-    var f = function(n) {
-      return n.toFixed(1);
+  function irregularBands(n, from, X, slot, T, B) {
+    var runs = [], run = null, f = function(v) {
+      return v.toFixed(1);
     };
-    return "L" + f(xb - w / 2) + "," + f(base) + "L" + f(xb - w * .2) + "," + f(base + A * .15) + "L" + f(xb) + "," + f(base - A) + "L" + f(xb + w * .2) + "," + f(base + A * .34) + "L" + f(xb + w / 2) + "," + f(base);
-  }
-  function ekgTrace(ser, from, X, Y, F) {
-    var c = m2vHistory.slice(0, from).reduce(function(a, v) {
-      return a + v / 4;
-    }, 0), out = [], runs = [], run = null;
-    var w = Math.max(2, Math.min(9, F.slot * 1.1)), A = (F.B - F.T) * .07, f = function(n) {
-      return n.toFixed(1);
-    };
-    var base = function(x) {
-      var j = Math.max(0, Math.min(ser.length - 1, Math.floor((x - X(0)) / F.slot))), k = Math.min(ser.length - 1, j + 1), t = Math.max(0, Math.min(1, (x - X(j)) / F.slot));
-      return Y(ser[j]) + (Y(ser[k]) - Y(ser[j])) * t;
-    };
-    ser.forEach(function(v, i) {
-      var xl = Math.max(X(0), X(i) - F.slot / 2), xr = Math.min(X(ser.length - 1), X(i) + F.slot / 2), odd = irregularAt(from + i);
-      var at = [], pts2 = [ xl, X(i), xr ];
-      for (var k = Math.floor(c) + 1; k <= c + v / 4; k++) {
-        var xb = X(i) - F.slot / 2 + (k - c) / (v / 4) * F.slot;
-        pts2.push(xb);
-        at.push(f(xb));
-      }
-      c += v / 4;
-      var d = pts2.sort(function(a, b) {
-        return a - b;
-      }).map(function(x, j) {
-        return at.indexOf(f(x)) !== -1 ? beatAt(x, base(x), w, A) : (j ? "L" : "M") + f(x) + "," + f(base(x));
-      }).join("").replace(/^L/, "M");
-      if (odd && run) run[1] = xr; else if (odd) runs.push(run = [ xl, xr ]); else run = null;
-      out.push('<path class="pv-beat hcol' + (odd ? " odd" : "") + '" d="' + d + '"/>');
-    });
+    for (var i = 0; i < n; i++) {
+      var xl = X(i) - slot / 2, xr = X(i) + slot / 2;
+      if (!irregularAt(from + i)) run = null; else if (run) run[1] = xr; else runs.push(run = [ xl, xr ]);
+    }
     return runs.map(function(r) {
-      return '<rect class="pv-odd" x="' + f(r[0]) + '" y="' + f(F.T) + '" width="' + f(Math.max(1.5, r[1] - r[0])) + '" height="' + f(F.B - F.T) + '"/>';
-    }).join("") + out.join("");
+      return '<rect class="pv-odd" x="' + f(r[0]) + '" y="' + f(T) + '" width="' + f(r[1] - r[0]) + '" height="' + f(B - T) + '"/>';
+    }).join("");
+  }
+  function pulseStrips(from, to) {
+    var end = to == null ? m2vHistory.length : to, first = Math.max(from, (Math.floor((end - 1) / 4) - PULSE_STRIP_YEARS + 1) * 4), rows = [];
+    for (var y = M2V_FROM_YEAR + Math.floor(first / 4); y <= M2V_FROM_YEAR + Math.floor((end - 1) / 4); y++) {
+      var a = Math.max(first, (y - M2V_FROM_YEAR) * 4), b = Math.min(end, (y - M2V_FROM_YEAR + 1) * 4), pace = m2vHistory.slice(a, b), odd = false;
+      for (var i = a; i < b; i++) odd = odd || irregularAt(i);
+      var avg = pace.reduce(function(s, v) {
+        return s + v;
+      }, 0) / pace.length;
+      rows.push(pulseLane(y + (b - a < 4 ? " so far" : ""), avg.toFixed(2) + "× · " + (odd ? "Irregular" : "Steady"), avg, "solo" + (odd ? " odd" : "") + [ "", " q1", " q2", " q3", "" ][b - a], PULSE_STRIP_BEATS * (b - a) / 4, pace));
+    }
+    return '<div class="pulsetrace pulse-strips">' + rows.reverse().join("") + "</div>";
   }
   function velocityHistoryChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
@@ -47083,15 +47080,18 @@
       })
     });
     out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
-    out.push(ekgTrace(ser, from, X, Y, {
-      T: T,
-      B: B,
-      slot: (R - L) / Math.max(1, n)
-    }));
+    var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
+    var pMidY = Y(PULSE_PRE2008);
+    out.unshift(irregularBands(n, from, X, pSlot, T, B));
+    ser.forEach(function(v, i) {
+      var y12 = Y(v);
+      if (Math.abs(y12 - pMidY) < .6) y12 = pMidY + (v >= PULSE_PRE2008 ? -.6 : .6);
+      out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + (irregularAt(from + i) ? " odd" : "") + '" stroke-width="' + pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y12, pSw) + '"/>');
+    });
     out.push(fitLine(ser, "quarter", function(v) {
       return v.toFixed(2) + "×";
     }, X(0), X(n - 1), Y, R, L, 0));
-    return vhOpen(W, H) + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + " as a heartbeat trace: it runs at the quarter’s velocity, beats once per turnover of a dollar, and turns red where the rhythm is irregular, against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + ", against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times, with the quarters of irregular rhythm in red">' + out.join("") + "</svg>";
   }
   function yearTicks(out, vals, w, X, T, B, f) {
     var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
@@ -47545,7 +47545,7 @@
   }
   function historyHtml(R, h, W) {
     var svg = h.chart(W);
-    return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '">' + svg + "</div>" : svg) + h.trend + histTip(R.id + "-tip") + "</div>";
+    return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '">' + svg + "</div>" : svg) + h.trend + (h.foot || "") + histTip(R.id + "-tip") + "</div>";
   }
   function drawReading(R, W) {
     var r = readingFor(R.id), w = W || 340, h = r.history(w);
@@ -50673,6 +50673,7 @@
           chart: function(w) {
             return velocityHistoryChart(w, from, to);
           },
+          foot: pulseStrips(from, to),
           trend: trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, true, {
             rising: "accelerating",
             falling: "decelerating"
