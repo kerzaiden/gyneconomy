@@ -375,7 +375,7 @@ the manifest's; now each module says what it imports.
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `activity` (the growth gap, nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
-  `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers),
+  `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `pulse-strips` (the Pulse history: one EKG strip per year, 0.9.25), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers),
   `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
   (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
@@ -868,8 +868,10 @@ scrollbars, so the rig must include a scrollbar run.
 
 ## Charts
 
-**Every chart is bars.** The test for a new one: can it stand on zero? If not, find the midline it hangs
-from (Pulse hangs from the pre-2008 mean); **never truncate the axis under a column.** **Every chart is
+**Every chart is bars**, except Pulse's EKG strips (0.9.25, Keren). The test for a new one: can it stand on zero? If not, find the midline it hangs
+from; **never truncate the axis under a column.** The strips keep the one frame and the shared plate; because their
+quarters sit in a grid rather than a line, their geometry adds `xOf(i)` (where quarter i's plate sits) and
+`pick(x, y)` (which quarter a touch lands on), which the history component uses in place of its even spacing. Their trend pill shows its word without the toggle, since a fitted line has no place on the strips; the suite names Pulse as the one history whose pill does not draw a line (`TREND_WORD_ONLY`). **Every chart is
 width-aware** and measures its host. Temperature's columns are binned by the reading, not by rank, so the
 same CPI is the same colour in any cycle. `unempHistoryChart` copies `cpiHistoryChart` as a **separate
 function on purpose**: folding two subjects into one function behind flags is how a component stops

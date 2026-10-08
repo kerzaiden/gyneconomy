@@ -634,8 +634,11 @@
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
-  .pv-col.over{ stroke:var(--good); }
+  .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
+  .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
+  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
+  .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
+  .ps-beat.blank{ stroke:var(--text-muted); }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -705,8 +708,7 @@
   .trend-on .dv-bar,
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
-  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
-  .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
+  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
   .trend-on .temp-avg{ opacity:0.16; }
   .trend-on .dv-mid{ opacity:0.4; }
 
@@ -1272,7 +1274,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.24 (795)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.25 (796)</span></p>
     </div>
   </div>
 
@@ -43120,6 +43122,9 @@
   function xLabel(x, text, y) {
     return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + "</text>";
   }
+  function yLabel(x, y, text, anchor) {
+    return '<text class="bt-yl" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + "</text>";
+  }
   function crossLine(top, bot) {
     return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
   }
@@ -43175,7 +43180,7 @@
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;
       if ((o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9) && (o.base == null || Math.abs(ty - parseFloat(o.base)) > .5)) out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + "," + ty.toFixed(1) + "L" + fx1.toFixed(1) + "," + ty.toFixed(1) + '"/>');
       var ly = ty - 5;
-      out.push('<text class="bt-yl" x="' + ((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle">' + o.fmt(v) + "</text>");
+      out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, ly, o.fmt(v), "middle"));
     });
     if (o.base != null) out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + "," + o.base + "L" + fx1.toFixed(1) + "," + o.base + '"/>');
     return out.join("");
@@ -44747,7 +44752,7 @@
     var scale = sb.width / g.W || 1;
     var cross = svg.querySelector(".hist-cross");
     if (cross) {
-      var cx = (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)).toFixed(1);
+      var cx = geomX(g, i).toFixed(1);
       cross.setAttribute("x1", cx);
       cross.setAttribute("x2", cx);
     }
@@ -44755,7 +44760,7 @@
     var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
     var plateTop = sb.top - cp.top + (frTop + AXIS.LEG + 10) * scale;
-    var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
+    var colX = sb.left - eb.left + geomX(g, i) * scale;
     plate.classList.remove("compact");
     var w = plate.offsetWidth;
     if (w > (g.R - g.L) * scale * .6) {
@@ -44877,6 +44882,15 @@
     if (!(vb > 0) || Math.abs(vb - w) <= 1) return;
     svg.outerHTML = build(w);
   }
+  function geomX(g, i) {
+    return g.xOf ? g.xOf(i) : g.L + (g.R - g.L) * i / Math.max(1, g.n - 1);
+  }
+  function geomPick(g, x, y) {
+    if (g.pick) return g.pick(x, y);
+    var hPad = (g.R - g.L) / Math.max(1, 2 * (g.n - 1));
+    if (x < g.L - hPad || x > g.R + hPad) return null;
+    return Math.max(0, Math.min(g.n - 1, Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1))));
+  }
   function wireHistHover(host, tipId) {
     if (!host) return;
     histReadEnsure(host);
@@ -44906,13 +44920,8 @@
       var box = svg.getBoundingClientRect();
       var scale = box.width / g.W || 1;
       var x = (e.clientX - box.left) / scale;
-      var hPad = (g.R - g.L) / Math.max(1, 2 * (g.n - 1));
-      if (x < g.L - hPad || x > g.R + hPad) {
-        hide();
-        return;
-      }
-      var i = Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1));
-      histShow(host, svg, Math.max(0, Math.min(g.n - 1, i)));
+      var i = geomPick(g, x, (e.clientY - box.top) / scale);
+      if (i == null) hide(); else histShow(host, svg, i);
     }
     host.addEventListener("pointermove", at);
     host.addEventListener("pointerdown", at);
@@ -46562,6 +46571,7 @@
       term: "Pulse",
       hk: "pulse-range",
       head: "Velocity of Money (M2)",
+      stops: [ "5y", "10y" ],
       hist: {
         s: m2vHistory,
         k: "qi",
@@ -47173,83 +47183,6 @@
         return F.B - (F.B - F.T) * (v - lo) / (hi - lo);
       }
     };
-  }
-  function velocityHistoryChart(Wpx, from, to) {
-    var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
-    from = from || 0;
-    var ser = m2vHistory.slice(from, to == null ? void 0 : to), n = ser.length;
-    var sc = windowScale(ser, [ PULSE_PRE2008 ]);
-    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
-    var f = function(v) {
-      return v.toFixed(1);
-    };
-    var out = [];
-    var y0 = M2V_FROM_YEAR + Math.floor(from / 4);
-    var y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
-    out.push(chartAxes({
-      ticks: sc.ticks,
-      y: Y,
-      x0: L,
-      x1: R,
-      base: B,
-      top: T - AXIS.LEG - AXIS.READ,
-      bot: B,
-      fmt: function(g) {
-        return g.toFixed(1) + "×";
-      }
-    }));
-    windowYears(y0, y1, narrow2 ? 4 : 5).forEach(function(yr) {
-      var i = (yr - M2V_FROM_YEAR) * 4 - from;
-      if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
-    var iEnd = (2008 - M2V_FROM_YEAR) * 4 - 1 - from;
-    var meanTo = iEnd > 0 ? X(Math.min(iEnd, n - 1)) : R;
-    out.push('<path class="vh-mean" d="M' + f(X(0)) + "," + f(Y(PULSE_PRE2008)) + "H" + f(meanTo) + '"/>');
-    out.push(crossLine(T, B));
-    var pAvg = ser.reduce(function(a, v) {
-      return a + v;
-    }, 0) / (n || 1);
-    publishGeom("velocityHistoryChart", {
-      L: L,
-      R: R,
-      T: T,
-      B: B,
-      W: W,
-      n: n,
-      at: function(d, i) {
-        return qAtIndex(M2V_FROM_YEAR, from + i);
-      },
-      fmt: function(v) {
-        return v.toFixed(3) + "×";
-      },
-      refs: [ {
-        label: "Average",
-        v: pAvg
-      }, {
-        label: "Pre-2008 mean",
-        v: PULSE_PRE2008,
-        dash: true
-      } ],
-      vals: ser.map(function(v) {
-        return {
-          v: v
-        };
-      })
-    });
-    out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
-    var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
-    var pMidY = Y(PULSE_PRE2008);
-    ser.forEach(function(v, i) {
-      var y12 = Y(v);
-      if (Math.abs(y12 - pMidY) < .6) y12 = pMidY + (v >= PULSE_PRE2008 ? -.6 : .6);
-      out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' + pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y12, pSw) + '"/>');
-    });
-    out.push(fitLine(ser, "quarter", function(v) {
-      return v.toFixed(2) + "×";
-    }, X(0), X(n - 1), Y, R, L, 0));
-    return vhOpen(W, H) + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + ", against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
   }
   function yearTicks(out, vals, w, X, T, B, f) {
     var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
@@ -48512,11 +48445,11 @@
     var volPct = volInd.meter.value;
     var up = volPct > 0, vup = velChg > 0;
     var name = up && vup ? "Growing and moving faster" : up && !vup ? "Added faster than it is used" : !up && vup ? "Circulating faster on a smaller stock" : "Draining and slowing";
-    var f1 = function(v) {
+    var f12 = function(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
     };
     var circLede = lede("Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and the Federal funds rate is the signal that sets all three. The money lent into the flow and what it leaves owing are read under Stress.");
-    var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
+    var txt = "M2 is " + f12(volPct) + " over the year and each dollar turns over " + f12(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
     if (run >= 8) {
       var oc = openCycle();
       txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
@@ -48543,7 +48476,7 @@
     var now2 = rows[rows.length - 1];
     var past = rows.slice(0, -1);
     if (!past.length) return "";
-    var f1 = function(v) {
+    var f12 = function(v) {
       return v.toFixed(1) + "%";
     };
     var absGap = function(r) {
@@ -48566,9 +48499,9 @@
       return NUM2[n] || String(n);
     };
     var lead = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
-    var txt = lead + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
+    var txt = lead + ". Since " + now2.from + " prices are up " + f12(now2.p) + " and the economy is up " + f12(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
       return absGap(r).toFixed(1);
-    }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
+    }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f12(tightest.g) + " against " + f12(tightest.p) + ".";
     if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
     return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The Balance", "", txt);
   }
@@ -50714,6 +50647,162 @@
   function bootPortfolio() {
     buildPortfolio();
   }
+  var PULSE_BEATS = 10;
+  var PULSE_FENCE = 1.5;
+  var PULSE_FAR = 3;
+  var PULSE_VEL = 34;
+  var fences = null;
+  function pulseMove(i) {
+    return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100;
+  }
+  function pulseFences() {
+    if (fences) return fences;
+    var moves = [];
+    for (var i = 1; i < m2vHistory.length; i++) moves.push(pulseMove(i));
+    var q1 = quartile(moves, .25), q3 = quartile(moves, .75), k = q3 - q1;
+    return fences = [ q1 - PULSE_FAR * k, q1 - PULSE_FENCE * k, q3 + PULSE_FENCE * k ];
+  }
+  function pulseBeat(i) {
+    if (i < 1) return "";
+    var m = pulseMove(i), f = pulseFences();
+    return m < f[0] ? "flat" : m < f[1] || m > f[2] ? "odd" : "";
+  }
+  function f1(v) {
+    return v.toFixed(1);
+  }
+  function pulseStroke(i) {
+    var g = m2Yoy[i];
+    return g == null ? null : Math.max(-1, Math.min(1, g / M2_FLOOD));
+  }
+  function stripQuarter(r, q, x, limit) {
+    var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
+    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(18, r.h * .58) * (stroke == null ? .5 : stroke);
+    var cy = r.top + r.h * .64, d = [];
+    if (stroke == null) kind = kind || "blank";
+    x = Math.max(x, xa);
+    if (kind === "flat") {
+      d.push("M" + f1(xa) + "," + f1(cy) + "H" + f1(xb));
+      x = xb;
+    }
+    while (kind !== "flat" && x < xb && x + p <= limit) {
+      d.push(beatPath(x, x, cy, p, amp));
+      x += p;
+    }
+    if (x < xb) {
+      d.push("M" + f1(x) + "," + f1(cy) + "H" + f1(xb));
+      x = xb;
+    }
+    return {
+      x: x,
+      svg: '<path class="ps-beat hcol' + (kind ? " " + kind : "") + '" d="' + d.join("") + '"/>'
+    };
+  }
+  function stripRow(r) {
+    var out = [], x = r.X(0), sum = 0, n = 0, base = (r.y - M2V_FROM_YEAR) * 4, last = -1;
+    for (var q = 0; q < 4; q++) if (base + q >= r.from && base + q < r.end) last = q;
+    for (q = 0; q < 4; q++) {
+      var i = base + q;
+      if (i < r.from || i >= r.end) {
+        x = Math.max(x, r.X(q + 1));
+        continue;
+      }
+      var s = stripQuarter(r, q, x, r.X(last + 1));
+      out.push(s.svg);
+      x = s.x;
+      sum += m2vHistory[i];
+      n++;
+    }
+    var mid = r.top + r.h / 2 + 3.5;
+    out.push(yLabel(r.X(0) - (AXIS.L + AXIS.RAIL) / 2, mid, r.y, "middle"));
+    out.push(yLabel(r.X(4) + PULSE_VEL, mid, (sum / n).toFixed(2) + "×", "end"));
+    return out.join("");
+  }
+  function stripPaper(L, R, T, B, h) {
+    var m = (R - L) / 20, minor = [], major = [];
+    var rules = [];
+    for (var k = 0; k <= 20; k++) if (k % 5) minor.push("M" + f1(L + k * m) + "," + f1(T) + "V" + f1(B)); else rules.push(vGrid(L + k * m, T, B));
+    for (var top = T; top < B - .5; top += h) {
+      major.push("M" + f1(L) + "," + f1(top) + "H" + f1(R));
+      for (var y = top + m; y < top + h - 1; y += m) minor.push("M" + f1(L) + "," + f1(y) + "H" + f1(R));
+    }
+    major.push("M" + f1(L) + "," + f1(B) + "H" + f1(R));
+    return '<path class="ekg-minor" d="' + minor.join("") + '"/><path class="ekg-major" d="' + major.join("") + '"/>' + rules.join("");
+  }
+  function pulseStripsChart(Wpx, from, to) {
+    from = from || 0;
+    var F = histFrame(Wpx), L = F.L, R = F.R - PULSE_VEL, T = F.T, B = F.B, end = to == null ? m2vHistory.length : to;
+    var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1, h = (B - T) / rows;
+    var X = function(q) {
+      return L + (R - L) * q / 4;
+    }, out = [];
+    out.push(chartAxes({
+      ticks: [],
+      y: function() {
+        return B;
+      },
+      x0: L,
+      x1: F.R,
+      base: B,
+      top: T - AXIS.LEG - AXIS.READ,
+      bot: B,
+      fmt: String
+    }));
+    out.push(stripPaper(L, R, T, B, h));
+    [ "Q1", "Q2", "Q3", "Q4" ].forEach(function(t, q) {
+      out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17));
+    });
+    for (var y = y0; y <= y1; y++) out.push(stripRow({
+      y: y,
+      top: T + h * (y - y0),
+      h: h,
+      from: from,
+      end: end,
+      X: X
+    }));
+    var cell = function(i) {
+      var k = from + i;
+      return {
+        row: Math.floor(k / 4) + M2V_FROM_YEAR - y0,
+        q: k % 4
+      };
+    };
+    publishGeom("pulseStripsChart", {
+      L: L,
+      R: R,
+      T: T,
+      B: B,
+      W: F.W,
+      n: end - from,
+      at: function(d, i) {
+        var g = m2Yoy[from + i];
+        return qAtIndex(M2V_FROM_YEAR, from + i) + (g == null ? "" : " · M2 " + fmtSigned(g, 1) + "%");
+      },
+      fmt: function(v) {
+        return v.toFixed(3) + "×";
+      },
+      xOf: function(i) {
+        return (X(cell(i).q) + X(cell(i).q + 1)) / 2;
+      },
+      pick: function(x, yy) {
+        var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y0 + row - M2V_FROM_YEAR) * 4 + q - from;
+        return row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
+      },
+      vals: m2vHistory.slice(from, end).map(function(v) {
+        return {
+          v: v
+        };
+      })
+    });
+    return vhOpen(F.W, F.H) + 'aria-label="Money velocity’s heartbeat, one strip per year from ' + y0 + " to " + y1 + ", " + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; a quarter whose fall was far out of the record flatlines">' + out.join("") + "</svg>";
+  }
+  function stripsInfo() {
+    var f = pulseFences(), pct2 = function(v) {
+      return (v > 0 ? "+" : "−") + Math.abs(v).toFixed(2) + "%";
+    };
+    var flats = [];
+    for (var i = 1; i < m2vHistory.length; i++) if (pulseBeat(i) === "flat") flats.push(qAtIndex(M2V_FROM_YEAR, i));
+    return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, its quarters across. A beat is a tenth of one turnover of the money stock, so a year at 1.4× carries 14 beats and the gaps widen as money slows; the figure at the end of each strip is that year’s average velocity. Ten beats a turnover is Claude’s choice, made for legibility.</p><p class="caption follow"><b>A beat’s height is the money stock’s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, full height at ' + M2_FLOOD.toFixed(1) + "%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. " + M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.</p><p class="caption follow"><b>A red quarter moved past Tukey’s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' + M2V_FROM_YEAR + ", " + pct2(f[1]) + " or " + pct2(f[2]) + ". <b>A quarter flatlines</b> when its fall passed Tukey’s far-out fence (3 times the range), " + pct2(f[0]) + ": " + flats.join(" and ") + ".</p>";
+  }
   var RHYTHM_WINDOW = 8;
   var RHYTHM_BEFORE = 2008;
   var RHYTHM_PCTL = .9;
@@ -50879,7 +50968,7 @@
         return [ ind.metric, ind.tag ? ind.tag.text : "" ];
       },
       info: function() {
-        return pulseInfoHtml(flowRow("Pulse")) + rhythmInfo();
+        return pulseInfoHtml(flowRow("Pulse")) + stripsInfo() + rhythmInfo();
       },
       controls: function() {
         return histControls("pulse-range", {
@@ -50890,12 +50979,12 @@
         var key = page.range["pulse-range"], cyc = pageCycle("pulse-range"), idx = cyc ? cycleQtrIdx(M2V_FROM_YEAR, cyc, m2vHistory.length) : null;
         var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : void 0;
         return {
-          geom: "velocityHistoryChart",
+          geom: "pulseStripsChart",
           wrap: "vh-host",
           chart: function(w) {
-            return velocityHistoryChart(w, from, to);
+            return pulseStripsChart(w, from, to);
           },
-          trend: trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, true, {
+          trend: trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, false, {
             rising: "accelerating",
             falling: "decelerating"
           })

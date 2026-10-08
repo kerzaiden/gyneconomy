@@ -196,14 +196,14 @@ function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: number){
   var scale = sb.width / g.W || 1;
   var cross = svg.querySelector(".hist-cross");
   if (cross){
-    var cx = (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)).toFixed(1);
+    var cx = geomX(g, i).toFixed(1);
     cross.setAttribute("x1", cx); cross.setAttribute("x2", cx);
   }
   var fr = svg.querySelector(".bt-frame");
   var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
   var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
   var plateTop = sb.top - cp.top + (frTop + AXIS.LEG + 10) * scale;
-  var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
+  var colX = sb.left - eb.left + geomX(g, i) * scale;
   plate.classList.remove("compact");
   var w = plate.offsetWidth;
   if (w > (g.R - g.L) * scale * 0.6){ plate.classList.add("compact"); w = plate.offsetWidth; }
@@ -299,6 +299,15 @@ export function refitHistory(box: Element | null, build: (w: number) => string){
   if (!(vb > 0) || Math.abs(vb - w) <= 1) return;
   svg.outerHTML = build(w);
 }
+function geomX(g: ChartGeom, i: number){
+  return g.xOf ? g.xOf(i) : g.L + (g.R - g.L) * i / Math.max(1, g.n - 1);
+}
+function geomPick(g: ChartGeom, x: number, y: number){
+  if (g.pick) return g.pick(x, y);
+  var hPad = (g.R - g.L) / Math.max(1, 2 * (g.n - 1));
+  if (x < g.L - hPad || x > g.R + hPad) return null;
+  return Math.max(0, Math.min(g.n - 1, Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1))));
+}
 function wireHistHover(host: HTMLElement, tipId: string){
   if (!host) return;
   histReadEnsure(host);
@@ -322,10 +331,8 @@ function wireHistHover(host: HTMLElement, tipId: string){
     var box = svg.getBoundingClientRect();
     var scale = box.width / g.W || 1;
     var x = (e.clientX - box.left) / scale;
-    var hPad = (g.R - g.L) / Math.max(1, 2 * (g.n - 1));
-    if (x < g.L - hPad || x > g.R + hPad){ hide(); return; }
-    var i = Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1));
-    histShow(host, svg, Math.max(0, Math.min(g.n - 1, i)));
+    var i = geomPick(g, x, (e.clientY - box.top) / scale);
+    if (i == null) hide(); else histShow(host, svg, i);
   }
   host.addEventListener("pointermove", at);
   host.addEventListener("pointerdown", at);

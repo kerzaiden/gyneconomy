@@ -1087,13 +1087,23 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   connected to EKG". Rhythm is the standard deviation of the last eight quarterly changes in M2 velocity; it reads
   Irregular past the 90th percentile of every two-year window from 1959 to 2007 (1.31 points). No convention sets it, so it is
   derived and the (i) says so; the window and the percentile are Claude's. The Now trace beats at each quarter's own
-  velocity across its five years, so its spacing shows the rhythm. The Pulse history stays the standard history (velocity columns against
-  the pre-2008 mean), and the pulse container, the Now and pre-2008 traces, is a card in Insights beside Rhythm (Keren:
-  "Let's revert back … the template history component showing velocity of money as it is today with bars … take the money
-  velocity container with the pulse and put it in the insights"). An EKG history (scrolling strip, Holter report, rate
-  columns with red bands, an Apple Health-style ECG variant) was built and dropped; don't re-propose it. Familiar metrics are a guideline, not a rule: Keren,
+  velocity across its five years, so its spacing shows the rhythm. The pulse container, the Now and pre-2008 traces, is a card in
+  Insights beside Rhythm (Keren: "take the money velocity container with the pulse and put it in the insights"). Familiar metrics are a guideline, not a rule: Keren,
   "If you think that some KPI would shed light on our Gyneconomy model, then let's think about it." Told Keren, not printed:
   Irregular quarters fall in Spring 4 of 96 times, against Summer 14 of 61, Autumn 15 of 96 and Winter 5 of 9. (0.9.24)
+- **The Pulse history is an EKG strip per year, in the history frame, instead of the velocity columns.** Keren: "Inside
+  the history component instead of a bar chart, I want an EKG chart … for each year … a small height grid with that row
+  of the pulse … it will show the velocity, it will show the year … and it will show abnormalities like in the COVID 2020
+  example where it flatlined for an entire quarter"; "it will show us both the rhythm … and how fast it is". Quarters run
+  across, years down, on pink EKG paper; a beat is a tenth of one turnover (Claude's choice), so beats per year = 10 ×
+  velocity and the gaps are honest; each strip ends with the year's average velocity. A quarter past Tukey's fence
+  (1.5 IQR) of every quarterly change since 1959 is red; a fall past the far-out fence (3 IQR) flatlines (2008 Q4,
+  2020 Q2). A beat's height is M2's growth year on year, the stroke volume (Keren: "Let's do the Money stock as the
+  stroke volume", after M × V = nominal GDP was set beside rate × stroke volume = cardiac output): full height at
+  Volume's Flooding edge (13.5%, the pre-2020 record) and capped there, upside down when the stock shrank (2023 Q1 to
+  2024 Q1, the record's only such quarters, which Keren noted a healthy heart never shows). Its windows are
+  5Y, 10Y and the cycles, at most twelve strips. The earlier EKG histories (scrolling strip, Holter report, Apple
+  Health-style ECG) stay dropped. (0.9.25)
 - **Pulse's verdict is five bands against the 1959–2007 mean, both extremes flagged; the spectrum's ends say
   what velocity means (slow is hoarding, fast is spending).** Keren: "I would rather have an indicator that
   tells me: is the velocity fast or slow"; a stalled circulation and a feverish one are both unhealthy. (V297,

@@ -98,6 +98,9 @@ export function histFrame(Wpx?: number | null): HistFrame {
 export function xLabel(x: number | string, text: string | number, y: number | string){
   return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + '</text>';
 }
+export function yLabel(x: number, y: number, text: string | number, anchor: string){
+  return '<text class="bt-yl" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + '</text>';
+}
 export function crossLine(top: number | string, bot: number | string){
   return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
 }
@@ -141,8 +144,7 @@ export function chartAxes(o: AxesOpts){
         (o.base == null || Math.abs(ty - parseFloat(o.base as string)) > 0.5))
       out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + ',' + ty.toFixed(1) + 'L' + fx1.toFixed(1) + ',' + ty.toFixed(1) + '"/>');
     var ly = ty - 5;
-    out.push('<text class="bt-yl" x="' + ((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1) + '" y="' + ly.toFixed(1) +
-             '" text-anchor="middle">' + o.fmt(v) + '</text>');
+    out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, ly, o.fmt(v), "middle"));
   });
   if (o.base != null)
     out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + ',' + o.base + 'L' + fx1.toFixed(1) + ',' + o.base + '"/>');
@@ -217,7 +219,7 @@ function refName(t?: string | null){
 }
 export var PULSE_WINDOW = 5;
 var pulseClipN = 0;
-function beatPath(x0: number, x1: number, y: number, period: number | ((x: number) => number), amp: number){
+export function beatPath(x0: number, x1: number, y: number, period: number | ((x: number) => number), amp: number){
   var f = function(n: number){ return n.toFixed(1); };
   var at = function(x: number){ return typeof period === "number" ? period : period(x); };
   var d = ["M" + f(x0) + "," + f(y)], x = x0, p = at(x0), A = amp;
