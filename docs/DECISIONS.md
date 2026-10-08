@@ -30,7 +30,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Activity (earth: a sprout, the colour `--earth`), Mood (wind: three wind lines), Desire (fire), Circulation (water) and Stress (thunder: the bolt).**
   Keren: "we should separate activity from weather and make it its own category … there you can put the real economy";
   she gave the sprout. A spiral for Mood was tried and dropped: "it looks too mushed … let's switch to the former icon" (0.9.11).
-  Activity holds Jobs (Unemployment rate, Nonfarm payrolls) and Output (GDP growth, Productivity growth); the
+  Activity holds Labor (Unemployment rate, Nonfarm payrolls; Keren: "switch jobs to labor … it fits the context of fertility better") and Output (GDP growth, Productivity growth); the
   subcategory names, the factory mark on Output and the olive are Claude's picks. Weather keeps what the season and the
   market are read from: Economic Season (Temperature, Growth gap) and Market. Real GDP growth moved to Output and
   Economic Season shows the Growth gap instead, the figure the season actually reads, headed "GDP Growth versus Potential" (Keren); Keren: "are we really looking at

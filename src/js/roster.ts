@@ -26,7 +26,7 @@ export var CATEGORIES: Category[] = [
   { key:"stress", title:"Stress", shown:5 }
 ];
 export var SUB_MARK: Record<string, () => string> = {
-  "Economic Season":thermoSvg, "Market":marketSvg, "Jobs":personSvg, "Output":factorySvg, "Pressure":gaugeSvg, "Money":ecgSvg,
+  "Economic Season":thermoSvg, "Market":marketSvg, "Labor":personSvg, "Output":factorySvg, "Pressure":gaugeSvg, "Money":ecgSvg,
   "Credit":creditSvg, "Debt":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
 };
 export var ROSTER_BY: Record<string, RosterRow> = {};
@@ -73,9 +73,9 @@ function declareRoster(): RosterRow[] {
       term:"Growth gap", head:"GDP Growth versus Potential", hist:{ s:growthGapHistory, k:"q" }, mid:GAP_LINE, cardUnit:"vs potential" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, cardUnit:"total return" },
-    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"activity", sub:"Jobs", good:"down", timing:"lagging", door:"row",
+    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"activity", sub:"Labor", good:"down", timing:"lagging", door:"row",
       term:"Activity", head:"Unemployment Rate", hist:{ s:unempHistory, k:"m" } },
-    { id:"sheet-sign-payrolls", name:"Nonfarm payrolls", cat:"activity", sub:"Jobs", good:"up", timing:"coincident", door:"row",
+    { id:"sheet-sign-payrolls", name:"Nonfarm payrolls", cat:"activity", sub:"Labor", good:"up", timing:"coincident", door:"row",
       term:"Nonfarm payrolls", head:"Nonfarm Payrolls, YoY", hist:{ s:payrollsHistory, k:"m" }, mid:PAYROLLS_LINE, cardUnit:"YoY" },
     { id:"sheet-metric-gdp", name:"GDP growth", cat:"activity", sub:"Output", good:"up", timing:"coincident", door:"peek", slot:"gdp",
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, cardUnit:"YoY" },
