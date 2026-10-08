@@ -1,4 +1,4 @@
-import { CHEV, facts, qLabel, srcBlock } from "./format.ts";
+import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
@@ -22,10 +22,6 @@ var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight",
 var FENCE_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)", u:"https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm" };
 var SD_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — Measures of Scale (standard deviation)", u:"https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm" };
 
-function quartile(vs: number[], p: number){
-  var s = vs.slice().sort(function(a, b){ return a - b; }), i = (s.length - 1) * p, lo = Math.floor(i);
-  return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
-}
 function normOf(vs: number[]): Norm | null {
   if (vs.length < 2) return null;
   var lo = quartile(vs, 0.25), hi = quartile(vs, 0.75);

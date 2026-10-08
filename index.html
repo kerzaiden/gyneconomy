@@ -1382,7 +1382,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.16 (787)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.17 (788)</span></p>
     </div>
   </div>
 
@@ -1585,6 +1585,12 @@
   }
   function round1(v) {
     return Math.round(v * 10) / 10;
+  }
+  function quartile(vs, p) {
+    var s = vs.slice().sort(function(a, b) {
+      return a - b;
+    }), i = (s.length - 1) * p, lo = Math.floor(i);
+    return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
   }
   function mean(a) {
     return a.reduce(function(x, y) {
@@ -43690,6 +43696,23 @@
       state: "good"
     };
   }
+  function derivePressureTendency() {
+    var a = t10yYieldHistory, moves = [], from = "";
+    a.forEach(function(p, i) {
+      var was = hznBack(a, i, HZN_BACK);
+      if (p.v == null || p.partial || was == null) return;
+      if (!from) from = p.q;
+      moves.push(Math.abs(p.v - was));
+    });
+    var still = quartile(moves, .25), fast = quartile(moves, .75), d = horizonRead.dLong, m = Math.abs(d);
+    pressureTendency = {
+      d: d,
+      still: still,
+      fast: fast,
+      from: from,
+      word: m <= still ? "Steady" : (d > 0 ? "Rising" : "Falling") + (m >= fast ? " quickly" : "")
+    };
+  }
   function horizonInfoHtml(pick2) {
     var m = HZN_METERS[pick2], shortLeg = pick2 === "2y" ? "2-year" : "3-month";
     return "<h4>10-year minus " + shortLeg + '</h4><p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a forecast rather than a measurement: the long rate is the market’s own average of where it expects the short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly record, ' + m.min.toFixed(2) + " and +" + m.max.toFixed(2) + ' points; the deepest single DAY of the last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p><p class="caption follow"><b>The line at zero is definitional, not drawn</b> — it is where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own recession model is built on, using this exact pair of maturities. That model’s FAQ states that an inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p><p class="caption follow">Read the caution with the signal, because it is the same source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, but no source says where “just above” ends, so the page draws no zone for it.</p>' + String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
@@ -43813,6 +43836,7 @@
   var premiumReading;
   var tempInfo;
   var horizonRead;
+  var pressureTendency;
   var householdsNow;
   var marketReading;
   var productivityRecord;
@@ -44174,6 +44198,7 @@
       word: w.word,
       state: w.state
     };
+    derivePressureTendency();
   }
   function fieldsKept(v, target) {
     var t = target;
@@ -45939,6 +45964,12 @@
     if (pt && last.q === pt.q) data[data.length - 1] = pt; else if (pt && pt.q > last.q) data.push(pt);
     return data;
   }
+  function tendencyNote() {
+    var T = pressureTendency, pt = function(v) {
+      return v.toFixed(2);
+    };
+    return " The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) + " points in the quarterly average over the last four quarters. A shipping forecast grades a barometer steady, rising or falling, and quickly when the move is large; nothing grades a yield that way, so the cut-offs come from this record: steady within " + pt(T.still) + " points, quickly past " + pt(T.fast) + ", the lower and upper quartiles of every four-quarter move since " + T.from + ". A barometer is corrected to sea level before two readings can be compared, and a yield’s sea level is the neutral rate, the rate that neither presses on growth nor lifts it; nobody can observe it, so the Fed’s economists estimate it.";
+  }
   function pressureMaturities() {
     return [ {
       code: "3m",
@@ -45972,9 +46003,15 @@
       name: "10-Year",
       data: t10yYieldHistory,
       on: true,
-      detail: `<h4>10-Year Treasury</h4><p class="caption">The single most-referenced benchmark in the credit market. A 30-year fixed mortgage sounds like a 30-year commitment, but between moves and refinances its real average lifespan runs closer to 7–10 years — which is why mortgage rates track this maturity rather than the 30-year bond. Most investment-grade corporate bonds are also quoted as this yield plus a spread, and it's the standard discount-rate proxy used in stock valuation.</p>` + srcBlock([ {
+      detail: `<h4>10-Year Treasury</h4><p class="caption">The single most-referenced benchmark in the credit market. A 30-year fixed mortgage sounds like a 30-year commitment, but between moves and refinances its real average lifespan runs closer to 7–10 years — which is why mortgage rates track this maturity rather than the 30-year bond. Most investment-grade corporate bonds are also quoted as this yield plus a spread, and it's the standard discount-rate proxy used in stock valuation.` + tendencyNote() + "</p>" + srcBlock([ {
         t: "FRED — 10-Year Treasury Rate (GS10)",
         u: "https://fred.stlouisfed.org/series/GS10"
+      }, {
+        t: "Met Office — Shipping forecast glossary (pressure tendency)",
+        u: "https://www.metoffice.gov.uk/weather/guides/coast-and-sea/glossary"
+      }, {
+        t: "Federal Reserve Bank of New York — Measuring the Natural Rate of Interest",
+        u: "https://www.newyorkfed.org/research/policy/rstar"
       } ])
     }, {
       code: "30y",
@@ -47259,7 +47296,7 @@
     },
     "sheet-sign-pressure": function() {
       var y = curveAt("10Y");
-      return [ y == null ? "—" : y.toFixed(2) + "%", "" ];
+      return [ y == null ? "—" : y.toFixed(2) + "%", pressureTendency.word ];
     },
     "sheet-sign-spreads": function() {
       var s = horizonRead.spread;
@@ -47704,12 +47741,6 @@
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — Measures of Scale (standard deviation)",
     u: "https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm"
   };
-  function quartile(vs, p) {
-    var s = vs.slice().sort(function(a, b) {
-      return a - b;
-    }), i = (s.length - 1) * p, lo = Math.floor(i);
-    return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
-  }
   function normOf(vs) {
     if (vs.length < 2) return null;
     var lo = quartile(vs, .25), hi = quartile(vs, .75);

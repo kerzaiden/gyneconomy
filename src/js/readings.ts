@@ -1,4 +1,4 @@
-import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, srcBlock, tagFor, titleCase } from "./format.ts";
+import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, quartile, srcBlock, tagFor, titleCase } from "./format.ts";
 import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg } from "./charts.ts";
@@ -19,6 +19,7 @@ type PremiumReading = WordReading & { side: string };
 type MarketReading = WordReading & { wordSays: string; now: YearPoint; lo: YearPoint; hi: YearPoint; open: boolean };
 type HznPoint = { v: number | null; partial?: boolean };
 type HznAt = { i: number; v: number };
+type Tendency = { d: number; still: number; fast: number; from: string; word: string };
 type HorizonRead = { spread: number; q: HznAt; q2: HznAt; dSpread: number; dLong: number; dShort: number; was: number | null; was2: number | null; d2: number; word: string; state: State };
 type WordOf = { state: State; text: string; says: string; why?: string };
 
@@ -410,6 +411,18 @@ function horizonWord(sp: number, dLong: number, dShort: number, dSpread: number)
   if (dSpread <= 0.05) return { word:"Guarded", state:"warning" };
   return dLong >= -dShort ? { word:"Optimistic", state:"good" } : { word:"Hopeful", state:"good" };
 }
+function derivePressureTendency(){
+  var a: (HznPoint & { q: string })[] = t10yYieldHistory, moves: number[] = [], from = "";
+  a.forEach(function(p, i){
+    var was = hznBack(a, i, HZN_BACK);
+    if (p.v == null || p.partial || was == null) return;
+    if (!from) from = p.q;
+    moves.push(Math.abs(p.v - was));
+  });
+  var still = quartile(moves, 0.25), fast = quartile(moves, 0.75), d = horizonRead.dLong, m = Math.abs(d);
+  pressureTendency = { d:d, still:still, fast:fast, from:from,
+    word:m <= still ? "Steady" : (d > 0 ? "Rising" : "Falling") + (m >= fast ? " quickly" : "") };
+}
 export function horizonInfoHtml(pick: string){
   var m = HZN_METERS[pick], shortLeg = pick === "2y" ? "2-year" : "3-month";
   return '<h4>10-year minus ' + shortLeg + '</h4>' +
@@ -548,7 +561,7 @@ function seatTemperature(ind: Indicator, d: HTMLElement){
 }
 export var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
 
-export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
+export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, pressureTendency: Tendency, householdsNow: { word: string; state: State }, marketReading: MarketReading;
 var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;
 
 function deriveFeelingReadings(){
@@ -723,6 +736,7 @@ function deriveHorizon(){
     was:hznBack(t10y3mHistory, sN.i, HZN_BACK), was2:hznBack(t10y2yHistory, tN2.i, HZN_BACK),
     d2:hznDelta(t10y2yHistory, tN2),
     word:w.word, state:w.state };
+  derivePressureTendency();
 }
 function fieldsKept(v: object, target: object){
   var t = target as Record<string, unknown>;

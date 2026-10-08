@@ -26,6 +26,10 @@ export function pctl(a: readonly number[], p: number){
   return s[l] + (s[Math.min(l + 1, s.length - 1)] - s[l]) * (h - l);
 }
 export function round1(v: number){ return Math.round(v * 10) / 10; }
+export function quartile(vs: number[], p: number){
+  var s = vs.slice().sort(function(a, b){ return a - b; }), i = (s.length - 1) * p, lo = Math.floor(i);
+  return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
+}
 export function mean(a: number[]){ return a.reduce(function(x: number, y: number){ return x + y; }, 0) / a.length; }
 export function atQuarter(d: { q: string }){ return d.q; }
 export function atMonth(d: { m: string }){ return MONTHS_SHORT[parseInt(d.m.slice(5, 7), 10) - 1] + " " + d.m.slice(0, 4); }

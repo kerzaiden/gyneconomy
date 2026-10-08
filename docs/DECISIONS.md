@@ -129,6 +129,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Words for verdicts and trends
 
+- **The US 10-year Treasury's word is its tendency, read like a barometer: Steady, Rising or Falling, with "quickly"
+  when the move is large.** Keren took the recommendation ("I want to take your recommendation option A", 0.9.17): a
+  barometer is read by which way it moves, not where it stands. The move is the quarterly average's change over four
+  quarters (`horizonRead.dLong`, the figure Treasury spreads already reads). The words are a shipping forecast's;
+  their cut-offs are hectopascals and do not carry over, so Steady is within the lower quartile of every four-quarter
+  move in the record and "quickly" past the upper one (Claude's call from the app's own data). The word carries no
+  state colour and says nothing about what comes next. The (i) adds sea level: a yield means something only against
+  the neutral rate. (0.9.17)
+
 - **On the Elements page the Federal budget is a signed number: a deficit is minus, a surplus plain, and the word
   under it says "Large deficit".** Keren: "Instead of saying deficits, just use minus", so the word is not said twice
   and the row matches the others (0.9.15). A surplus reads "Surplus" (Keren: "If it has extra budget, meaning it's

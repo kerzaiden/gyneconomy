@@ -5,7 +5,7 @@ import { detailTexts, ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, liveIsoOf, forgetLive, READINGS } from '../../src/js/live.ts';
 import { now, capeHistory, curveAsOf, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
 import { inflationHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
-import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead } from '../../src/js/readings.ts';
+import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead, pressureTendency } from '../../src/js/readings.ts';
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
 import { topTenHistory, topTenReadings } from '../../src/js/concentration.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory, topTenRecent } from '../../src/js/history-fred.ts';
@@ -327,6 +327,15 @@ test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
   assert.equal(horizonRead.word, 'Pessimistic');
   await at(0.01, '2026-12-31');
   assert.notEqual(horizonRead.word, 'Pessimistic');
+});
+
+test('the 10-year card reads its tendency like a barometer, by its own record\'s quartiles', () => {
+  const T = pressureTendency, m = Math.abs(T.d);
+  assert.ok(T.still > 0 && T.still < T.fast, JSON.stringify(T));
+  const want = m <= T.still ? 'Steady' : (T.d > 0 ? 'Rising' : 'Falling') + (m >= T.fast ? ' quickly' : '');
+  assert.equal(T.word, want);
+  assert.equal(T.d, horizonRead.dLong);
+  assert.equal(word('sheet-sign-pressure'), T.word);
 });
 
 test('a Cycle Statistics result is named by its tier, Normal on its good side and flagged on the other', () => {
