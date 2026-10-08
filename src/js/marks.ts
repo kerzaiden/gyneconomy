@@ -43,7 +43,10 @@ export function ecgSvg(){ return markSvg(
   '<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>'); }
 export function weatherSvg(){ return markSvg('<path d="M15.8 3.4v1.3M19.3 5.1l-.95.95M20.9 8.6h-1.3M19.3 12.1l-.95-.95M12.3 5.1l.95.95" stroke-width="1.9"/>' +
   '<path d="M12.75 8.06A3.1 3.1 0 1 1 15.26 11.65" stroke-width="1.9"/><path d="M7.8 19.2h6.9a3.2 3.2 0 0 0 .25-6.4 4.8 4.8 0 0 0-9.05-.95 3.7 3.7 0 0 0 1.9 7.35z" stroke-width="1.9"/>'); }
-export function moodSvg(){ return markSvg('<path d="M3.6 6.4q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/><path d="M3.6 12q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/><path d="M3.6 17.6q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>'); }
+export function moodSvg(){ return markSvg('<path d="M10.5 12.75A1.5 1.5 0 0 1 13.5 12.75A3 3 0 0 1 7.5 12.75A4.5 4.5 0 0 1 16.5 12.75A6 6 0 0 1 4.5 12.75A7.5 7.5 0 0 1 19.5 12.75" stroke-width="1.8"/>'); }
+export function sproutSvg(){ return markSvg('<path d="M4.8 20.4c1.3-3.3 4-5 7.2-5s5.9 1.7 7.2 5z" stroke-width="1.8"/><path d="M12 15.4V10.6" stroke-width="1.8"/>' +
+  '<path d="M12 11.8C11.6 8.4 9.1 6.4 4.9 6.5c.1 3.9 2.6 6 7.1 5.3zM12 10.6c.5-3.9 3.3-6.2 7.6-6.1-.1 4.2-2.9 6.6-7.6 6.1z" stroke-width="1.8"/>'); }
+export function factorySvg(){ return markSvg('<path d="M3.8 20.2V8.8l5.2 3.3V8.8l5.2 3.3V8.8l6 3.8v7.6z" stroke-width="1.8"/><path d="M7.5 16.5h1.5M11.3 16.5h1.5M15.1 16.5h1.5" stroke-width="1.8"/>'); }
 export function circulationSvg(){ return dropSvg(1.9); }
 export function boltSvg(){ return markSvg('<path d="M14.2 2.4 5.2 13.6h5.9l-1.3 8 9-11.2h-5.9z" stroke-width="1.8"/>'); }
 export function marketSvg(){ return markSvg(

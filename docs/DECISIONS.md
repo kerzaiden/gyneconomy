@@ -26,15 +26,22 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
-- **There are five categories: Weather, Mood, Desire, Circulation and Stress. The work readings are Weather's subcategory Activity;
+- **There are six categories, and each wears one of the I Ching's six forces as its mark: Weather (heaven: sun and cloud),
+  Activity (earth: a sprout, the colour `--earth`), Mood (wind: a spiral), Desire (fire), Circulation (water) and Stress (thunder: the bolt).**
+  Keren: "we should separate activity from weather and make it its own category … there you can put the real economy";
+  she gave the sprout and the spiral ("I really like how the [spiral] looks at mood … let's change it") (0.9.11).
+  Activity holds Jobs (Unemployment rate, Nonfarm payrolls) and Output (Growth, Productivity growth); the
+  subcategory names, the factory mark on Output and the olive are Claude's picks. Weather keeps what the season and the
+  market are read from: Economic Season (Temperature, Growth gap) and Market. Real GDP growth moved to Output and
+  Economic Season shows the Growth gap instead, the figure the season actually reads; Keren: "are we really looking at
+  pure growth when we're looking at the economic season?", then chose "Move, add gap" (0.9.11). Stress keeps its name.
   Stress holds two subcategories, Credit and Debt, and its mark is the lightning bolt.** Keren: "stress should have its own
   category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3); "Under stress category, put credit
   and debt" (0.9.4). Desire left Mood to be its own category, after Mood, with two subcategories, Demand (Discretionary
   spending, Retail sales) and Risk (Equity risk premium). Keren: "desire should be its own category";
   "the subcategories … would be risk and demand" (0.9.8). Its mark is the flame and its colour the red of `--bleed-mid`;
   Demand wears a shopping bag and Risk a die: Claude's picks, for Keren to change.
-  Keren: "we don't need a category named activity. I think it's a subcategory under weather … economy, market, work", then "instead of work, write activity"
-  (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3; Credit followed in 0.9.4.
+  Before 0.9.11 the work readings were Weather's subcategory Activity; Keren: "we don't need a category named activity" (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3; Credit followed in 0.9.4.
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)
@@ -306,12 +313,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   still folds it. The box matches a reading's name, its series, its group or its category. There is no timing filter:
   "the division of Structural, leading, coincident, lagging … It's not something that I would filter by", so timing
   lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.6.1, 0.8.6)
-  **The search box lives only in Indicators; Analysis has none, and the Vitals head is its way in.** Keren: "in the
+  **The search box lives only in Indicators; Analysis has none, and the Elements head is its way in.** Keren: "in the
   analysis page, I don't need the search indicators because I already have this in the insight page." (0.8.8)
-  **Analysis's container of categories is called Vitals, not Insights;** Keren: "instead of insights call the container
-  in analysis 'vitals'". Insights stays the name of the commentary box on every reading page. (0.9.5)
-  **The Indicators page is called Vitals too;** Keren: "indicators should be vitals too". Its search box reads
-  "Search vitals". Older entries here that say Indicators mean this page. (0.9.5)
+  **Analysis's container of categories and the Indicators page are both called Elements, and the container's head has no mark;**
+  Keren: "maybe we should call it elements", then chose Elements over Vitals; "we don't need an icon next to the
+  elements title" (0.9.11). They were Vitals from 0.9.5 to 0.9.10. Insights stays the name of the commentary box on
+  every reading page. Older entries here that say Indicators or Vitals mean this page.
 - **Each year in Year by Year opens Indicators on that year, and Indicators moves between cycles, years and quarters
   with a stepper under its title: the period large, its place in its cycle under it, arrows either side.** Keren: "what
   I would want is to be referred to the indicators page under that date … so that we would have the ability to

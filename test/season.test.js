@@ -2,10 +2,11 @@
 const fs = require('fs'), path = require('path');
 const { plainJs } = require('../tools/source');
 
-function lift(file, names, vars) {
+function lift(file, names, vars, varFile) {
   const src = plainJs(fs.readFileSync(path.join(__dirname, '..', file), 'utf8'));
+  const varSrc = varFile ? plainJs(fs.readFileSync(path.join(__dirname, '..', varFile), 'utf8')) : src;
   let out = (vars || []).map(v => {
-    const m = new RegExp('\\n(?:export )?(var ' + v + '\\s*= [^\\n]*;)').exec(src);
+    const m = new RegExp('\\n(?:export )?(var ' + v + '\\s*= [^\\n]*;)').exec(varSrc);
     if (!m) throw new Error('not found in ' + file + ': ' + v);
     return m[1] + '\n';
   }).join('');
@@ -22,7 +23,7 @@ function lift(file, names, vars) {
   }
   return new Function(out + 'return { ' + names.concat(vars || []).join(', ') + ' };')();
 }
-const { readSeason, cpiTrend, regimeOf, HOLD_BAND } = lift('src/js/model.ts', ['monthIndex', 'cpiTrend', 'cpiDirectionOf', 'regimeOf', 'readSeason'], ['HOLD_BAND']);
+const { readSeason, cpiTrend, regimeOf, HOLD_BAND } = lift('src/js/model.ts', ['monthIndex', 'cpiTrend', 'cpiDirectionOf', 'regimeOf', 'readSeason'], ['HOLD_BAND'], 'src/js/data.ts');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
