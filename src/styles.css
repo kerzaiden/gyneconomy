@@ -429,12 +429,12 @@
 
   .cv-kicker{ font-size:var(--type-meta); text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-weight:600; display:inline-flex; align-items:center; gap:2px; }
 
-  .search-field{ display:flex; align-items:center; gap:8px; height:44px; margin:0 0 12px; padding:0 14px; border:1px solid var(--border);
+  .search-field{ display:flex; align-items:center; gap:6px; height:44px; margin:0 0 12px; padding:0 14px; border:1px solid var(--border);
     border-radius:var(--round); background:var(--surface); color:var(--text-muted); cursor:text; }
   .search-field svg{ width:19px; height:19px; flex:none; }
-  .search-field input{ flex:1; min-width:0; height:100%; border:0; background:none; font-family:"Public Sans",sans-serif; font-size:var(--type-row);
+  .search-field input{ flex:1; min-width:0; height:100%; padding:0; border:0; background:none; font-family:"Public Sans",sans-serif; font-size:var(--type-row);
     color:var(--text-primary); outline:none; }
-  .search-field input::placeholder{ color:var(--placeholder); opacity:1; }
+  .search-field input::placeholder{ font-size:var(--type-meta); color:var(--placeholder); opacity:1; }
   .search-field:focus-within{ border-color:var(--accent); }
   .search-none{ margin:22px 4px; font-size:var(--type-reading); color:var(--text-muted); }
   .menu-section .expand-btn{ margin-left:4px; vertical-align:middle; }

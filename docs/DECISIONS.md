@@ -128,6 +128,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Words for verdicts and trends
 
+- **On the Elements page the Federal budget is a signed number: a deficit is minus, a surplus plain, and the word
+  under it says "Large deficit".** Keren: "Instead of saying deficits, just use minus", so the word is not said twice
+  and the row matches the others (0.9.15). The word flags only a deficit past the 3.8% line; a surplus sits on the
+  good side and reads "50-year average".
+
 - **Growth is said in one pair of words everywhere: Expansion and Contraction ("expanding", "contracting" in a
   sentence), the model's own regime.** The season table, the Growth card, the chart legend, the season notes and
   pop-ups, Weather's opening line and the Growth page's trend all say the same side. Keren, on the 1929 pop-up that

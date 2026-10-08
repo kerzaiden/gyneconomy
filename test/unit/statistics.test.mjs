@@ -20,7 +20,8 @@ test('the open cycle’s results are today’s figures, printed as the model pri
     const l = lab(R.id);
     if (l.per[open] != null && !/–/.test(cardText(R.id))) assert.equal(l.print(l.per[open]), cardText(R.id), R.name);
   });
-  assert.match(lab('sheet-marker-deficit').print(-5.77), /^5\.8% deficit$/);
+  assert.equal(lab('sheet-marker-deficit').print(-5.77), '\u22125.8%');
+  assert.equal(lab('sheet-marker-deficit').print(1.2), '1.2%');
   assert.doesNotMatch(row('sheet-sign-market').querySelector('.lab-res b').textContent, /so far/);
 });
 
