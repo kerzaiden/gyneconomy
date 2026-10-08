@@ -7,7 +7,8 @@ import { now, capeHistory, curveAsOf, fedFundsRange, labRow, m2vHistory, m2Yoy, 
 import { inflationHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
 import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead } from '../../src/js/readings.ts';
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
-import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
+import { topTenHistory, topTenReadings } from '../../src/js/concentration.ts';
+import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory, topTenRecent } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
@@ -347,4 +348,17 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
 test('Cycle length is judged once, by Tukey’s fences, and variation is a figure left to Cycle Statistics rather than Elements', () => {
   assert.equal(labs().find(l => l.id === 'regularity'), undefined);
   assert.equal(document.querySelector('#sheet-find .cat-cycle, #sheet-find [data-ind-cat="cycle"]'), null);
+});
+
+test('Concentration’s history holds only quarter ends: the open State Street quarter is today’s figure, not a point', () => {
+  const open = topTenRecent[topTenRecent.length - 1];
+  assert.deepEqual(topTenReadings[topTenReadings.length - 1], open);
+  assert.ok(topTenHistory.every(h => h.q < open.q));
+  assert.ok(topTenHistory.every(h => h.v == null || topTenReadings.some(r => r.q === h.q && r.v === h.v)));
+});
+
+test('Stress has its insight, naming credit and debt, and Circulation no longer claims credit', () => {
+  ['weather', 'circulation', 'mood', 'stress'].forEach(k => assert.ok(catInsight(k).length > 0, k));
+  assert.match(catInsight('stress'), /Credit[^<]*debt/);
+  assert.doesNotMatch(catInsight('circulation'), /Credit is the money lent/);
 });

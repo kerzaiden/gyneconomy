@@ -260,7 +260,7 @@ not hooks.
 | **Data workflow** (`data.yml`) | five readings from their primary sources into `data/live.json`, tests that the app accepts each one, then starts the site deploy (V651: a push with the repository's own token starts no workflow by itself). A figure that did not arrive keeps its last document and turns the run red, so a dead key is an email, not a quietly ageing site (1.1.1) | weekdays 22:40 UTC, after the NY close | the site |
 | **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database, and checks the artifact is on main's version (V654) | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
-| **Backfill workflow** (`backfill.yml`) | the FRED histories in `src/data/fred.json`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
+| **Backfill workflow** (`backfill.yml`) | the FRED histories in `src/data/fred.json`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC; the 1st of each quarter, 12:00 UTC, for State Street's quarter-end SPY holdings; and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
 | **Tag workflow** (`tag.yml`, V647) | a `v0.1.0` tag (build and name in its message) for each version commit on `main` that has none, pushed one at a time, and a GitHub Release for each tag on the current line that has none (0.1.0). GitHub refuses the token some old V-tags, on commits whose workflow files differ from today's; those are listed and left untagged, and only a refused semantic tag turns the run red. The current line is read newest first, each number below the one after it, so the abandoned 1.0.0–1.8.0 are never released and never outrank 0.x. A version on the current line whose tag already names a commit of the abandoned line (`taken`, 0.1.1) is neither tagged nor released over it: the run names it and turns red | every push to `main` | the repo's history and its Releases page |
 
 **The task is a courier and nothing else (V542).** Each figure is fetched once and validated once, so the
@@ -348,7 +348,9 @@ the manifest's; now each module says what it imports.
   `topTenQuarterly` (SPY's SEC annual reports from 1995 Q4, then its N-PORT quarter ends from 2019 Q3) was written once by
   `tools/import-nport.js` from filings downloaded outside the cloud; the quarters between reports are gaps, which
   `concentration.ts` fills with null so the chart keeps time and draws nothing there, since the SEC refuses GitHub's runners; the Backfill carries it forward
-  from State Street's daily file as `topTenRecent` in `fred.json`, one figure per quarter.
+  from State Street's daily file as `topTenRecent` in `fred.json`, one figure per quarter. The run on the first day of each quarter
+  reads that file as of the closed quarter's last trading day, so the history holds only quarter ends; the newest row is
+  the open quarter, which the card shows and the history leaves out until a later quarter follows it.
 - **The modules are TypeScript, strict** (V702, Keren: "If that is typesetting, then do it"). `src/js/*.ts` uses
   only erasable syntax (`erasableSyntaxOnly`): annotations, `!`, `as`, generics and type declarations, never an enum
   or a namespace. So esbuild bundles it by dropping the types, and Node runs it as it is (type stripping), which is

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,103 lines** in 38 files, about 616 KB, roughly **175 thousand tokens**. No session can
+The source is **9,106 lines** in 38 files, about 616 KB, roughly **175 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `544b813` on 2026-10-08.
+Generated from commit `26d63b1` on 2026-10-08.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `544b813` on 2026-10-08.
 | `js/main.ts` | 34 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **34** modules, **725** top-level functions, **123** top-level vars, **357** exported names, **20** boots.
+Counts: **34** modules, **726** top-level functions, **123** top-level vars, **357** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -60,7 +60,7 @@ Counts: **34** modules, **725** top-level functions, **123** top-level vars, **3
 | `js/history-fred.ts` | 31 | 14 | — |
 | `js/indicators.ts` | 227 | 33 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
-| `js/insights.ts` | 182 | 17 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
+| `js/insights.ts` | 185 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/marks.ts` | 60 | 27 | — |
 | `js/main.ts` | 44 | 0 | `analysis`, `credit`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
 
@@ -1326,7 +1326,8 @@ falls in. **export** marks a name other modules import.
 | 159 | `insightMood` | `function insightMood(` |
 | 165 | `storyBeats` | `function storyBeats(` |
 | 176 | `storyText` | `function storyText(` |
-| 181 | `catInsight` · export | `function catInsight(` |
+| 180 | `insightStress` | `function insightStress(` |
+| 184 | `catInsight` · export | `function catInsight(` |
 
 ### `js/marks.ts`
 

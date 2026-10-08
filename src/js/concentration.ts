@@ -25,14 +25,14 @@ function concentrationRecord(){
   topTenQuarterly.forEach(function(d){ var y = d.q.slice(0, 4); if (+y <= CONCENTRATION_TO) (years[y] = years[y] || []).push(d.v); });
   var means = Object.keys(years).map(function(y){ return years[y].reduce(function(a, v){ return a + v; }, 0) / years[y].length; });
   CONCENTRATION_MEAN = Math.round(means.reduce(function(a, v){ return a + v; }, 0) / means.length * 10) / 10;
-  var last = topTenQuarterly[topTenQuarterly.length - 1].q;
+  var last = topTenQuarterly[topTenQuarterly.length - 1].q, recent = topTenRecent.filter(function(d){ return d.q > last; });
   topTenReadings.length = 0;
-  (topTenQuarterly as CreditPoint[]).concat(topTenRecent.filter(function(d){ return d.q > last; })).forEach(function(d){ topTenReadings.push(d); });
-  var at: Record<string, number> = {};
-  topTenReadings.forEach(function(d){ at[d.q as string] = d.v; });
+  (topTenQuarterly as CreditPoint[]).concat(recent).forEach(function(d){ topTenReadings.push(d); });
+  var ends = recent.length ? topTenReadings.slice(0, -1) : topTenReadings, at: Record<string, number> = {};
+  ends.forEach(function(d){ at[d.q as string] = d.v; });
   topTenHistory.length = 0;
-  var y0 = +(topTenReadings[0].q as string).slice(0, 4), end = topTenReadings[topTenReadings.length - 1].q as string;
-  for (var i = 0, q = qAtIndex(y0, 0); q <= end; q = qAtIndex(y0, ++i)) if (q >= (topTenReadings[0].q as string)) topTenHistory.push({ q:q, v:q in at ? at[q] : null });
+  var y0 = +(ends[0].q as string).slice(0, 4), end = ends[ends.length - 1].q as string;
+  for (var i = 0, q = qAtIndex(y0, 0); q <= end; q = qAtIndex(y0, ++i)) if (q >= (ends[0].q as string)) topTenHistory.push({ q:q, v:q in at ? at[q] : null });
 }
 export function concentrationSpecs(): CreditSpec[] {
   concentrationRecord();
@@ -41,7 +41,7 @@ export function concentrationSpecs(): CreditSpec[] {
     ends:{ high:"Concentrated" }, fmt:function(v){ return v.toFixed(1) + "%"; }, word:concentrationWord, src:CONCENTRATION_SRC,
     about:"The ten largest companies' share of the S&P 500's market cap, read from SPY, the oldest fund that tracks the index, which holds each company by its weight in the index. " +
       "A company with two share classes counts once, so Alphabet’s A and C shares are added together. The record comes from SPY’s filings with the SEC: its annual reports from 1995, " +
-      "twice a year from 2010 and every quarter from 2019; the latest figure is State Street’s own daily holdings file. When a few giants carry the index, its fortunes ride on theirs: the concentration risk.",
+      "twice a year from 2010 and every quarter from 2019. Every point in the history is a quarter’s end: the SEC’s filings, then State Street’s own daily holdings file on the quarter’s last trading day. Today’s figure is that file’s latest. When a few giants carry the index, its fortunes ride on theirs: the concentration risk.",
     band:"<b>The line is the record’s own average</b> over " + concentrationSpan() + ", each year counted once, since the early years have one or two readings and the recent ones four. " +
       "No convention sets a band for concentration, so the line is derived from that record and no other is drawn.",
     lede:"How much of the S&P 500 rests on its ten biggest stocks. The higher it runs, the more the whole market leans on a few names." }];
