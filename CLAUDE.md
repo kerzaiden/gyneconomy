@@ -46,7 +46,7 @@ rules below are the ones that matter most.
   (Keren, 0.6.17): today's and each past cycle's share one layout, and a unit test fails if they part.
 - **A parent owns what its children share** (Keren, V662). One frame (`histFrame`: height and margins) for
   every history chart, one type scale (`--type-*`, from the Lovable DSM), options on components instead of
-  page-scoped styles, a reading's page described by `ind.page` instead of branches on its name, and nothing
+  page-scoped styles, a reading's page declared once in `READING` (`src/js/reading.ts`) instead of branches on its name, and nothing
   unused. `npm run hygiene` (in `check`) fails on each; `docs/ARCHITECTURE.md` lists the named exceptions.
 - **Band provenance.** Every range on screen is sourced or explicitly Keren's call, and the (i) says
   which. A target is never relabelled "normal".

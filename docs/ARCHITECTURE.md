@@ -149,12 +149,7 @@ id, name, cat, timing, mark   the page, the name on every door, the category, th
 good                          the side that is good for it ("up" or "down"; none where neither is), which colours
                               a Cycle analysis result outside its range
 group                         consecutive rows with one group are one group (Valuations, Debt)
-door                          where today's figure and the page come from: peek (an authored page, its figure
-                              in OWN_FACE), pair and row (a reading object), split (a split page), subject (an
-                              authored subject page, its figure in OWN_FACE)
 term                          the bodyTerm of the reading object a row or pair is built from
-slot                          the authored page whose timing slot and order orderMetricSheets sets (the
-                              deficit's since V670)
 hk, head, range, cycles, stops   the history key (when it is not the page id), its head's title, its default
                               window, false where it has no Cycles mode, and its window stops
 hist, pair                    the series as written ({s, k, y0} or a function), read by keyed() into {k, v}
@@ -380,8 +375,9 @@ the manifest's; now each module says what it imports.
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `activity` (the growth gap, nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (the credit gap, margin debt and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
-  `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
+  `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers),
+  `reading` (the one reading component: every reading's figure, word and page, 0.9.18), `render-pages` and `pressure`
+  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -403,8 +399,21 @@ Season; Volatility, never Fear or Sentiment (V663); Households, never Debt servi
 
 Rules that shape the pages:
 
-- **Reading pages are built by MOVING the authored markup in** (the V314 rule); pages stay put and are
-  found by id. Anything reading a reading's authored markup runs before `renderSignsList` moves it.
+- **Every reading is one component (0.9.18, Keren: "all categories should have the same behavior even though
+  they present different data").** `src/js/reading.ts` holds `READING`, one entry per roster row, declared by
+  `defineReading(id, {face, info, controls, history, insight, aside?, src?})`: today's figure and word, the (i)
+  note, the bar above the chart, the chart (`history(W)` returns its svg or shell, its tooltip geometry, its trend
+  pill and an optional `paint`), and the Insights box. `mountReadings` builds every sheet from the roster in
+  card order (timing pill, chart host, Insights host, category class) and `drawReading` draws each the same way:
+  bar, `histHead`, chart, trend, tooltip, aside, then Insights. No sheet is written in `page-body.html`; a reading
+  that cannot say something through these fields is a finding, not a page of its own. The defines live with
+  their data: `defineSplits` (indicators), `defineInnerReadings` (inner-pages), `defineSubjectReadings`
+  (render-pages) and `defineMarketReadings` (pressure); `renderSignsList` calls them, then mounts.
+- **One record, read one way (0.9.18).** A reading whose Insights read its own record against a line or a band
+  uses `recordInsight` (or `indicatorInsight`, which takes the band from the meter): "The Latest Reading" says
+  where it sits and since when, "Against the Record" how many readings ran higher and how many held the line or
+  band. Readings with a story of their own (Valuations, GDP, Temperature, the Fed, Fear, Pressure) keep their
+  cards but go through `highlightsHtml` and `lede` like the rest. Pulse alone adds an aside, its trace.
 - **Navigation is `NAV` and nothing else** (`NAV.open`, `NAV.panel`, or emit `data-open`). Inner pages are
   pages, not popups; the host moves as live DOM. **Don't invent a second navigation idea.**
 - **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),
@@ -412,8 +421,8 @@ Rules that shape the pages:
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
   card (Valuations: Shiller CAPE · Buffett indicator; Debt: Margin debt · Federal debt · Federal interest payments
   · Federal budget · Households · Delinquency rate). The split pages are
-  built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, joined by
-  `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
+  built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, declared by
+  `defineSplits` as readings), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
   Indicators holds the groups as its subcategories (0.8.5); the group pages that held them went in 0.8.6.
   The Power score is gone (V660, Keren: "remove the power score"): its card, page, composite and history;
@@ -423,8 +432,7 @@ Rules that shape the pages:
   which fails on: a chart height set outside `histFrame`; a chart margin set outside it (only the mini chart,
   `colPeek`, owns its own); a `font-size` that is not a `--type-` token; a style aimed
   at one page by id (make it an option of the component, as `goodAbove` is for Productivity's bars); a branch on a
-  reading's name (`ind.bodyTerm === ...`: a reading declares its page in `ind.page` — `deferHighlights`, `chart`,
-  `after`, `seat` — and `signSubject` only reads it; looking a
+  reading's name (`ind.bodyTerm === ...`: a reading declares its page in `READING`; looking a
   reading up by name is fine); and anything unused — a function or variable nothing calls, a style class nothing
   carries (classes built at run time are listed in the tool). V662 removed what that found: the Temperature and
   Growth cycle cards (drawn but shown nowhere since V656), the hidden GDP and Valuation summary blocks, eleven dead
@@ -436,14 +444,14 @@ Rules that shape the pages:
   together). A reading without a history (Productivity growth until its series lands)
   keeps its note behind **More details** (`ind.info`). The sourced bands stay on the charts as their lines.
 - **The activity readings (V661; ungrouped since V688):** Unemployment rate (the Activity page; its roster name renames it on
-  screen while `bodyTerm` stays the reading's term), and Productivity growth, each a sign page
-  of its own (`signSubject`, the page id from the roster). Productivity growth is structural (Claude's call, to
+  screen while `bodyTerm` stays the reading's term), and Productivity growth, each a reading
+  of its own (the page id from the roster). Productivity growth is structural (Claude's call, to
   confirm). Its history is OPHNFB year over year, written by the Backfill as `productivityHistory`, and its
   `splitPages` entry mounts the split chart on the same page (the 1.3% slowdown line is the BLS figure; above it
   is good, so its bars read green).
 - **Every reading keeps its own icon, in its category's colour (V661).** Keren first asked for the category's
   icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
-  the color." `wearCategories` (`cycle-tab`) marks each reading's page with
+  the color." `mountReadings` marks each reading's page with
   its category class, so the page head disc and the history head take `--cat`. Group rows keep a mark
   of their own (`GROUP_MARK`: Debt the bolt; Valuations its first member's).
   The two Treasury spreads (one page, Treasury spreads) and Households' bill and cushion stay one page each (Keren, V658: they read as one).

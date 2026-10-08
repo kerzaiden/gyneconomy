@@ -1,16 +1,18 @@
-import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, mean, monthLabel, ordinal, qAtIndex, qLabel, stateOf, tagFor, yearOf } from "./format.ts";
-import { byId, byIdMaybe, focusQuiet, layer, moreRow, need, put } from "./dom.ts";
-import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.ts";
+import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, monthLabel, ordinal, qAtIndex, qLabel, stateOf, tagFor, titleCase, yearOf } from "./format.ts";
+import { addSources, byId, focusQuiet, layer, moreRow } from "./dom.ts";
+import { divergeChart, trendOf, trendPill } from "./charts.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.ts";
+import { CAPE_FAIR, capeHistory, DEFICIT_LINE, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fileRow, labRow, longCycleSrc, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, syncCapeHistory, unempHistory } from "./data.ts";
 import { currentEra, cycleQtrIdx, cycleSlice, growthWord, inflationFigure, nowModel, potentialGap, totalGrowthYears, totalRiseIn } from "./model.ts";
-import { attachHistory, controlKeys, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.ts";
-import { deficitBlock, dsrInfoHtml, growthInfoHtml, householdsNow, phaseClass, savInfoHtml, tempCaptionFull, tempInfo, tempLeadShown } from "./readings.ts";
+import { controlKeys, defFrom, histControls, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, timelineSpan, timelineWindow } from "./history.ts";
+import { activityInfoHtml, deficitInfoHtml, dsrInfoHtml, gdpWord, growthInfoHtml, householdsNow, lagging, phaseClass, savInfoHtml, tempInfo, temperatureInfoHtml } from "./readings.ts";
 import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, unempHistoryChart } from "./history-charts.ts";
-import { sheetRenderers } from "./render-core.ts";
+import { gdpFigure, sheetRenderers, tempWord } from "./render-core.ts";
 import { growthDetail } from "./dial-cycle.ts";
+import { meterWord } from "./indicators.ts";
+import { defineReading, indicatorInsight, recordInsight, recordPoints } from "./reading.ts";
+import { ROSTER_BY } from "./roster.ts";
 
-type MetricCtx = { capeNow: number; buffNow: number | null; tempInd: Indicator | undefined; r: typeof nowModel.reading; gq: QuarterPoint[] };
 // ---- THE INNER PAGES ----
 function actCycleMonths(c: Cycle){
   var to = c.to || calendarTodayY, a = -1, b = -1;
@@ -27,9 +29,9 @@ function householdsHighlights(){
                         .filter(function(d){ return d.v <= savNow && d.i < savHistory.length - 1; });
   var run = lower.filter(function(d){ var y = SAV_FROM_YEAR + Math.floor(d.i / 4); return y >= 2005 && y <= 2008; });
   var years = SAV_FROM_YEAR + Math.floor((savHistory.length - 1) / 4) - SAV_FROM_YEAR;
-  var hhLede = '<p class="hi-lede">Two halves of one household: what it owes every month, and what is left ' +
+  var hhLede = lede('Two halves of one household: what it owes every month, and what is left ' +
     'after. The bill is the load the body carries; the cushion is what it has stored against a month that ' +
-    'goes wrong.</p>';
+    'goes wrong.');
   var billTxt = "Households pay " + dsrNow.toFixed(1) + "% of what they take home to service debt, against " +
     DSR_MEAN.toFixed(1) + "% on average since " + DSR_FROM_YEAR + " and a peak of " + peak.toFixed(1) + "% in " +
     peakAt + ". That is " + offPeak.toFixed(0) + "% below the peak, and flat for two years.";
@@ -48,134 +50,117 @@ function redrawSheet(id: string){
   });
   keys.some(function(k){ return focusQuiet(document.querySelector<HTMLElement>(k)); });
 }
-function registerTempGdpPages(){
-  sheetRenderers["sheet-metric-temp"] = function(W = 0){
-    var r = page.range["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
-    put("temp-rangebar", histControls("sheet-metric-temp", { series:inflationHistory }));
-    put("temp-head", histHead("sheet-metric-temp"));
-    var hist = need("temp-history"); hist.hidden = false;
-    var win;
-    if (cyc){
-      var span = cycleSlice(inflationHistory, cyc);
-      win = span ? inflationHistory.slice(span[0], span[1]) : [];
-      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
-                                       { to:span ? span[1] : undefined, cycle:true });
-      attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
-      put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
-                  { rising:"heating", falling:"cooling" }));
-    } else {
-      var from = mWindowFrom(inflationHistory.length, r); win = inflationHistory.slice(from);
-      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
-      attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
-      put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
-                  { rising:"heating", falling:"cooling" }));
-    }
-    var tri = totalRiseIn(win);
-      headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
-  };
-  sheetRenderers["sheet-metric-gdp"] = function(W = 0){
-    var r = page.range["sheet-metric-gdp"];
-    put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY }));
-    histNote("sheet-metric-gdp", growthInfoHtml());
-    put("gdp-head", histHead("sheet-metric-gdp"));
-    var hist = need("gdp-history"); hist.hidden = false;
-    var gCyc = pageCycle("sheet-metric-gdp");
-    var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;
-    var gFrom = gSpan ? gSpan[0] : qWindowFrom(gdpQuarterlyYoY.length, r);
-    var gTo = gSpan ? gSpan[1] : undefined;
-    var win = gdpQuarterlyYoY.slice(gFrom, gTo);
-    hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, { to:gTo, cycle:!!gSpan });
-    attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
-    var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
-    headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
-    put("gdp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
-                { rising:"accelerating", falling:"slowing" }));
-  };
-
+function lagRow(term: string){ var ind = lagging.filter(function(x){ return x.bodyTerm === term; })[0]; if (!ind) throw new Error("no " + term + " reading"); return ind; }
+function monthWindow(id: string, series: MonthPoint[]){
+  var cyc = pageCycle(id), span = cyc ? cycleSlice(series, cyc) : null;
+  return span ? { from:span[0], to:span[1] as number | undefined, cycle:true } : { from:mWindowFrom(series.length, page.range[id]), to:undefined, cycle:false };
 }
-function registerActivityPowerDeficitPages(){
-  sheetRenderers["sheet-sign-activity"] = function(W = 0){
-    var id = "sheet-sign-activity", bar = byId("act-rangebar");
-    if (!bar) return;
-    bar.innerHTML = histControls(id, { series:unempHistory });
-    var hist = byId("act-history"); if (!hist) return;
-    var cyc = pageCycle(id);
-    var span = cyc ? actCycleMonths(cyc) : null;
-    var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]);
-    var to = span ? span[1] : undefined;
-    hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, { to:to, cycle:!!span });
-    attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
-    var win = unempHistory.slice(from, to).filter(function(d){ return d.v != null; });
-    put("act-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
-                               { rising:"loosening", falling:"tightening" }));
-  };
-  sheetRenderers["sheet-marker-deficit"] = function(W){
-    var sheet = byId("sheet-marker-deficit"); if (!sheet) return;
-    if (!byIdMaybe("deficit-record")) sheet.insertAdjacentHTML("afterbegin", deficitBlock());
-    sheetRenderers["deficit-range"](W);
-  };
-  sheetRenderers["deficit-range"] = function(W = 0){
-    var host = byId("deficit-record"); if (!host) return;
-    var key = page.range["deficit-range"], defCyc = pageCycle("deficit-range");
-    var defIdx = defCyc ? [Math.max(0, defCyc.from - DEF_FROM_YEAR),
-                           Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1)] : null;
-    var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
-    put("deficit-rangebar", histControls("deficit-range",
-      { depth:deficitHistory.length }));
-    host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
-    put("deficit-records", "");
-    attachHistory(host, "deficit-hist-tooltip", "deficitChart");
-    put("deficit-trend", trendPill(
-      trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true,
-      { rising:"improving", falling:"widening" }));
-  };
+function defineTemp(){
+  var id = "sheet-metric-temp";
+  defineReading(id, {
+    face:function(){ return [lagRow("Temperature").metric, tempWord(nowModel.reading)]; },
+    info:function(){ return temperatureInfoHtml(lagRow("Temperature")); },
+    controls:function(){ return histControls(id, { series:inflationHistory }); },
+    history:function(){
+      var w = monthWindow(id, inflationHistory), win = inflationHistory.slice(w.from, w.to), tri = totalRiseIn(win);
+      return { geom:"cpiHistoryChart", wrap:"vh-host", sigma:tri ? fmtSigned(tri.total, 0) + "%" : null,
+        chart:function(W: number){ return cpiHistoryChart(W, w.from, { to:w.to, cycle:w.cycle }); },
+        trend:trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"heating", falling:"cooling" }) };
+    },
+    insight:tempHighlights
+  });
 }
-function registerHouseholdsValuationPages(){
-  sheetRenderers["sheet-metric-households"] = function(W = 0){
-    var id = "sheet-metric-households";
-    var hhCyc = pageCycle(id, DSR_FROM_YEAR);
-    var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
-    var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, page.range[id]);
-    var to = idx ? idx[1] : dsrHistory.length;
-    var host = byId("households-chart"); if (!host) return;
-    histNote(id, dsrInfoHtml() + savInfoHtml());
-    host.innerHTML =
-      histBar(histControls(id, { depth:Math.floor(dsrHistory.length / 4) }, DSR_FROM_YEAR)) +
-      '<div class="page-chart">' + histHead(id) +
-      householdsChart(W, from, to) +
-      trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"),
-                "Saving", true, { rising:"keeping more", falling:"keeping less" }) +
-      histTip("households-hist-tooltip") + '</div>';
-    var box = host.querySelector<HTMLElement>(".page-chart");
-    refitHistory(box, function(w){ return householdsChart(w, from, to); });
-    attachHistory(box, "households-hist-tooltip", "householdsChart");
-    put("households-highlights", householdsHighlights());
-  };
-  sheetRenderers["sheet-metric-valuation"] = function(W){
-    var r = page.range["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
-    var vlSpan = vlCyc ? cycleSlice(capeHistory, vlCyc) : null;
-    var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
-    var capeTrend = trendOf(vals.map(function(d){ return d.v; }), "\u00d7", "year");
-    put("valuation-chart", histBar(histControls("sheet-metric-valuation", { series:capeHistory })) +
-      '<div class="page-chart">' + histHead("sheet-metric-valuation") +
-      divergeChart({
-        vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7", fmt:capeFmt1,
-        tickFmt:function(v){ return v + "\u00d7"; },
-        fit:capeTrend.fit,
-        alt:"Shiller CAPE against its long-run fair value, each January" +
-            (r === "max" ? " since " + capeHistory[0].y : " of the last " + timelineSpan(r) + " years") +
-            ", with the fitted trend across the readings in view"
-      }, W) +
-      trendPill(capeTrend, null, true) +
-      histTip("valuation-hist-tooltip") + '</div>');
-    var vBox = document.querySelector<HTMLElement>("#valuation-chart .page-chart");
-    refitHistory(vBox, function(w){
-      return divergeChart({ vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7",
-                            fmt:capeFmt1, tickFmt:function(v){ return v + "\u00d7"; }, fit:capeTrend.fit,
-                            alt:"Shiller CAPE against its long-run fair value, each January" }, w);
-    });
-    attachHistory(vBox, "valuation-hist-tooltip", "divergeChart");
-  };
+function defineGdp(){
+  var id = "sheet-metric-gdp";
+  defineReading(id, {
+    face:function(){ return [gdpFigure(nowModel.reading), gdpWord(nowModel.reading)]; },
+    info:growthInfoHtml,
+    controls:function(){ return histControls(id, { series:gdpQuarterlyYoY }); },
+    history:function(){
+      var cyc = pageCycle(id), span = cyc ? cycleSlice(gdpQuarterlyYoY, cyc) : null;
+      var from = span ? span[0] : qWindowFrom(gdpQuarterlyYoY.length, page.range[id]), to = span ? span[1] : undefined;
+      var win = gdpQuarterlyYoY.slice(from, to), gt = totalGrowthYears(yearOf(win[0]), yearOf(win[win.length - 1]));
+      return { geom:"gdpHistoryChart", wrap:"vh-host", sigma:gt ? fmtSigned(gt.total, 0) + "%" : null,
+        chart:function(W: number){ return gdpHistoryChart(W, from, { to:to, cycle:!!span }); },
+        trend:trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true, { rising:"accelerating", falling:"slowing" }) };
+    },
+    insight:gdpHighlights
+  });
+}
+function defineActivity(){
+  var id = "sheet-sign-activity";
+  defineReading(id, {
+    face:function(){ var ind = lagRow("Activity"); return [ind.metric, ind.tag ? ind.tag.text : ""]; },
+    info:function(){ return activityInfoHtml(lagRow("Activity")); },
+    controls:function(){ return histControls(id, { series:unempHistory }); },
+    history:function(){
+      var cyc = pageCycle(id), span = cyc ? actCycleMonths(cyc) : null;
+      var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]), to = span ? span[1] : undefined;
+      var win = unempHistory.slice(from, to).filter(function(d){ return d.v != null; });
+      return { geom:"unempHistoryChart", wrap:"vh-host",
+        chart:function(W: number){ return unempHistoryChart(W, from, { to:to, cycle:!!span }); },
+        trend:trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"loosening", falling:"tightening" }) };
+    },
+    insight:function(){ return indicatorInsight(ROSTER_BY[id], lagRow("Activity"), function(v){ return v.toFixed(1) + "%"; }); }
+  });
+}
+function defineDeficit(){
+  var id = "sheet-marker-deficit", key = "deficit-range";
+  defineReading(id, {
+    face:function(){ var row = labRow(id); return [row.flagValue, meterWord(row.meter)]; },
+    info:deficitInfoHtml,
+    controls:function(){ return histControls(key, { depth:deficitHistory.length }); },
+    history:function(){
+      var cyc = pageCycle(key), idx = cyc ? [Math.max(0, cyc.from - DEF_FROM_YEAR), Math.min(deficitHistory.length, (cyc.to || calendarTodayY) - DEF_FROM_YEAR + 1)] : null;
+      var from = idx ? idx[0] : defFrom(page.range[key]), to = idx ? idx[1] : undefined;
+      return { geom:"deficitChart", wrap:"vh-host", chart:function(W: number){ return deficitChart(W, from, to); },
+        trend:trendPill(trendOf(deficitHistory.slice(from, to), "points", "year"), null, true, { rising:"improving", falling:"widening" }) };
+    },
+    insight:function(){ return recordInsight(recordPoints(ROSTER_BY[id]), { lede:labRow(id).shortNote || "", fmt:function(v){ return fmtSigned(v, 1) + "%"; },
+      mid:-DEFICIT_LINE, line:"the 50-year average of " + fmtSigned(-DEFICIT_LINE, 1) + "%" }); }, src:longCycleSrc
+  });
+}
+function defineHouseholds(){
+  var id = "sheet-metric-households";
+  defineReading(id, {
+    face:function(){ return [dsrNow.toFixed(1) + "/" + savNow.toFixed(1), householdsNow.word]; },
+    info:function(){ return dsrInfoHtml() + savInfoHtml(); },
+    controls:function(){ return histControls(id, { depth:Math.floor(dsrHistory.length / 4) }, DSR_FROM_YEAR); },
+    history:function(){
+      var cyc = pageCycle(id, DSR_FROM_YEAR), idx = cyc ? cycleQtrIdx(DSR_FROM_YEAR, cyc, dsrHistory.length) : null;
+      var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, page.range[id]), to = idx ? idx[1] : dsrHistory.length;
+      return { geom:"householdsChart", chart:function(W: number){ return householdsChart(W, from, to); },
+        trend:trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"), "Saving", true, { rising:"keeping more", falling:"keeping less" }) };
+    },
+    insight:householdsHighlights
+  });
+}
+function valuationInfo(){ var cape = fileRow("cape"); return '<h4>' + titleCase(cape.marker) + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note); }
+function defineValuation(){
+  var id = "sheet-metric-valuation";
+  defineReading(id, {
+    face:function(){ return [fileRow("cape").flagValue, (now.valuation.tag || { text:"" }).text]; },
+    info:valuationInfo,
+    controls:function(){ return histControls(id, { series:capeHistory }); },
+    history:function(){
+      var r = page.range[id], cyc = pageCycle(id), span = cyc ? cycleSlice(capeHistory, cyc) : null;
+      var vals = span ? capeHistory.slice(span[0], span[1]) : timelineWindow(capeHistory, r);
+      var capeTrend = trendOf(vals.map(function(d){ return d.v; }), "\u00d7", "year");
+      return { geom:"divergeChart", trend:trendPill(capeTrend, null, true), chart:function(W: number){
+        return divergeChart({ vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7", fmt:capeFmt1,
+          tickFmt:function(v){ return v + "\u00d7"; }, fit:capeTrend.fit,
+          alt:"Shiller CAPE against its long-run fair value, each January" +
+              (r === "max" ? " since " + capeHistory[0].y : " of the last " + timelineSpan(r) + " years") +
+              ", with the fitted trend across the readings in view" }, W);
+      } };
+    },
+    insight:valuationHighlights, src:now.valuation.src
+  });
+}
+export function defineInnerReadings(){
+  syncCapeHistory();
+  defineTemp(); defineGdp(); defineActivity(); defineDeficit(); defineHouseholds(); defineValuation();
+  addSources(now.valuation.src);
 }
 function wireMetricPageControls(){
   document.addEventListener("click", function(e){
@@ -205,41 +190,39 @@ function wireMetricPageControls(){
   });
 
 }
-function valuationHighlights(capeNow: number, buffNow: number | null){
+function valuationHighlights(){
+  var capeNow = metered(fileRow("cape").meter);
   var richer = capeHistory.filter(function(d): d is YearPoint { return d.v != null && d.v > capeNow; });
-  var cards = [];
-  cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
+  var cards = [lede('Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
     'ten years. Paying far above the long-run price is appetite running ahead of what the body is actually ' +
-    'producing.</p>');
+    'producing.')];
   cards.push(hiCard("Shiller CAPE", stateOf(tagFor(now.valuation)), richer.length === 0
     ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "."
     : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y +
       " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v) + ")"; }).join(" and ") + " ran higher."));
-  put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(now.valuation.impression))));
+  return highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(now.valuation.impression)));
 }
-function tempHighlights(tempInd: Indicator | undefined, r: typeof nowModel.reading){
-  var cyc = nowModel.cpi, hot = cyc.filter(function(d){ return d.v > 3; }).length;
+function tempHighlights(){
+  var tempInd = lagRow("Temperature"), r = nowModel.reading, cyc = nowModel.cpi, hot = cyc.filter(function(d){ return d.v > 3; }).length;
   var peak = cyc.reduce(function(a, b){ return b.v > a.v ? b : a; });
-  var cards = ['<p class="hi-lede">A temperature is the one number that says whether something inside is ' +
+  var cards = [lede('A temperature is the one number that says whether something inside is ' +
     'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
-    'means anything measured against the level the system is meant to hold.</p>'];
+    'means anything measured against the level the system is meant to hold.')];
   cards.push(hiCard("Temperature", tempInd ? stateOf(tagFor(tempInd)) : "warning",
     "Across the " + cyc.length + " months of the " + currentEra.name + ", prices have run above 3% in " + hot +
     " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
   cards.push(hiCard("Where It Sits Now", tempInd ? stateOf(tagFor(tempInd)) : "warning",
     "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +
     inflationFigure(r.cpiNow) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1\u20133% range."));
-  put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + (function(){
-      var rest = dropWhatIsShown(tempCaptionFull, tempLeadShown);
-      return rest ? factsFrom(rest) : "";
-    })())));
+  var rest = dropWhatIsShown(tempInd.caption || "", tempInd.lead || tempInd.shortCaption || "");
+  return highlightsHtml(cards, "", moreRow(tempInfo + (rest ? factsFrom(rest) : "")));
 }
-function gdpHighlights(r: typeof nowModel.reading, gq: QuarterPoint[]){
-  var cycAvg = mean(gq.map(function(d){ return d.v; }));
-  var contractions = gq.filter(function(d){ return d.v < 0; }).length;
-  var cards = ['<p class="hi-lede">Growth is the build-up: how much more the economy made this year than ' +
+function gdpHighlights(){
+  var r = nowModel.reading, gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q.slice(0, 4), 10) >= nowModel.era.from; });
+  var cycAvg = mean(gq.map(function(d){ return d.v; })), contractions = gq.filter(function(d){ return d.v < 0; }).length;
+  var cards = [lede('Growth is the build-up: how much more the economy made this year than ' +
     'last. A body spends the first half of its cycle building something it has not used yet, and an ' +
-    'economy does the same with output.</p>'];
+    'economy does the same with output.')];
   cards.push(hiCard("Growth", phaseClass(r.regime),
     "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) +
     "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
@@ -247,7 +230,7 @@ function gdpHighlights(r: typeof nowModel.reading, gq: QuarterPoint[]){
     qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
     (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average and " + potentialGap(r) + " the economy\u2019s potential of " + r.potential.toFixed(1) + "%, so the season model reads the economy as " +
     growthWord(r) + "."));
-  put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
+  return highlightsHtml(cards, "", moreRow(growthDetail));
 }
 function shutPickers(){
   var open = Object.keys(pickerOpen).filter(function(k){ return pickerOpen[k]; });
@@ -274,13 +257,7 @@ function wireControlKeys(){
     e.preventDefault(); if (m !== k){ segs[m].focus(); segs[m].click(); }
   });
 }
-export function renderMetricPages(ctx: MetricCtx){
-  registerTempGdpPages();
-  registerActivityPowerDeficitPages();
-  registerHouseholdsValuationPages();
+export function wirePageControls(){
   wireMetricPageControls();
   wireControlKeys();
-  valuationHighlights(ctx.capeNow, ctx.buffNow);
-  tempHighlights(ctx.tempInd, ctx.r);
-  gdpHighlights(ctx.r, ctx.gq);
 }

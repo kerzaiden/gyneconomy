@@ -14,7 +14,7 @@ import { sheetRenderers } from '../../src/js/render-core.ts';
 import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
 import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
-import { todayFace } from '../../src/js/era.ts';
+import { todayFace } from '../../src/js/reading.ts';
 import { catInsight } from '../../src/js/insights.ts';
 import { marketCycles } from '../../src/js/data.ts';
 

@@ -129,7 +129,7 @@ async function openPage(p, url, sheet) {
     const r = await p.evaluate(h => {
       const mp = document.getElementById('metric-page');
       const hb = document.querySelector('.bh-more[data-head-more="' + h + '"]');
-      const band = (hb && hb.closest('.page-chart, .spread-history')) || mp.querySelector('.page-chart, .spread-history');
+      const band = (hb && hb.closest('.page-chart')) || mp.querySelector('.page-chart');
       const svg = band && [...band.querySelectorAll('svg')]
         .sort((a, b) => b.getBoundingClientRect().height - a.getBoundingClientRect().height)[0];
       const q = s => svg ? svg.querySelectorAll(s).length : 0;
@@ -139,7 +139,7 @@ async function openPage(p, url, sheet) {
         trend: !!mp.querySelector('.trendpill'), headBtn: !!btn,
         tall: svg ? Math.round(svg.getBoundingClientRect().height) : 0, title: btn ? btn.closest('.band-head').querySelector('.bh-title').textContent : '',
         ctlOutside: (() => { const bar = mp.querySelector('.hist-bar');
-          return !!bar && !bar.closest('.page-chart, .spread-history'); })(),
+          return !!bar && !bar.closest('.page-chart'); })(),
         frame: q('.bt-frame'), grid: q('.bt-grid'), vgrid: q('.bt-vgrid'), yl: q('.bt-yl'), xl: q('.bt-xl'),
         mark: !!(btn && btn.closest('.band-head').querySelector('.bh-mark svg')), chip: !!mp.querySelector('.timing-row'),
         boxes: mp.querySelectorAll('.highlights').length,
@@ -160,7 +160,7 @@ async function openPage(p, url, sheet) {
       const b = document.querySelector('#metric-page .trendpill.can-toggle');
       if (!b) return document.querySelector('#metric-page .trendpill.none') ? 'unavailable' : 'no button';
       b.click();
-      const box = b.closest('.page-chart, .spread-history'), fit = box && box.querySelector('.fit');
+      const box = b.closest('.page-chart'), fit = box && box.querySelector('.fit');
       const on = b.getAttribute('aria-pressed') === 'true' && box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none';
       b.click(); return on ? 'line' : 'dead';
     });
@@ -249,13 +249,13 @@ async function openPage(p, url, sheet) {
         await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click());
       await gp.click('[data-head-grp="levels"]'); await settle(gp);
       await gp.click('[data-ylm-mat="10y"]'); await settle(gp);
-      const lv = await view('sheet-sign-pressure', 'pressure-insights');
+      const lv = await view('sheet-sign-pressure', 'sheet-sign-pressure-highlights');
       let sp = {};
       if (await openPage(gp, url, 'sheet-sign-spreads')) {
         await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="spreads-range"]').click()); await settle(gp);
         await gp.click('[data-head-grp="spreads"]'); await settle(gp);
         await gp.click('[data-hzn-spread="2y"]'); await settle(gp);
-        sp = await view('sheet-sign-spreads', 'spreads-insights');
+        sp = await view('sheet-sign-spreads', 'sheet-sign-spreads-highlights');
       }
       (root.join() === 'levels' && /10-Year/.test(lv.title || '') && lv.ylm && lv.level && !lv.slope && lv.boxes === 1 &&
        /10Y − 2Y Treasury Spread/.test(sp.title || '') && sp.spread && sp.slope && !sp.level && sp.cols > 10 && sp.boxes === 1)
@@ -558,7 +558,7 @@ async function openPage(p, url, sheet) {
     await p.click('#sheet-find .lab-row[data-open="sheet-sign-confidence"]'); await settle(p);
     const fromChart = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle'); if (!b) return null;
-      b.click(); const box = b.closest('.page-chart, .spread-history'), fit = box.querySelector('.fit');
+      b.click(); const box = b.closest('.page-chart'), fit = box.querySelector('.fit');
       return { bar: document.getElementById('topbar-title').textContent, on: box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none' };
     });
     (fromChart && fromChart.bar === 'Confidence' && fromChart.on)

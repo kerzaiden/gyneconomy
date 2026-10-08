@@ -66,16 +66,9 @@ type ChartGeom = {
   [k: string]: unknown;
 };
 type AuxFact = { label: string; value: string; wordy?: boolean };
-type IndicatorPage = {
-  deferHighlights?: boolean;
-  after?: (ind: Indicator) => string;
-  chart?: (ind: Indicator) => string;
-  seat?: (ind: Indicator, d: HTMLElement) => void;
-};
 type Indicator = {
   bodyTerm: string;
   econTerm: string;
-  page?: IndicatorPage;
   tag: Tag | null;
   metric: string;
   metricSub: string;
@@ -107,10 +100,8 @@ type RosterRow = {
   cat: string;
   good?: "up" | "down";
   timing: RosterTiming;
-  door: "peek" | "row" | "subject" | "pair" | "split";
   head: string;
   hist: HistSpec;
-  slot?: string;
   term?: string;
   hk?: string;
   group?: string;

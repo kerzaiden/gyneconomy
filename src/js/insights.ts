@@ -30,9 +30,9 @@ function insightCirculation(){
            : !up && vup ? "Circulating faster on a smaller stock"
                         : "Draining and slowing";
   var f1 = function(v: number){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
-  var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' +
+  var circLede = lede('Volume is the blood and Pulse is the heart rate; multiplied they ' +
     'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
-    'resistance that flow meets, and the Federal funds rate is the signal that sets all three. The money lent into the flow and what it leaves owing are read under Stress.</p>';
+    'resistance that flow meets, and the Federal funds rate is the signal that sets all three. The money lent into the flow and what it leaves owing are read under Stress.');
   var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " +
     f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " +
     (up === vup ? "both are pushing the same way." : "they are pulling against each other.");

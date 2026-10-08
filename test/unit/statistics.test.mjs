@@ -7,7 +7,7 @@ import { labRow, marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 import { meterWord } from '../../src/js/indicators.ts';
 import { calendarTodayY } from '../../src/js/refresh-season.ts';
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
-import { todayFace } from '../../src/js/era.ts';
+import { todayFace } from '../../src/js/reading.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { labs, yearsWord } from '../../src/js/cycle-analysis.ts';
 
