@@ -95,7 +95,7 @@ export function histFrame(Wpx?: number | null): HistFrame {
   return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
            T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
 }
-function yLabel(x: number | string, text: string | number, y: number | string, anchor: string){
+export function yLabel(x: number | string, text: string | number, y: number | string, anchor: string){
   return '<text class="bt-yl" x="' + x + '" y="' + y + '" text-anchor="' + anchor + '">' + text + '</text>';
 }
 export function xLabel(x: number | string, text: string | number, y: number | string){
@@ -117,7 +117,7 @@ export function histTip(id: string){ return '<div class="gdp-tooltip mono hist-t
 export function avgRule(x0: number | string, x1: number | string, y: number | string){
   return '<path class="temp-avg" d="M' + x0 + ',' + y + 'H' + x1 + '"/>';
 }
-export function vhOpen(W: number, H: number){ return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" '; }
+export function vhOpen(W: number, H: number, frame?: number){ return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '"' + (frame ? ' width="' + W + '" height="' + H + '" data-frame="' + frame + '"' : "") + ' role="img" '; }
 function autoTicks(o: AxesOpts){
   var lo = o.lo, hi = o.hi; if (lo == null || hi == null) throw new Error("an axis has neither ticks nor a range"); var span = hi - lo;
   var step = o.step || [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100].filter(function(k){
@@ -219,13 +219,14 @@ function refName(t?: string | null){
 }
 export var PULSE_WINDOW = 5;
 var pulseClipN = 0;
-export function beatPath(x0: number, x1: number, y: number, period: number | ((x: number) => number), amp: number, wide?: number){
+export function beatPath(x0: number, x1: number, base: number | ((x: number) => number), period: number | ((x: number) => number), amp: number, wide?: number){
   var f = function(n: number){ return n.toFixed(1); };
   var at = function(x: number){ return typeof period === "number" ? period : period(x); };
-  var d = ["M" + f(x0) + "," + f(y)], x = x0, p = at(x0), A = amp;
+  var lvl = function(x: number){ return typeof base === "number" ? base : base(x); };
+  var d = ["M" + f(x0) + "," + f(lvl(x0))], x = x0, p = at(x0), A = amp;
   while (x < x1 + p){
-    p = at(x); var s = wide ? Math.min(p, wide) : p;
-    d.push("H" + f(x + s * 0.08));
+    p = at(x); var s = wide ? Math.min(p, wide) : p, y = lvl(x);
+    d.push("L" + f(x + s * 0.08) + "," + f(y));
     d.push("Q" + f(x + s * 0.15) + "," + f(y - A * 0.24) + " " + f(x + s * 0.22) + "," + f(y));
     d.push("H" + f(x + s * 0.30));
     d.push("L" + f(x + s * 0.345) + "," + f(y + A * 0.15));

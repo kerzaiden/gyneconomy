@@ -8,7 +8,7 @@ import { headPickRow, histControls, page, pageCycle, qWindowFrom } from "./histo
 import { indOf, pressureTendency, pressureZone, pulseBlock, pulseInfoHtml, volumeInfoHtml } from "./readings.ts";
 import { chartShell, defineReading, indicatorInsight, redrawReading } from "./reading.ts";
 import { ROSTER_BY } from "./roster.ts";
-import { m2GrowthChart, pulseYearsChart, velocityHistoryChart } from "./history-charts.ts";
+import { m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
 import { rhythmCard, rhythmInfo } from "./rhythm.ts";
 type YieldPt = { q: string; v: number | null; latest?: boolean };
 type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string };
@@ -73,7 +73,7 @@ function defineFlow(){
     history:function(){
       var key = page.range["pulse-range"], cyc = pageCycle("pulse-range"), idx = cyc ? cycleQtrIdx(M2V_FROM_YEAR, cyc, m2vHistory.length) : null;
       var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : undefined;
-      return { geom:"velocityHistoryChart", wrap:"vh-host", chart:function(w: number){ return velocityHistoryChart(w, from, to); }, foot:pulseYearsChart(from, to),
+      return { geom:"velocityHistoryChart", wrap:"vh-host hscroll", scroll:true, chart:function(w: number){ return velocityHistoryChart(w, from, to); },
         trend:trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, true, { rising:"accelerating", falling:"decelerating" }) };
     },
     aside:function(){ var ind = flowRow("Pulse"); return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind); },

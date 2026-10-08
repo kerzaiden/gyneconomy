@@ -1087,15 +1087,17 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   connected to EKG". Rhythm is the standard deviation of the last eight quarterly changes in M2 velocity; it reads
   Irregular past the 90th percentile of every two-year window from 1959 to 2007 (1.31 points). No convention sets it, so it is
   derived and the (i) says so; the window and the percentile are Claude's. The Now trace beats at each quarter's own
-  velocity across its five years, so its spacing shows the rhythm. Under the Pulse history's rate columns runs one EKG line across
-  the period chosen in the selection bar, each year labelled with its average velocity (each quarter, for a single year).
-  Keren: "you can take the rhythm and insert it into the EKG so that it reads like a real chart", then "I need like times
-  1.43 … if the current cycle is chosen, then I would see just one line with the averages of the years of that cycle".
-  A quarter's beats close up or spread by e^(−0.12 × its % change in velocity), Claude's scale; beats per turnover are
-  20 ÷ the period's years (at least one), so a line stays readable. No red bands or red columns: Keren found them "not understandable,
-  not intuitively" (a long EKG line and per-year strips with Irregular labels were built and dropped the same day). Familiar metrics are a guideline, not a rule: Keren,
+  velocity across its five years, so its spacing shows the rhythm. The Pulse history is one EKG chart: velocity on the y-axis, the
+  trace riding at each quarter's level, a year to a screen, scrolling sideways through the period chosen, with a bar under the
+  axis showing the position. Keren: "I think the solution is horizontal scroll. I want one history component in this page, with
+  a pulse and a rhythm combined into an EKG style reading. The y-axis will be the Velocity … and also some kind of an
+  indicator in the x-axis that we can scroll". It beats ten times per turnover; a quarter's beats close up or spread by
+  e^(−0.12 × its % change in velocity), Claude's scale. The value labels repeat at each year so a scrolled screen keeps its
+  scale; the reading plate shows the last quarter in view. The rate columns, red bands, per-year strips and the separate
+  heartbeat line under the chart were built and dropped the same day; Keren on the bands: "not understandable,
+  not intuitively". Familiar metrics are a guideline, not a rule: Keren,
   "If you think that some KPI would shed light on our Gyneconomy model, then let's think about it." Told Keren, not printed:
-  Irregular quarters fall in Spring 4 of 96 times, against Summer 14 of 61, Autumn 15 of 96 and Winter 5 of 9. (0.9.22)
+  Irregular quarters fall in Spring 4 of 96 times, against Summer 14 of 61, Autumn 15 of 96 and Winter 5 of 9. (0.9.24)
 - **Pulse's verdict is five bands against the 1959–2007 mean, both extremes flagged; the spectrum's ends say
   what velocity means (slow is hoarding, fast is spending).** Keren: "I would rather have an indicator that
   tells me: is the velocity fast or slow"; a stalled circulation and a feverish one are both unhealthy. (V297,

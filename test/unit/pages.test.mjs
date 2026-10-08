@@ -41,7 +41,7 @@ test('every history chart on a page sits in the one frame', () => {
     assert.ok(svgs.length >= 6);
     svgs.forEach(s => {
       const [, , w, h] = s.getAttribute('viewBox').split(' ').map(Number);
-      assert.equal(h, histFrame(w).H, s.getAttribute('aria-label'));
+      assert.equal(h, histFrame(+(s.dataset.frame || w)).H, s.getAttribute('aria-label'));
     });
   }
 });
@@ -54,7 +54,8 @@ for (const [name, chart] of Object.entries(CHARTS)) {
       const svg = chart(W);
       const f = histFrame(W), vb = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
       assert.ok(vb, name + ' has a viewBox');
-      assert.deepEqual([+vb[1], +vb[2]], [f.W, f.H], name + ' at ' + W);
+      const frame = /data-frame="(\d+)"/.exec(svg);
+      assert.deepEqual([frame ? +frame[1] : +vb[1], +vb[2]], [f.W, f.H], name + ' at ' + W);
       assert.deepEqual(broken(svg), [], name + ' at ' + W);
       assert.match(svg, /aria-label="[^"]{12,}"/, name + ' names itself for a screen reader');
     }

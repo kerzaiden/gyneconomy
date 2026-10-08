@@ -637,8 +637,8 @@
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
-  .pv-col.over{ stroke:var(--good); }
+  .pv-trace{ fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .pv-hit{ fill:transparent; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -681,9 +681,11 @@
   .pulsetrace{ margin:0; }
   .pulsetrace .spread-history-head + .pt-head{ margin-top:12px; }
   .pulsetrace .pt-svg.solo{ height:42px; }
-  .pulse-years{ margin-top:16px; }
-  .pulse-years-svg{ display:block; width:100%; height:auto; }
-  .pulse-years-svg .pt-now{ fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .hscroll{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; }
+  .hscroll::-webkit-scrollbar{ display:none; }
+  .hscroll > .vh-svg{ width:auto; max-width:none; }
+  .hscroll-bar{ position:relative; height:4px; border-radius:2px; background:var(--grid); margin:4px 0 2px; }
+  .hscroll-bar span{ position:absolute; top:0; bottom:0; border-radius:2px; background:var(--text-muted); }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
   .pt-head:first-child{ margin-top:0; }
@@ -717,7 +719,7 @@
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
   .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
-  .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
+  .trend-on .pv-trace{ stroke:var(--border-strong) !important; opacity:0.45; }
   .trend-on .temp-avg{ opacity:0.16; }
   .trend-on .dv-mid{ opacity:0.4; }
 

@@ -634,8 +634,8 @@
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
-  .pv-col.over{ stroke:var(--good); }
+  .pv-trace{ fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .pv-hit{ fill:transparent; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -677,9 +677,11 @@
   .pulsetrace{ margin:0; }
   .pulsetrace .spread-history-head + .pt-head{ margin-top:12px; }
   .pulsetrace .pt-svg.solo{ height:42px; }
-  .pulse-years{ margin-top:16px; }
-  .pulse-years-svg{ display:block; width:100%; height:auto; }
-  .pulse-years-svg .pt-now{ fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .hscroll{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; }
+  .hscroll::-webkit-scrollbar{ display:none; }
+  .hscroll > .vh-svg{ width:auto; max-width:none; }
+  .hscroll-bar{ position:relative; height:4px; border-radius:2px; background:var(--grid); margin:4px 0 2px; }
+  .hscroll-bar span{ position:absolute; top:0; bottom:0; border-radius:2px; background:var(--text-muted); }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
   .pt-head:first-child{ margin-top:0; }
@@ -711,7 +713,7 @@
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
   .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
-  .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
+  .trend-on .pv-trace{ stroke:var(--border-strong) !important; opacity:0.45; }
   .trend-on .temp-avg{ opacity:0.16; }
   .trend-on .dv-mid{ opacity:0.4; }
 
@@ -43154,8 +43156,8 @@
   function avgRule(x0, x1, y) {
     return '<path class="temp-avg" d="M' + x0 + "," + y + "H" + x1 + '"/>';
   }
-  function vhOpen(W, H) {
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ';
+  function vhOpen(W, H, frame) {
+    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '"' + (frame ? ' width="' + W + '" height="' + H + '" data-frame="' + frame + '"' : "") + ' role="img" ';
   }
   function autoTicks(o) {
     var lo = o.lo, hi = o.hi;
@@ -43308,18 +43310,21 @@
   }
   var PULSE_WINDOW = 5;
   var pulseClipN = 0;
-  function beatPath(x0, x1, y, period, amp, wide) {
+  function beatPath(x0, x1, base, period, amp, wide) {
     var f = function(n) {
       return n.toFixed(1);
     };
     var at = function(x2) {
       return typeof period === "number" ? period : period(x2);
     };
-    var d = [ "M" + f(x0) + "," + f(y) ], x = x0, p = at(x0), A = amp;
+    var lvl = function(x2) {
+      return typeof base === "number" ? base : base(x2);
+    };
+    var d = [ "M" + f(x0) + "," + f(lvl(x0)) ], x = x0, p = at(x0), A = amp;
     while (x < x1 + p) {
       p = at(x);
-      var s = wide ? Math.min(p, wide) : p;
-      d.push("H" + f(x + s * .08));
+      var s = wide ? Math.min(p, wide) : p, y = lvl(x);
+      d.push("L" + f(x + s * .08) + "," + f(y));
       d.push("Q" + f(x + s * .15) + "," + f(y - A * .24) + " " + f(x + s * .22) + "," + f(y));
       d.push("H" + f(x + s * .3));
       d.push("L" + f(x + s * .345) + "," + f(y + A * .15));
@@ -44777,6 +44782,7 @@
     var fx1 = fr ? fx0 + attrNum(fr, "width") : g.R;
     var lo = sb.left - eb.left + (fx0 + AXIS.L) * scale, hi = sb.left - eb.left + (fx1 - AXIS.R) * scale;
     var mx = i === 0 ? lo : i === g.n - 1 ? hi - w : Math.max(lo, Math.min(hi - w, colX - w / 2));
+    mx = Math.max(0, Math.min(el.clientWidth - w, mx));
     el.style.top = plateTop.toFixed(1) + "px";
     if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = mx.toFixed(1) + "px";
@@ -44876,6 +44882,25 @@
       }
       it.t.setAttribute("x", (x + MARK + PAD).toFixed(1));
       x += it.w + GAP;
+    });
+  }
+  function wireHScroll(box) {
+    var sc = box.querySelector(".hscroll"), bar = box.querySelector(".hscroll-bar span");
+    if (!sc || !bar) return;
+    var pane = sc, thumb = bar;
+    var fit = function() {
+      var w = pane.scrollWidth || 1;
+      thumb.style.width = 100 * pane.clientWidth / w + "%";
+      thumb.style.left = 100 * pane.scrollLeft / w + "%";
+      var g = box.__geom, svg = pane.querySelector("svg"), sw = svg ? svg.getBoundingClientRect().width : 0;
+      if (!g || !sw || box.classList.contains("hovering")) return;
+      var x = (pane.scrollLeft + pane.clientWidth) * g.W / sw, i = Math.max(0, Math.min(g.n - 1, Math.floor((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1))));
+      histReadFill(box, g.vals[i], i);
+    };
+    pane.scrollLeft = pane.scrollWidth;
+    fit();
+    pane.addEventListener("scroll", fit, {
+      passive: true
     });
   }
   function refitHistory(box, build) {
@@ -45077,6 +45102,7 @@
     if (expect && (!g || g.src !== expect)) (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
     host.__geom = g;
     if (tipId) wireHistHover(host, tipId);
+    wireHScroll(host);
     return g;
   }
   function bootHistory() {
@@ -47186,60 +47212,48 @@
       }
     };
   }
-  var PULSE_BEATS = 20;
+  var PULSE_BEATS = 10;
   var PULSE_SWING = .12;
-  function pulseLine(y, i0, n, X, perTurn) {
-    var wide = (X(4) - X(0)) / (perTurn * 1.9), at = function(x) {
-      var q = Math.max(0, Math.min(n - 1, Math.floor((x - X(0)) / (X(n) - X(0)) * n))), i = i0 + q;
-      var change = i > 0 ? (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100 : 0;
-      var p = (X(4) - X(0)) / (perTurn * m2vHistory[i]) * Math.exp(-PULSE_SWING * change);
-      return Math.min(p, Math.max(X(q + 1) - x, wide));
+  function pulseTrace(ser, from, X, Y) {
+    var n = ser.length, year = X(4) - X(0), wide = year / (PULSE_BEATS * 1.9);
+    var qOf = function(x) {
+      return Math.max(0, Math.min(n - 1, Math.round((x - X(0)) / (X(1) - X(0)))));
     };
-    return '<path class="pt-now" d="' + beatPath(X(0), X(n), y, at, 13, wide) + '"/>';
-  }
-  function pulseBeatsPerTurn(n) {
-    return Math.max(1, Math.round(PULSE_BEATS * 4 / Math.max(4, n)));
-  }
-  function pulseYearsChart(from, to) {
-    var end = to == null ? m2vHistory.length : to, n = end - from, perTurn = pulseBeatsPerTurn(n);
-    var W = 520, L = 6, R = W - 6, T = 26, Y = 52, B = 76, H = B + 18, f = function(v) {
-      return v.toFixed(1);
+    var level2 = function(x) {
+      var t = (x - X(0)) / (X(1) - X(0)), i = Math.max(0, Math.min(n - 1, Math.floor(t))), j = Math.min(n - 1, i + 1), u = Math.max(0, Math.min(1, t - i));
+      return Y(ser[i] + (ser[j] - ser[i]) * u);
     };
-    var X = function(q) {
-      return L + (R - L) * q / n;
-    }, out = [];
-    var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4);
-    var marks = n <= 4 ? Array.from({
-      length: n
-    }, function(_, k) {
-      return [ from + k, from + k + 1, "Q" + ((from + k) % 4 + 1) ];
-    }) : windowYears(y0, y1, 7).map(function(yr) {
-      var s = (yr - M2V_FROM_YEAR) * 4;
-      return [ Math.max(from, s), Math.min(end, s + 4), yr ];
-    });
-    marks.forEach(function(m) {
-      var a = +m[0], b = +m[1], part = m2vHistory.slice(a, b), avg = part.reduce(function(s, v) {
-        return s + v;
-      }, 0) / part.length, cx = f((X(a - from) + X(b - from)) / 2);
-      out.push(vGrid(X(a - from), T - 12, B));
-      out.push(xLabel(cx, avg.toFixed(2) + "×", T - 6));
-      out.push(xLabel(cx, m[2], B + 15));
-    });
-    out.push(pulseLine(Y, from, n, X, perTurn));
-    return '<div class="pulse-years"><svg class="pulse-years-svg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Money velocity’s heartbeat from ' + y0 + " to " + y1 + ', each year marked with its average velocity; a quarter’s beats closer together when velocity rose that quarter and further apart when it fell">' + out.join("") + "</svg></div>";
+    var at = function(x) {
+      var q = qOf(x), i = from + q, change = i > 0 ? (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100 : 0;
+      var p = year / (PULSE_BEATS * ser[q]) * Math.exp(-PULSE_SWING * change);
+      return Math.min(p, Math.max(X(q + .5) - x, wide));
+    };
+    return '<path class="pt-now pv-trace" d="' + beatPath(X(-.5), X(n - .5), level2, at, 16, wide) + '"/>';
+  }
+  function pulseAxisRepeat(ticks, Y, xs) {
+    return xs.map(function(x) {
+      return ticks.map(function(t) {
+        return yLabel((x + 4).toFixed(1), t.toFixed(1) + "×", (Y(t) - 4).toFixed(1), "start");
+      }).join("");
+    }).join("");
   }
   function velocityHistoryChart(Wpx, from, to) {
-    var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
+    var F = histFrame(Wpx), H = F.H, L = F.L, T = F.T, B = F.B;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? void 0 : to), n = ser.length;
+    var R = L + (F.R - F.L) * Math.max(1, n / 4), W = R + (F.W - F.R);
     var sc = windowScale(ser, [ PULSE_PRE2008 ]);
-    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
+    var LO = sc.lo, HI = sc.hi, Y = function(v) {
+      return B - (B - T) * (v - LO) / (HI - LO);
+    };
+    var X = function(i2) {
+      return L + (R - L) * (i2 + .5) / n;
+    };
     var f = function(v) {
       return v.toFixed(1);
     };
-    var out = [];
-    var y0 = M2V_FROM_YEAR + Math.floor(from / 4);
-    var y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
+    var out = [], starts = [];
+    var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
     out.push(chartAxes({
       ticks: sc.ticks,
       y: Y,
@@ -47252,12 +47266,16 @@
         return g.toFixed(1) + "×";
       }
     }));
-    windowYears(y0, y1, narrow2 ? 4 : 5).forEach(function(yr) {
-      var i = (yr - M2V_FROM_YEAR) * 4 - from;
-      if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
+    for (var i = 0; i < n; i++) {
+      var q = (from + i) % 4, xb = X(i - .5);
+      if (q === 0 && i > 0) {
+        out.unshift(vGrid(xb, T, B));
+        starts.push(xb);
+      }
+      if (q === 0 || i === 0) out.push(xLabel(f(xb + 20), M2V_FROM_YEAR + Math.floor((from + i) / 4), B + 17));
+      out.push('<rect class="pv-hit hcol" x="' + f(xb) + '" y="' + f(T) + '" width="' + f(X(1) - X(0)) + '" height="' + f(B - T) + '"/>');
+    }
+    out.push(pulseAxisRepeat(sc.ticks, Y, starts));
     var iEnd = (2008 - M2V_FROM_YEAR) * 4 - 1 - from;
     var meanTo = iEnd > 0 ? X(Math.min(iEnd, n - 1)) : R;
     out.push('<path class="vh-mean" d="M' + f(X(0)) + "," + f(Y(PULSE_PRE2008)) + "H" + f(meanTo) + '"/>');
@@ -47266,14 +47284,14 @@
       return a + v;
     }, 0) / (n || 1);
     publishGeom("velocityHistoryChart", {
-      L: L,
-      R: R,
+      L: X(0),
+      R: X(n - 1),
       T: T,
       B: B,
       W: W,
       n: n,
-      at: function(d, i) {
-        return qAtIndex(M2V_FROM_YEAR, from + i);
+      at: function(d, i2) {
+        return qAtIndex(M2V_FROM_YEAR, from + i2);
       },
       fmt: function(v) {
         return v.toFixed(3) + "×";
@@ -47293,17 +47311,11 @@
       })
     });
     out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
-    var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
-    var pMidY = Y(PULSE_PRE2008);
-    ser.forEach(function(v, i) {
-      var y12 = Y(v);
-      if (Math.abs(y12 - pMidY) < .6) y12 = pMidY + (v >= PULSE_PRE2008 ? -.6 : .6);
-      out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' + pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y12, pSw) + '"/>');
-    });
+    out.push(pulseTrace(ser, from, X, Y));
     out.push(fitLine(ser, "quarter", function(v) {
       return v.toFixed(2) + "×";
     }, X(0), X(n - 1), Y, R, L, 0));
-    return vhOpen(W, H) + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + ", against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
+    return vhOpen(Math.round(W), H, F.W) + 'aria-label="Velocity of M2 drawn as a heartbeat, every quarter from ' + y0 + " to " + y1 + ", a year to a screen, against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times; beats close up when velocity rose that quarter and spread out when it fell">' + out.join("") + "</svg>";
   }
   function yearTicks(out, vals, w, X, T, B, f) {
     var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
@@ -47757,7 +47769,7 @@
   }
   function historyHtml(R, h, W) {
     var svg = h.chart(W);
-    return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '">' + svg + "</div>" : svg) + h.trend + (h.foot || "") + histTip(R.id + "-tip") + "</div>";
+    return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '">' + svg + "</div>" : svg) + (h.scroll ? '<div class="hscroll-bar" aria-hidden="true"><span></span></div>' : "") + h.trend + histTip(R.id + "-tip") + "</div>";
   }
   function drawReading(R, W) {
     var r = readingFor(R.id), w = W || 340, h = r.history(w);
@@ -50830,7 +50842,7 @@
   }
   function rhythmInfo() {
     var r = rhythmRecord();
-    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>Under the history, her heartbeat runs across the period you choose</b>, each year marked with its average velocity (each quarter, when the period is a single year). Each quarter’s beats close up when velocity rose that quarter and spread out when it fell: every point of change moves them about 12% (Claude’s scale, so a change can be seen). A steady stretch beats evenly; an irregular one stutters. The beats are spaced to stay readable, more per turnover in a short period than in a long one.</p>';
+    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>The history is her heartbeat</b>, drawn at her velocity: the line rides at each quarter’s level on the scale at the side, a year to a screen, and scrolls sideways through the period you choose (the bar under it shows where you are). It beats ten times for every turnover, and a quarter’s beats close up when velocity rose that quarter and spread out when it fell: every point of change moves them about 12% (Claude’s scale, so a change can be seen). A steady stretch beats evenly; an irregular one stutters, as in 2020.</p>';
   }
   var CURVE_KEY = {
     "3m": "3M",
@@ -50945,11 +50957,11 @@
         var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : void 0;
         return {
           geom: "velocityHistoryChart",
-          wrap: "vh-host",
+          wrap: "vh-host hscroll",
+          scroll: true,
           chart: function(w) {
             return velocityHistoryChart(w, from, to);
           },
-          foot: pulseYearsChart(from, to),
           trend: trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, true, {
             rising: "accelerating",
             falling: "decelerating"

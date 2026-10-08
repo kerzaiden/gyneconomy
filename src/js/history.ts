@@ -213,6 +213,7 @@ function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: number){
   var mx = i === 0 ? lo
          : i === g.n - 1 ? hi - w
          : Math.max(lo, Math.min(hi - w, colX - w / 2));
+  mx = Math.max(0, Math.min(el.clientWidth - w, mx));
   el.style.top = plateTop.toFixed(1) + "px";
   if (!plate.__placed) plate.style.transition = "none";
   plate.style.marginLeft = mx.toFixed(1) + "px";
@@ -288,6 +289,21 @@ function histLegend(host: HTMLElement){
     it.t.setAttribute("x", (x + MARK + PAD).toFixed(1));
     x += it.w + GAP;
   });
+}
+function wireHScroll(box: HTMLElement){
+  var sc = box.querySelector<HTMLElement>(".hscroll"), bar = box.querySelector<HTMLElement>(".hscroll-bar span");
+  if (!sc || !bar) return;
+  var pane = sc, thumb = bar;
+  var fit = function(){
+    var w = pane.scrollWidth || 1; thumb.style.width = (100 * pane.clientWidth / w) + "%"; thumb.style.left = (100 * pane.scrollLeft / w) + "%";
+    var g = box.__geom, svg = pane.querySelector("svg"), sw = svg ? svg.getBoundingClientRect().width : 0;
+    if (!g || !sw || box.classList.contains("hovering")) return;
+    var x = (pane.scrollLeft + pane.clientWidth) * g.W / sw, i = Math.max(0, Math.min(g.n - 1, Math.floor((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1))));
+    histReadFill(box, g.vals[i], i);
+  };
+  pane.scrollLeft = pane.scrollWidth;
+  fit();
+  pane.addEventListener("scroll", fit, { passive:true });
 }
 export function refitHistory(box: Element | null, build: (w: number) => string){
   if (!box || !build) return;
@@ -446,6 +462,7 @@ export function attachHistory(host: HTMLElement | null, tipId?: string | null, e
     (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
   host.__geom = g;
   if (tipId) wireHistHover(host, tipId);
+  wireHScroll(host);
   return g;
 }
 

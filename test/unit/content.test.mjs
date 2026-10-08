@@ -16,7 +16,8 @@ import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/reading.ts';
 import { rhythmRecord, RHYTHM_WINDOW } from '../../src/js/rhythm.ts';
-import { pulseYearsChart, velocityHistoryChart } from '../../src/js/history-charts.ts';
+import { velocityHistoryChart } from '../../src/js/history-charts.ts';
+import { histFrame } from '../../src/js/charts.ts';
 import { catInsight } from '../../src/js/insights.ts';
 import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 
@@ -396,11 +397,11 @@ test('the Pulse page reads its rhythm: two years of quarterly changes, cut at th
   assert.match(page, /Rhythm/);
   assert.match(page, /Steady: in the two years to Q2 2026 velocity’s quarterly changes spread by 0\.30 points, the steadiest of the 262/);
   assert.match(page, /1981–1984, 2008–2010 and 2020–2022/);
-  const svg = velocityHistoryChart(360, 0);
-  assert.equal((svg.match(/class="pv-col hcol/g) || []).length, m2vHistory.length);
-  const cycle = pulseYearsChart(240, 256);
-  assert.equal((cycle.match(/class="pt-now"/g) || []).length, 1);
-  assert.deepEqual([...cycle.matchAll(/class="bt-xl"[^>]*>([^<]+)</g)].map(m => m[1]), ['1.45×', '2019', '1.21×', '2020', '1.16×', '2021', '1.21×', '2022']);
-  const year = pulseYearsChart(252, 256);
-  assert.deepEqual([...year.matchAll(/class="bt-xl"[^>]*>([^<]+)</g)].map(m => m[1]).filter((_, k) => k % 2), ['Q1', 'Q2', 'Q3', 'Q4']);
+  const cycle = velocityHistoryChart(360, 240, 256), frame = histFrame(360);
+  assert.equal((cycle.match(/class="pv-hit hcol"/g) || []).length, 16);
+  assert.equal((cycle.match(/class="pt-now pv-trace"/g) || []).length, 1);
+  assert.equal(+/viewBox="0 0 (\d+)/.exec(cycle)[1], Math.round(frame.L + (frame.R - frame.L) * 4 + (frame.W - frame.R)));
+  assert.deepEqual([...cycle.matchAll(/class="bt-xl"[^>]*>(\d{4})</g)].map(m => +m[1]), [2019, 2020, 2021, 2022]);
+  sheetRenderers['sheet-sign-pulse'](360);
+  assert.ok(document.querySelector('#sheet-sign-pulse .hscroll > svg.vh-svg') && document.querySelector('#sheet-sign-pulse .hscroll-bar span'));
 });
