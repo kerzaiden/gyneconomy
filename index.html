@@ -47215,12 +47215,18 @@
     };
   }
   var PULSE_BEATS = 10;
-  function pulseTrace(ser, X, y, amp) {
+  function pulseTrace(ser, X, Y) {
     var n = ser.length, year = X(4) - X(0), wide = year / (PULSE_BEATS * 1.9);
-    var gap = function(x) {
-      return year / (PULSE_BEATS * ser[Math.max(0, Math.min(n - 1, Math.round((x - X(0)) / (X(1) - X(0)))))]);
+    var vAt = function(x) {
+      var t = (x - X(0)) / (X(1) - X(0)), i = Math.max(0, Math.min(n - 1, Math.floor(t))), j = Math.min(n - 1, i + 1), u = Math.max(0, Math.min(1, t - i));
+      return ser[i] + (ser[j] - ser[i]) * u;
     };
-    return '<path class="pt-now pv-trace" d="' + beatPath(X(-.5), X(n - .5), y, gap, amp, wide) + '"/>';
+    var gap = function(x) {
+      return year / (PULSE_BEATS * vAt(x));
+    };
+    return '<path class="pt-now pv-trace" d="' + beatPath(X(-.5), X(n - .5), function(x) {
+      return Y(vAt(x));
+    }, gap, 16, wide) + '"/>';
   }
   function ekgPaper(x0, x1, T, B, big) {
     var f = function(v) {
@@ -47230,26 +47236,59 @@
     for (var j = 0, y = B; y >= T - .1; j++, y = B - small * j) (j % 5 ? minor : major).push("M" + f(x0) + "," + f(y) + "H" + f(x1));
     return '<path class="ekg-minor" d="' + minor.join("") + '"/><path class="ekg-major" d="' + major.join("") + '"/>';
   }
+  function pulseAxisRepeat(ticks, Y, xs) {
+    return xs.map(function(x) {
+      return ticks.map(function(t) {
+        return yLabel((x + 4).toFixed(1), t.toFixed(1) + "×", (Y(t) - 4).toFixed(1), "start");
+      }).join("");
+    }).join("");
+  }
   function velocityHistoryChart(Wpx, from, to) {
     var F = histFrame(Wpx), H = F.H, L = F.L, T = F.T, B = F.B;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? void 0 : to), n = ser.length;
     var R = L + (F.R - F.L) * Math.max(1, n / 4), W = R + (F.W - F.R), big = (R - L) / n;
+    var sc = windowScale(ser, [ PULSE_PRE2008 ]);
+    var LO = sc.lo, HI = sc.hi, Y = function(v) {
+      return B - (B - T) * (v - LO) / (HI - LO);
+    };
     var X = function(i2) {
       return L + big * (i2 + .5);
     };
     var f = function(v) {
       return v.toFixed(1);
-    }, mid = T + (B - T) * .5;
-    var out = [ ekgPaper(L, R, T, B, big) ];
+    };
+    var out = [ ekgPaper(L, R, T, B, big) ], starts = [];
     var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
+    out.push(chartAxes({
+      ticks: sc.ticks,
+      y: Y,
+      x0: L,
+      x1: R,
+      base: B,
+      top: T - AXIS.LEG - AXIS.READ,
+      bot: B,
+      fmt: function(g) {
+        return g.toFixed(1) + "×";
+      }
+    }));
     for (var i = 0; i < n; i++) {
       var q = (from + i) % 4, xb = X(i - .5);
+      if (q === 0 && i > 0) {
+        out.push(vGrid(xb, T, B));
+        starts.push(xb);
+      }
       if (q === 0 || i === 0) out.push(xLabel(f(xb + 20), M2V_FROM_YEAR + Math.floor((from + i) / 4), B + 17));
       out.push(xLabel(f(X(i)), "Q" + (q + 1) + " " + ser[i].toFixed(2) + "×", f(B - 8)));
       out.push('<rect class="pv-hit hcol" x="' + f(xb) + '" y="' + f(T) + '" width="' + f(big) + '" height="' + f(B - T) + '"/>');
     }
+    out.push(pulseAxisRepeat(sc.ticks, Y, starts));
+    var iEnd = (2008 - M2V_FROM_YEAR) * 4 - 1 - from;
+    out.push('<path class="vh-mean" d="M' + f(X(0)) + "," + f(Y(PULSE_PRE2008)) + "H" + f(iEnd > 0 ? X(Math.min(iEnd, n - 1)) : R) + '"/>');
     out.push(crossLine(T, B));
+    var pAvg = ser.reduce(function(a, v) {
+      return a + v;
+    }, 0) / (n || 1);
     publishGeom("velocityHistoryChart", {
       L: X(0),
       R: X(n - 1),
@@ -47263,15 +47302,26 @@
       fmt: function(v) {
         return v.toFixed(3) + "×";
       },
-      refs: [],
+      refs: [ {
+        label: "Average",
+        v: pAvg
+      }, {
+        label: "Pre-2008 mean",
+        v: PULSE_PRE2008,
+        dash: true
+      } ],
       vals: ser.map(function(v) {
         return {
           v: v
         };
       })
     });
-    out.push(pulseTrace(ser, X, mid, (B - T) * .32));
-    return vhOpen(Math.round(W), H, F.W) + 'aria-label="Velocity of M2 as an EKG strip, every quarter from ' + y0 + " to " + y1 + ", one large square a quarter with its velocity written on it, against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times; the gap between beats is a year divided by ten times that quarter’s velocity">' + out.join("") + "</svg>";
+    out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
+    out.push(pulseTrace(ser, X, Y));
+    out.push(fitLine(ser, "quarter", function(v) {
+      return v.toFixed(2) + "×";
+    }, X(0), X(n - 1), Y, R, L, 0));
+    return vhOpen(Math.round(W), H, F.W) + 'aria-label="Velocity of M2 as an EKG strip on its velocity scale, every quarter from ' + y0 + " to " + y1 + ", one large square a quarter with its velocity written under it, against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times; the gap between beats is a year divided by ten times the velocity">' + out.join("") + "</svg>";
   }
   function yearTicks(out, vals, w, X, T, B, f) {
     var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
@@ -50798,7 +50848,7 @@
   }
   function rhythmInfo() {
     var r = rhythmRecord();
-    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>The history is her EKG strip</b>, on EKG paper: one large square is a quarter, with that quarter’s velocity written under it, a year to a screen, scrolling sideways through the period you choose (the bar under it shows where you are). The beats are her rate, like beats per minute: ten beats for every turnover of a dollar, so the gap between two beats is a year divided by ten times her velocity. At 1.42× a year she beats 14.2 times a year; at the pre-2008 1.86× she beat 18.6. When velocity changes, the gaps change with it, and how evenly they change is her rhythm: in 2020 Q2 velocity fell 19%, so the gaps there are a quarter longer. The height of a beat carries nothing.</p>';
+    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>The history is her EKG strip</b>, on EKG paper: one large square is a quarter, with that quarter’s velocity written under it and the strip riding at that velocity on the scale at the side, a year to a screen, scrolling sideways through the period you choose (the bar under it shows where you are). The beats are her rate, like beats per minute: ten beats for every turnover of a dollar, so the gap between two beats is a year divided by ten times her velocity. At 1.42× a year she beats 14.2 times a year; at the pre-2008 1.86× she beat 18.6. When velocity changes, the gaps change with it, and how evenly they change is her rhythm: in 2020 Q2 velocity fell 19%, so the gaps there are a quarter longer.</p>';
   }
   var CURVE_KEY = {
     "3m": "3M",

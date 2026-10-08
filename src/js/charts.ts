@@ -95,7 +95,7 @@ export function histFrame(Wpx?: number | null): HistFrame {
   return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
            T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
 }
-function yLabel(x: number | string, text: string | number, y: number | string, anchor: string){
+export function yLabel(x: number | string, text: string | number, y: number | string, anchor: string){
   return '<text class="bt-yl" x="' + x + '" y="' + y + '" text-anchor="' + anchor + '">' + text + '</text>';
 }
 export function xLabel(x: number | string, text: string | number, y: number | string){
