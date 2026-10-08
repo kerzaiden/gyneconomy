@@ -366,7 +366,7 @@ function statsHome(i: number){
     statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
 }
 function insightSec(k: string, ls: Lab[]){
-  return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Elements" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b>', countTag(ls.length)));
+  return scoreTile("button", " stat-row insight-row cat-" + k, ' type="button" data-open="' + IND + '" data-title="Elements" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b>', countTag(ls.length)));
 }
 function catName(k: string){ return markName(CAT_MARK[k], catTitle(k)); }
 function markName(mark: () => string, name: string){ return '<span class="lab-mark">' + mark() + '</span>' + name; }
