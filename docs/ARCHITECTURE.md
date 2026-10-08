@@ -374,7 +374,7 @@ the manifest's; now each module says what it imports.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
-  `data` (the figures, their constants and sources), `activity` (the growth gap, nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (margin debt and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
+  `data` (the figures, their constants and sources), `activity` (the growth gap, nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (consumer credit, margin debt, the saving rate, debt payments and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers),
   `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
   (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
@@ -394,8 +394,8 @@ The conversion was proved by the snapshot (every state identical) and the browse
 to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio (labels; the panels keep their keys `chart` and `analysis`. Cycle Statistics (Cycle analysis until 0.6.8) took Search's place in 0.6.1 and is labelled Analysis, and the cycle list is labelled Herstory; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Economic Season · Market) · Activity (Labor · Output) · Mood (Valuations · Sentiment) ·
-Desire (Demand · Risk) · Circulation (Pressure · Money) · Stress (Credit · Debt); six since 0.9.11, when Activity (key `activity`) left Weather; four categories since 0.9.3, when Debt left Circulation for its own category, Stress (key `stress`), which Credit joined in 0.9.4; three in 0.9.0, when the Activity category (key `energy`) became Weather's subcategory Activity. Named Weather, never
-Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
+Desire (Demand · Risk) · Circulation (Pressure · Money · Credit) · Stress (Households · Government); Credit moved to Circulation and Debt became Households and Government in 0.9.21; six since 0.9.11, when Activity (key `activity`) left Weather; four categories since 0.9.3, when Debt left Circulation for its own category, Stress (key `stress`), which Credit joined in 0.9.4; three in 0.9.0, when the Activity category (key `energy`) became Weather's subcategory Activity. Named Weather, never
+Season; Volatility, never Fear or Sentiment (V663); Debt payments, never Debt service.
 
 Rules that shape the pages:
 
@@ -420,7 +420,7 @@ Rules that shape the pages:
   read by the category sheets, the past cycles, the Diagnosis and Cycle analysis.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
   card (Valuations: Shiller CAPE · Buffett indicator; Debt: Margin debt · Federal debt · Federal interest payments
-  · Federal budget · Households · Delinquencies). The split pages are
+  · Federal budget · Saving rate · Debt payments · Delinquencies). The split pages are
   built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, declared by
   `defineSplits` as readings), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
@@ -440,8 +440,7 @@ Rules that shape the pages:
 - **No lab-style range rows (V661, Keren: "remove test result components from the app").** The rows that
   read like a blood test under each history (name, range bar, verdict: `panelRow`, `panelBar`, the sign
   page's `meterHtml` bar, `seatBandReading`'s reading box) are gone. What they carried as notes lives on
-  in the chart's (i) menu: `histNote(head, info)` registers it (Households' note is the bill and the cushion
-  together). A reading without a history (Productivity growth until its series lands)
+  in the chart's (i) menu: `histNote(head, info)` registers it. A reading without a history (Productivity growth until its series lands)
   keeps its note behind **More details** (`ind.info`). The sourced bands stay on the charts as their lines.
 - **The activity readings (V661; ungrouped since V688):** Unemployment rate (the Activity page; its roster name renames it on
   screen while `bodyTerm` stays the reading's term), and Productivity growth, each a reading
@@ -453,8 +452,8 @@ Rules that shape the pages:
   icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
   the color." `mountReadings` marks each reading's page with
   its category class, so the page head disc and the history head take `--cat`. Group rows keep a mark
-  of their own (`GROUP_MARK`: Debt the bolt; Valuations its first member's).
-  The two Treasury spreads (one page, Treasury spreads) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
+  of their own (`SUB_MARK`).
+  The two Treasury spreads stay one page, Treasury spreads (Keren, V658: they read as one).
 - **Analysis shows every cycle as one `.era-row`** (V631), opening the cycle's page.
   Don't split it into list + overview.
 - **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
@@ -870,8 +869,7 @@ scrollbars, so the rig must include a scrollbar run.
 ## Charts
 
 **Every chart is bars.** The test for a new one: can it stand on zero? If not, find the midline it hangs
-from (Pulse hangs from the pre-2008 mean); **never truncate the axis under a column.** Households draws
-paired columns, honest only because its two series are shares of the same income. **Every chart is
+from (Pulse hangs from the pre-2008 mean); **never truncate the axis under a column.** **Every chart is
 width-aware** and measures its host. Temperature's columns are binned by the reading, not by rank, so the
 same CPI is the same colour in any cycle. `unempHistoryChart` copies `cpiHistoryChart` as a **separate
 function on purpose**: folding two subjects into one function behind flags is how a component stops
@@ -1054,8 +1052,8 @@ by its own picture, by cycle = the average never the total.
 ## Wording
 
 Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
-or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Debt is the
-group of Margin debt, Federal debt, Federal interest payments, Federal budget, Households and Delinquencies (0.9.0; Stress from V688, Economic power before); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
+or "Sentiment"; Debt payments, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Stress is
+Households (Saving rate, Debt payments, Margin debt, Delinquencies) and Government (Federal debt, Federal interest payments, Federal budget) (0.9.21; Stress from V688, Economic power before); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.
