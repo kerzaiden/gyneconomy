@@ -30,7 +30,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Stress holds two subcategories, Credit and Debt, and its mark is the lightning bolt.** Keren: "stress should have its own
   category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3); "Under stress category, put credit
   and debt" (0.9.4). Desire left Mood to be its own category, after Mood, with two subcategories, Demand (Discretionary
-  spending, Retail sales) and Risk (Equity risk premium). Keren: "desire should be its own category";
+  spending, Retail sales) and Risk (Equity risk premium, Concentration risk). Keren: "desire should be its own category";
   "the subcategories … would be risk and demand" (0.9.8). Its mark is the flame and its colour the red of `--bleed-mid`;
   Demand wears a shopping bag and Risk a die: Claude's picks, for Keren to change.
   Keren: "we don't need a category named activity. I think it's a subcategory under weather … economy, market, work", then "instead of work, write activity"
@@ -687,7 +687,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium); Circulation: Pressure (Federal funds rate,
+  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium, Concentration risk); Circulation: Pressure (Federal funds rate,
   US 10-year Treasury), Money (Pulse, Volume); Stress: Credit (Credit gap, Margin debt, Lending standards) and Debt. There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
@@ -911,7 +911,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Import once": the quarter ends since 2019 Q3 are SPY's SEC N-PORT filings, downloaded once from her own computer
   (the SEC refuses GitHub's servers and the cloud allowlist) and kept in `series.json` by `tools/import-nport.js`;
   from then on the Backfill reads State Street's daily SPY holdings file and keeps its latest figure for each quarter
-  (`topTenRecent`). Keren asked whether the record could reach before 2019 and chose to fold it into 0.9.10: SPY's
+  (`topTenRecent`). **Every point in the history is a quarter's end** (Keren, 0.9.11: "let's do quarter end figures"): a Backfill run on
+  the first day of each quarter reads the file as of the last trading day of the one just closed, so a State Street quarter
+  stands beside the SEC's quarter ends as their equal; the quarter still open is today's figure on the card and joins
+  the history once it closes. A quarter the SEC has filed and State Street has not, such as 2026 Q3, waits for the
+  next N-PORT import. Keren asked whether the record could reach before 2019 and chose to fold it into 0.9.10: SPY's
   annual reports (Form N-30D, yearly from 1995, twice a year from 2010) carry the full schedule of investments, read as
   each holding's value over net assets; they agree with N-PORT to the hundredth in both quarters where the two meet
   (2019 Q3, 2020 Q1). The quarters between reports have no reading and are drawn as gaps, never filled in. Each year

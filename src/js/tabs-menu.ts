@@ -155,12 +155,12 @@ function wireMenu(){
   var built = false;
   var groups: SourceGroup[] = [
     ["Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/],
-    ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
+    ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|ycfaq|bostonfed/],
     ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/],
     ["Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/],
     ["Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/],
     ["Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|sec\.gov|ssga\.com|fortune\.com|berkshirehathaway/],
-    ["Credit & delinquencies", /bis\.org|finra\.org|releases\/chargeoff|DRALACBS|sloos|DRTSCILM|feds\/2012\/201224/], ["Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/]
+    ["Credit & delinquencies", /bis\.org|finra\.org|releases\/chargeoff|DRALACBS|sloos|DRTSCILM|morgan_credit_cycle|feds\/2012\/201224/], ["Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/]
   ];
   function buildSources(){
     var src = sourceIndex, seen: Record<string, boolean> = {}, items: Src[] = [];

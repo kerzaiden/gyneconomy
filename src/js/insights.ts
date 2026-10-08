@@ -32,7 +32,7 @@ function insightCirculation(){
   var f1 = function(v: number){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
   var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' +
     'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
-    'resistance that flow meets, and the Federal funds rate is the signal that sets all three. Credit is the money lent into the flow; what it leaves behind, Debt, is read under Stress.</p>';
+    'resistance that flow meets, and the Federal funds rate is the signal that sets all three. The money lent into the flow and what it leaves owing are read under Stress.</p>';
   var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " +
     f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " +
     (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
@@ -177,5 +177,8 @@ function storyText(s: Story, open: boolean | undefined){
   return storyBeats(s, open) + " Most of it she spent in " +
     s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
 }
-var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood };
+function insightStress(){
+  return lede("Credit is the money lent into the flow, and debt is what it leaves owing. Credit’s readings lead the cycle; Debt’s lag it or move slowly, by design. In the body, stress that never lifts spends the reserve until fatigue is what remains.");
+}
+var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood, stress:insightStress };
 export function catInsight(key: string){ return INSIGHT[key] ? INSIGHT[key]() : ""; }
