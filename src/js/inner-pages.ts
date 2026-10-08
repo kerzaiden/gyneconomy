@@ -89,7 +89,7 @@ function registerTempGdpPages(){
     var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
     headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
     put("gdp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
-                { rising:"expanding", falling:"contracting" }));
+                { rising:"accelerating", falling:"slowing" }));
   };
 
 }

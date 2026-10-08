@@ -34,7 +34,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   subcategory names, the factory mark on Output and the olive are Claude's picks. Weather keeps what the season and the
   market are read from: Economic Season (Temperature, Growth gap) and Market. Real GDP growth moved to Output and
   Economic Season shows the Growth gap instead, the figure the season actually reads, headed "GDP Growth versus Potential" (Keren); Keren: "are we really looking at
-  pure growth when we're looking at the economic season?", then chose "Move, add gap" (0.9.11). Stress keeps its name.
+  pure growth when we're looking at the economic season?", then chose "Move, add gap" (0.9.11). Only the Growth gap says
+  expansion or contraction; GDP growth reads its own sign against zero, Growing or Shrinking, and its trend accelerating or slowing,
+  like Nonfarm payrolls and Retail sales (Claude, 0.9.13: it had kept the season's word and read "Contraction" at +2.1%). Stress keeps its name.
   Stress holds two subcategories, Credit and Debt, and its mark is the lightning bolt.** Keren: "stress should have its own
   category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3); "Under stress category, put credit
   and debt" (0.9.4). Desire left Mood to be its own category, after Mood, with two subcategories, Demand (Discretionary

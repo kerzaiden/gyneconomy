@@ -1,6 +1,6 @@
 import { curveAt, dsrNow, fedFundsRange, fileRow, now, policyDirection, savNow } from "./data.ts";
 import { nowModel } from "./model.ts";
-import { DATED_UNIT, growthShownCap, householdsNow, volatilityTag } from "./readings.ts";
+import { DATED_UNIT, gdpWord, householdsNow, volatilityTag } from "./readings.ts";
 import { gdpFigure, needInd, tempWord } from "./render-core.ts";
 import { meterWord, splitRow } from "./indicators.ts";
 
@@ -14,7 +14,7 @@ export function eraFig(today: string){
 type Face = { text: string; unit: string; word: string };
 var OWN_FACE: Record<string, () => [string, string]> = {
   "sheet-metric-temp": function(){ return [needInd("sheet-metric-temp").metric, tempWord(nowModel.reading)]; },
-  "sheet-metric-gdp": function(){ return [gdpFigure(nowModel.reading), growthShownCap(nowModel.reading)]; },
+  "sheet-metric-gdp": function(){ return [gdpFigure(nowModel.reading), gdpWord(nowModel.reading)]; },
   "sheet-metric-valuation": function(){ return [fileRow("cape").flagValue, (now.valuation.tag || { text:"" }).text]; },
   "sheet-metric-households": function(){ return [dsrNow.toFixed(1) + "/" + savNow.toFixed(1), householdsNow.word]; },
   "sheet-sign-hormones": function(){ return [fedFundsRange(), policyDirection()]; },

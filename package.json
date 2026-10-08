@@ -1,7 +1,7 @@
 {
   "name": "gyneconomy",
-  "version": "0.9.11",
-  "build": 782,
+  "version": "0.9.13",
+  "build": 784,
   "private": true,
   "description": "Gyneconomy — a single-file reading companion to the book Mrs. Market.",
   "scripts": {

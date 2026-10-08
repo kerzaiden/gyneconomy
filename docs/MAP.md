@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,102 lines** in 38 files, about 616 KB, roughly **175 thousand tokens**. No session can
+The source is **9,103 lines** in 38 files, about 616 KB, roughly **175 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `42d6571` on 2026-10-08.
+Generated from commit `544b813` on 2026-10-08.
 
 ## The page
 
@@ -36,7 +36,7 @@ Counts: **34** modules, **725** top-level functions, **123** top-level vars, **3
 | `js/credit.ts` | 134 | 11 | `activity`, `charts`, `concentration`, `format`, `history-fred` |
 | `js/model.ts` | 381 | 56 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
-| `js/readings.ts` | 802 | 69 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
+| `js/readings.ts` | 803 | 69 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 149 | 5 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 500 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 417 | 10 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
@@ -80,8 +80,8 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 6 | `bootCredit` | `js/credit.ts:126`–133 |
 | 7 | `bootModel` | `js/model.ts:356`–380 |
 | 8 | `bootHistory` | `js/history.ts:452`–475 |
-| 9 | `bootReadings` | `js/readings.ts:625`–693 |
-| 10 | `bootReadingRegistry` | `js/readings.ts:736`–801 |
+| 9 | `bootReadings` | `js/readings.ts:626`–694 |
+| 10 | `bootReadingRegistry` | `js/readings.ts:737`–802 |
 | 11 | `bootRoster` | `js/roster.ts:136`–148 |
 | 12 | `bootRenderCore` | `js/render-core.ts:490`–499 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:401`–416 |
@@ -460,80 +460,80 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 24 | `productivityWord` | `function productivityWord(` |
-| 35 | `confidenceWord` | `function confidenceWord(` |
-| 41 | `desireWord` | `function desireWord(` |
-| 47 | `deficitBlock` · export | `function deficitBlock(` |
-| 109 | `deriveVolumeTag` | `function deriveVolumeTag(` |
-| 113 | `meterFlagged` · export | `function meterFlagged(` |
-| 117 | `volumeInfoHtml` | `function volumeInfoHtml(` |
-| 131 | `pulseInfoHtml` | `function pulseInfoHtml(` |
-| 144 | `confidenceInfoHtml` | `function confidenceInfoHtml(` |
-| 156 | `desireInfoHtml` | `function desireInfoHtml(` |
-| 167 | `premiumInfoHtml` | `function premiumInfoHtml(` |
-| 179 | `productivityInfoHtml` | `function productivityInfoHtml(` |
-| 193 | `activityInfoHtml` | `function activityInfoHtml(` |
-| 212 | `bandMonths` | `function bandMonths(` |
-| 215 | `temperatureInfoHtml` | `function temperatureInfoHtml(` |
-| 245 | `volumeBlock` | `function volumeBlock(` |
-| 255 | `velocityRecordBlock` | `function velocityRecordBlock(` |
-| 265 | `volumeVerdict` · export | `function volumeVerdict(` |
-| 272 | `unempState` · export | `function unempState(` |
-| 277 | `sahmNow` | `function sahmNow(` |
-| 278 | `potentialSentence` | `function potentialSentence(` |
-| 286 | `growthInfoHtml` · export | `function growthInfoHtml(` |
-| 306 | `velocityVerdict` | `function velocityVerdict(` |
-| 314 | `laborWord` · export | `function laborWord(` |
-| 317 | `temperatureWord` · export | `function temperatureWord(` |
-| 322 | `deriveLaggingTags` | `function deriveLaggingTags(` |
-| 328 | `derivePulseTag` | `function derivePulseTag(` |
-| 363 | `volatilityTag` · export | `function volatilityTag(` |
-| 369 | `fearCurve` · export | `function fearCurve(` |
-| 374 | `curveVerdict` · export | `function curveVerdict(` |
-| 379 | `valuationVerdict` · export | `function valuationVerdict(` |
-| 387 | `tempCaptionFull` · export | `var tempCaptionFull =` |
-| 388 | `PRESSURE_ZONES` | `var PRESSURE_ZONES =` |
-| 392 | `pressureZone` · export | `function pressureZone(` |
-| 398 | `HZN_BACK` | `var HZN_BACK =` |
-| 399 | `hznLast` | `function hznLast(` |
-| 400 | `hznNeed` | `function hznNeed(` |
-| 401 | `hznDelta` | `function hznDelta(` |
-| 402 | `hznRecord` | `function hznRecord(` |
-| 406 | `hznBack` | `function hznBack(` |
-| 407 | `horizonWord` | `function horizonWord(` |
-| 412 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
-| 433 | `pulseBlock` | `function pulseBlock(` |
-| 447 | `householdsWord` | `function householdsWord(` |
-| 454 | `dsrInfoHtml` · export | `function dsrInfoHtml(` |
-| 471 | `savInfoHtml` · export | `function savInfoHtml(` |
-| 488 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
-| 502 | `marketWord` | `function marketWord(` |
-| 506 | `marketCol` | `function marketCol(` |
-| 507 | `marketInfoHtml` | `function marketInfoHtml(` |
-| 516 | `rowReadings` · export | `function rowReadings(` |
-| 517 | `indOf` · export | `function indOf(` |
-| 518 | `policyFacts` | `function policyFacts(` |
-| 525 | `policyFactRows` · export | `function policyFactRows(` |
-| 528 | `growthShownCap` · export | `function growthShownCap(` |
-| 529 | `phaseClass` · export | `function phaseClass(` |
-| 530 | `activityStackHtml` | `function activityStackHtml(` |
-| 540 | `seatTemperature` | `function seatTemperature(` |
-| 548 | `DATED_UNIT` · export | `var DATED_UNIT =` |
-| 553 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
+| 25 | `productivityWord` | `function productivityWord(` |
+| 36 | `confidenceWord` | `function confidenceWord(` |
+| 42 | `desireWord` | `function desireWord(` |
+| 48 | `deficitBlock` · export | `function deficitBlock(` |
+| 110 | `deriveVolumeTag` | `function deriveVolumeTag(` |
+| 114 | `meterFlagged` · export | `function meterFlagged(` |
+| 118 | `volumeInfoHtml` | `function volumeInfoHtml(` |
+| 132 | `pulseInfoHtml` | `function pulseInfoHtml(` |
+| 145 | `confidenceInfoHtml` | `function confidenceInfoHtml(` |
+| 157 | `desireInfoHtml` | `function desireInfoHtml(` |
+| 168 | `premiumInfoHtml` | `function premiumInfoHtml(` |
+| 180 | `productivityInfoHtml` | `function productivityInfoHtml(` |
+| 194 | `activityInfoHtml` | `function activityInfoHtml(` |
+| 213 | `bandMonths` | `function bandMonths(` |
+| 216 | `temperatureInfoHtml` | `function temperatureInfoHtml(` |
+| 246 | `volumeBlock` | `function volumeBlock(` |
+| 256 | `velocityRecordBlock` | `function velocityRecordBlock(` |
+| 266 | `volumeVerdict` · export | `function volumeVerdict(` |
+| 273 | `unempState` · export | `function unempState(` |
+| 278 | `sahmNow` | `function sahmNow(` |
+| 279 | `potentialSentence` | `function potentialSentence(` |
+| 287 | `growthInfoHtml` · export | `function growthInfoHtml(` |
+| 307 | `velocityVerdict` | `function velocityVerdict(` |
+| 315 | `laborWord` · export | `function laborWord(` |
+| 318 | `temperatureWord` · export | `function temperatureWord(` |
+| 323 | `deriveLaggingTags` | `function deriveLaggingTags(` |
+| 329 | `derivePulseTag` | `function derivePulseTag(` |
+| 364 | `volatilityTag` · export | `function volatilityTag(` |
+| 370 | `fearCurve` · export | `function fearCurve(` |
+| 375 | `curveVerdict` · export | `function curveVerdict(` |
+| 380 | `valuationVerdict` · export | `function valuationVerdict(` |
+| 388 | `tempCaptionFull` · export | `var tempCaptionFull =` |
+| 389 | `PRESSURE_ZONES` | `var PRESSURE_ZONES =` |
+| 393 | `pressureZone` · export | `function pressureZone(` |
+| 399 | `HZN_BACK` | `var HZN_BACK =` |
+| 400 | `hznLast` | `function hznLast(` |
+| 401 | `hznNeed` | `function hznNeed(` |
+| 402 | `hznDelta` | `function hznDelta(` |
+| 403 | `hznRecord` | `function hznRecord(` |
+| 407 | `hznBack` | `function hznBack(` |
+| 408 | `horizonWord` | `function horizonWord(` |
+| 413 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
+| 434 | `pulseBlock` | `function pulseBlock(` |
+| 448 | `householdsWord` | `function householdsWord(` |
+| 455 | `dsrInfoHtml` · export | `function dsrInfoHtml(` |
+| 472 | `savInfoHtml` · export | `function savInfoHtml(` |
+| 489 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
+| 503 | `marketWord` | `function marketWord(` |
+| 507 | `marketCol` | `function marketCol(` |
+| 508 | `marketInfoHtml` | `function marketInfoHtml(` |
+| 517 | `rowReadings` · export | `function rowReadings(` |
+| 518 | `indOf` · export | `function indOf(` |
+| 519 | `policyFacts` | `function policyFacts(` |
+| 526 | `policyFactRows` · export | `function policyFactRows(` |
+| 529 | `gdpWord` · export | `function gdpWord(` |
+| 530 | `phaseClass` · export | `function phaseClass(` |
+| 531 | `activityStackHtml` | `function activityStackHtml(` |
+| 541 | `seatTemperature` | `function seatTemperature(` |
+| 549 | `DATED_UNIT` · export | `var DATED_UNIT =` |
+| 554 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
 
 #### Temperature's notes
 
 | Line | Name | Anchor |
 |---|---|---|
-| 694 | `isNum` | `function isNum(` |
-| 696 | `rowId` | `function rowId(` |
-| 697 | `rowLike` | `function rowLike(` |
-| 710 | `rowsOk` | `function rowsOk(` |
-| 713 | `deriveHorizon` | `function deriveHorizon(` |
-| 726 | `fieldsKept` | `function fieldsKept(` |
-| 730 | `vixAsOf` | `function vixAsOf(` |
-| 731 | `coincidentAsOf` | `function coincidentAsOf(` |
-| 732 | `periodIso` | `function periodIso(` |
+| 695 | `isNum` | `function isNum(` |
+| 697 | `rowId` | `function rowId(` |
+| 698 | `rowLike` | `function rowLike(` |
+| 711 | `rowsOk` | `function rowsOk(` |
+| 714 | `deriveHorizon` | `function deriveHorizon(` |
+| 727 | `fieldsKept` | `function fieldsKept(` |
+| 731 | `vixAsOf` | `function vixAsOf(` |
+| 732 | `coincidentAsOf` | `function coincidentAsOf(` |
+| 733 | `periodIso` | `function periodIso(` |
 
 ### `js/roster.ts`
 

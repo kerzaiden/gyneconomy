@@ -261,9 +261,17 @@ test('the policy facts say how the latest move sits in the run of moves', async 
   assert.doesNotMatch(document.getElementById('policy-facts').textContent, /since/);
 });
 
-test('Growth’s word and Weather’s opening line follow the model', () => {
+test('GDP growth’s word reads its own sign, and Weather’s opening line follows the model', () => {
   const w = growthWord(nowModel.reading);
-  assert.equal(word('sheet-metric-gdp').toLowerCase(), nowModel.reading.regime);
+  assert.equal(word('sheet-metric-gdp'), nowModel.reading.gdpLatest.v < 0 ? 'Shrinking' : 'Growing');
+  const g = nowModel.reading.gdpLatest, regime = nowModel.reading.regime;
+  nowModel.reading.gdpLatest = { q: g.q, v: -0.4 };
+  assert.equal(word('sheet-metric-gdp'), 'Shrinking');
+  nowModel.reading.gdpLatest = { q: g.q, v: 2.1 };
+  nowModel.reading.regime = 'contraction';
+  assert.equal(word('sheet-metric-gdp'), 'Growing');
+  nowModel.reading.gdpLatest = g;
+  nowModel.reading.regime = regime;
   assert.equal(w, nowModel.reading.regime === 'contraction' ? 'contracting' : 'expanding');
   assert.match(cycleNowNote(nowModel), new RegExp({ contracting: 'contracting', expanding: 'expanding' }[w]));
 });
