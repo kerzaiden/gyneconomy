@@ -1,4 +1,4 @@
-import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qPretty, quartile, srcBlock, tagFor, titleCase } from "./format.ts";
+import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLabel, MONTHS_SHORT, qPretty, quartile, srcBlock, tagFor, titleCase } from "./format.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, PULSE_WINDOW, pulseLane } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
@@ -410,17 +410,14 @@ export function horizonInfoHtml(pick: string, detail: string){
       'but no source says where \u201cjust above\u201d ends, so the page draws no zone for it.</p>' +
     detail.replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
 }
-export function pulseBlock(rate: number, ref: number, ind: Indicator){
+export function pulseCard(rate: number, ref: number, ind: Indicator){
   var slower = Math.round((1 - rate / ref) * 100);
-  var title = '<div class="spread-history-head"><h4>' + titleCase(ind.econTerm) + '</h4>' +
-    '<span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + '</span></div>';
-  return '<div class="page-chart pulsebox"><div class="pulsetrace">' + title +
-    pulseLane("Now", rate.toFixed(2) + "× a year", rate, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) +
-    pulseLane("Her pre-2008 pace", ref.toFixed(2) + "× a year", ref, "solo past", undefined, undefined, "past") +
+  return hiCard(ind.econTerm, tagFor(ind).state || "", tagFor(ind).text + ": she turns her money over about " + slower + "% less often than she did across 1959\u20132007.",
+    '<div class="pulsetrace">' +
+    pulseLane("Now", rate.toFixed(2) + "\u00d7 a year", rate, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) +
+    pulseLane("Her pre-2008 pace", ref.toFixed(2) + "\u00d7 a year", ref, "solo past", undefined, undefined, "past") +
     '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW +
-    ' years — so the gap you can see is the gap in the number. The top trace beats at each quarter\u2019s own pace, so its spacing is her rhythm: even when steady, uneven when not. She turns her money over about ' + slower +
-    '% less often than she did across 1959–2007.</p>' +
-  '</div></div>';
+    ' years, so the gap you can see is the gap in the number. The top trace beats at each quarter\u2019s own pace, so its spacing is her rhythm: even when steady, uneven when not.</p></div>');
 }
 export function volatilityDetailHtml(){
   var m = now.vixRow.meter;

@@ -16,8 +16,6 @@ import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/reading.ts';
 import { rhythmRecord, RHYTHM_WINDOW } from '../../src/js/rhythm.ts';
-import { velocityHistoryChart } from '../../src/js/history-charts.ts';
-import { histFrame } from '../../src/js/charts.ts';
 import { catInsight } from '../../src/js/insights.ts';
 import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 
@@ -397,12 +395,4 @@ test('the Pulse page reads its rhythm: two years of quarterly changes, cut at th
   assert.match(page, /Rhythm/);
   assert.match(page, /Steady: in the two years to Q2 2026 velocity’s quarterly changes spread by 0\.30 points, the steadiest of the 262/);
   assert.match(page, /1981–1984, 2008–2010 and 2020–2022/);
-  const cycle = velocityHistoryChart(360, 240, 256), frame = histFrame(360);
-  assert.equal((cycle.match(/class="pv-hit hcol"/g) || []).length, 16);
-  assert.equal((cycle.match(/class="pt-now pv-trace"/g) || []).length, 1);
-  assert.equal(+/viewBox="0 0 (\d+)/.exec(cycle)[1], Math.round(frame.W / 3.6 * 16));
-  assert.equal((cycle.match(/<path class="ekg-col"/g) || []).length, 16);
-  assert.deepEqual([...cycle.matchAll(/class="bt-xl"[^>]*>Q1 (\d{4})</g)].map(m => +m[1]), [2019, 2020, 2021, 2022]);
-  sheetRenderers['sheet-sign-pulse'](360);
-  assert.ok(document.querySelector('#sheet-sign-pulse .ekg-strip > svg.vh-svg'));
 });

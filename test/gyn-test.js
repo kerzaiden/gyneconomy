@@ -140,7 +140,7 @@ async function openPage(p, url, sheet) {
         tall: svg ? Math.round(svg.getBoundingClientRect().height) : 0, title: btn ? btn.closest('.band-head').querySelector('.bh-title').textContent : '',
         ctlOutside: (() => { const bar = mp.querySelector('.hist-bar');
           return !!bar && !bar.closest('.page-chart'); })(),
-        strip: q('.ekg-col'), frame: q('.bt-frame'), grid: q('.bt-grid'), vgrid: q('.bt-vgrid'), yl: q('.bt-yl'), xl: q('.bt-xl'),
+        frame: q('.bt-frame'), grid: q('.bt-grid'), vgrid: q('.bt-vgrid'), yl: q('.bt-yl'), xl: q('.bt-xl'),
         mark: !!(btn && btn.closest('.band-head').querySelector('.bh-mark svg')), chip: !!mp.querySelector('.timing-row'),
         boxes: mp.querySelectorAll('.highlights').length,
         gap: (() => { const bar = mp.querySelector('.hist-bar'), top = document.querySelector('.wrap > .topbar');
@@ -150,16 +150,15 @@ async function openPage(p, url, sheet) {
     const miss = [];
     if (!r.head) miss.push('head'); if (!r.ctl) miss.push('control'); if (!r.trend) miss.push('trend');
     if (!r.headBtn) miss.push('⋯ or (i)'); if (!r.ctlOutside) miss.push('control outside the band');
-    if (!r.strip) { if (!r.frame) miss.push('frame'); if (!r.grid) miss.push('gridlines');
-      if (!r.vgrid) miss.push('vertical rules'); if (!r.yl) miss.push('y labels'); }
-    if (!r.xl) miss.push('x labels');
+    if (!r.frame) miss.push('frame'); if (!r.grid) miss.push('gridlines');
+    if (!r.vgrid) miss.push('vertical rules'); if (!r.yl) miss.push('y labels'); if (!r.xl) miss.push('x labels');
     if (!r.mark) miss.push('the head\u2019s mark'); if (!r.chip) miss.push('the timing chip');
     if (r.boxes > 1) miss.push('a single Insights box (' + r.boxes + ')');
     miss.length ? bad('page ' + label, 'missing ' + miss.join(', ')) : ok('page ' + label, r.title);
     tall[label] = r.tall; gaps[label] = r.gap;
     pills[label] = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle');
-      if (!b) return document.querySelector('#metric-page .trendpill.none') ? 'unavailable' : document.querySelector('#metric-page .pv-trace') ? 'strip' : 'no button';
+      if (!b) return document.querySelector('#metric-page .trendpill.none') ? 'unavailable' : 'no button';
       b.click();
       const box = b.closest('.page-chart'), fit = box && box.querySelector('.fit');
       const on = b.getAttribute('aria-pressed') === 'true' && box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none';
@@ -194,7 +193,7 @@ async function openPage(p, url, sheet) {
     }
   }
   {
-    const lines = Object.keys(pills).filter(k => pills[k] === 'line'), dead = Object.keys(pills).filter(k => !/^(line|unavailable|strip)$/.test(pills[k]));
+    const lines = Object.keys(pills).filter(k => pills[k] === 'line'), dead = Object.keys(pills).filter(k => !/^(line|unavailable)$/.test(pills[k]));
     (lines.length >= 12 && !dead.length)
       ? ok('every trend button draws its line', lines.length + ' lines · unavailable under eight points: ' + Object.keys(pills).filter(k => pills[k] === 'unavailable').join(', '))
       : bad('every trend button draws its line', JSON.stringify(pills));

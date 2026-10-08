@@ -7,7 +7,7 @@ import { drawsPage, metricSheet, sheetRenderers, timingPill } from "./render-cor
 
 // ---- One reading: its figure, its words, its page ----
 export type Face = { text: string; word: string };
-export type History = { chart: (w: number) => string; geom: string; trend: string; wrap?: string; strip?: boolean; sigma?: string | null; paint?: (box: HTMLElement) => void };
+export type History = { chart: (w: number) => string; geom: string; trend: string; wrap?: string; sigma?: string | null; paint?: (box: HTMLElement) => void };
 export type Reading = {
   face: () => [string, string];
   info: () => string;
@@ -30,7 +30,7 @@ export function todayFace(R: RosterRow): Face {
 }
 function historyHtml(R: RosterRow, h: History, W: number){
   var svg = h.chart(W);
-  return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '"' + (h.strip ? ' tabindex="0" role="region" aria-label="EKG strip, scrolls sideways"' : "") + '>' + svg + '</div>' : svg) +
+  return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '">' + svg + '</div>' : svg) +
     h.trend + histTip(R.id + "-tip") + '</div>';
 }
 function drawReading(R: RosterRow, W?: number){

@@ -413,7 +413,7 @@ Rules that shape the pages:
   uses `recordInsight` (or `indicatorInsight`, which takes the band from the meter): "The Latest Reading" says
   where it sits and since when, "Against the Record" how many readings ran higher and how many held the line or
   band. Readings with a story of their own (Valuations, GDP, Temperature, the Fed, Fear, Pressure) keep their
-  cards but go through `highlightsHtml` and `lede` like the rest. Pulse alone adds an aside, its trace.
+  cards but go through `highlightsHtml` and `lede` like the rest. Pulse adds two cards of its own to Insights: its traces and its Rhythm.
 - **Navigation is `NAV` and nothing else** (`NAV.open`, `NAV.panel`, or emit `data-open`). Inner pages are
   pages, not popups; the host moves as live DOM. **Don't invent a second navigation idea.**
 - **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),

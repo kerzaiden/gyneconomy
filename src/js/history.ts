@@ -213,7 +213,6 @@ function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: number){
   var mx = i === 0 ? lo
          : i === g.n - 1 ? hi - w
          : Math.max(lo, Math.min(hi - w, colX - w / 2));
-  mx = Math.max(0, Math.min(el.clientWidth - w, mx));
   el.style.top = plateTop.toFixed(1) + "px";
   if (!plate.__placed) plate.style.transition = "none";
   plate.style.marginLeft = mx.toFixed(1) + "px";
@@ -289,19 +288,6 @@ function histLegend(host: HTMLElement){
     it.t.setAttribute("x", (x + MARK + PAD).toFixed(1));
     x += it.w + GAP;
   });
-}
-function wireStrip(box: HTMLElement){
-  var sc = box.querySelector<HTMLElement>(".ekg-strip");
-  if (!sc) return;
-  var pane = sc;
-  var fit = function(){
-    var g = box.__geom, svg = pane.querySelector("svg"), sw = svg ? svg.getBoundingClientRect().width : 0;
-    if (!g || !sw || !g.n || box.classList.contains("hovering")) return;
-    var i = Math.max(0, Math.min(g.n - 1, Math.round((pane.scrollLeft + pane.clientWidth) * g.W / sw * g.n / (g.W || 1)) - 1));
-    histReadFill(box, g.vals[i], i);
-  };
-  fit();
-  pane.addEventListener("scroll", fit, { passive:true });
 }
 export function refitHistory(box: Element | null, build: (w: number) => string){
   if (!box || !build) return;
@@ -460,7 +446,6 @@ export function attachHistory(host: HTMLElement | null, tipId?: string | null, e
     (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
   host.__geom = g;
   if (tipId) wireHistHover(host, tipId);
-  wireStrip(host);
   return g;
 }
 

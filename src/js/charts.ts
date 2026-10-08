@@ -95,11 +95,8 @@ export function histFrame(Wpx?: number | null): HistFrame {
   return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
            T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
 }
-function yLabel(x: number | string, text: string | number, y: number | string, anchor: string){
-  return '<text class="bt-yl" x="' + x + '" y="' + y + '" text-anchor="' + anchor + '">' + text + '</text>';
-}
-export function xLabel(x: number | string, text: string | number, y: number | string, anchor?: string){
-  return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="' + (anchor || "middle") + '">' + text + '</text>';
+export function xLabel(x: number | string, text: string | number, y: number | string){
+  return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + '</text>';
 }
 export function crossLine(top: number | string, bot: number | string){
   return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
@@ -117,7 +114,7 @@ export function histTip(id: string){ return '<div class="gdp-tooltip mono hist-t
 export function avgRule(x0: number | string, x1: number | string, y: number | string){
   return '<path class="temp-avg" d="M' + x0 + ',' + y + 'H' + x1 + '"/>';
 }
-export function vhOpen(W: number, H: number, frame?: number){ return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '"' + (frame ? ' width="' + W + '" height="' + H + '" data-frame="' + frame + '"' : "") + ' role="img" '; }
+export function vhOpen(W: number, H: number){ return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" '; }
 function autoTicks(o: AxesOpts){
   var lo = o.lo, hi = o.hi; if (lo == null || hi == null) throw new Error("an axis has neither ticks nor a range"); var span = hi - lo;
   var step = o.step || [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100].filter(function(k){
@@ -144,7 +141,8 @@ export function chartAxes(o: AxesOpts){
         (o.base == null || Math.abs(ty - parseFloat(o.base as string)) > 0.5))
       out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + ',' + ty.toFixed(1) + 'L' + fx1.toFixed(1) + ',' + ty.toFixed(1) + '"/>');
     var ly = ty - 5;
-    out.push(yLabel(((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1), o.fmt(v), ly.toFixed(1), "middle"));
+    out.push('<text class="bt-yl" x="' + ((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1) + '" y="' + ly.toFixed(1) +
+             '" text-anchor="middle">' + o.fmt(v) + '</text>');
   });
   if (o.base != null)
     out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + ',' + o.base + 'L' + fx1.toFixed(1) + ',' + o.base + '"/>');
@@ -219,22 +217,21 @@ function refName(t?: string | null){
 }
 export var PULSE_WINDOW = 5;
 var pulseClipN = 0;
-export function beatPath(x0: number, x1: number, base: number | ((x: number) => number), period: number | ((x: number) => number), amp: number | ((x: number) => number), wide?: number){
+function beatPath(x0: number, x1: number, y: number, period: number | ((x: number) => number), amp: number){
   var f = function(n: number){ return n.toFixed(1); };
   var at = function(x: number){ return typeof period === "number" ? period : period(x); };
-  var lvl = function(x: number){ return typeof base === "number" ? base : base(x); };
-  var d = ["M" + f(x0) + "," + f(lvl(x0))], x = x0, p = at(x0);
+  var d = ["M" + f(x0) + "," + f(y)], x = x0, p = at(x0), A = amp;
   while (x < x1 + p){
-    p = at(x); var s = wide ? Math.min(p, wide) : p, y = lvl(x), A = typeof amp === "number" ? amp : amp(x);
-    d.push("L" + f(x + s * 0.08) + "," + f(y));
-    d.push("Q" + f(x + s * 0.15) + "," + f(y - A * 0.24) + " " + f(x + s * 0.22) + "," + f(y));
-    d.push("H" + f(x + s * 0.30));
-    d.push("L" + f(x + s * 0.345) + "," + f(y + A * 0.15));
-    d.push("L" + f(x + s * 0.400) + "," + f(y - A));
-    d.push("L" + f(x + s * 0.455) + "," + f(y + A * 0.34));
-    d.push("L" + f(x + s * 0.500) + "," + f(y));
-    d.push("H" + f(x + s * 0.60));
-    d.push("Q" + f(x + s * 0.71) + "," + f(y - A * 0.36) + " " + f(x + s * 0.82) + "," + f(y));
+    p = at(x);
+    d.push("H" + f(x + p * 0.08));
+    d.push("Q" + f(x + p * 0.15) + "," + f(y - A * 0.24) + " " + f(x + p * 0.22) + "," + f(y));
+    d.push("H" + f(x + p * 0.30));
+    d.push("L" + f(x + p * 0.345) + "," + f(y + A * 0.15));
+    d.push("L" + f(x + p * 0.400) + "," + f(y - A));
+    d.push("L" + f(x + p * 0.455) + "," + f(y + A * 0.34));
+    d.push("L" + f(x + p * 0.500) + "," + f(y));
+    d.push("H" + f(x + p * 0.60));
+    d.push("Q" + f(x + p * 0.71) + "," + f(y - A * 0.36) + " " + f(x + p * 0.82) + "," + f(y));
     x += p;
   }
   return d.join("");

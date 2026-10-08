@@ -1087,22 +1087,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   connected to EKG". Rhythm is the standard deviation of the last eight quarterly changes in M2 velocity; it reads
   Irregular past the 90th percentile of every two-year window from 1959 to 2007 (1.31 points). No convention sets it, so it is
   derived and the (i) says so; the window and the percentile are Claude's. The Now trace beats at each quarter's own
-  velocity across its five years, so its spacing shows the rhythm. The Pulse history is a true EKG strip (Keren: "I want a true EKG
-  and I want the velocity to appear. I don't want to count the amount of beats"): EKG paper, one column per quarter
-  labelled at its foot like Apple Health's ECG ("Q1 2026", "Q2"), a flat line of same-height beats (Keren: "I thought we had a
-  horizontal line that we see changing its amounts of beats per square … Why did you do it like a slope?"; a strip riding at
-  its velocity, and beats as tall as M2 growth, were built and dropped: "we overdid it with the volume axis"). It is its own
-  history type: grey paper, no y-axis, the paper running past the card's right padding to show it scrolls (Keren, from the
-  Apple ECG view: "It just crosses the padding of the page"), and the shared reading plate top right with the vertical line on
-  the quarter touched, never a line underneath (Keren: "like in the history component"). It is a history-component variant:
-  the same height and gap under the title as every history, the paper and its label row closed in one box, beats short. A year to a screen, scrolling sideways from the start of the period chosen
-  (the scroll bar was dropped for the bleed). Keren: "I think the solution is horizontal scroll. I want one history component in this page, with
-  a pulse and a rhythm combined into an EKG style reading. The y-axis will be the Velocity … and also some kind of an
-  indicator in the x-axis that we can scroll". Velocity is the beats-per-minute: ten beats per turnover, the gap
-  between beats a year ÷ (10 × velocity), nothing magnified. Keren: "The rhythm right is the gap between every beat. Right,
-  like BPM" (a 12%-per-point magnification of each quarter's change was built and dropped as off). The reading plate shows the last quarter in view. The rate columns, red bands, per-year strips and the separate
-  heartbeat line under the chart were built and dropped the same day; Keren on the bands: "not understandable,
-  not intuitively". Familiar metrics are a guideline, not a rule: Keren,
+  velocity across its five years, so its spacing shows the rhythm. The Pulse history stays the standard history (velocity columns against
+  the pre-2008 mean), and the pulse container, the Now and pre-2008 traces, is a card in Insights beside Rhythm (Keren:
+  "Let's revert back … the template history component showing velocity of money as it is today with bars … take the money
+  velocity container with the pulse and put it in the insights"). An EKG history (scrolling strip, Holter report, rate
+  columns with red bands, an Apple Health-style ECG variant) was built and dropped; don't re-propose it. Familiar metrics are a guideline, not a rule: Keren,
   "If you think that some KPI would shed light on our Gyneconomy model, then let's think about it." Told Keren, not printed:
   Irregular quarters fall in Spring 4 of 96 times, against Summer 14 of 61, Autumn 15 of 96 and Winter 5 of 9. (0.9.24)
 - **Pulse's verdict is five bands against the 1959–2007 mean, both extremes flagged; the spectrum's ends say
