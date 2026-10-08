@@ -686,7 +686,7 @@
   .pulsetrace .pt-svg.solo{ height:42px; }
   .ekg-strip{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; margin-right:-14px; outline-offset:2px; }
   .ekg-strip::-webkit-scrollbar{ display:none; }
-  .ekg-strip > .vh-svg{ display:block; width:auto; max-width:none; }
+  .ekg-strip > .vh-svg{ width:auto; max-width:none; margin:0; }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
   .pt-head:first-child{ margin-top:0; }

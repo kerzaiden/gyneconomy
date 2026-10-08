@@ -1094,7 +1094,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   its velocity, and beats as tall as M2 growth, were built and dropped: "we overdid it with the volume axis"). It is its own
   history type: grey paper, no y-axis, the paper running past the card's right padding to show it scrolls (Keren, from the
   Apple ECG view: "It just crosses the padding of the page"), and the shared reading plate top right with the vertical line on
-  the quarter touched, never a line underneath (Keren: "like in the history component"). A year to a screen, scrolling sideways from the start of the period chosen
+  the quarter touched, never a line underneath (Keren: "like in the history component"). It is a history-component variant:
+  the same height and gap under the title as every history, the paper and its label row closed in one box, beats short. A year to a screen, scrolling sideways from the start of the period chosen
   (the scroll bar was dropped for the bleed). Keren: "I think the solution is horizontal scroll. I want one history component in this page, with
   a pulse and a rhythm combined into an EKG style reading. The y-axis will be the Velocity … and also some kind of an
   indicator in the x-axis that we can scroll". Velocity is the beats-per-minute: ten beats per turnover, the gap

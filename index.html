@@ -682,7 +682,7 @@
   .pulsetrace .pt-svg.solo{ height:42px; }
   .ekg-strip{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; margin-right:-14px; outline-offset:2px; }
   .ekg-strip::-webkit-scrollbar{ display:none; }
-  .ekg-strip > .vh-svg{ display:block; width:auto; max-width:none; }
+  .ekg-strip > .vh-svg{ width:auto; max-width:none; margin:0; }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
   .pt-head:first-child{ margin-top:0; }
@@ -47229,10 +47229,11 @@
     var F = histFrame(Wpx), H = F.H, col = F.W / 3.6, small = col / 5;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? void 0 : to), n = ser.length, W = col * n;
-    var T = F.T, rows = Math.floor((H - 30 - T) / small), B = T + rows * small, base = T + small * Math.round(rows * .62);
+    var T = AXIS.T, B = H - AXIS.FOOT - 24, base = B - small * Math.round((B - T) / small * .4);
     var f = function(v) {
       return v.toFixed(1);
     }, out = [ ekgPaper(0, W, T, B, col) ];
+    out.push('<rect class="ekg-col" x="0.5" y="' + f(T) + '" width="' + f(W - 1) + '" height="' + f(B + 24 - T) + '"/>');
     var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
     for (var i = 0; i < n; i++) {
       var q = (from + i) % 4, x = col * i;
@@ -47244,7 +47245,7 @@
     publishGeom("velocityHistoryChart", {
       L: col / 2,
       R: W - col / 2,
-      T: T - AXIS.READ,
+      T: T,
       B: B,
       W: W,
       n: n,
@@ -47260,7 +47261,7 @@
         };
       })
     });
-    out.push(pulseTrace(ser, col, base, (base - T) * .78));
+    out.push(pulseTrace(ser, col, base, (B - T) * .22));
     return vhOpen(Math.round(W), H, F.W) + 'aria-label="Velocity of M2 as an EKG strip, every quarter from ' + y0 + " to " + y1 + ", one column a quarter; the gap between beats is a year divided by ten times that quarter’s velocity, against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
   }
   function yearTicks(out, vals, w, X, T, B, f) {

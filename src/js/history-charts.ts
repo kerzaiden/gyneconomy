@@ -96,8 +96,9 @@ export function velocityHistoryChart(Wpx: number, from: number, to?: number | nu
   var F = histFrame(Wpx), H = F.H, col = F.W / 3.6, small = col / 5;
   from = from || 0;
   var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length, W = col * n;
-  var T = F.T, rows = Math.floor((H - 30 - T) / small), B = T + rows * small, base = T + small * Math.round(rows * 0.62);
+  var T = AXIS.T, B = H - AXIS.FOOT - 24, base = B - small * Math.round((B - T) / small * 0.4);
   var f = function(v: number){ return v.toFixed(1); }, out: string[] = [ekgPaper(0, W, T, B, col)];
+  out.push('<rect class="ekg-col" x="0.5" y="' + f(T) + '" width="' + f(W - 1) + '" height="' + f(B + 24 - T) + '"/>');
   var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
   for (var i = 0; i < n; i++){
     var q = (from + i) % 4, x = col * i;
@@ -106,9 +107,9 @@ export function velocityHistoryChart(Wpx: number, from: number, to?: number | nu
     out.push('<rect class="pv-hit hcol" x="' + f(x) + '" y="' + f(T) + '" width="' + f(col) + '" height="' + f(B - T) + '"/>');
   }
   out.push(crossLine(T, B));
-  publishGeom("velocityHistoryChart", { L:col / 2, R:W - col / 2, T:T - AXIS.READ, B:B, W:W, n:n, at:function(d: unknown, i: number){ return qAtIndex(M2V_FROM_YEAR, from + i); },
+  publishGeom("velocityHistoryChart", { L:col / 2, R:W - col / 2, T:T, B:B, W:W, n:n, at:function(d: unknown, i: number){ return qAtIndex(M2V_FROM_YEAR, from + i); },
                    fmt:function(v: number){ return v.toFixed(2) + "\u00d7"; }, vals:ser.map(function(v: number){ return { v:v }; }) });
-  out.push(pulseTrace(ser, col, base, (base - T) * 0.78));
+  out.push(pulseTrace(ser, col, base, (B - T) * 0.22));
   return vhOpen(Math.round(W), H, F.W) +
     'aria-label="Velocity of M2 as an EKG strip, every quarter from ' + y0 + ' to ' + y1 +
     ', one column a quarter; the gap between beats is a year divided by ten times that quarter\u2019s velocity, against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times">' +

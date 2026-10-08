@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,832 lines** in 40 files, about 607 KB, roughly **172 thousand tokens**. No session can
+The source is **8,833 lines** in 40 files, about 607 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `3e15fbf` on 2026-10-08.
+Generated from commit `b675485` on 2026-10-08.
 
 ## The page
 
@@ -55,7 +55,7 @@ Counts: **36** modules, **752** top-level functions, **119** top-level vars, **3
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 350 | 15 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
+| `js/history-charts.ts` | 351 | 15 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 31 | 14 | — |
 | `js/indicators.ts` | 195 | 32 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -1173,15 +1173,15 @@ falls in. **export** marks a name other modules import.
 | 84 | `pulseTrace` | `function pulseTrace(` |
 | 89 | `ekgPaper` | `function ekgPaper(` |
 | 95 | `velocityHistoryChart` · export | `function velocityHistoryChart(` |
-| 117 | `yearTicks` | `function yearTicks(` |
-| 132 | `unempHistoryChart` · export | `function unempHistoryChart(` |
-| 170 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 212 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 250 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 297 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 338 | `m2Step` | `function m2Step(` |
-| 342 | `heatEdges` | `function heatEdges(` |
-| 346 | `heatStep` | `function heatStep(` |
+| 118 | `yearTicks` | `function yearTicks(` |
+| 133 | `unempHistoryChart` · export | `function unempHistoryChart(` |
+| 171 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
+| 213 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 251 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 298 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 339 | `m2Step` | `function m2Step(` |
+| 343 | `heatEdges` | `function heatEdges(` |
+| 347 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 

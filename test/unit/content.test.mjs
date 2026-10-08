@@ -401,7 +401,7 @@ test('the Pulse page reads its rhythm: two years of quarterly changes, cut at th
   assert.equal((cycle.match(/class="pv-hit hcol"/g) || []).length, 16);
   assert.equal((cycle.match(/class="pt-now pv-trace"/g) || []).length, 1);
   assert.equal(+/viewBox="0 0 (\d+)/.exec(cycle)[1], Math.round(frame.W / 3.6 * 16));
-  assert.equal((cycle.match(/class="ekg-col"/g) || []).length, 16);
+  assert.equal((cycle.match(/<path class="ekg-col"/g) || []).length, 16);
   assert.deepEqual([...cycle.matchAll(/class="bt-xl"[^>]*>Q1 (\d{4})</g)].map(m => +m[1]), [2019, 2020, 2021, 2022]);
   sheetRenderers['sheet-sign-pulse'](360);
   assert.ok(document.querySelector('#sheet-sign-pulse .ekg-strip > svg.vh-svg'));
