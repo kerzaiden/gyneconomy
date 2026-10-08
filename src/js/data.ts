@@ -364,7 +364,7 @@ export var dsrHistory = SERIES.dsrHistory;
 export var SAV_FROM_YEAR = 1947;
 export var savHistory = SERIES.savHistory;
 export var topTenQuarterly: QuarterPoint[] = SERIES.topTenQuarterly;
-export var SAV_THIN = pctl(savHistory, 0.05), SAV_LOW = pctl(savHistory, 0.1), SAV_MID = pctl(savHistory, 0.5);
+export var SAV_THIN = pctl(savHistory, 0.05), SAV_LOW = pctl(savHistory, 0.1), SAV_MID = pctl(savHistory, 0.5), SAV_HIGH = pctl(savHistory, 0.9);
 function checkHouseholdHistories(){
   var dHi = Math.max.apply(null, dsrHistory), dLo = Math.min.apply(null, dsrHistory);
   if (dsrHistory.length !== 86 || Math.abs(dHi - 15.846367) > 1e-6 || Math.abs(dLo - 9.051457) > 1e-6)
@@ -373,9 +373,6 @@ function checkHouseholdHistories(){
   if (savHistory.length !== 318 || Math.abs(sHi - 24.4) > 1e-9 || Math.abs(sLo - 1.8) > 1e-9)
     console.warn("savHistory failed its check", savHistory.length, sHi, sLo);
 }
-export var SAV_OFFSET = (DSR_FROM_YEAR - SAV_FROM_YEAR) * 4;
-export var dsrNow = dsrHistory[dsrHistory.length - 1];
-export var savNow = savHistory[savHistory.length - 1];
 export var DSR_MEAN = dsrHistory.reduce(function(a, b){ return a + b; }, 0) / dsrHistory.length;
 export var curveNoteFull = "The 30-day VIX divided by the 3-month VIX \u2014 the SHAPE of expected volatility rather " +
   "than its level. Below 1.00 the curve slopes up, which is its ordinary state: insuring three months costs " +

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,870 lines** in 39 files, about 607 KB, roughly **172 thousand tokens**. No session can
+The source is **8,759 lines** in 39 files, about 599 KB, roughly **170 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `d813ba0` on 2026-10-08.
+Generated from commit `4bd8a23` on 2026-10-08.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `d813ba0` on 2026-10-08.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,199 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,194 | the whole stylesheet, every token and rule |
 | `page-body.html` | 251 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 35 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **35** modules, **744** top-level functions, **121** top-level vars, **369** exported names, **20** boots.
+Counts: **35** modules, **740** top-level functions, **118** top-level vars, **364** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -32,12 +32,12 @@ Counts: **35** modules, **744** top-level functions, **121** top-level vars, **3
 | `js/dom.ts` | 165 | 25 | `format` |
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 44 | 6 | `format`, `history-fred` |
-| `js/data.ts` | 573 | 82 | `format`, `history-fred`, `live` |
-| `js/credit.ts` | 122 | 9 | `activity`, `charts`, `concentration`, `format`, `history-fred` |
+| `js/data.ts` | 570 | 79 | `format`, `history-fred`, `live` |
+| `js/credit.ts` | 138 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
 | `js/model.ts` | 384 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
-| `js/readings.ts` | 784 | 68 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 153 | 4 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
+| `js/readings.ts` | 742 | 65 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
+| `js/roster.ts` | 152 | 4 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 376 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
 | `js/diagnosis.ts` | 88 | 13 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
@@ -55,12 +55,12 @@ Counts: **35** modules, **744** top-level functions, **121** top-level vars, **3
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
-| `js/history-fred.ts` | 31 | 14 | — |
+| `js/history-charts.ts` | 364 | 12 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
+| `js/history-fred.ts` | 30 | 14 | — |
 | `js/indicators.ts` | 195 | 32 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
-| `js/inner-pages.ts` | 264 | 20 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
+| `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/insights.ts` | 185 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
-| `js/marks.ts` | 60 | 27 | — |
+| `js/marks.ts` | 61 | 28 | — |
 | `js/pressure.ts` | 319 | 13 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `reading`, `readings`, `roster` |
 | `js/reading.ts` | 94 | 12 | `charts`, `dom`, `format`, `history`, `render-core`, `roster` |
 | `js/main.ts` | 44 | 0 | `analysis`, `credit`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
@@ -77,13 +77,13 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 2 | `bootDone` | `js/live.ts:198`–200 |
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:36`–43 |
-| 5 | `bootData` | `js/data.ts:521`–572 |
-| 6 | `bootCredit` | `js/credit.ts:114`–121 |
+| 5 | `bootData` | `js/data.ts:518`–569 |
+| 6 | `bootCredit` | `js/credit.ts:130`–137 |
 | 7 | `bootModel` | `js/model.ts:359`–383 |
 | 8 | `bootHistory` | `js/history.ts:452`–475 |
-| 9 | `bootReadings` | `js/readings.ts:599`–655 |
-| 10 | `bootReadingRegistry` | `js/readings.ts:718`–783 |
-| 11 | `bootRoster` | `js/roster.ts:140`–152 |
+| 9 | `bootReadings` | `js/readings.ts:558`–613 |
+| 10 | `bootReadingRegistry` | `js/readings.ts:676`–741 |
+| 11 | `bootRoster` | `js/roster.ts:139`–151 |
 | 12 | `bootRenderCore` | `js/render-core.ts:150`–155 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:367`–372 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:84`–87 |
@@ -294,29 +294,27 @@ falls in. **export** marks a name other modules import.
 | 365 | `savHistory` · export | `var savHistory =` |
 | 367 | `SAV_THIN` · export | `var SAV_THIN =` |
 | 368 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
-| 376 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
-| 377 | `dsrNow` · export | `var dsrNow =` |
-| 378 | `savNow` · export | `var savNow =` |
-| 379 | `DSR_MEAN` · export | `var DSR_MEAN =` |
-| 380 | `curveNoteFull` · export | `var curveNoteFull =` |
-| 391 | `VOL_JOIN` · export | `var VOL_JOIN =` |
-| 513 | `typicalCycleYears` · export | `var typicalCycleYears =` |
+| 376 | `DSR_MEAN` · export | `var DSR_MEAN =` |
+| 377 | `curveNoteFull` · export | `var curveNoteFull =` |
+| 388 | `VOL_JOIN` · export | `var VOL_JOIN =` |
+| 510 | `typicalCycleYears` · export | `var typicalCycleYears =` |
 
 ### `js/credit.ts`
 
-#### Credit and debt: the credit gap, margin debt, lending standards and delinquencies
+#### Credit, households and debt: consumer credit, margin debt, the saving rate, debt payments and delinquencies
 
 | Line | Name | Anchor |
 |---|---|---|
-| 11 | `GAP_BUILD` · export | `var GAP_BUILD =` |
-| 32 | `avgSpan` | `function avgSpan(` |
-| 33 | `gapWord` | `function gapWord(` |
-| 40 | `marginWord` | `function marginWord(` |
-| 45 | `lendingWord` | `function lendingWord(` |
-| 50 | `delinquencyWord` | `function delinquencyWord(` |
-| 56 | `lendingSpec` | `function lendingSpec(` |
-| 65 | `specs` | `function specs(` |
-| 92 | `readingOf` | `function readingOf(` |
+| 12 | `CONSUMER_LINE` · export | `var CONSUMER_LINE =` |
+| 35 | `avgSpan` | `function avgSpan(` |
+| 36 | `consumerWord` | `function consumerWord(` |
+| 41 | `marginWord` | `function marginWord(` |
+| 46 | `savingWord` | `function savingWord(` |
+| 53 | `debtPaymentsWord` | `function debtPaymentsWord(` |
+| 58 | `householdSpecs` | `function householdSpecs(` |
+| 77 | `delinquencyWord` | `function delinquencyWord(` |
+| 83 | `specs` | `function specs(` |
+| 108 | `readingOf` | `function readingOf(` |
 
 ### `js/model.ts`
 
@@ -502,38 +500,35 @@ falls in. **export** marks a name other modules import.
 | 380 | `derivePressureTendency` | `function derivePressureTendency(` |
 | 392 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
 | 413 | `pulseBlock` · export | `function pulseBlock(` |
-| 427 | `householdsWord` | `function householdsWord(` |
-| 434 | `dsrInfoHtml` · export | `function dsrInfoHtml(` |
-| 451 | `savInfoHtml` · export | `function savInfoHtml(` |
-| 468 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
-| 482 | `marketWord` | `function marketWord(` |
-| 486 | `realWord` | `function realWord(` |
-| 490 | `marketCol` | `function marketCol(` |
-| 491 | `yearLead` | `function yearLead(` |
-| 496 | `realInfoHtml` | `function realInfoHtml(` |
-| 505 | `marketInfoHtml` | `function marketInfoHtml(` |
-| 512 | `rowReadings` · export | `function rowReadings(` |
-| 513 | `indOf` · export | `function indOf(` |
-| 514 | `policyFacts` | `function policyFacts(` |
-| 521 | `policyFactRows` · export | `function policyFactRows(` |
-| 524 | `gdpWord` · export | `function gdpWord(` |
-| 525 | `phaseClass` · export | `function phaseClass(` |
-| 530 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
+| 427 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
+| 441 | `marketWord` | `function marketWord(` |
+| 445 | `realWord` | `function realWord(` |
+| 449 | `marketCol` | `function marketCol(` |
+| 450 | `yearLead` | `function yearLead(` |
+| 455 | `realInfoHtml` | `function realInfoHtml(` |
+| 464 | `marketInfoHtml` | `function marketInfoHtml(` |
+| 471 | `rowReadings` · export | `function rowReadings(` |
+| 472 | `indOf` · export | `function indOf(` |
+| 473 | `policyFacts` | `function policyFacts(` |
+| 480 | `policyFactRows` · export | `function policyFactRows(` |
+| 483 | `gdpWord` · export | `function gdpWord(` |
+| 484 | `phaseClass` · export | `function phaseClass(` |
+| 489 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
 
 #### Temperature's notes
 
 | Line | Name | Anchor |
 |---|---|---|
-| 657 | `yearReading` | `function yearReading(` |
-| 675 | `isNum` | `function isNum(` |
-| 677 | `rowId` | `function rowId(` |
-| 678 | `rowLike` | `function rowLike(` |
-| 691 | `rowsOk` | `function rowsOk(` |
-| 694 | `deriveHorizon` | `function deriveHorizon(` |
-| 708 | `fieldsKept` | `function fieldsKept(` |
-| 712 | `vixAsOf` | `function vixAsOf(` |
-| 713 | `coincidentAsOf` | `function coincidentAsOf(` |
-| 714 | `periodIso` | `function periodIso(` |
+| 615 | `yearReading` | `function yearReading(` |
+| 633 | `isNum` | `function isNum(` |
+| 635 | `rowId` | `function rowId(` |
+| 636 | `rowLike` | `function rowLike(` |
+| 649 | `rowsOk` | `function rowsOk(` |
+| 652 | `deriveHorizon` | `function deriveHorizon(` |
+| 666 | `fieldsKept` | `function fieldsKept(` |
+| 670 | `vixAsOf` | `function vixAsOf(` |
+| 671 | `coincidentAsOf` | `function coincidentAsOf(` |
+| 672 | `periodIso` | `function periodIso(` |
 
 ### `js/roster.ts`
 
@@ -1174,13 +1169,12 @@ falls in. **export** marks a name other modules import.
 | 131 | `yearTicks` | `function yearTicks(` |
 | 146 | `unempHistoryChart` · export | `function unempHistoryChart(` |
 | 184 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 226 | `householdsChart` · export | `function householdsChart(` |
-| 268 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 306 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 353 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 394 | `m2Step` | `function m2Step(` |
-| 398 | `heatEdges` | `function heatEdges(` |
-| 402 | `heatStep` | `function heatStep(` |
+| 226 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 264 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 311 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 352 | `m2Step` | `function m2Step(` |
+| 356 | `heatEdges` | `function heatEdges(` |
+| 360 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 
@@ -1254,25 +1248,23 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 17 | `actCycleMonths` | `function actCycleMonths(` |
-| 25 | `householdsHighlights` | `function householdsHighlights(` |
-| 44 | `redrawSheet` | `function redrawSheet(` |
-| 53 | `lagRow` | `function lagRow(` |
-| 54 | `monthWindow` | `function monthWindow(` |
-| 58 | `defineTemp` | `function defineTemp(` |
-| 73 | `defineGdp` | `function defineGdp(` |
-| 90 | `defineActivity` | `function defineActivity(` |
-| 107 | `defineDeficit` | `function defineDeficit(` |
-| 123 | `defineHouseholds` | `function defineHouseholds(` |
-| 138 | `valuationInfo` | `function valuationInfo(` |
-| 139 | `defineValuation` | `function defineValuation(` |
-| 160 | `defineInnerReadings` · export | `function defineInnerReadings(` |
-| 165 | `wireMetricPageControls` | `function wireMetricPageControls(` |
-| 193 | `valuationHighlights` | `function valuationHighlights(` |
-| 205 | `tempHighlights` | `function tempHighlights(` |
-| 220 | `gdpHighlights` | `function gdpHighlights(` |
-| 235 | `shutPickers` | `function shutPickers(` |
-| 241 | `wireControlKeys` | `function wireControlKeys(` |
-| 260 | `wirePageControls` · export | `function wirePageControls(` |
+| 25 | `redrawSheet` | `function redrawSheet(` |
+| 34 | `lagRow` | `function lagRow(` |
+| 35 | `monthWindow` | `function monthWindow(` |
+| 39 | `defineTemp` | `function defineTemp(` |
+| 54 | `defineGdp` | `function defineGdp(` |
+| 71 | `defineActivity` | `function defineActivity(` |
+| 88 | `defineDeficit` | `function defineDeficit(` |
+| 104 | `valuationInfo` | `function valuationInfo(` |
+| 105 | `defineValuation` | `function defineValuation(` |
+| 126 | `defineInnerReadings` · export | `function defineInnerReadings(` |
+| 131 | `wireMetricPageControls` | `function wireMetricPageControls(` |
+| 159 | `valuationHighlights` | `function valuationHighlights(` |
+| 171 | `tempHighlights` | `function tempHighlights(` |
+| 186 | `gdpHighlights` | `function gdpHighlights(` |
+| 201 | `shutPickers` | `function shutPickers(` |
+| 207 | `wireControlKeys` | `function wireControlKeys(` |
+| 226 | `wirePageControls` · export | `function wirePageControls(` |
 
 ### `js/insights.ts`
 
@@ -1306,32 +1298,33 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 1 | `debtSvg` · export | `function debtSvg(` |
-| 2 | `creditSvg` · export | `function creditSvg(` |
-| 3 | `dropSvg` | `function dropSvg(` |
-| 5 | `gaugeSvg` · export | `function gaugeSvg(` |
-| 9 | `diamondSvg` · export | `function diamondSvg(` |
-| 13 | `markSvg` | `function markSvg(` |
-| 16 | `orbitSvg` · export | `function orbitSvg(` |
-| 17 | `flameSvg` · export | `function flameSvg(` |
-| 20 | `bagSvg` · export | `function bagSvg(` |
-| 23 | `diceSvg` · export | `function diceSvg(` |
-| 27 | `clockSvg` · export | `function clockSvg(` |
-| 28 | `thermoSvg` · export | `function thermoSvg(` |
-| 31 | `personSvg` · export | `function personSvg(` |
-| 33 | `calendarSvg` · export | `function calendarSvg(` |
-| 34 | `sparkleSvg` · export | `function sparkleSvg(` |
-| 36 | `umbrellaSvg` · export | `function umbrellaSvg(` |
-| 38 | `slidersSvg` · export | `function slidersSvg(` |
-| 40 | `chartSvg` · export | `function chartSvg(` |
-| 42 | `heartSvg` · export | `function heartSvg(` |
-| 44 | `weatherSvg` · export | `function weatherSvg(` |
-| 46 | `moodSvg` · export | `function moodSvg(` |
-| 47 | `sproutSvg` · export | `function sproutSvg(` |
-| 49 | `factorySvg` · export | `function factorySvg(` |
-| 50 | `circulationSvg` · export | `function circulationSvg(` |
-| 51 | `boltSvg` · export | `function boltSvg(` |
-| 52 | `marketSvg` · export | `function marketSvg(` |
-| 55 | `volatilitySvg` · export | `function volatilitySvg(` |
+| 2 | `homeSvg` · export | `function homeSvg(` |
+| 3 | `creditSvg` · export | `function creditSvg(` |
+| 4 | `dropSvg` | `function dropSvg(` |
+| 6 | `gaugeSvg` · export | `function gaugeSvg(` |
+| 10 | `diamondSvg` · export | `function diamondSvg(` |
+| 14 | `markSvg` | `function markSvg(` |
+| 17 | `orbitSvg` · export | `function orbitSvg(` |
+| 18 | `flameSvg` · export | `function flameSvg(` |
+| 21 | `bagSvg` · export | `function bagSvg(` |
+| 24 | `diceSvg` · export | `function diceSvg(` |
+| 28 | `clockSvg` · export | `function clockSvg(` |
+| 29 | `thermoSvg` · export | `function thermoSvg(` |
+| 32 | `personSvg` · export | `function personSvg(` |
+| 34 | `calendarSvg` · export | `function calendarSvg(` |
+| 35 | `sparkleSvg` · export | `function sparkleSvg(` |
+| 37 | `umbrellaSvg` · export | `function umbrellaSvg(` |
+| 39 | `slidersSvg` · export | `function slidersSvg(` |
+| 41 | `chartSvg` · export | `function chartSvg(` |
+| 43 | `heartSvg` · export | `function heartSvg(` |
+| 45 | `weatherSvg` · export | `function weatherSvg(` |
+| 47 | `moodSvg` · export | `function moodSvg(` |
+| 48 | `sproutSvg` · export | `function sproutSvg(` |
+| 50 | `factorySvg` · export | `function factorySvg(` |
+| 51 | `circulationSvg` · export | `function circulationSvg(` |
+| 52 | `boltSvg` · export | `function boltSvg(` |
+| 53 | `marketSvg` · export | `function marketSvg(` |
+| 56 | `volatilitySvg` · export | `function volatilitySvg(` |
 
 ### `js/pressure.ts`
 
@@ -1409,19 +1402,19 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 402 | tab bar (app-style segmented navigation) |
 | 426 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
 | 514 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 653 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 691 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 740 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 882 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 891 | The symptoms: a cycle's years against today |
-| 1,038 | yield curve charts |
-| 1,062 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,081 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,096 | un-inversion-to-recession historical lag panel |
-| 1,105 | the reading's tag |
-| 1,113 | info icon + popover (progressive disclosure for longer notes) |
-| 1,127 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,190 | footer |
+| 648 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 686 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 735 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 877 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 886 | The symptoms: a cycle's years against today |
+| 1,033 | yield curve charts |
+| 1,057 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,076 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,091 | un-inversion-to-recession historical lag panel |
+| 1,100 | the reading's tag |
+| 1,108 | info icon + popover (progressive disclosure for longer notes) |
+| 1,122 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,185 | footer |
 
 ## Markup landmarks
 

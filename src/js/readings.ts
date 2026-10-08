@@ -1,9 +1,9 @@
-import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, quartile, srcBlock, tagFor, titleCase } from "./format.ts";
+import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qPretty, quartile, srcBlock, tagFor, titleCase } from "./format.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, PULSE_WINDOW, pulseTraceSvg } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY, yearDone } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf } from "./data.ts";
 import { cpiNow, growthWord, inflationFigure, nowModel, potentialGap, realReturn, yearInflation } from "./model.ts";
 import type { ModelReading } from "./model.ts";
 import { creditReadings } from "./credit.ts";
@@ -424,47 +424,6 @@ export function pulseBlock(rate: number, ref: number, ind: Indicator){
     '% less often than she did across 1959–2007.</p>' +
   '</div></div>';
 }
-function householdsWord(bill: number, kept: number): { word: string; state: State } {
-  var heavy = bill > DSR_MEAN;
-  if (kept < SAV_THIN) return { word:heavy ? "Overstretched" : "Stretched",  state:"serious" };
-  if (kept < SAV_LOW) return { word:heavy ? "Stretched"     : "Thin cover", state:"warning" };
-  if (kept < SAV_MID) return { word:heavy ? "Thin cover"    : "Covered",    state:"good" };
-  return                 { word:heavy ? "Covered" : "Well covered",     state:"good" };
-}
-export function dsrInfoHtml(){
-  return '<h4>Debt Service</h4>' +
-    '<p class="caption">What households pay each quarter in required payments on mortgages and consumer debt, ' +
-      'as a share of disposable income (' + qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1) + '). The ends of the ' +
-      'track are the record: 15.8% in 2007 Q4, at the top of the housing boom, and 9.1% in 2020 Q2, when ' +
-      'payments were being deferred and incomes were being topped up at once.</p>' +
-    '<p class="caption follow">The line is <b>this series\u2019 own average since ' + DSR_FROM_YEAR +
-      ', ' + DSR_MEAN.toFixed(1) + '%</b> \u2014 and it is the same line this page\u2019s verdict already used, rather ' +
-      'than a second opinion drawn beside it. It is one-sided on purpose: a light debt bill is not a condition ' +
-      'to flag, and what the reading answers is how far ABOVE the average the burden sits. Today it is below, ' +
-      'about a third off the 2007 peak, and has been flat for two years.</p>' +
-    '<p class="caption follow">Read it with the cushion below, never alone. The bill is the ' +
-      'lighter half of this page\u2019s story; the thin part is what is left over.</p>' +
-    srcBlock([
-      {t:"Federal Reserve via FRED \u2014 Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)", u:"https://fred.stlouisfed.org/series/TDSP"}
-    ]);
-}
-export function savInfoHtml(){
-  return '<h4>Saving Rate</h4>' +
-    '<p class="caption">What is left after households have spent and paid tax, as a share of disposable ' +
-      'income. The ends of the track are the record: 1.8% and 24.4% \u2014 the second of those is 2020, when the ' +
-      'stimulus payments arrived and there was nothing open to spend them in.</p>' +
-    '<p class="caption follow"><b>The 4.5\u201312.2% band is computed rather than chosen</b>: the ' +
-      'tenth to ninetieth percentile of the 318 quarters since 1947, a record long enough to have held every ' +
-      'kind of decade. Today\u2019s ' + savNow.toFixed(1) + '% sits <b>below</b> it \u2014 only ' +
-      savHistory.filter(function(v, i){ return v <= savNow && i < savHistory.length - 1; }).length +
-      ' of those quarters have been lower, and a run of them came between 2005 and early 2008.</p>' +
-    '<p class="caption follow">This is the reading that sets the page\u2019s word, and the bill ' +
-      'above can only make it worse, never better: a household with a cushion can carry a heavy bill, and one ' +
-      'without cannot carry a light one.</p>' +
-    srcBlock([
-      {t:"BEA via FRED \u2014 Personal Saving Rate (PSAVERT)", u:"https://fred.stlouisfed.org/series/PSAVERT"}
-    ]);
-}
 export function volatilityDetailHtml(){
   var m = now.vixRow.meter;
   return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + '</div>' + facts([
@@ -524,7 +483,7 @@ export function policyFactRows(){
 export function gdpWord(r: ModelReading){ return r.gdpLatest.v < 0 ? "Shrinking" : "Growing"; }
 export function phaseClass(regime: string){ return regime === "contraction" ? "phase-down" : "phase-up"; }
 
-export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, pressureTendency: Tendency, householdsNow: { word: string; state: State }, marketReading: MarketReading, realYears: YearPoint[], realReading: MarketReading;
+export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, pressureTendency: Tendency, marketReading: MarketReading, realYears: YearPoint[], realReading: MarketReading;
 var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;
 
 function deriveFeelingReadings(){
@@ -643,7 +602,6 @@ export function bootReadings(){
     "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max },
     "2y": { min:hznRecord(t10y2yHistory).min, max:hznRecord(t10y2yHistory).max }
   };
-  householdsNow = householdsWord(dsrNow, savNow);
   marketReading = yearReading(sp500Years, { term:"S&P 500", sub:"total return", with:"with dividends", low:"Bear year",
     word:marketWord, info:function(){ return marketInfoHtml(marketReading); } });
   var last = inflationHistory[inflationHistory.length - 1];

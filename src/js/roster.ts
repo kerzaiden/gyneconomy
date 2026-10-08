@@ -1,11 +1,11 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
-import { bagSvg, creditSvg, debtSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
-import { confidenceHistory, creditGapHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { bagSvg, creditSvg, debtSvg, homeSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
+import { confidenceHistory, payrollsHistory, retailHistory, consumerCreditHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
+import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_MEAN, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_MID, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
-import { DELINQUENCY_MEAN, GAP_BUILD, LENDING_LINE, MARGIN_LINE } from "./credit.ts";
+import { CONSUMER_LINE, debtPaymentPoints, DELINQUENCY_MEAN, MARGIN_LINE, savingPoints } from "./credit.ts";
 import { GAP_LINE, growthGapHistory, PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
 import { CONCENTRATION_MEAN, topTenHistory } from "./concentration.ts";
 import { realYears } from "./readings.ts";
@@ -28,7 +28,7 @@ export var CATEGORIES: Category[] = [
 ];
 export var SUB_MARK: Record<string, () => string> = {
   "Economic Season":thermoSvg, "Market":marketSvg, "Labor":personSvg, "Output":factorySvg, "Pressure":gaugeSvg, "Money":heartSvg,
-  "Credit":creditSvg, "Debt":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
+  "Credit":creditSvg, "Households":homeSvg, "Government":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
 };
 export var ROSTER_BY: Record<string, RosterRow> = {};
 function pageState<T>(of: (R: RosterRow) => T | undefined): Record<string, T> {
@@ -95,25 +95,24 @@ function declareRoster(): RosterRow[] {
       cardUnit:"M2 velocity", live:["coincident"] },
     { id:"sheet-sign-volume", name:"Volume", cat:"circulation", sub:"Money", timing:"leading", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, cardUnit:"M2, YoY", live:["coincident"] },
-    { id:"sheet-sign-credit-gap", name:"Credit gap", cat:"stress", sub:"Credit", good:"down", group:"Credit", timing:"leading",
-      term:"Credit gap", head:"Credit-to-GDP Gap, Private Sector", hist:{ s:creditGapHistory, k:"q" }, mid:GAP_BUILD, cardUnit:"over trend" },
-    { id:"sheet-sign-margin", name:"Margin debt", cat:"stress", sub:"Credit", group:"Credit", timing:"leading",
+    { id:"sheet-sign-consumer-credit", name:"Consumer credit", cat:"circulation", sub:"Credit", timing:"lagging",
+      term:"Consumer credit", head:"Consumer Credit, YoY", hist:{ s:consumerCreditHistory, k:"m" }, mid:CONSUMER_LINE, cardUnit:"YoY" },
+    { id:"sheet-sign-saving", name:"Saving rate", cat:"stress", sub:"Households", good:"up", group:"Households", timing:"structural",
+      term:"Saving rate", head:"Personal Saving Rate, Share of Income", hist:{ s:savingPoints, k:"q" }, mid:SAV_MID, cardUnit:"of income" },
+    { id:"sheet-metric-debt-payments", name:"Debt payments", cat:"stress", sub:"Households", good:"down", group:"Households", timing:"structural",
+      term:"Debt payments", head:"Debt Payments, Share of Income", hist:{ s:debtPaymentPoints, k:"q" }, mid:DSR_MEAN, cardUnit:"of income" },
+    { id:"sheet-sign-margin", name:"Margin debt", cat:"stress", sub:"Households", group:"Households", timing:"leading",
       term:"Margin debt", head:"Margin Debt, YoY", hist:{ s:marginHistory, k:"m" }, mid:MARGIN_LINE, cardUnit:"YoY" },
-    { id:"sheet-sign-lending", name:"Lending standards", cat:"stress", sub:"Credit", good:"down", group:"Credit", timing:"leading",
-      term:"Lending standards", head:"Banks Tightening Loan Standards", hist:{ s:lendingHistory, k:"q" }, mid:LENDING_LINE, cardUnit:"net tightening" },
-    { id:"sheet-metric-debt", name:"Federal debt", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"structural",
+    { id:"sheet-metric-delinquency", name:"Delinquencies", cat:"stress", sub:"Households", good:"down", group:"Households", timing:"lagging",
+      term:"Delinquencies", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
+    { id:"sheet-metric-debt", name:"Federal debt", cat:"stress", sub:"Government", good:"down", group:"Government", timing:"structural",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:DEBT_LINE, cardUnit:"of GDP" },
-    { id:"sheet-metric-interest", name:"Federal interest payments", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"structural",
+    { id:"sheet-metric-interest", name:"Federal interest payments", cat:"stress", sub:"Government", good:"down", group:"Government", timing:"structural",
       head:"Federal Interest Payments, Share of GDP", hist:{ s:interestQuarterly, k:"q" }, mid:INTEREST_LINE,
       cardUnit:"of GDP" },
-    { id:"sheet-marker-deficit", name:"Federal budget", cat:"stress", sub:"Debt", good:"up", group:"Debt", timing:"structural",
+    { id:"sheet-marker-deficit", name:"Federal budget", cat:"stress", sub:"Government", good:"up", group:"Government", timing:"structural",
       hk:"deficit-range", head:"Federal Deficit or Surplus, Share of GDP", hist:{ s:deficitHistory, k:"yi", y0:DEF_FROM_YEAR },
       flip:true, mid:DEFICIT_LINE, cardUnit:"deficit, of GDP" },
-    { id:"sheet-metric-households", name:"Households", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"structural",
-      head:"Debt Service, Share of Income", stops:["5y", "10y", "max"], hist:{ s:dsrHistory, k:"qi", y0:DSR_FROM_YEAR },
-      pair:{ s:savHistory, k:"qi", y0:SAV_FROM_YEAR }, cardUnit:"% paid / kept" },
-    { id:"sheet-metric-delinquency", name:"Delinquency rate", cat:"stress", sub:"Debt", good:"down", group:"Debt", timing:"lagging",
-      term:"Delinquency rate", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
     { id:"sheet-metric-valuation", name:"Shiller CAPE", cat:"mood", sub:"Valuations", good:"down", group:"Valuations", timing:"structural",
       head:"Shiller CAPE, Against Fair Value", hist:{ s:capeHistory, k:"y" }, mid:CAPE_FAIR, cardUnit:"CAPE", live:["valuation", "capeValue"] },
     { id:"sheet-metric-buffett", name:"Buffett indicator", cat:"mood", sub:"Valuations", good:"down", group:"Valuations", timing:"structural",

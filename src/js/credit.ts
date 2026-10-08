@@ -1,51 +1,78 @@
-import { fmtSigned, pointLabel, srcBlock, titleCase } from "./format.ts";
+import { fmtSigned, pointLabel, qAtIndex, srcBlock, titleCase } from "./format.ts";
 import { colPeek } from "./charts.ts";
-import { creditGapHistory, delinquencyHistory, lendingHistory, marginHistory } from "./history-fred.ts";
+import { consumerCreditHistory, delinquencyHistory, marginHistory } from "./history-fred.ts";
+import { DSR_FROM_YEAR, DSR_MEAN, dsrHistory, SAV_FROM_YEAR, SAV_HIGH, SAV_LOW, SAV_MID, SAV_THIN, savHistory } from "./data.ts";
 import { activitySpecs } from "./activity.ts";
 import { concentrationSpecs } from "./concentration.ts";
 
-// ---- Credit and debt: the credit gap, margin debt, lending standards and delinquencies ----
+// ---- Credit, households and debt: consumer credit, margin debt, the saving rate, debt payments and delinquencies ----
 export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
 export type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
 
-export var GAP_BUILD = 2, GAP_BOOM = 10, MARGIN_LINE = 0, LENDING_LINE = 0, DELINQUENCY_TO = 2025;
-export var GAP_SRC: Src[] = [
-  { t:"Bank for International Settlements — Credit-to-GDP gaps, United States, private non-financial sector, quarterly", u:"https://data.bis.org/topics/CREDIT_GAPS" },
-  { t:"Basel Committee on Banking Supervision — Guidance for national authorities operating the countercyclical capital buffer, Dec 2010 (the 2 and 10 point lines)", u:"https://www.bis.org/publ/bcbs187.htm" },
-  { t:"Mathias Drehmann and Kostas Tsatsaronis — The credit-to-GDP gap and countercyclical capital buffers: questions and answers, BIS Quarterly Review, Mar 2014", u:"https://www.bis.org/publ/qtrpdf/r_qt1403g.htm" }
+export var CONSUMER_LINE = 0, MARGIN_LINE = 0, DELINQUENCY_TO = 2025;
+export var CONSUMER_SRC: Src[] = [
+  { t:"Federal Reserve — G.19 Consumer Credit, monthly: revolving (credit cards) and nonrevolving (auto and student loans) credit owed by households, mortgages excluded", u:"https://www.federalreserve.gov/releases/g19/current/" },
+  { t:"FRED — Total Consumer Credit Owned and Securitized (TOTALSL)", u:"https://fred.stlouisfed.org/series/TOTALSL" },
+  { t:"The Conference Board — Lagging Economic Index, whose components include consumer installment credit outstanding to personal income", u:"https://www.conference-board.org/topics/us-leading-indicators" }
 ];
 export var MARGIN_SRC: Src[] = [
   { t:"FINRA — Margin Statistics: debit balances in customers’ securities margin accounts, monthly", u:"https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics" }
 ];
-export var LENDING_SRC: Src[] = [
-  { t:"Federal Reserve — Senior Loan Officer Opinion Survey on Bank Lending Practices", u:"https://www.federalreserve.gov/data/sloos.htm" },
-  { t:"FRED — Net Percentage of Domestic Banks Tightening Standards for Commercial and Industrial Loans to Large and Middle-Market Firms (DRTSCILM)", u:"https://fred.stlouisfed.org/series/DRTSCILM" },
-  { t:"Cara Lown and Donald P. Morgan — The Credit Cycle and the Business Cycle: New Findings Using the Loan Officer Opinion Survey, Journal of Money, Credit and Banking, 2006", u:"https://www.newyorkfed.org/medialibrary/media/research/economists/morgan/morgan_credit_cycle.pdf" },
-  { t:"William F. Bassett, Mary Beth Chosak, John C. Driscoll and Egon Zakrajšek — Changes in Bank Lending Standards and the Macroeconomy, FEDS 2012-24", u:"https://www.federalreserve.gov/pubs/feds/2012/201224/201224abs.html" }
+export var SAVING_SRC: Src[] = [
+  { t:"BEA via FRED \u2014 Personal Saving Rate, quarterly since 1947 (PSAVERT)", u:"https://fred.stlouisfed.org/series/PSAVERT" }
+];
+export var DEBT_PAYMENTS_SRC: Src[] = [
+  { t:"Federal Reserve via FRED \u2014 Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)", u:"https://fred.stlouisfed.org/series/TDSP" }
 ];
 export var DELINQUENCY_SRC: Src[] = [
   { t:"Federal Reserve — Charge-Off and Delinquency Rates on Loans and Leases at Commercial Banks, all loans, seasonally adjusted", u:"https://www.federalreserve.gov/releases/chargeoff/" },
   { t:"FRED — Delinquency Rate on All Loans, All Commercial Banks (DRALACBS)", u:"https://fred.stlouisfed.org/series/DRALACBS" }
 ];
 export var DELINQUENCY_MEAN: number;
+export var savingPoints: QuarterPoint[] = savHistory.map(function(v, i){ return { q:qAtIndex(SAV_FROM_YEAR, i), v:v }; });
+export var debtPaymentPoints: QuarterPoint[] = dsrHistory.map(function(v, i){ return { q:qAtIndex(DSR_FROM_YEAR, i), v:v }; });
 
 function avgSpan(){ return delinquencyHistory[0].q.slice(0, 4) + "\u2013" + DELINQUENCY_TO; }
-function gapWord(v: number): CreditWord {
-  if (v >= GAP_BOOM) return { state:"serious", text:"Credit boom",
-    says:"at or above 10 points over trend, where Basel III asks banks to hold the full countercyclical buffer" };
-  if (v >= GAP_BUILD) return { state:"warning", text:"Build-up",
-    says:"between 2 and 10 points over trend, where Basel III starts the countercyclical buffer" };
-  return { state:"good", text:"No build-up", says:"below 2 points over trend, where Basel III asks for no buffer" };
+function consumerWord(v: number): CreditWord {
+  if (v >= CONSUMER_LINE) return { state:"norm", text:"Borrowing more",
+    says:"above zero: households owe more on cards, cars and student loans than a year earlier" };
+  return { state:"norm", text:"Borrowing less", says:"below zero: households owe less on cards, cars and student loans than a year earlier" };
 }
 function marginWord(v: number): CreditWord {
   if (v >= MARGIN_LINE) return { state:"norm", text:"Borrowing more",
     says:"above zero: investors owe their brokers more than a year earlier" };
   return { state:"norm", text:"Borrowing less", says:"below zero: investors owe their brokers less than a year earlier" };
 }
-function lendingWord(v: number): CreditWord {
-  var w = v > LENDING_LINE ? ["warning", "Tightening", "above zero: more banks tightened their standards for business loans than eased them"] : v < LENDING_LINE ? ["good", "Easing", "below zero: more banks eased their standards for business loans than tightened them"]
-    : ["good", "No change", "at zero: as many banks eased their standards for business loans as tightened them"];
-  return { state:w[0] as State, text:w[1], says:w[2] };
+function savingWord(v: number): CreditWord {
+  var band = " the " + SAV_LOW.toFixed(1) + "\u2013" + SAV_HIGH.toFixed(1) + "% that held in eight quarters of ten since " + SAV_FROM_YEAR;
+  if (v < SAV_THIN) return { state:"serious", text:"Saving very little", says:"below the lowest twentieth of its quarters since " + SAV_FROM_YEAR + ": households keep almost nothing of what they earn" };
+  if (v < SAV_LOW) return { state:"warning", text:"Saving little", says:"below" + band + ": households keep less of what they earn than usual" };
+  if (v <= SAV_HIGH) return { state:"good", text:"Saving steadily", says:"within" + band };
+  return { state:"norm", text:"Saving a lot", says:"above" + band + ": households are keeping more of what they earn than usual" };
+}
+function debtPaymentsWord(v: number): CreditWord {
+  var avg = DSR_MEAN.toFixed(1) + "%";
+  if (v > DSR_MEAN) return { state:"warning", text:"Above average", says:"above its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes more of what households take home than usual" };
+  return { state:"good", text:"Below average", says:"below its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes less of what households take home than usual" };
+}
+function householdSpecs(): CreditSpec[] {
+  var pct = function(v: number){ return v.toFixed(1) + "%"; };
+  return [
+    { id:"sheet-sign-saving", goodAbove:true, term:"Saving rate", econ:"Saving rate", unit:"of income", series:savingPoints, mid:SAV_MID, line:"Median since " + SAV_FROM_YEAR,
+      optimal:{ from:SAV_LOW, to:SAV_HIGH, label:SAV_LOW.toFixed(1) + "\u2013" + SAV_HIGH.toFixed(1) + "%" }, ends:{ low:"Saving little" }, fmt:pct, word:savingWord, src:SAVING_SRC,
+      about:"What is left of households\u2019 income after tax and spending, as a share of that income, as the Bureau of Economic Analysis reports it each quarter: " +
+        "the personal saving rate the news quotes.",
+      band:"<b>The band is computed, not chosen</b>: the tenth to ninetieth percentile of every quarter since " + SAV_FROM_YEAR + ", and the line is their median. " +
+        "No convention sets a normal saving rate. Below the band households have little set aside for a month that goes wrong.",
+      lede:"What households keep of what they earn: the cushion against a bad month." },
+    { id:"sheet-metric-debt-payments", term:"Debt payments", econ:"Debt payments", unit:"of income", series:debtPaymentPoints, mid:DSR_MEAN, line:"Average since " + DSR_FROM_YEAR,
+      optimal:{ lte:DSR_MEAN, label:"\u2264 " + DSR_MEAN.toFixed(1) + "%" }, ends:{ high:"Above average" }, fmt:pct, word:debtPaymentsWord, src:DEBT_PAYMENTS_SRC,
+      about:"What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, " +
+        "as the Federal Reserve estimates it.",
+      band:"<b>The line is the series\u2019 own average since " + DSR_FROM_YEAR + "</b>. No convention sets a band, so the line is derived from the record and " +
+        "only above it is flagged: a light debt bill is not a condition.",
+      lede:"The share of take-home pay that goes to paying debts: the load households carry each month." }
+  ];
 }
 function delinquencyWord(v: number): CreditWord {
   var avg = DELINQUENCY_MEAN.toFixed(2) + "%";
@@ -53,25 +80,15 @@ function delinquencyWord(v: number): CreditWord {
     says:"above its " + avgSpan() + " average of " + avg + ": more loans are going unpaid than usual" };
   return { state:"good", text:"Below average", says:"below its " + avgSpan() + " average of " + avg + ": fewer loans are going unpaid than usual" };
 }
-function lendingSpec(): CreditSpec {
-  return { id:"sheet-sign-lending", term:"Lending standards", econ:"Lending standards", unit:"net tightening", series:lendingHistory, mid:LENDING_LINE, line:"No change",
-    fmt:function(v){ return fmtSigned(v, 1) + "%"; }, word:lendingWord, src:LENDING_SRC,
-    about:"Each quarter the Federal Reserve asks senior loan officers at large US banks whether they tightened or eased their standards for " +
-      "business loans. The reading is the share of banks that tightened less the share that eased, for loans to large and middle-market firms.",
-    band:"<b>Zero is the only line.</b> Above it more banks are tightening than easing; below it more are easing. No convention sets a band. " +
-      "Research at the Fed found that tightening standards come before falls in lending and output (Lown and Morgan, 2006; Bassett and others, 2012).",
-    lede:"Whether banks are willing to lend. When more of them tighten than ease, credit is being withdrawn: the crunch." };
-}
 function specs(): CreditSpec[] {
-  var pts = function(v: number){ return fmtSigned(v, 1) + " pt"; };
   return [
-    { id:"sheet-sign-credit-gap", term:"Credit gap", econ:"Credit gap", unit:"over trend", series:creditGapHistory, mid:GAP_BUILD, line:"Basel’s first line",
-      optimal:{ lte:GAP_BUILD, label:"≤ 2 pt" }, ends:{ high:"Build-up" }, fmt:pts, word:gapWord, src:GAP_SRC,
-      about:"What households and companies owe, as a share of GDP, against its own long-run trend. The Bank for International Settlements " +
-        "publishes the gap itself; the app does not compute it. The trend is a one-sided filter, so each quarter is judged only by the quarters before it.",
-      band:"<b>The lines are Basel III’s.</b> Below 2 points banks hold no countercyclical buffer; from 2 the buffer starts, and at 10 it is full. " +
-        "The gap was chosen because it ran high before most banking crises.",
-      lede:"Private borrowing against the size of the economy, measured against its own trend. A wide gap is credit running ahead of what the body produces: the bubble before a crunch." },
+    { id:"sheet-sign-consumer-credit", term:"Consumer credit", econ:"Consumer credit", unit:"YoY", series:consumerCreditHistory, mid:CONSUMER_LINE, line:"No change",
+      fmt:function(v){ return fmtSigned(v, 1) + "%"; }, word:consumerWord, src:CONSUMER_SRC,
+      about:"Consumer credit is what households owe on credit cards, car loans and student loans, mortgages excluded, as the Federal Reserve " +
+        "reports it each month (G.19). The figure is the total against the same month a year earlier.",
+      band:"<b>Zero is the only line.</b> Above it households are borrowing more to spend than a year ago; below it they are paying it down. " +
+        "No convention sets a band for its growth.",
+      lede:"What households owe on cards, cars and student loans, against the same month a year earlier: borrowing to spend." },
     { id:"sheet-sign-margin", term:"Margin debt", econ:"Margin debt", unit:"YoY", series:marginHistory, mid:MARGIN_LINE, line:"No change",
       fmt:function(v){ return fmtSigned(v, 0) + "%"; }, word:marginWord, src:MARGIN_SRC,
       about:"Margin debt is money investors borrow from their brokers to buy shares, with the shares as collateral. When prices fall, brokers call " +
@@ -79,8 +96,7 @@ function specs(): CreditSpec[] {
         "against the same month a year earlier.",
       band:"<b>Zero is the only line.</b> Above it investors are borrowing more to own stocks than a year ago; below it they are paying it back.",
       lede:"Money borrowed to buy stocks, against the same month a year earlier: the market’s own appetite for credit." },
-    lendingSpec(),
-    { id:"sheet-metric-delinquency", term:"Delinquency rate", econ:"Delinquency rate", unit:"of bank loans", series:delinquencyHistory, mid:DELINQUENCY_MEAN,
+    { id:"sheet-metric-delinquency", term:"Delinquencies", econ:"Delinquencies", unit:"of bank loans", series:delinquencyHistory, mid:DELINQUENCY_MEAN,
       line:avgSpan() + " average", optimal:{ lte:DELINQUENCY_MEAN, label:"≤ " + DELINQUENCY_MEAN.toFixed(2) + "%" }, ends:{ high:"Above average" },
       fmt:function(v){ return v.toFixed(2) + "%"; }, word:delinquencyWord, src:DELINQUENCY_SRC,
       about:"The share of all loans at US commercial banks that are 30 days or more past due, or no longer accruing interest, as the Federal Reserve " +
@@ -114,7 +130,7 @@ export var creditPages: Record<string, CreditPage> = {};
 export function bootCredit(){
   var closed = delinquencyHistory.filter(function(d){ return +d.q.slice(0, 4) <= DELINQUENCY_TO; });
   DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d){ return a + d.v; }, 0) / closed.length * 100) / 100;
-  specs().concat(activitySpecs(), concentrationSpecs()).forEach(function(S){
+  specs().concat(householdSpecs(), activitySpecs(), concentrationSpecs()).forEach(function(S){
     creditReadings[S.id] = readingOf(S);
     creditPages[S.id] = { goodAbove:S.goodAbove, line:S.line, fmt:S.fmt, tick:S.fmt, src:S.src, lede:S.lede, series:S.series };
   });
