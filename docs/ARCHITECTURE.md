@@ -698,7 +698,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   quarter or a closed cycle's close opens Indicators on that quarter (`hubOpen`'s `when`, 0.8.9). The Diagnosis's Analysis leaves out
   every `onDial` category. Weather's Insights (behind Weather analysis's More details since 1.5.0) open with `cycleNowNote` (the note the popup used to open with), then
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
-  barometer. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
+  Balance. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names
   calendar years through the page option `at`.
 
@@ -867,7 +867,7 @@ same CPI is the same colour in any cycle. `unempHistoryChart` copies `cpiHistory
 function on purpose**: folding two subjects into one function behind flags is how a component stops
 being readable.
 
-**The barometer** (Weather's Insights) reads the GAP between total price change and total real growth
+**The Balance** (Weather's Insights) reads the GAP between total price change and total real growth
 over a cycle's closed years — Dot-Com −3.6, Housing +1.5, Big Tech +0.2, Stimulus +3.5. They finish close
 over a full cycle as a regularity of the low-inflation era, **never described as arithmetic**. One band,
 `GAP_BAND = 1.5`, decides both the word and the run counter.

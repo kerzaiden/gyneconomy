@@ -603,7 +603,7 @@ async function openPage(p, url, sheet) {
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
     (wx && wx.bar === 'Elements' && wx.names === 'Federal funds rate+Growth gap+S&P 500+Temperature' && !wx.modal &&
-     wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
+     wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Balance') > 0)
       ? ok('the season in the dial opens Elements on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Elements on Weather, with the market and what the season means', JSON.stringify(wx));
     await p.evaluate(() => document.querySelector('.dial-moon[data-q="0"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))); await settle(p);
