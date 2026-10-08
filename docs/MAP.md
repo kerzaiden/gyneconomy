@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,851 lines** in 40 files, about 607 KB, roughly **172 thousand tokens**. No session can
+The source is **8,839 lines** in 40 files, about 607 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `1d9ddbd` on 2026-10-08.
+Generated from commit `176394a` on 2026-10-08.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `1d9ddbd` on 2026-10-08.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,207 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,209 | the whole stylesheet, every token and rule |
 | `page-body.html` | 251 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 36 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **36** modules, **752** top-level functions, **119** top-level vars, **370** exported names, **20** boots.
+Counts: **36** modules, **752** top-level functions, **119** top-level vars, **369** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -55,7 +55,7 @@ Counts: **36** modules, **752** top-level functions, **119** top-level vars, **3
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 368 | 15 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
+| `js/history-charts.ts` | 354 | 15 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 31 | 14 | — |
 | `js/indicators.ts` | 195 | 32 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -895,7 +895,7 @@ falls in. **export** marks a name other modules import.
 | 85 | `colWidth` · export | `function colWidth(` |
 | 90 | `AXIS` · export | `var AXIS =` |
 | 91 | `histFrame` · export | `function histFrame(` |
-| 98 | `yLabel` · export | `function yLabel(` |
+| 98 | `yLabel` | `function yLabel(` |
 | 101 | `xLabel` · export | `function xLabel(` |
 | 104 | `crossLine` · export | `function crossLine(` |
 | 107 | `zeroRule` · export | `function zeroRule(` |
@@ -1171,17 +1171,17 @@ falls in. **export** marks a name other modules import.
 | 78 | `colScale` | `function colScale(` |
 | 83 | `PULSE_BEATS` · export | `var PULSE_BEATS =` |
 | 84 | `pulseTrace` | `function pulseTrace(` |
-| 93 | `pulseAxisRepeat` | `function pulseAxisRepeat(` |
-| 98 | `velocityHistoryChart` · export | `function velocityHistoryChart(` |
-| 135 | `yearTicks` | `function yearTicks(` |
-| 150 | `unempHistoryChart` · export | `function unempHistoryChart(` |
-| 188 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 230 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 268 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 315 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 356 | `m2Step` | `function m2Step(` |
-| 360 | `heatEdges` | `function heatEdges(` |
-| 364 | `heatStep` | `function heatStep(` |
+| 89 | `ekgPaper` | `function ekgPaper(` |
+| 95 | `velocityHistoryChart` · export | `function velocityHistoryChart(` |
+| 121 | `yearTicks` | `function yearTicks(` |
+| 136 | `unempHistoryChart` · export | `function unempHistoryChart(` |
+| 174 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
+| 216 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 254 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 301 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 342 | `m2Step` | `function m2Step(` |
+| 346 | `heatEdges` | `function heatEdges(` |
+| 350 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 
@@ -1423,19 +1423,19 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 410 | tab bar (app-style segmented navigation) |
 | 434 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
 | 522 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 656 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 699 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 748 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 890 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 899 | The symptoms: a cycle's years against today |
-| 1,046 | yield curve charts |
-| 1,070 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,089 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,104 | un-inversion-to-recession historical lag panel |
-| 1,113 | the reading's tag |
-| 1,121 | info icon + popover (progressive disclosure for longer notes) |
-| 1,135 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,198 | footer |
+| 658 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 701 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 750 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 892 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 901 | The symptoms: a cycle's years against today |
+| 1,048 | yield curve charts |
+| 1,072 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,091 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,106 | un-inversion-to-recession historical lag panel |
+| 1,115 | the reading's tag |
+| 1,123 | info icon + popover (progressive disclosure for longer notes) |
+| 1,137 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,200 | footer |
 
 ## Markup landmarks
 

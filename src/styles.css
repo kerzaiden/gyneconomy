@@ -639,6 +639,8 @@
     stroke-linecap:round; stroke-linejoin:round; }
   .pv-trace{ fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   .pv-hit{ fill:transparent; }
+  .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--critical) 10%, transparent); stroke-width:0.6; }
+  .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--critical) 26%, transparent); stroke-width:1; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }

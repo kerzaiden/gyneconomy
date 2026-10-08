@@ -1087,14 +1087,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   connected to EKG". Rhythm is the standard deviation of the last eight quarterly changes in M2 velocity; it reads
   Irregular past the 90th percentile of every two-year window from 1959 to 2007 (1.31 points). No convention sets it, so it is
   derived and the (i) says so; the window and the percentile are Claude's. The Now trace beats at each quarter's own
-  velocity across its five years, so its spacing shows the rhythm. The Pulse history is one EKG chart: velocity on the y-axis, the
-  trace riding at each quarter's level, a year to a screen, scrolling sideways through the period chosen, with a bar under the
+  velocity across its five years, so its spacing shows the rhythm. The Pulse history is a true EKG strip (Keren: "I want a true EKG
+  and I want the velocity to appear. I don't want to count the amount of beats"): EKG paper, one large square per quarter
+  with its velocity written under it, the height carrying nothing (a velocity y-axis was built and dropped: on an EKG the
+  vertical is voltage), a year to a screen, scrolling sideways through the period chosen, with a bar under the
   axis showing the position. Keren: "I think the solution is horizontal scroll. I want one history component in this page, with
   a pulse and a rhythm combined into an EKG style reading. The y-axis will be the Velocity … and also some kind of an
   indicator in the x-axis that we can scroll". Velocity is the beats-per-minute: ten beats per turnover, the gap
   between beats a year ÷ (10 × velocity), nothing magnified. Keren: "The rhythm right is the gap between every beat. Right,
-  like BPM" (a 12%-per-point magnification of each quarter's change was built and dropped as off). The value labels repeat at each year so a scrolled screen keeps its
-  scale; the reading plate shows the last quarter in view. The rate columns, red bands, per-year strips and the separate
+  like BPM" (a 12%-per-point magnification of each quarter's change was built and dropped as off). The reading plate shows the last quarter in view. The rate columns, red bands, per-year strips and the separate
   heartbeat line under the chart were built and dropped the same day; Keren on the bands: "not understandable,
   not intuitively". Familiar metrics are a guideline, not a rule: Keren,
   "If you think that some KPI would shed light on our Gyneconomy model, then let's think about it." Told Keren, not printed:
