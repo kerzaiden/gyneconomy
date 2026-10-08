@@ -420,7 +420,7 @@ Rules that shape the pages:
   read by the category sheets, the past cycles, the Diagnosis and Cycle analysis.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
   card (Valuations: Shiller CAPE · Buffett indicator; Debt: Margin debt · Federal debt · Federal interest payments
-  · Federal budget · Saving rate · Debt-to-income ratio · Delinquencies). The split pages are
+  · Federal budget · Saving rate · Debt-to-income ratio · Default risk). The split pages are
   built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, declared by
   `defineSplits` as readings), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
@@ -1053,7 +1053,7 @@ by its own picture, by cycle = the average never the total.
 
 Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
 or "Sentiment"; Debt-to-income ratio, not "Debt service" or "Debt payments"; Valuations, plural; Growth, not "GDP growth"; Stress is
-Households (Saving rate, Debt-to-income ratio, Margin debt; Delinquencies moved to Desire › Risk in 0.9.22) and Government (Federal debt, Federal interest payments, Federal budget) (0.9.21; Stress from V688, Economic power before); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
+Households (Saving rate, Debt-to-income ratio, Margin debt; Delinquencies moved to Desire › Risk as Default risk in 0.9.22) and Government (Federal debt, Federal interest payments, Federal budget) (0.9.21; Stress from V688, Economic power before); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.

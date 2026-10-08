@@ -43724,7 +43724,7 @@
       fmt: pct2,
       word: debtPaymentsWord,
       src: DEBT_PAYMENTS_SRC,
-      about: "What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, as the Federal Reserve estimates it: the debt-to-income ratio a lender checks, taken across every household and measured against income after tax.",
+      about: "What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, as the Federal Reserve estimates it: the debt-to-income ratio a lender checks, taken across every household and measured against income after tax. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month.",
       band: "<b>The line is the series’ own average since " + DSR_FROM_YEAR + "</b>. No convention sets a band, so the line is derived from the record and only above it is flagged: a light debt bill is not a condition.",
       lede: "The share of take-home pay that goes to paying debts: the load households carry each month."
     } ];
@@ -43777,8 +43777,8 @@
       lede: "Money borrowed to buy stocks, against the same month a year earlier: the market’s own appetite for credit."
     }, {
       id: "sheet-metric-delinquency",
-      term: "Delinquencies",
-      econ: "Delinquencies",
+      term: "Default risk",
+      econ: "Default risk",
       unit: "of bank loans",
       series: delinquencyHistory,
       mid: DELINQUENCY_MEAN,
@@ -46811,13 +46811,13 @@
       cardUnit: "over bonds"
     }, {
       id: "sheet-metric-delinquency",
-      name: "Delinquencies",
+      name: "Default risk",
       cat: "desire",
       sub: "Risk",
       good: "down",
       group: "Risk",
       timing: "lagging",
-      term: "Delinquencies",
+      term: "Default risk",
       head: "Bank Loans Past Due",
       hist: {
         s: delinquencyHistory,

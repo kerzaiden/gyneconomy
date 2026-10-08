@@ -129,8 +129,8 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-sign-premium", name:"Equity risk premium", cat:"desire", sub:"Risk", good:"up", group:"Risk", timing:"structural",
       term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE,
       cardUnit:"over bonds" },
-    { id:"sheet-metric-delinquency", name:"Delinquencies", cat:"desire", sub:"Risk", good:"down", group:"Risk", timing:"lagging",
-      term:"Delinquencies", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
+    { id:"sheet-metric-delinquency", name:"Default risk", cat:"desire", sub:"Risk", good:"down", group:"Risk", timing:"lagging",
+      term:"Default risk", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
     { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", sub:"Sentiment", good:"up", timing:"leading", term:"Confidence",
       head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE,
       cardUnit:"OECD index" }

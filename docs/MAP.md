@@ -8,7 +8,7 @@ read it whole, so this file exists to get you to the right two hundred lines.
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `c380adf` on 2026-10-08.
+Generated from commit `2b6252d` on 2026-10-08.
 
 ## The page
 
