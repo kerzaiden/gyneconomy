@@ -247,6 +247,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Keren, on her iPhone: "the page title is not aligned to the center of the menu button" (0.6.11).
   It overturns the sticky bar of Sep 19, 2026 (made with Clue's screens). The menu's own screens keep their
   sticky bar. (0.6.9)
+- **A page with both a back button and the menu (every inner page: Elements, each reading, a past cycle) has a
+  sticky top bar with a hairline beneath it, its back and menu buttons drop their glass circles to the plum mark
+  alone, and the tab bar is hidden; going back to a tab home brings the tab bar and the floating circles back.** Keren, on the Elements page: "I want the top menu to
+  have a dividing line and remove the circles around the menu and the back button because in the elements page,
+  we already have chevrons with a circle around them. So I want some kind of hierarchy and borders between
+  different selection bars." Then: "the bottom menu needs to disappear … because the bottom menu is the main
+  navigation. And when I go to inner pages, then I'm in my own world … if I go back, I can see the main navigation
+  again." The rule keys on the back button being shown, so no page opts in. (0.9.23)
 - **The top bar sets the page name in Cormorant, in the plum ink, and its buttons are the plum mark alone; the
   menu's screens keep a hairline under their bar.** Keren: "the title of the page should be in feminine
   letters"; "all buttons in the top bar should not have a round border around it"; "it should be only purple
