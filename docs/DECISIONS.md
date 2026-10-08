@@ -314,6 +314,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Pages and doors
 
+- **Every reading drives from one source and behaves the same; only its data differs.** Each page is built by the
+  one reading component from its roster row: the same figure and word, (i) note, history card and Insights, with
+  the same "The Latest Reading" and "Against the Record" cards wherever a reading is read against its own record.
+  Keren: "make sure the readings all drive from the same source because basically all categories should have the
+  same behavior even though they present different data." (0.9.20)
 - **A reading is a row or card that opens a page; it never unfolds where it stands, and a popup is for a note,
   never for a page's content.** Keren asked for inner pages "aligning to our inner pages format"; a long
   record "is not a footnote you glance at and dismiss". (V269, V303)

@@ -16,10 +16,16 @@ const { coincident: after } = await import('../../src/js/readings.ts');
 const { liveApplied, refreshLiveData } = await import('../../src/js/live.ts');
 const { capeHistory, syncCapeHistory, fileRow } = await import('../../src/js/data.ts');
 const { isoDay } = await import('../../src/js/format.ts');
+const { ROSTER } = await import('../../src/js/roster.ts');
+const { readingFor } = await import('../../src/js/reading.ts');
 
-test('a cached coincident document keeps the page each row draws', () => {
+test('a cached coincident document keeps the reading each row draws', () => {
   assert.equal(liveApplied.coincident, JSON.stringify(globalThis.gynCache.coincident));
-  after.forEach(r => assert.equal(typeof r.page.chart, 'function', r.bodyTerm));
+  after.forEach(r => {
+    const R = ROSTER.find(x => x.term === r.bodyTerm);
+    assert.ok(R, r.bodyTerm);
+    assert.equal(typeof readingFor(R.id).history, 'function', r.bodyTerm);
+  });
 });
 
 test('cached valuation rows in the order the app keeps them are accepted on the next visit', () => {

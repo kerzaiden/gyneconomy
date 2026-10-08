@@ -6,8 +6,6 @@ type UiStore = {
   shownEra: Cycle | null;
   topbarBack: (() => void) | null;
   eraPageBack: (() => void) | null;
-  heldHighlights: string;
-  spreadDetail: string;
   uninvDetail: string;
 };
 
@@ -16,8 +14,6 @@ export var ui: UiStore = {
   shownEra: null,
   topbarBack: null,
   eraPageBack: null,
-  heldHighlights: "",
-  spreadDetail: "",
   uninvDetail: ""
 };
 export function byId(id: string): HTMLElement | null {

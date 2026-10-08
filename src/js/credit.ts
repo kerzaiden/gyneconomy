@@ -1,11 +1,11 @@
-import { atMonth, fmtAsOf, fmtSigned, hiCard, lede, qPretty, srcBlock, titleCase } from "./format.ts";
+import { fmtSigned, pointLabel, srcBlock, titleCase } from "./format.ts";
 import { colPeek } from "./charts.ts";
 import { creditGapHistory, delinquencyHistory, lendingHistory, marginHistory } from "./history-fred.ts";
 import { activitySpecs } from "./activity.ts";
 import { concentrationSpecs } from "./concentration.ts";
 
 // ---- Credit and debt: the credit gap, margin debt, lending standards and delinquencies ----
-export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; page: IndicatorPage; wordSays: string };
+export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
 export type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
 
 export var GAP_BUILD = 2, GAP_BOOM = 10, MARGIN_LINE = 0, LENDING_LINE = 0, DELINQUENCY_TO = 2025;
@@ -30,7 +30,6 @@ export var DELINQUENCY_SRC: Src[] = [
 export var DELINQUENCY_MEAN: number;
 
 function avgSpan(){ return delinquencyHistory[0].q.slice(0, 4) + "\u2013" + DELINQUENCY_TO; }
-function pointLabel(d: CreditPoint){ return d.d ? fmtAsOf(d.d) : d.m ? atMonth(d as MonthPoint) : qPretty(d.q); }
 function gapWord(v: number): CreditWord {
   if (v >= GAP_BOOM) return { state:"serious", text:"Credit boom",
     says:"at or above 10 points over trend, where Basel III asks banks to hold the full countercyclical buffer" };
@@ -98,7 +97,6 @@ function readingOf(S: CreditSpec): CreditReading {
   var r: CreditReading = {
     bodyTerm:S.term, econTerm:S.econ, metricSub:S.unit + ", " + at, metric:S.fmt(last.v), tag:{ state:word.state, text:word.text }, wordSays:word.says,
     meter:{ min:lo.v, max:hi.v, value:last.v, optimal:S.optimal, ends:S.ends }, span:span, lead:"",
-    page:{ chart:function(){ return '<div id="' + S.id + '-chart"></div><div id="' + S.id + '-highlights"></div>'; } },
     caption:at + ", " + S.econ.toLowerCase() + " at " + S.fmt(last.v) + ", " + word.says + ". The track runs over the record since " + pointLabel(h[0]) + ": " + span + ".",
     info:function(){
       return '<h4>' + titleCase(S.econ) + '</h4>' +
@@ -113,16 +111,6 @@ function readingOf(S: CreditSpec): CreditReading {
 }
 export var creditReadings: Record<string, CreditReading> = {};
 export var creditPages: Record<string, CreditPage> = {};
-export function creditInsight(s: { series: readonly Point[]; mid: number; name: string; row: { flagState?: Tone } }, P: CreditPage){
-  var h = P.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
-  var side = function(d: CreditPoint){ return d.v >= s.mid; }, cross: CreditPoint | null = null;
-  for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
-  var higher = h.filter(function(d){ return d.v > last.v; }).length;
-  return [lede(P.lede),
-    hiCard("The Latest Reading", s.row.flagState || "", pointLabel(last) + " read " + P.fmt(last.v) + ", " + (last.v === s.mid ? "on" : side(last) ? "above" : "below") + " the line at " +
-      P.fmt(s.mid) + (cross && last.v !== s.mid ? ", where it has been since " + pointLabel(cross) + "." : ".")),
-    hiCard("Against the Record", "", higher + " of its " + h.length + " readings since " + pointLabel(h[0]) + " ran higher, and " + above + " sat at or above the line.")];
-}
 export function bootCredit(){
   var closed = delinquencyHistory.filter(function(d){ return +d.q.slice(0, 4) <= DELINQUENCY_TO; });
   DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d){ return a + d.v; }, 0) / closed.length * 100) / 100;

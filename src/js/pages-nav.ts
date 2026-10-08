@@ -1,70 +1,31 @@
-import { allSources, byId, focusQuiet, layer, need, put, ui } from "./dom.ts";
+import { allSources, byId, focusQuiet, layer, need, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { gdpSrc, sp500AnnualReturnSource } from "./data.ts";
-import { coincident, lagging, rowReadings } from "./readings.ts";
-import { ROSTER, rosterFor } from "./roster.ts";
-import { cardDetailHtml, collapseEmptyBlocks, detailClose, metricSheet, seatPageFoot, sheetRenderers, timingPill } from "./render-core.ts";
-import { cycleViewEl, setTopbar } from "./render-pages.ts";
+import { coincident, lagging } from "./readings.ts";
+import { collapseEmptyBlocks, detailClose, seatPageFoot, sheetRenderers } from "./render-core.ts";
+import { defineMarketReadings } from "./pressure.ts";
+import { cycleViewEl, defineSubjectReadings, setTopbar } from "./render-pages.ts";
 import { cycleView } from "./dial-cycle.ts";
-import { renderMetricPages } from "./inner-pages.ts";
-import { renderReadingPages } from "./cycle-tab.ts";
+import { defineInnerReadings, wirePageControls } from "./inner-pages.ts";
+import { defineSplits } from "./indicators.ts";
+import { mountReadings } from "./reading.ts";
 type SourceIndex = { all: Src[]; cards: { name: string; src: Src[] }[]; annual: Src[]; gdp: Src[] };
 export var sourceIndex: SourceIndex = { all: [], cards: [], annual: [], gdp: [] };
 
 type OpenPage = (el: HTMLElement | null, title: string | null, returning?: boolean, homeKey?: string | null) => void;
 type PageHome = { panel: HTMLElement; bar: () => [string, (() => void) | null]; hide: () => (HTMLElement | null | undefined)[] };
 
-function convertLeadingSigns(){
-  ROSTER.filter(function(R){ return R.door === "subject"; }).forEach(function(R){
-    var key = R.id.replace("sheet-sign-", ""), det = document.querySelector('.subject[data-subject="' + key + '"]'); if (!det) return;
-    var sheet = metricSheet(R.id);
-    sheet.innerHTML = timingPill(R.timing);
-    while (det.firstChild) sheet.appendChild(det.firstChild);
-    det.before(sheet);
-    det.remove();
-  });
-}
-function sheetRank(el: Element){
-  var k = el.id || "";
-  if (/-timing$/.test(k)) return 0;
-  if (/-head$/.test(k)) return 1;
-  if (/-chart$/.test(k) || /^slot-/.test(k)) return 2;
-  if (/-highlights$/.test(k)) return 4;
-  return 3;
-}
-function orderSheet(sheet: HTMLElement){
-  Array.prototype.slice.call(sheet.children)
-    .map(function(el, i){ return { el:el, r:sheetRank(el), i:i }; })
-    .sort(function(a, b){ return a.r - b.r || a.i - b.i; })
-    .forEach(function(x){ sheet.appendChild(x.el); });
-}
 function openTarget(el: Element){ var id = el.getAttribute("data-open"); return id ? byId(id) : null; }
 function tabPanel(tab: string){ return need("panel-" + tab); }
 function scrollSoon(y: number){ window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); }); }
 function viewTab(){ var p = cycleView().closest(".tab-panel"); if (!p) throw new Error("the cycle view sits in no tab panel"); return p.getAttribute("data-tab"); }
-function orderMetricSheets(){
-  var slotted = ROSTER.filter(function(R){ return R.slot; });
-  slotted.forEach(function(R){ put(R.slot + "-timing", timingPill(R.timing)); });
-  slotted.forEach(function(R){
-    var sheet = byId(R.id); if (sheet) orderSheet(sheet);
-  });
-  Array.prototype.forEach.call(document.querySelectorAll(".metric-sheet"), seatPageFoot);
-}
 function renderSignsList(){
-  var host = need("signs-list");
-  function signSubject(ind: Indicator){
-    var R = rosterFor(ind), pg: IndicatorPage = ind.page || {}, timing = R.timing;
-    var d = metricSheet(R.id);
-    d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
-    put(d.querySelector(".sign-detail"), cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") +
-      (function(){ var h = ui.heldHighlights; ui.heldHighlights = ""; return h; })());
-    if (pg.seat) pg.seat(ind, d); else host.appendChild(d);
-    return d;
-  }
-  rowReadings().forEach(function(ind){ signSubject(ind); });
-
-  convertLeadingSigns();
-  orderMetricSheets();
+  defineSplits();
+  defineInnerReadings();
+  defineSubjectReadings();
+  defineMarketReadings();
+  mountReadings(need("signs-list"));
+  Array.prototype.forEach.call(document.querySelectorAll(".metric-sheet"), seatPageFoot);
 }
 // ---- THE NAVIGATION CONTROLLER ----
 var NAV: { open: OpenPage | null; panel: HTMLElement | null } = { open: null, panel: null };
@@ -155,7 +116,7 @@ function buildNav(){
   });
   metricPage.addEventListener("click", function(e){
     var btn = (e.target as Element).closest && (e.target as Element).closest(".trendpill.can-toggle"); if (!btn) return;
-    var box = btn.closest(".page-chart, .spread-history"); if (!box) return;
+    var box = btn.closest(".page-chart"); if (!box) return;
     var on = btn.getAttribute("aria-pressed") !== "true";
     btn.setAttribute("aria-pressed", on ? "true" : "false");
     box.classList.toggle("trend-on", on);
@@ -170,7 +131,7 @@ function buildNav(){
   NAV.panel = analysisPanel;
 }
 function renderPagesAndNav(){
-  renderMetricPages(renderReadingPages());
+  wirePageControls();
   buildNav();
 }
 // ---- The Diagnosis: under the dial, today or at a cycle's close ----

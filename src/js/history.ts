@@ -150,7 +150,7 @@ export function windowScale(vals: (number | null)[], must?: number[]){
   return { lo:lo, hi:hi, ticks:ticks };
 }
 function histReadEnsure(host: HTMLElement){
-  var cont = (host.closest(".page-chart, .spread-history") || host.parentNode || host) as HTMLElement;
+  var cont = (host.closest(".page-chart") || host.parentNode || host) as HTMLElement;
   var el = cont.querySelector<HTMLElement>(":scope > .hist-read");
   if (!el){
     el = document.createElement("div");
