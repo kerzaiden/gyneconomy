@@ -852,6 +852,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
+- **Real return is its own reading in Weather, under Market, after the S&P 500: the index's total return each year with
+  inflation taken out.** Keren: "it needs to be under the weather category, under market subcategory" (0.9.19), over
+  chips on the cycle pages. It deflates by the app's own inflation gauge (CPI before 2000, PCE since), so one inflation
+  figure is used everywhere; the open year's inflation is the latest twelve-month rate taken for the share of the year
+  gone (Claude's call: the app holds no price index to measure the year so far). Zero is the definitional line, like the
+  S&P 500's; the words are "Beat inflation" and "Lost to inflation". A cycle's real years are read on its page through
+  the Cycles window. (0.9.19)
+
 - **Credit and debt are one system, and both live in Stress: Credit is the appetite, Debt is the burden.** Credit
   (Credit gap, Margin debt, Lending standards) is borrowing as it builds and banks' willingness to lend; Debt (Federal debt,
   Federal interest payments, Federal budget, Households, Delinquency rate) is what the borrowing leaves owed. Keren: "I think
@@ -1095,12 +1103,6 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Insights.** Nothing drew it once Volatility had one chart. (V663)
 
 ### Figures
-
-- **Every closed cycle and every finished year show the S&P 500's real return, beside its nominal one.** Keren asked for
-  an "inflation-adjusted return for each cycle" and chose cycle pages over a new reading (0.9.19): a real return
-  only means something over a span, and nominal flatters the inflationary cycles (Volcker +58% nominal, +5% real).
-  It deflates by the app's own inflation gauge rather than Shiller's CPI, so one inflation figure is used everywhere.
-  The open year and the open cycle carry none, since their return is year-to-date. (0.9.19)
 
 - **An inflation reading past the 1–3% band never prints as the band's edge: one decimal, or two when one would
   round onto 1.0 or 3.0 (3.04% is "3.04%", not "Above range (3.0%)").** Written once, `inflationFigure` in

@@ -104,10 +104,10 @@ export function marketPills(runs: MarketRun[]){
 export function seasonRunsLabel(runs: StripRun[]){
   return runs.map(function(r){ return stripGroupName[r.g] + ' ' + r.n + (r.n === 1 ? ' quarter' : ' quarters'); }).join(', ');
 }
-export function econChips(growth: number | null, prices: number | null, market: number | null, real: number | null, digits: number, soFar: boolean, cls: string){
+export function econChips(growth: number | null, prices: number | null, market: number | null, digits: number, soFar: boolean, cls: string){
   function chip(label: string, v: number | null, unit: string){ return v == null ? "" : '<span class="chip"><i>' + label + '</i>' + fmtSigned(v, digits) + '%' + unit + '</span>'; }
   return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") +
-    chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + chip("Real return", real, "") + '</span></span>';
+    chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + '</span></span>';
 }
 export function dxHead(mark: string, title: string, open?: string){
   var inner = (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + '</span>' : "") + titleCase(title);

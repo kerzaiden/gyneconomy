@@ -1,7 +1,7 @@
 import { fmtSigned, qLabel, yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
 import { confidenceHistory, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
-import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
+import { calendarTodayY, inflationHistory, gdpQuarterlyYoY, seasonOverride, yearDone } from "./refresh-season.ts";
 export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; heading: string; cpiHot: boolean; cpiCold: boolean; potential: number; gdpLatest: QuarterPoint; annual: boolean };
 type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
@@ -373,7 +373,7 @@ export function bootModel(){
     return out;
   })();
   // ---- One cycle, as the cycle view reads it ----
-  cycleYtdFraction = (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
+  cycleYtdFraction = yearDone();
   nowModel = cycleModel(currentEra);
   readingNow = nowModel.reading;
   cpiNow = readingNow.cpiNow;

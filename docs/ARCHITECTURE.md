@@ -601,10 +601,7 @@ season strip (`seasonRuns` and `seasonPills` in render-core, the cycle list's ow
 since four quarters fill the row; the quarters not yet run a grey line on the season strip and grey dots on the market
 strip, Keren), and under it the same Growth,
 Prices and S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` (the figures `eraGrowth` and
-`eraInflation` compound) and `sp500AnnualReturns`, whole percents as on the Analysis page, then a Real return chip
-(`realReturn` in model.ts: the S&P 500 deflated by the Prices figure beside it, so the chip is the two printed numbers'
-ratio and the app's one inflation gauge, CPI before 2000 and PCE since). The year in progress and the open cycle have no
-Real return chip: a year-to-date return set against a twelve-month inflation rate does not compare. The year in progress reads
+`eraInflation` compound) and `sp500AnnualReturns`, whole percents as on the Analysis page. The year in progress reads
 `yearSoFar`: its latest quarter's real GDP on a year earlier and its latest month's CPI, the Growth and Temperature
 cards' own figures; the bar's blank end says the year is not done, so the row carries no "so far", which would not
 fit on a phone. Its grey dots are laid out after layout, not in the markup (`fitYearDots`, run by `renderDiagnosis` and
@@ -703,7 +700,9 @@ emotion at the closing month, its years, and what followed a year later. Every l
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   Balance. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names
-  calendar years through the page option `at`.
+  calendar years through the page option `at`. Real return is built by the same `yearReading` from `realYears`: each year of
+  `sp500Years` deflated by `yearInflation` through `realReturn` (model.ts), the open year by the latest twelve-month
+  rate times `yearDone()`, the share of the year gone that the cycle view's `cycleYtdFraction` also reads.
 
 ## The season model
 
