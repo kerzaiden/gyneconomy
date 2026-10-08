@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,853 lines** in 40 files, about 607 KB, roughly **172 thousand tokens**. No session can
+The source is **8,855 lines** in 40 files, about 607 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `abfd8c7` on 2026-10-08.
+Generated from commit `b0c6c2a` on 2026-10-08.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `abfd8c7` on 2026-10-08.
 | `js/main.ts` | 36 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **36** modules, **751** top-level functions, **119** top-level vars, **371** exported names, **20** boots.
+Counts: **36** modules, **752** top-level functions, **119** top-level vars, **371** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -55,7 +55,7 @@ Counts: **36** modules, **751** top-level functions, **119** top-level vars, **3
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 390 | 15 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
+| `js/history-charts.ts` | 392 | 16 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 31 | 14 | — |
 | `js/indicators.ts` | 195 | 32 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -894,7 +894,7 @@ falls in. **export** marks a name other modules import.
 | 85 | `colWidth` · export | `function colWidth(` |
 | 90 | `AXIS` · export | `var AXIS =` |
 | 91 | `histFrame` · export | `function histFrame(` |
-| 98 | `yLabel` · export | `function yLabel(` |
+| 98 | `yLabel` | `function yLabel(` |
 | 101 | `xLabel` · export | `function xLabel(` |
 | 104 | `crossLine` · export | `function crossLine(` |
 | 107 | `zeroRule` · export | `function zeroRule(` |
@@ -1168,19 +1168,20 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 11 | `deficitChart` · export | `function deficitChart(` |
 | 78 | `colScale` | `function colScale(` |
-| 83 | `PULSE_YEARS` · export | `var PULSE_YEARS =` |
-| 84 | `pulseRow` | `function pulseRow(` |
-| 93 | `pulseYearsChart` · export | `function pulseYearsChart(` |
-| 109 | `velocityHistoryChart` · export | `function velocityHistoryChart(` |
-| 157 | `yearTicks` | `function yearTicks(` |
-| 172 | `unempHistoryChart` · export | `function unempHistoryChart(` |
-| 210 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 252 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 290 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 337 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 378 | `m2Step` | `function m2Step(` |
-| 382 | `heatEdges` | `function heatEdges(` |
-| 386 | `heatStep` | `function heatStep(` |
+| 83 | `PULSE_BEATS` · export | `var PULSE_BEATS =` |
+| 84 | `pulseLine` | `function pulseLine(` |
+| 93 | `pulseBeatsPerTurn` · export | `function pulseBeatsPerTurn(` |
+| 94 | `pulseYearsChart` · export | `function pulseYearsChart(` |
+| 111 | `velocityHistoryChart` · export | `function velocityHistoryChart(` |
+| 159 | `yearTicks` | `function yearTicks(` |
+| 174 | `unempHistoryChart` · export | `function unempHistoryChart(` |
+| 212 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
+| 254 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 292 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 339 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 380 | `m2Step` | `function m2Step(` |
+| 384 | `heatEdges` | `function heatEdges(` |
+| 388 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 

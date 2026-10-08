@@ -398,8 +398,9 @@ test('the Pulse page reads its rhythm: two years of quarterly changes, cut at th
   assert.match(page, /1981–1984, 2008–2010 and 2020–2022/);
   const svg = velocityHistoryChart(360, 0);
   assert.equal((svg.match(/class="pv-col hcol/g) || []).length, m2vHistory.length);
-  const years = pulseYearsChart(0);
-  assert.deepEqual([...years.matchAll(/class="bt-yl"[^>]*>(\d{4})</g)].map(m => +m[1]), Array.from({ length: 12 }, (_, k) => 2015 + k));
-  assert.equal((years.match(/class="pt-now"/g) || []).length, 12);
-  assert.match(pulseYearsChart(240, 256), /from 2019 to 2022/);
+  const cycle = pulseYearsChart(240, 256);
+  assert.equal((cycle.match(/class="pt-now"/g) || []).length, 1);
+  assert.deepEqual([...cycle.matchAll(/class="bt-xl"[^>]*>([^<]+)</g)].map(m => m[1]), ['1.45×', '2019', '1.21×', '2020', '1.16×', '2021', '1.21×', '2022']);
+  const year = pulseYearsChart(252, 256);
+  assert.deepEqual([...year.matchAll(/class="bt-xl"[^>]*>([^<]+)</g)].map(m => m[1]).filter((_, k) => k % 2), ['Q1', 'Q2', 'Q3', 'Q4']);
 });

@@ -47186,37 +47186,47 @@
       }
     };
   }
-  var PULSE_YEARS = 12;
-  var PULSE_BEATS = 10;
+  var PULSE_BEATS = 20;
   var PULSE_SWING = .12;
-  function pulseRow(y, i0, n, X, clip) {
-    var wide = (X(4) - X(0)) / (PULSE_BEATS * 1.9), at = function(x) {
-      var q = Math.max(0, Math.min(n - 1, Math.floor((x - X(0)) / (X(4) - X(0)) * 4))), i = i0 + q;
+  function pulseLine(y, i0, n, X, perTurn) {
+    var wide = (X(4) - X(0)) / (perTurn * 1.9), at = function(x) {
+      var q = Math.max(0, Math.min(n - 1, Math.floor((x - X(0)) / (X(n) - X(0)) * n))), i = i0 + q;
       var change = i > 0 ? (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100 : 0;
-      var p = (X(4) - X(0)) / (PULSE_BEATS * m2vHistory[i]) * Math.exp(-PULSE_SWING * change);
+      var p = (X(4) - X(0)) / (perTurn * m2vHistory[i]) * Math.exp(-PULSE_SWING * change);
       return Math.min(p, Math.max(X(q + 1) - x, wide));
     };
-    return '<g clip-path="url(#' + clip + ')"><path class="pt-now" d="' + beatPath(X(0), X(n), y, at, 13, wide) + '"/></g>';
+    return '<path class="pt-now" d="' + beatPath(X(0), X(n), y, at, 13, wide) + '"/>';
+  }
+  function pulseBeatsPerTurn(n) {
+    return Math.max(1, Math.round(PULSE_BEATS * 4 / Math.max(4, n)));
   }
   function pulseYearsChart(from, to) {
-    var end = to == null ? m2vHistory.length : to, y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4);
-    var y0 = Math.max(M2V_FROM_YEAR + Math.floor(from / 4), y1 - PULSE_YEARS + 1);
-    var W = 520, L = 44, R = W - 6, row = 40, T = 8, B = T + row * (y1 - y0 + 1), H = B + 20, f = function(v) {
+    var end = to == null ? m2vHistory.length : to, n = end - from, perTurn = pulseBeatsPerTurn(n);
+    var W = 520, L = 6, R = W - 6, T = 26, Y = 52, B = 76, H = B + 18, f = function(v) {
       return v.toFixed(1);
     };
-    var X = function(q2) {
-      return L + (R - L) * q2 / 4;
+    var X = function(q) {
+      return L + (R - L) * q / n;
     }, out = [];
-    for (var q = 0; q <= 4; q++) out.push(vGrid(X(q), T, B));
-    [ "Q1", "Q2", "Q3", "Q4" ].forEach(function(t, q2) {
-      out.push(xLabel(f((X(q2) + X(q2 + 1)) / 2), t, B + 15));
+    var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4);
+    var marks = n <= 4 ? Array.from({
+      length: n
+    }, function(_, k) {
+      return [ from + k, from + k + 1, "Q" + ((from + k) % 4 + 1) ];
+    }) : windowYears(y0, y1, 7).map(function(yr) {
+      var s = (yr - M2V_FROM_YEAR) * 4;
+      return [ Math.max(from, s), Math.min(end, s + 4), yr ];
     });
-    for (var y = y0; y <= y1; y++) {
-      var i0 = (y - M2V_FROM_YEAR) * 4, n = Math.min(4, end - i0), cy = T + row * (y - y0 + .62);
-      out.push(yLabel(L - 8, y, f(cy + 3), "end"));
-      out.push('<clipPath id="pyclip' + y + '"><rect x="' + f(X(0)) + '" y="' + f(cy - row) + '" width="' + f(X(n) - X(0)) + '" height="' + row * 1.4 + '"/></clipPath>' + pulseRow(cy, i0, n, X, "pyclip" + y));
-    }
-    return '<div class="pulse-years"><svg class="pulse-years-svg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Money velocity’s heartbeat, one row per year from ' + y0 + " to " + y1 + ', a quarter’s beats closer together when velocity rose that quarter and further apart when it fell">' + out.join("") + "</svg></div>";
+    marks.forEach(function(m) {
+      var a = +m[0], b = +m[1], part = m2vHistory.slice(a, b), avg = part.reduce(function(s, v) {
+        return s + v;
+      }, 0) / part.length, cx = f((X(a - from) + X(b - from)) / 2);
+      out.push(vGrid(X(a - from), T - 12, B));
+      out.push(xLabel(cx, avg.toFixed(2) + "×", T - 6));
+      out.push(xLabel(cx, m[2], B + 15));
+    });
+    out.push(pulseLine(Y, from, n, X, perTurn));
+    return '<div class="pulse-years"><svg class="pulse-years-svg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Money velocity’s heartbeat from ' + y0 + " to " + y1 + ', each year marked with its average velocity; a quarter’s beats closer together when velocity rose that quarter and further apart when it fell">' + out.join("") + "</svg></div>";
   }
   function velocityHistoryChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
@@ -50820,7 +50830,7 @@
   }
   function rhythmInfo() {
     var r = rhythmRecord();
-    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>Under the history, her heartbeat runs one year to a row</b> (the last twelve of the period you choose), Q1 to Q4 across, the way a hospital lays out a long EKG. Each row beats ten times for every turnover, and each quarter’s beats close up when velocity rose that quarter and spread out when it fell: every point of change moves them about 12% (Claude’s scale, so a year can be read). A steady year beats evenly; an irregular one stutters.</p>';
+    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>Under the history, her heartbeat runs across the period you choose</b>, each year marked with its average velocity (each quarter, when the period is a single year). Each quarter’s beats close up when velocity rose that quarter and spread out when it fell: every point of change moves them about 12% (Claude’s scale, so a change can be seen). A steady stretch beats evenly; an irregular one stutters. The beats are spaced to stay readable, more per turnover in a short period than in a long one.</p>';
   }
   var CURVE_KEY = {
     "3m": "3M",

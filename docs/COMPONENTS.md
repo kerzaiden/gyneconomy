@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `4b05956` on 2026-10-08. **104 components**, **20 shared patterns**.
+Generated from commit `b0c6c2a` on 2026-10-08. **104 components**, **20 shared patterns**.
 
 ## ai-insights.ts
 
@@ -47,7 +47,7 @@ Generated from commit `4b05956` on 2026-10-08. **104 components**, **20 shared p
 | **`vGrid`** | `.bt-vgrid` | `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:pulseYearsChart`, `history-charts.ts:velocityHistoryChart`, `history-charts.ts:yearTicks`, `render-pages.ts:paintSpreads` |
 | **`vhOpen`** | `.vh-svg` | `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart` |
 | **`xLabel`** | `.bt-xl` | `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:pulseYearsChart`, `history-charts.ts:velocityHistoryChart`, `history-charts.ts:yearTicks`, `render-pages.ts:paintSpreads` |
-| **`yLabel`** | `.bt-yl` | `charts.ts:chartAxes`, `history-charts.ts:pulseYearsChart` |
+| **`yLabel`** | `.bt-yl` | `charts.ts:chartAxes` |
 | **`zeroRule`** | `.m2-zero` | `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart` |
 
 ## cycle-analysis.ts
@@ -130,7 +130,7 @@ Generated from commit `4b05956` on 2026-10-08. **104 components**, **20 shared p
 | **`fedFundsHistoryChart`** | `.ff-col` | `render-pages.ts:defineHormones` |
 | **`gdpHistoryChart`** | `.growth-col` | `inner-pages.ts:defineGdp` |
 | **`m2GrowthChart`** | `.m2-col` | `pressure.ts:defineFlow` |
-| **`pulseRow`** | `.pt-now` | `history-charts.ts:pulseYearsChart` |
+| **`pulseLine`** | `.pt-now` | `history-charts.ts:pulseYearsChart` |
 | **`pulseYearsChart`** | `.pulse-years` `.pulse-years-svg` | `pressure.ts:defineFlow` |
 | **`unempHistoryChart`** | `.unemp-col` | `inner-pages.ts:defineActivity` |
 | **`velocityHistoryChart`** | `.pv-col` | `pressure.ts:defineFlow` |
@@ -229,12 +229,12 @@ renderer speaks. Listed most-used first.
 | **`addSources`** | dom.ts | 8 places |
 | **`cycleSlice`** | model.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
+| **`windowYears`** | charts.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`fitLine`** | charts.ts | 7 places |
 | **`keyed`** | roster.ts | 7 places |
 | **`put`** | dom.ts | 7 places |
-| **`windowYears`** | charts.ts | 7 places |
 | **`colScale`** | history-charts.ts | 6 places |
 | **`fileRow`** | data.ts | 6 places |
 | **`labRow`** | data.ts | 6 places |
