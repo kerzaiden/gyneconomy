@@ -1,6 +1,6 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
-import { bagSvg, creditSvg, debtSvg, homeSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
+import { bagSvg, debtSvg, homeSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { confidenceHistory, payrollsHistory, retailHistory, consumerCreditHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_MEAN, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_MID, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
@@ -28,7 +28,7 @@ export var CATEGORIES: Category[] = [
 ];
 export var SUB_MARK: Record<string, () => string> = {
   "Economic Season":thermoSvg, "Market":marketSvg, "Labor":personSvg, "Output":factorySvg, "Pressure":gaugeSvg, "Money":heartSvg,
-  "Credit":creditSvg, "Households":homeSvg, "Government":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
+  "Households":homeSvg, "Government":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
 };
 export var ROSTER_BY: Record<string, RosterRow> = {};
 function pageState<T>(of: (R: RosterRow) => T | undefined): Record<string, T> {
@@ -95,16 +95,14 @@ function declareRoster(): RosterRow[] {
       cardUnit:"M2 velocity", live:["coincident"] },
     { id:"sheet-sign-volume", name:"Volume", cat:"circulation", sub:"Money", timing:"leading", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, cardUnit:"M2, YoY", live:["coincident"] },
-    { id:"sheet-sign-consumer-credit", name:"Consumer credit", cat:"circulation", sub:"Credit", timing:"lagging",
+    { id:"sheet-sign-consumer-credit", name:"Consumer credit", cat:"circulation", sub:"Money", timing:"lagging",
       term:"Consumer credit", head:"Consumer Credit, YoY", hist:{ s:consumerCreditHistory, k:"m" }, mid:CONSUMER_LINE, cardUnit:"YoY" },
     { id:"sheet-sign-saving", name:"Saving rate", cat:"stress", sub:"Households", good:"up", group:"Households", timing:"structural",
       term:"Saving rate", head:"Personal Saving Rate, Share of Income", hist:{ s:savingPoints, k:"q" }, mid:SAV_MID, cardUnit:"of income" },
-    { id:"sheet-metric-debt-payments", name:"Debt payments", cat:"stress", sub:"Households", good:"down", group:"Households", timing:"structural",
-      term:"Debt payments", head:"Debt Payments, Share of Income", hist:{ s:debtPaymentPoints, k:"q" }, mid:DSR_MEAN, cardUnit:"of income" },
+    { id:"sheet-metric-debt-payments", name:"Debt-to-income ratio", cat:"stress", sub:"Households", good:"down", group:"Households", timing:"structural",
+      term:"Debt-to-income ratio", head:"Debt Payments ÷ Disposable Income", hist:{ s:debtPaymentPoints, k:"q" }, mid:DSR_MEAN, cardUnit:"of income" },
     { id:"sheet-sign-margin", name:"Margin debt", cat:"stress", sub:"Households", group:"Households", timing:"leading",
       term:"Margin debt", head:"Margin Debt, YoY", hist:{ s:marginHistory, k:"m" }, mid:MARGIN_LINE, cardUnit:"YoY" },
-    { id:"sheet-metric-delinquency", name:"Delinquencies", cat:"stress", sub:"Households", good:"down", group:"Households", timing:"lagging",
-      term:"Delinquencies", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
     { id:"sheet-metric-debt", name:"Federal debt", cat:"stress", sub:"Government", good:"down", group:"Government", timing:"structural",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:DEBT_LINE, cardUnit:"of GDP" },
     { id:"sheet-metric-interest", name:"Federal interest payments", cat:"stress", sub:"Government", good:"down", group:"Government", timing:"structural",
@@ -131,6 +129,8 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-sign-premium", name:"Equity risk premium", cat:"desire", sub:"Risk", good:"up", group:"Risk", timing:"structural",
       term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE,
       cardUnit:"over bonds" },
+    { id:"sheet-metric-delinquency", name:"Default risk", cat:"desire", sub:"Risk", good:"down", group:"Risk", timing:"lagging",
+      term:"Default risk", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
     { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", sub:"Sentiment", good:"up", timing:"leading", term:"Confidence",
       head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE,
       cardUnit:"OECD index" }

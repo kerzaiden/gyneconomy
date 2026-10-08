@@ -673,9 +673,7 @@
   .page-foot > .timing-row{ margin:0; flex:none; }
   .page-foot > .more-row{ margin:0; flex:1 1 auto; }
   .detail-modal .timing-row{ margin:18px 0 0; padding-top:16px; border-top:1px solid var(--border); }
-  .page-chart.pulsebox{ padding:16px 16px 14px; }
-  .pulsetrace{ margin:0; }
-  .pulsetrace .spread-history-head + .pt-head{ margin-top:12px; }
+  .pulsetrace{ margin:12px 0 0; }
   .pulsetrace .pt-svg.solo{ height:42px; }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
@@ -745,7 +743,7 @@
     background:color-mix(in srgb, var(--text-primary) 8%, var(--surface)); }
   .bh-mark svg{ width:13px; height:13px; }
   .bh-mark svg path, .bh-mark svg circle, .bh-mark svg rect, .bh-mark svg line{ stroke-width:1.35; }
-  .bh-title, .spread-history-head h4{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface);
+  .bh-title{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface);
     font-weight:600; letter-spacing:-0.01em; color:var(--text-primary); }
   .bh-title{ flex:0 1 auto; min-width:0; margin:0; }
   .bh-sigma{ flex:0 0 auto; margin-left:-5px; font-family:"IBM Plex Mono",monospace; font-size:var(--type-interface);
@@ -1077,8 +1075,6 @@
   #metric-page :has(.hist-bar){ margin-top:0; }
   #metric-page .hist-bar{ margin-top:0; }
   .hist-bar > * + *{ margin-top:8px; }
-  .spread-history-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }
   .spread-history-band{ fill:var(--border); opacity:0.7; }
   .spread-history-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
 
@@ -1276,7 +1272,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.23 (794)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.24 (795)</span></p>
     </div>
   </div>
 
@@ -2955,7 +2951,6 @@
     m2vHistory: [ 1773, 1789, 1773, 1779, 1817, 1797, 1780, 1737, 1723, 1725, 1733, 1742, 1746, 1728, 1726, 1701, 1690, 1675, 1680, 1672, 1685, 1679, 1674, 1652, 1668, 1669, 1680, 1693, 1713, 1712, 1733, 1744, 1739, 1708, 1695, 1691, 1715, 1733, 1730, 1722, 1737, 1749, 1774, 1773, 1789, 1804, 1795, 1752, 1770, 1736, 1717, 1690, 1696, 1703, 1679, 1673, 1694, 1711, 1711, 1739, 1725, 1748, 1764, 1781, 1766, 1741, 1739, 1750, 1752, 1731, 1717, 1699, 1690, 1701, 1713, 1715, 1713, 1780, 1795, 1822, 1832, 1835, 1846, 1857, 1870, 1847, 1831, 1874, 1928, 1900, 1925, 1888, 1843, 1835, 1825, 1804, 1745, 1753, 1779, 1797, 1812, 1819, 1829, 1818, 1799, 1795, 1795, 1793, 1792, 1760, 1741, 1722, 1718, 1734, 1751, 1776, 1768, 1774, 1789, 1813, 1841, 1861, 1853, 1834, 1848, 1859, 1856, 1839, 1827, 1833, 1850, 1861, 1875, 1905, 1931, 1950, 1971, 1985, 1997, 2023, 2047, 2080, 2103, 2138, 2155, 2151, 2142, 2146, 2147, 2165, 2171, 2176, 2174, 2189, 2192, 2184, 2171, 2154, 2154, 2140, 2130, 2124, 2127, 2145, 2135, 2150, 2139, 2132, 2085, 2057, 2011, 1978, 1967, 1969, 1950, 1924, 1913, 1899, 1903, 1938, 1948, 1938, 1947, 1956, 1983, 1993, 1998, 1999, 2015, 2015, 2003, 1994, 1992, 1983, 1974, 1974, 1937, 1923, 1904, 1810, 1733, 1705, 1707, 1722, 1736, 1742, 1744, 1741, 1723, 1708, 1651, 1644, 1639, 1627, 1608, 1582, 1580, 1570, 1569, 1560, 1538, 1545, 1550, 1537, 1520, 1525, 1519, 1497, 1471, 1462, 1455, 1447, 1440, 1434, 1438, 1447, 1457, 1461, 1463, 1461, 1455, 1456, 1451, 1435, 1390, 1126, 1176, 1165, 1155, 1150, 1152, 1163, 1163, 1191, 1219, 1252, 1287, 1324, 1351, 1369, 1373, 1387, 1393, 1392, 1390, 1395, 1407, 1409, 1413, 1415 ],
     m2Level: [ 286.6, 290.1, 295.2, 296.5, 298.2, 300.1, 304.1, 309.5, 314.1, 319.9, 325.6, 331.1, 337.5, 345.5, 350.8, 357.2, 365.2, 373.3, 381.1, 388.3, 395.2, 401.7, 410.1, 419.1, 427.5, 435.5, 442.9, 452.6, 462, 469.3, 470.8, 475.7, 481.6, 492.1, 506.3, 518.2, 527.4, 535.7, 545.6, 557.6, 569.3, 575.7, 579.5, 583.4, 589.6, 588.4, 599.1, 616.4, 633, 658.4, 679.6, 698.4, 717.7, 738.4, 759.5, 786.9, 810.3, 819.7, 836.5, 842.6, 859.7, 872.9, 881.4, 893.3, 906.3, 935.1, 975.1, 997.8, 1026.7, 1060.8, 1086.3, 1125, 1165.2, 1199.6, 1226.8, 1254, 1279.7, 1300.3, 1324.2, 1352.4, 1371.6, 1402.1, 1434.8, 1460.4, 1482.7, 1502.2, 1545.5, 1584.7, 1607, 1659.2, 1681.9, 1721.7, 1770.4, 1804, 1831.6, 1869.4, 1959.4, 2028.9, 2064.9, 2098.8, 2138, 2192.1, 2223.6, 2258.4, 2332.1, 2375.8, 2429.6, 2467.6, 2501.6, 2558.1, 2626.6, 2687.1, 2743.3, 2767.8, 2779, 2814.7, 2846.9, 2910.4, 2947.2, 2965.4, 2991.2, 3005.5, 3052.5, 3114.3, 3166.3, 3201.2, 3224.7, 3259.2, 3287.4, 3331.9, 3356.2, 3360, 3380.9, 3399.2, 3393.9, 3423.9, 3418.9, 3410.7, 3441.9, 3456.9, 3474.8, 3480.5, 3488.1, 3484.8, 3492.2, 3498.2, 3567.5, 3614.1, 3647.4, 3696.4, 3737.5, 3773.4, 3834, 3875.8, 3924.9, 3992.7, 4055.2, 4138.9, 4205.4, 4308.2, 4401.7, 4459.9, 4537.6, 4592.9, 4666.1, 4766.4, 4793.4, 4871.4, 4976.8, 5137.9, 5212, 5344, 5459.6, 5501.3, 5597.6, 5707.3, 5811.1, 5904.9, 6050.4, 6070.2, 6081.3, 6198.5, 6292.3, 6379.9, 6429.9, 6461.4, 6545.1, 6644, 6728.4, 6806.3, 6896.1, 7002.1, 7115.6, 7239.9, 7321.8, 7429, 7513.6, 7711.4, 7794.9, 7976.3, 8284.2, 8390.2, 8467.3, 8489.2, 8473.1, 8554.3, 8642.3, 8769.8, 8844.5, 9033.6, 9346.9, 9586.2, 9753.3, 9905, 10076, 10294.4, 10502.3, 10608.9, 10743, 10989.2, 11127.5, 11276, 11452.5, 11596.5, 11806.2, 11953.4, 12063.5, 12228.4, 12522.2, 12741.9, 12907.3, 13124.5, 13318.9, 13520.3, 13638.5, 13801.5, 13902.4, 14034.8, 14170, 14257.6, 14460.2, 14594, 14882.7, 15185.6, 15425, 17064, 18331.4, 18759.9, 19375.3, 20174.2, 20630, 21164.2, 21647.4, 21768.4, 21649.3, 21464.1, 21274, 20758.4, 20792.2, 20737.5, 20835.5, 20955.5, 21098.8, 21336.7, 21539.3, 21770.8, 22025.5, 22249.8, 22413.4, 22756.7, 23218 ],
     unempHistory: [ 3.4, 3.8, 4, 3.9, 3.5, 3.6, 3.6, 3.9, 3.8, 3.7, 3.8, 4, 4.3, 4.7, 5, 5.3, 6.1, 6.2, 6.7, 6.8, 6.6, 7.9, 6.4, 6.6, 6.5, 6.4, 6.3, 5.8, 5.5, 5.4, 5, 4.5, 4.4, 4.2, 4.2, 4.3, 3.7, 3.4, 3.4, 3.1, 3, 3.2, 3.1, 3.1, 3.3, 3.5, 3.5, 3.1, 3.2, 3.1, 2.9, 2.9, 3, 3, 3.2, 3.4, 3.1, 3, 2.8, 2.7, 2.9, 2.6, 2.6, 2.7, 2.5, 2.5, 2.6, 2.7, 2.9, 3.1, 3.5, 4.5, 4.9, 5.2, 5.7, 5.9, 5.9, 5.6, 5.8, 6, 6.1, 5.7, 5.3, 5, 4.9, 4.7, 4.6, 4.7, 4.3, 4.2, 4, 4.2, 4.1, 4.3, 4.2, 4.2, 4, 3.9, 4.2, 4, 4.3, 4.3, 4.4, 4.1, 3.9, 3.9, 4.3, 4.2, 4.2, 3.9, 3.7, 3.9, 4.1, 4.3, 4.2, 4.1, 4.4, 4.5, 5.1, 5.2, 5.8, 6.4, 6.7, 7.4, 7.4, 7.3, 7.5, 7.4, 7.1, 6.7, 6.2, 6.2, 6, 5.9, 5.6, 5.2, 5.1, 5, 5.1, 5.2, 5.5, 5.7, 5.8, 5.3, 5.2, 4.8, 5.4, 5.2, 5.1, 5.4, 5.5, 5.6, 5.5, 6.1, 6.1, 6.6, 6.6, 6.9, 6.9, 7, 7.1, 6.9, 7, 6.6, 6.7, 6.5, 6.1, 6, 5.8, 5.5, 5.6, 5.6, 5.5, 5.5, 5.4, 5.7, 5.6, 5.4, 5.7, 5.5, 5.7, 5.9, 5.7, 5.7, 5.9, 5.6, 5.6, 5.4, 5.5, 5.5, 5.7, 5.5, 5.6, 5.4, 5.4, 5.3, 5.1, 5.2, 4.9, 5, 5.1, 5.1, 4.8, 5, 4.9, 5.1, 4.7, 4.8, 4.6, 4.6, 4.4, 4.4, 4.3, 4.2, 4.1, 4, 4, 3.8, 3.8, 3.8, 3.9, 3.8, 3.8, 3.8, 3.7, 3.7, 3.6, 3.8, 3.9, 3.8, 3.8, 3.8, 3.8, 3.9, 3.8, 3.8, 3.8, 4, 3.9, 3.8, 3.7, 3.8, 3.7, 3.5, 3.5, 3.7, 3.7, 3.5, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.5, 3.5, 3.5, 3.7, 3.7, 3.5, 3.5, 3.9, 4.2, 4.4, 4.6, 4.8, 4.9, 5, 5.1, 5.4, 5.5, 5.9, 6.1, 5.9, 5.9, 6, 5.9, 5.9, 5.9, 6, 6.1, 6, 5.8, 6, 6, 5.8, 5.7, 5.8, 5.7, 5.7, 5.7, 5.6, 5.6, 5.5, 5.6, 5.3, 5.2, 4.9, 5, 4.9, 5, 4.9, 4.9, 4.8, 4.8, 4.8, 4.6, 4.8, 4.9, 5.1, 5.2, 5.1, 5.1, 5.1, 5.4, 5.5, 5.5, 5.9, 6, 6.6, 7.2, 8.1, 8.1, 8.6, 8.8, 9, 8.8, 8.6, 8.4, 8.4, 8.4, 8.3, 8.2, 7.9, 7.7, 7.6, 7.7, 7.4, 7.6, 7.8, 7.8, 7.6, 7.7, 7.8, 7.8, 7.5, 7.6, 7.4, 7.2, 7, 7.2, 6.9, 7, 6.8, 6.8, 6.8, 6.4, 6.4, 6.3, 6.3, 6.1, 6, 5.9, 6.2, 5.9, 6, 5.8, 5.9, 6, 5.9, 5.9, 5.8, 5.8, 5.6, 5.7, 5.7, 6, 5.9, 6, 5.9, 6, 6.3, 6.3, 6.3, 6.9, 7.5, 7.6, 7.8, 7.7, 7.5, 7.5, 7.5, 7.2, 7.5, 7.4, 7.4, 7.2, 7.5, 7.5, 7.2, 7.4, 7.6, 7.9, 8.3, 8.5, 8.6, 8.9, 9, 9.3, 9.4, 9.6, 9.8, 9.8, 10.1, 10.4, 10.8, 10.8, 10.4, 10.4, 10.3, 10.2, 10.1, 10.1, 9.4, 9.5, 9.2, 8.8, 8.5, 8.3, 8, 7.8, 7.8, 7.7, 7.4, 7.2, 7.5, 7.5, 7.3, 7.4, 7.2, 7.3, 7.3, 7.2, 7.2, 7.3, 7.2, 7.4, 7.4, 7.1, 7.1, 7.1, 7, 7, 6.7, 7.2, 7.2, 7.1, 7.2, 7.2, 7, 6.9, 7, 7, 6.9, 6.6, 6.6, 6.6, 6.6, 6.3, 6.3, 6.2, 6.1, 6, 5.9, 6, 5.8, 5.7, 5.7, 5.7, 5.7, 5.4, 5.6, 5.4, 5.4, 5.6, 5.4, 5.4, 5.3, 5.3, 5.4, 5.2, 5, 5.2, 5.2, 5.3, 5.2, 5.2, 5.3, 5.3, 5.4, 5.4, 5.4, 5.3, 5.2, 5.4, 5.4, 5.2, 5.5, 5.7, 5.9, 5.9, 6.2, 6.3, 6.4, 6.6, 6.8, 6.7, 6.9, 6.9, 6.8, 6.9, 6.9, 7, 7, 7.3, 7.3, 7.4, 7.4, 7.4, 7.6, 7.8, 7.7, 7.6, 7.6, 7.3, 7.4, 7.4, 7.3, 7.1, 7, 7.1, 7.1, 7, 6.9, 6.8, 6.7, 6.8, 6.6, 6.5, 6.6, 6.6, 6.5, 6.4, 6.1, 6.1, 6.1, 6, 5.9, 5.8, 5.6, 5.5, 5.6, 5.4, 5.4, 5.8, 5.6, 5.6, 5.7, 5.7, 5.6, 5.5, 5.6, 5.6, 5.6, 5.5, 5.5, 5.6, 5.6, 5.3, 5.5, 5.1, 5.2, 5.2, 5.4, 5.4, 5.3, 5.2, 5.2, 5.1, 4.9, 5, 4.9, 4.8, 4.9, 4.7, 4.6, 4.7, 4.6, 4.6, 4.7, 4.3, 4.4, 4.5, 4.5, 4.5, 4.6, 4.5, 4.4, 4.4, 4.3, 4.4, 4.2, 4.3, 4.2, 4.3, 4.3, 4.2, 4.2, 4.1, 4.1, 4, 4, 4.1, 4, 3.8, 4, 4, 4, 4.1, 3.9, 3.9, 3.9, 3.9, 4.2, 4.2, 4.3, 4.4, 4.3, 4.5, 4.6, 4.9, 5, 5.3, 5.5, 5.7, 5.7, 5.7, 5.7, 5.9, 5.8, 5.8, 5.8, 5.7, 5.7, 5.7, 5.9, 6, 5.8, 5.9, 5.9, 6, 6.1, 6.3, 6.2, 6.1, 6.1, 6, 5.8, 5.7, 5.7, 5.6, 5.8, 5.6, 5.6, 5.6, 5.5, 5.4, 5.4, 5.5, 5.4, 5.4, 5.3, 5.4, 5.2, 5.2, 5.1, 5, 5, 4.9, 5, 5, 5, 4.9, 4.7, 4.8, 4.7, 4.7, 4.6, 4.6, 4.7, 4.7, 4.5, 4.4, 4.5, 4.4, 4.6, 4.5, 4.4, 4.5, 4.4, 4.6, 4.7, 4.6, 4.7, 4.7, 4.7, 5, 5, 4.9, 5.1, 5, 5.4, 5.6, 5.8, 6.1, 6.1, 6.5, 6.8, 7.3, 7.8, 8.3, 8.7, 9, 9.4, 9.5, 9.5, 9.6, 9.8, 10, 9.9, 9.9, 9.8, 9.8, 9.9, 9.9, 9.6, 9.4, 9.4, 9.5, 9.5, 9.4, 9.8, 9.3, 9.1, 9, 9, 9.1, 9, 9.1, 9, 9, 9, 8.8, 8.6, 8.5, 8.3, 8.3, 8.2, 8.2, 8.2, 8.2, 8.2, 8.1, 7.8, 7.8, 7.7, 7.9, 8, 7.7, 7.5, 7.6, 7.5, 7.5, 7.3, 7.2, 7.2, 7.2, 6.9, 6.7, 6.6, 6.7, 6.7, 6.2, 6.3, 6.1, 6.2, 6.1, 5.9, 5.7, 5.8, 5.6, 5.7, 5.5, 5.4, 5.4, 5.6, 5.3, 5.2, 5.1, 5, 5, 5.1, 5, 4.8, 4.9, 5, 5.1, 4.8, 4.9, 4.8, 4.9, 5, 4.9, 4.7, 4.7, 4.7, 4.6, 4.4, 4.4, 4.4, 4.3, 4.3, 4.4, 4.3, 4.2, 4.2, 4.1, 4, 4.1, 4, 4, 3.8, 4, 3.8, 3.8, 3.7, 3.8, 3.8, 3.9, 4, 3.8, 3.8, 3.7, 3.6, 3.6, 3.7, 3.6, 3.5, 3.6, 3.6, 3.6, 3.6, 3.5, 4.4, 14.8, 13.2, 11, 10.2, 8.4, 7.8, 6.9, 6.7, 6.7, 6.4, 6.2, 6.1, 6.1, 5.8, 5.9, 5.4, 5.1, 4.7, 4.5, 4.1, 3.9, 4, 3.9, 3.7, 3.7, 3.6, 3.6, 3.5, 3.6, 3.5, 3.6, 3.6, 3.5, 3.5, 3.6, 3.5, 3.4, 3.6, 3.6, 3.5, 3.7, 3.7, 3.9, 3.7, 3.8, 3.7, 3.9, 3.9, 3.9, 3.9, 4.1, 4.2, 4.2, 4.1, 4.1, 4.2, 4.1, 4, 4.2, 4.2, 4.2, 4.3, 4.1, 4.3, 4.3, 4.4, null, 4.5, 4.4, 4.3, 4.4, 4.3, 4.3, 4.3, 4.2, 4.1, 4.1 ],
-    dsrHistory: [ 14.799802, 14.828576, 15.139959, 15.02855, 14.989443, 15.044255, 15.367228, 15.509711, 15.526607, 15.63251, 15.712123, 15.846367, 15.775857, 15.326612, 15.546547, 15.72136, 15.5975, 15.251967, 15.08588, 14.896385, 14.51494, 14.069775, 13.917807, 13.580863, 13.30846, 13.057706, 12.944597, 12.749684, 12.237059, 12.034065, 12.083107, 11.754033, 12.006598, 11.794391, 11.837713, 11.985283, 11.883758, 11.62114, 11.646947, 11.631993, 11.556634, 11.485147, 11.606488, 11.738976, 11.763247, 11.766109, 11.769855, 11.865818, 11.723758, 11.756991, 11.818444, 11.816704, 11.644589, 11.598389, 11.619573, 11.666416, 11.49992, 11.626991, 11.646611, 11.727653, 11.591164, 9.739844, 10.05851, 10.389381, 9.051457, 9.841025, 10.009597, 10.228796, 10.472393, 10.684739, 10.567838, 10.736945, 10.564109, 10.577002, 10.747842, 11.096141, 11.058908, 11.01936, 11.138762, 11.12249, 11.105386, 11.124247, 11.229457, 11.322763, 11.158929, 11.111439 ],
     savHistory: [ 7.4, 5, 7.1, 5.8, 6.9, 8.6, 10, 9.7, 7.8, 6.8, 7.2, 6.3, 11.5, 9.8, 6.3, 9.7, 7.6, 12.2, 12.2, 11.5, 11.2, 10.6, 11.9, 10.7, 10.6, 11.2, 10.9, 11.2, 11.3, 10.3, 9.9, 9.9, 9.3, 9.5, 10, 9.9, 10.6, 11.1, 11.3, 11.5, 11.1, 11.6, 11.4, 10.7, 11.2, 11.1, 11.6, 11.8, 10.7, 10.8, 9.7, 10.2, 10.3, 9.7, 10.2, 10, 10.9, 10.9, 11.7, 11.6, 11.6, 11.4, 11.1, 10.7, 10.8, 10.7, 10.4, 11.1, 11.1, 11.9, 11.4, 12.1, 11.2, 11.2, 12, 11.4, 11, 11, 11, 11.7, 12.5, 11.9, 12.4, 12.5, 11.9, 12, 10.6, 10.9, 10.1, 10.3, 11.7, 11.6, 12, 12.6, 13.3, 13.3, 13.4, 13.8, 13.6, 13.1, 12.4, 11.6, 12, 13.4, 12.6, 13.3, 13.4, 14.5, 14, 12.9, 12.6, 13.7, 12.8, 15.3, 12.9, 12.7, 12.1, 11.8, 11.6, 11, 10.1, 10.5, 10.8, 11.2, 11.3, 10.4, 10.7, 10.5, 11.1, 10.4, 9.9, 9.8, 10.1, 11.4, 11.5, 11.4, 10.8, 10.8, 12.2, 12.8, 12.2, 12.4, 12.2, 11, 11, 9.8, 9.5, 10, 11, 11.1, 11.6, 11.1, 9.2, 10.1, 8.2, 8.9, 9.3, 9.5, 8.4, 7.9, 8.5, 6.4, 7, 8.2, 8.1, 8.5, 8.6, 8.4, 8.9, 8.1, 7.9, 8.2, 8.2, 8.7, 8.3, 8.2, 8.8, 8.7, 8.7, 9.4, 9.6, 9.9, 9.3, 8.8, 8.7, 8.2, 7.3, 7.2, 6.7, 6.9, 6.7, 7, 7.5, 6.8, 6.7, 6.5, 6.5, 6.3, 6.4, 6.1, 6, 6.3, 5.8, 6.1, 7, 6.7, 6.4, 5.8, 5.9, 4.5, 4.1, 3.9, 4.1, 4.3, 4.5, 4.2, 4.7, 4.4, 6.3, 3.3, 5.5, 5.9, 5.4, 5.5, 5.1, 5.1, 5.5, 5, 4.6, 5, 4.5, 4.5, 2.5, 2.2, 1.8, 2.4, 3.2, 3, 2.4, 2.6, 2.7, 2.8, 2.4, 2.2, 2.8, 4.6, 3.5, 5.6, 5.7, 6.8, 5.1, 5.3, 5.4, 6.2, 6.1, 6, 6.6, 6.3, 6.6, 6.6, 7.4, 7.9, 7, 9.1, 4.8, 5.3, 5.2, 4.6, 5.3, 5.5, 5.5, 5.7, 6.2, 5.8, 5.6, 5.8, 5.9, 5.2, 5.1, 5.2, 5.5, 6, 6, 5.5, 5.8, 6.1, 6.6, 7.2, 8.2, 7.3, 6.9, 6.7, 8.9, 24.4, 15.1, 12.2, 20, 10.4, 8.6, 6.7, 3.8, 2.5, 3.3, 3.8, 5.5, 5.9, 5.4, 5.5, 6.2, 5.8, 5.1, 4.7, 5.2, 5, 4.4, 3.8, 3.9, 2.8 ],
     cpiYoYHistory: [ {
       m: "1989-01",
@@ -31808,6 +31803,265 @@
       m: "2026-08",
       v: 2.73
     } ],
+    dsrQuarterly: [ {
+      q: "2005 Q1",
+      v: 14.799802
+    }, {
+      q: "2005 Q2",
+      v: 14.828576
+    }, {
+      q: "2005 Q3",
+      v: 15.139959
+    }, {
+      q: "2005 Q4",
+      v: 15.02855
+    }, {
+      q: "2006 Q1",
+      v: 14.989443
+    }, {
+      q: "2006 Q2",
+      v: 15.044255
+    }, {
+      q: "2006 Q3",
+      v: 15.367228
+    }, {
+      q: "2006 Q4",
+      v: 15.509711
+    }, {
+      q: "2007 Q1",
+      v: 15.526607
+    }, {
+      q: "2007 Q2",
+      v: 15.63251
+    }, {
+      q: "2007 Q3",
+      v: 15.712123
+    }, {
+      q: "2007 Q4",
+      v: 15.846367
+    }, {
+      q: "2008 Q1",
+      v: 15.775857
+    }, {
+      q: "2008 Q2",
+      v: 15.326612
+    }, {
+      q: "2008 Q3",
+      v: 15.546547
+    }, {
+      q: "2008 Q4",
+      v: 15.72136
+    }, {
+      q: "2009 Q1",
+      v: 15.5975
+    }, {
+      q: "2009 Q2",
+      v: 15.251967
+    }, {
+      q: "2009 Q3",
+      v: 15.08588
+    }, {
+      q: "2009 Q4",
+      v: 14.896385
+    }, {
+      q: "2010 Q1",
+      v: 14.51494
+    }, {
+      q: "2010 Q2",
+      v: 14.069775
+    }, {
+      q: "2010 Q3",
+      v: 13.917807
+    }, {
+      q: "2010 Q4",
+      v: 13.580863
+    }, {
+      q: "2011 Q1",
+      v: 13.30846
+    }, {
+      q: "2011 Q2",
+      v: 13.057706
+    }, {
+      q: "2011 Q3",
+      v: 12.944597
+    }, {
+      q: "2011 Q4",
+      v: 12.749684
+    }, {
+      q: "2012 Q1",
+      v: 12.237059
+    }, {
+      q: "2012 Q2",
+      v: 12.034065
+    }, {
+      q: "2012 Q3",
+      v: 12.083107
+    }, {
+      q: "2012 Q4",
+      v: 11.754033
+    }, {
+      q: "2013 Q1",
+      v: 12.006598
+    }, {
+      q: "2013 Q2",
+      v: 11.794391
+    }, {
+      q: "2013 Q3",
+      v: 11.837713
+    }, {
+      q: "2013 Q4",
+      v: 11.985283
+    }, {
+      q: "2014 Q1",
+      v: 11.883758
+    }, {
+      q: "2014 Q2",
+      v: 11.62114
+    }, {
+      q: "2014 Q3",
+      v: 11.646947
+    }, {
+      q: "2014 Q4",
+      v: 11.631993
+    }, {
+      q: "2015 Q1",
+      v: 11.556634
+    }, {
+      q: "2015 Q2",
+      v: 11.485147
+    }, {
+      q: "2015 Q3",
+      v: 11.606488
+    }, {
+      q: "2015 Q4",
+      v: 11.738976
+    }, {
+      q: "2016 Q1",
+      v: 11.763247
+    }, {
+      q: "2016 Q2",
+      v: 11.766109
+    }, {
+      q: "2016 Q3",
+      v: 11.769855
+    }, {
+      q: "2016 Q4",
+      v: 11.865818
+    }, {
+      q: "2017 Q1",
+      v: 11.723758
+    }, {
+      q: "2017 Q2",
+      v: 11.756991
+    }, {
+      q: "2017 Q3",
+      v: 11.818444
+    }, {
+      q: "2017 Q4",
+      v: 11.816704
+    }, {
+      q: "2018 Q1",
+      v: 11.644589
+    }, {
+      q: "2018 Q2",
+      v: 11.598389
+    }, {
+      q: "2018 Q3",
+      v: 11.619573
+    }, {
+      q: "2018 Q4",
+      v: 11.666416
+    }, {
+      q: "2019 Q1",
+      v: 11.49992
+    }, {
+      q: "2019 Q2",
+      v: 11.626991
+    }, {
+      q: "2019 Q3",
+      v: 11.646611
+    }, {
+      q: "2019 Q4",
+      v: 11.727653
+    }, {
+      q: "2020 Q1",
+      v: 11.591164
+    }, {
+      q: "2020 Q2",
+      v: 9.739844
+    }, {
+      q: "2020 Q3",
+      v: 10.05851
+    }, {
+      q: "2020 Q4",
+      v: 10.389381
+    }, {
+      q: "2021 Q1",
+      v: 9.051457
+    }, {
+      q: "2021 Q2",
+      v: 9.841025
+    }, {
+      q: "2021 Q3",
+      v: 10.009597
+    }, {
+      q: "2021 Q4",
+      v: 10.228796
+    }, {
+      q: "2022 Q1",
+      v: 10.472393
+    }, {
+      q: "2022 Q2",
+      v: 10.684739
+    }, {
+      q: "2022 Q3",
+      v: 10.567838
+    }, {
+      q: "2022 Q4",
+      v: 10.736945
+    }, {
+      q: "2023 Q1",
+      v: 10.564109
+    }, {
+      q: "2023 Q2",
+      v: 10.577002
+    }, {
+      q: "2023 Q3",
+      v: 10.747842
+    }, {
+      q: "2023 Q4",
+      v: 11.096141
+    }, {
+      q: "2024 Q1",
+      v: 11.058908
+    }, {
+      q: "2024 Q2",
+      v: 11.01936
+    }, {
+      q: "2024 Q3",
+      v: 11.138762
+    }, {
+      q: "2024 Q4",
+      v: 11.12249
+    }, {
+      q: "2025 Q1",
+      v: 11.105386
+    }, {
+      q: "2025 Q2",
+      v: 11.124247
+    }, {
+      q: "2025 Q3",
+      v: 11.229457
+    }, {
+      q: "2025 Q4",
+      v: 11.322763
+    }, {
+      q: "2026 Q1",
+      v: 11.158929
+    }, {
+      q: "2026 Q2",
+      v: 11.111439
+    } ],
     debtDollarsQuarterly: [ {
       q: "1966 Q1",
       v: 321
@@ -32536,8 +32790,8 @@
       v: 39462
     } ],
     debtToday: {
-      d: "2026-10-06",
-      v: 40273
+      d: "2026-10-07",
+      v: 40284
     },
     interestQuarterly: [ {
       q: "1947 Q1",
@@ -41619,6 +41873,7 @@
   var delinquencyHistory = fred_default.delinquencyHistory;
   var marginHistory = fred_default.marginHistory;
   var consumerCreditHistory = fred_default.consumerCreditHistory;
+  var dsrQuarterly = fred_default.dsrQuarterly;
   var debtDollarsQuarterly = fred_default.debtDollarsQuarterly;
   var debtToday = fred_default.debtToday;
   var interestQuarterly = fred_default.interestQuarterly;
@@ -42448,7 +42703,9 @@
     u: "https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"
   } ];
   var DSR_FROM_YEAR = 2005;
-  var dsrHistory = series_default.dsrHistory;
+  var dsrHistory = dsrQuarterly.map(function(d) {
+    return d.v;
+  });
   var SAV_FROM_YEAR = 1947;
   var savHistory = series_default.savHistory;
   var topTenQuarterly = series_default.topTenQuarterly;
@@ -42457,8 +42714,7 @@
   var SAV_MID = pctl(savHistory, .5);
   var SAV_HIGH = pctl(savHistory, .9);
   function checkHouseholdHistories() {
-    var dHi = Math.max.apply(null, dsrHistory), dLo = Math.min.apply(null, dsrHistory);
-    if (dsrHistory.length !== 86 || Math.abs(dHi - 15.846367) > 1e-6 || Math.abs(dLo - 9.051457) > 1e-6) console.warn("dsrHistory failed its check", dsrHistory.length, dHi, dLo);
+    if (dsrQuarterly[0].q !== DSR_FROM_YEAR + " Q1") console.warn("dsrQuarterly failed its check", dsrQuarterly[0].q);
     var sHi = Math.max.apply(null, savHistory), sLo = Math.min.apply(null, savHistory);
     if (savHistory.length !== 318 || Math.abs(sHi - 24.4) > 1e-9 || Math.abs(sLo - 1.8) > 1e-9) console.warn("savHistory failed its check", savHistory.length, sHi, sLo);
   }
@@ -42755,7 +43011,7 @@
     var got = vals.filter(function(v) {
       return v != null;
     });
-    var lo = Math.min.apply(null, got), hi = Math.max.apply(null, got), spread = hi - lo || 1;
+    var lo = Math.min.apply(null, got), hi = Math.max.apply(null, got), spread2 = hi - lo || 1;
     var fit = {
       slope: slope,
       intercept: (sy - slope * sx) / (m || 1),
@@ -42763,7 +43019,7 @@
     };
     var perYear = period === "month" ? 12 : period === "quarter" ? 4 : period === "day" ? 252 : 1;
     var span = "across " + Math.max(1, Math.round(n / perYear)) + "Y";
-    if (total < spread * .1) return {
+    if (total < spread2 * .1) return {
       word: "flat",
       span: span,
       flat: true,
@@ -43046,8 +43302,12 @@
     var f = function(n) {
       return n.toFixed(1);
     };
-    var d = [ "M" + f(x0) + "," + f(y) ], x = x0, p = period, A = amp;
+    var at = function(x2) {
+      return typeof period === "number" ? period : period(x2);
+    };
+    var d = [ "M" + f(x0) + "," + f(y) ], x = x0, p = at(x0), A = amp;
     while (x < x1 + p) {
+      p = at(x);
       d.push("H" + f(x + p * .08));
       d.push("Q" + f(x + p * .15) + "," + f(y - A * .24) + " " + f(x + p * .22) + "," + f(y));
       d.push("H" + f(x + p * .3));
@@ -43061,7 +43321,16 @@
     }
     return d.join("");
   }
-  function pulseTraceSvg(rate, ref, W, H, amp, cls, years) {
+  function lanePeriod(even, W, span, pace) {
+    if (!pace || !pace.length) return even;
+    return function(x) {
+      return W / (span * pace[Math.max(0, Math.min(pace.length - 1, Math.floor(x / W * pace.length)))]);
+    };
+  }
+  function pulseLane(k, v, rate, cls, years, pace, head) {
+    return '<div class="pt-head' + (head ? " " + head : "") + '"><span class="pt-k">' + k + '</span><span class="pt-v mono">' + v + "</span></div>" + pulseTraceSvg(rate, null, 520, 34, 11, cls, years, pace);
+  }
+  function pulseTraceSvg(rate, ref, W, H, amp, cls, years, pace) {
     var id = "pulseclip" + ++pulseClipN;
     var span = years || PULSE_WINDOW;
     var lanes = ref == null ? [ {
@@ -43079,7 +43348,7 @@
     } ];
     var paths = lanes.map(function(L) {
       var beats = Math.max(.5, (L.r == null ? 0 : L.r) * span);
-      return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, W / beats, amp) + '"/>';
+      return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, lanePeriod(W / beats, W, span, L.c === "pt-now" ? pace : void 0), amp) + '"/>';
     }).join("");
     return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs><g clip-path="url(#' + id + ')">' + paths + "</g></svg>";
   }
@@ -43436,8 +43705,8 @@
       lede: "What households keep of what they earn: the cushion against a bad month."
     }, {
       id: "sheet-metric-debt-payments",
-      term: "Debt payments",
-      econ: "Debt payments",
+      term: "Debt-to-income ratio",
+      econ: "Debt-to-income ratio",
       unit: "of income",
       series: debtPaymentPoints,
       mid: DSR_MEAN,
@@ -43452,7 +43721,7 @@
       fmt: pct2,
       word: debtPaymentsWord,
       src: DEBT_PAYMENTS_SRC,
-      about: "What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, as the Federal Reserve estimates it.",
+      about: "What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, as the Federal Reserve estimates it: the debt-to-income ratio a lender checks, taken across every household and measured against income after tax. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month.",
       band: "<b>The line is the series’ own average since " + DSR_FROM_YEAR + "</b>. No convention sets a band, so the line is derived from the record and only above it is flagged: a light debt bill is not a condition.",
       lede: "The share of take-home pay that goes to paying debts: the load households carry each month."
     } ];
@@ -43505,8 +43774,8 @@
       lede: "Money borrowed to buy stocks, against the same month a year earlier: the market’s own appetite for credit."
     }, {
       id: "sheet-metric-delinquency",
-      term: "Delinquencies",
-      econ: "Delinquencies",
+      term: "Default risk",
+      econ: "Default risk",
       unit: "of bank loans",
       series: delinquencyHistory,
       mid: DELINQUENCY_MEAN,
@@ -45334,10 +45603,9 @@
     var m = HZN_METERS[pick2], shortLeg = pick2 === "2y" ? "2-year" : "3-month";
     return "<h4>10-year minus " + shortLeg + '</h4><p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a forecast rather than a measurement: the long rate is the market’s own average of where it expects the short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly record, ' + m.min.toFixed(2) + " and +" + m.max.toFixed(2) + ' points; the deepest single DAY of the last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p><p class="caption follow"><b>The line at zero is definitional, not drawn</b> — it is where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own recession model is built on, using this exact pair of maturities. That model’s FAQ states that an inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p><p class="caption follow">Read the caution with the signal, because it is the same source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, but no source says where “just above” ends, so the page draws no zone for it.</p>' + detail.replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
   }
-  function pulseBlock(rate, ref, ind) {
+  function pulseCard(rate, ref, ind) {
     var slower = Math.round((1 - rate / ref) * 100);
-    var title = '<div class="spread-history-head"><h4>' + titleCase(ind.econTerm) + '</h4><span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + "</span></div>";
-    return '<div class="page-chart pulsebox"><div class="pulsetrace">' + title + '<div class="pt-head"><span class="pt-k">Now</span><span class="pt-v mono">' + rate.toFixed(2) + "× a year</span></div>" + pulseTraceSvg(rate, null, 520, 34, 11, "solo") + '<div class="pt-head past"><span class="pt-k">Her pre-2008 pace</span><span class="pt-v mono">' + ref.toFixed(2) + "× a year</span></div>" + pulseTraceSvg(ref, null, 520, 34, 11, "solo past") + '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW + " years — so the gap you can see is the gap in the number. She turns her money over about " + slower + "% less often than she did across 1959–2007.</p></div></div>";
+    return hiCard(ind.econTerm, tagFor(ind).state || "", tagFor(ind).text + ": she turns her money over about " + slower + "% less often than she did across 1959–2007.", '<div class="pulsetrace">' + pulseLane("Now", rate.toFixed(2) + "× a year", rate, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) + pulseLane("Her pre-2008 pace", ref.toFixed(2) + "× a year", ref, "solo past", void 0, void 0, "past") + '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW + " years, so the gap you can see is the gap in the number. The top trace beats at each quarter’s own pace, so its spacing is her rhythm: even when steady, uneven when not.</p></div>");
   }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
@@ -45939,9 +46207,6 @@
   function homeSvg() {
     return markSvg('<path d="M4 11.2 12 4.5l8 6.7" stroke-width="1.9"/><path d="M6.5 9.6V19.5h11V9.6M10.2 19.5v-5h3.6v5" stroke-width="1.8"/>');
   }
-  function creditSvg() {
-    return markSvg('<rect x="3.5" y="6" width="17" height="12" rx="2" stroke-width="1.8"/><path d="M3.5 10h17M7 14.5h4" stroke-width="1.7"/>');
-  }
   function dropSvg(sw) {
     return markSvg('<path d="M12 3.2C12 3.2 6.5 10.8 6.5 14.9A5.5 5.5 0 0 0 17.5 14.9C17.5 10.8 12 3.2 12 3.2Z" stroke-width="' + (sw || 1.7) + '"/>');
   }
@@ -46064,7 +46329,6 @@
     Output: factorySvg,
     Pressure: gaugeSvg,
     Money: heartSvg,
-    Credit: creditSvg,
     Households: homeSvg,
     Government: debtSvg,
     Valuations: diamondSvg,
@@ -46325,7 +46589,7 @@
       id: "sheet-sign-consumer-credit",
       name: "Consumer credit",
       cat: "circulation",
-      sub: "Credit",
+      sub: "Money",
       timing: "lagging",
       term: "Consumer credit",
       head: "Consumer Credit, YoY",
@@ -46353,14 +46617,14 @@
       cardUnit: "of income"
     }, {
       id: "sheet-metric-debt-payments",
-      name: "Debt payments",
+      name: "Debt-to-income ratio",
       cat: "stress",
       sub: "Households",
       good: "down",
       group: "Households",
       timing: "structural",
-      term: "Debt payments",
-      head: "Debt Payments, Share of Income",
+      term: "Debt-to-income ratio",
+      head: "Debt Payments ÷ Disposable Income",
       hist: {
         s: debtPaymentPoints,
         k: "q"
@@ -46382,22 +46646,6 @@
       },
       mid: MARGIN_LINE,
       cardUnit: "YoY"
-    }, {
-      id: "sheet-metric-delinquency",
-      name: "Delinquencies",
-      cat: "stress",
-      sub: "Households",
-      good: "down",
-      group: "Households",
-      timing: "lagging",
-      term: "Delinquencies",
-      head: "Bank Loans Past Due",
-      hist: {
-        s: delinquencyHistory,
-        k: "q"
-      },
-      mid: DELINQUENCY_MEAN,
-      cardUnit: "of bank loans"
     }, {
       id: "sheet-metric-debt",
       name: "Federal debt",
@@ -46557,6 +46805,22 @@
       },
       mid: PREMIUM_LINE,
       cardUnit: "over bonds"
+    }, {
+      id: "sheet-metric-delinquency",
+      name: "Default risk",
+      cat: "desire",
+      sub: "Risk",
+      good: "down",
+      group: "Risk",
+      timing: "lagging",
+      term: "Default risk",
+      head: "Bank Loans Past Due",
+      hist: {
+        s: delinquencyHistory,
+        k: "q"
+      },
+      mid: DELINQUENCY_MEAN,
+      cardUnit: "of bank loans"
     }, {
       id: "sheet-sign-confidence",
       name: "Confidence",
@@ -47506,9 +47770,9 @@
     var higher = h.filter(function(d) {
       return d.v > last.v;
     }).length, n = h.filter(held).length;
-    return highlightsHtml([ lede(o.lede), hiCard("The Latest Reading", o.state || "", pointLabel(last) + " read " + o.fmt(last.v) + ", " + side2(last) + " " + line + (cross && side2(last) !== "on" ? ", where it has been since " + pointLabel(cross) + "." : ".")), hiCard("Against the Record", "", higher + " of its " + h.length + " readings since " + pointLabel(h[0]) + " ran higher, and " + n + (b ? " sat inside the band." : " sat at or above the line.")) ], o.facts || "");
+    return highlightsHtml([ lede(o.lede), hiCard("The Latest Reading", o.state || "", pointLabel(last) + " read " + o.fmt(last.v) + ", " + side2(last) + " " + line + (cross && side2(last) !== "on" ? ", where it has been since " + pointLabel(cross) + "." : ".")), hiCard("Against the Record", "", higher + " of its " + h.length + " readings since " + pointLabel(h[0]) + " ran higher, and " + n + (b ? " sat inside the band." : " sat at or above the line.")), o.more || "" ], o.facts || "");
   }
-  function indicatorInsight(R, ind, fmt2) {
+  function indicatorInsight(R, ind, fmt2, more) {
     var caption = String(ind.caption || ""), first = ind.shortCaption || (/^[\s\S]*?[.!?](?=\s|$)/.exec(caption) || [ caption ])[0], band = ind.meter.optimal;
     if (!band || !("from" in band)) throw new Error(R.id + " has no band to read its record against");
     return recordInsight(recordPoints(R), {
@@ -47518,6 +47782,7 @@
       band: [ band.from, band.to ],
       line: "the band at " + band.label,
       state: ind.tag ? ind.tag.state : "",
+      more: more,
       facts: [].concat(ind.facts || [], ind.aux || []).map(auxStat).join("")
     });
   }
@@ -47610,7 +47875,7 @@
     function y(v) {
       return padT + innerH - (v - minV) / (maxV - minV) * innerH;
     }
-    function pts(v) {
+    function pts2(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2) + " pts";
     }
     var s = spreadSeries()[key];
@@ -47678,7 +47943,7 @@
     });
     appendSvgMarkup(svg, fitLine(data.map(function(d) {
       return d.v;
-    }), "quarter", pts, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
+    }), "quarter", pts2, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
     svg.appendChild(el("line", {
       x1: 0,
       x2: 0,
@@ -47697,7 +47962,7 @@
       at: function(d) {
         return qLabel(d.q);
       },
-      fmt: pts,
+      fmt: pts2,
       refs: [ {
         label: "NBER recession",
         swatch: "var(--border-strong)"
@@ -48110,20 +48375,20 @@
   var VIEW_H = 300;
   var INSET = 18;
   function growthPoints(from, to) {
-    var pts = [], firstQ = gdpQuarterlyYoY.length ? Number(gdpQuarterlyYoY[0].q.slice(0, 4)) : Infinity;
+    var pts2 = [], firstQ = gdpQuarterlyYoY.length ? Number(gdpQuarterlyYoY[0].q.slice(0, 4)) : Infinity;
     Object.keys(usRealGdpGrowth).forEach(function(y) {
-      if (Number(y) < firstQ) pts.push({
+      if (Number(y) < firstQ) pts2.push({
         i: Number(y) * 12 + 6,
         v: usRealGdpGrowth[y]
       });
     });
     gdpQuarterlyYoY.forEach(function(d) {
-      pts.push({
+      pts2.push({
         i: Number(d.q.slice(0, 4)) * 12 + (Number(d.q.slice(6)) - 1) * 3 + 1,
         v: d.v
       });
     });
-    return pts.filter(function(p) {
+    return pts2.filter(function(p) {
       return p.i >= from && p.i <= to;
     }).sort(function(a, b) {
       return a.i - b.i;
@@ -48146,8 +48411,8 @@
       };
     });
   }
-  function curve(pts, x, y) {
-    var p = pts.map(function(d2) {
+  function curve(pts2, x, y) {
+    var p = pts2.map(function(d2) {
       return [ x(d2.i), y(d2.v) ];
     });
     if (p.length < 2) return "";
@@ -48341,13 +48606,13 @@
     t: "Russell Investments — the cycle of market emotions",
     u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
   } ];
-  function curvePath(pts) {
+  function curvePath(pts2) {
     var f = function(p) {
       return p[0].toFixed(1) + "," + p[1].toFixed(1);
     };
-    return pts.map(function(p, i) {
+    return pts2.map(function(p, i) {
       if (!i) return "M" + f(p);
-      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
+      var a = pts2[Math.max(0, i - 2)], b = pts2[i - 1], d = pts2[Math.min(pts2.length - 1, i + 1)];
       return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
     }).join("");
   }
@@ -48357,10 +48622,10 @@
     }).join("");
   }
   function moodCycleSvg(now2) {
-    var pts = MOOD_CHART.map(function(s) {
+    var pts2 = MOOD_CHART.map(function(s) {
       return [ +s[1], +s[2] ];
     });
-    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
+    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts2, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
     MOOD_CHART.forEach(function(s) {
       var on = s[0] === now2 ? " now" : "";
       out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
@@ -50449,6 +50714,70 @@
   function bootPortfolio() {
     buildPortfolio();
   }
+  var RHYTHM_WINDOW = 8;
+  var RHYTHM_BEFORE = 2008;
+  var RHYTHM_PCTL = .9;
+  var RHYTHM_STRETCH = 4;
+  var rhythm = null;
+  function spread(xs) {
+    var m = xs.reduce(function(a, x) {
+      return a + x;
+    }, 0) / xs.length;
+    return Math.sqrt(xs.reduce(function(a, x) {
+      return a + (x - m) * (x - m);
+    }, 0) / xs.length);
+  }
+  function rhythmRecord() {
+    if (rhythm) return rhythm;
+    var moves = [], history2 = [];
+    for (var i = 1; i < m2vHistory.length; i++) moves.push((m2vHistory[i] / m2vHistory[i - 1] - 1) * 100);
+    for (var j = RHYTHM_WINDOW; j <= moves.length; j++) history2.push({
+      q: qAtIndex(M2V_FROM_YEAR, j),
+      v: spread(moves.slice(j - RHYTHM_WINDOW, j))
+    });
+    var edge = pctl(history2.filter(function(d) {
+      return +d.q.slice(0, 4) < RHYTHM_BEFORE;
+    }).map(function(d) {
+      return d.v;
+    }), RHYTHM_PCTL);
+    return rhythm = {
+      history: history2,
+      edge: edge
+    };
+  }
+  function pts(v) {
+    return v.toFixed(2) + " points";
+  }
+  function stretches(r) {
+    var runs = [];
+    r.history.forEach(function(d, i) {
+      if (d.v <= r.edge) return;
+      var last = runs[runs.length - 1];
+      if (last && i - last.b <= 2) last.b = i; else runs.push({
+        a: i,
+        b: i
+      });
+    });
+    return runs.filter(function(s) {
+      return s.b - s.a + 1 >= RHYTHM_STRETCH;
+    }).map(function(s) {
+      return r.history[s.a].q.slice(0, 4) + "–" + r.history[s.b].q.slice(0, 4);
+    });
+  }
+  function listed(xs) {
+    return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || "";
+  }
+  function rhythmCard() {
+    var r = rhythmRecord(), h = r.history, last = h[h.length - 1], odd = last.v > r.edge;
+    var steadier = h.filter(function(d) {
+      return d.v < last.v;
+    }).length;
+    return hiCard("Rhythm", odd ? "warning" : "good", (odd ? "Irregular" : "Steady") + ": in the two years to " + pointLabel(last) + " velocity’s quarterly changes spread by " + pts(last.v) + ", " + (steadier ? "steadier than all but " + steadier + " of the " + h.length + " two-year windows since " + pointLabel(h[0]) : "the steadiest of the " + h.length + " two-year windows since " + pointLabel(h[0])) + ". Past " + pts(r.edge) + " the rhythm is irregular; it ran irregular for a year or more in " + listed(stretches(r)) + ".");
+  }
+  function rhythmInfo() {
+    var r = rhythmRecord();
+    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ", the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p>";
+  }
   var CURVE_KEY = {
     "3m": "3M",
     "2y": "2Y",
@@ -50550,7 +50879,7 @@
         return [ ind.metric, ind.tag ? ind.tag.text : "" ];
       },
       info: function() {
-        return pulseInfoHtml(flowRow("Pulse"));
+        return pulseInfoHtml(flowRow("Pulse")) + rhythmInfo();
       },
       controls: function() {
         return histControls("pulse-range", {
@@ -50572,14 +50901,11 @@
           })
         };
       },
-      aside: function() {
-        var ind = flowRow("Pulse");
-        return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind);
-      },
       insight: function() {
-        return indicatorInsight(ROSTER_BY["sheet-sign-pulse"], flowRow("Pulse"), function(v) {
+        var ind = flowRow("Pulse");
+        return indicatorInsight(ROSTER_BY["sheet-sign-pulse"], ind, function(v) {
           return v.toFixed(2) + "×";
-        });
+        }, pulseCard(metered(ind.meter), PULSE_PRE2008, ind) + rhythmCard());
       },
       src: flowRow("Pulse").src
     });

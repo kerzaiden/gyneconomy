@@ -20,6 +20,7 @@ export var potentialYoYHistory: QuarterPoint[] = FRED.potentialYoYHistory;
 export var delinquencyHistory: QuarterPoint[] = FRED.delinquencyHistory;
 export var marginHistory: MonthPoint[] = FRED.marginHistory;
 export var consumerCreditHistory: MonthPoint[] = FRED.consumerCreditHistory;
+export var dsrQuarterly: QuarterPoint[] = FRED.dsrQuarterly;
 export var debtDollarsQuarterly: QuarterPoint[] = FRED.debtDollarsQuarterly;
 export var debtToday: { d: string; v: number } = FRED.debtToday;
 export var interestQuarterly: QuarterPoint[] = FRED.interestQuarterly;

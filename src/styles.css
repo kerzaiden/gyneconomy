@@ -677,9 +677,7 @@
   .page-foot > .timing-row{ margin:0; flex:none; }
   .page-foot > .more-row{ margin:0; flex:1 1 auto; }
   .detail-modal .timing-row{ margin:18px 0 0; padding-top:16px; border-top:1px solid var(--border); }
-  .page-chart.pulsebox{ padding:16px 16px 14px; }
-  .pulsetrace{ margin:0; }
-  .pulsetrace .spread-history-head + .pt-head{ margin-top:12px; }
+  .pulsetrace{ margin:12px 0 0; }
   .pulsetrace .pt-svg.solo{ height:42px; }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
@@ -751,7 +749,7 @@
     background:color-mix(in srgb, var(--text-primary) 8%, var(--surface)); }
   .bh-mark svg{ width:13px; height:13px; }
   .bh-mark svg path, .bh-mark svg circle, .bh-mark svg rect, .bh-mark svg line{ stroke-width:1.35; }
-  .bh-title, .spread-history-head h4{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface);
+  .bh-title{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface);
     font-weight:600; letter-spacing:-0.01em; color:var(--text-primary); }
   .bh-title{ flex:0 1 auto; min-width:0; margin:0; }
   .bh-sigma{ flex:0 0 auto; margin-left:-5px; font-family:"IBM Plex Mono",monospace; font-size:var(--type-interface);
@@ -1091,8 +1089,6 @@
   #metric-page :has(.hist-bar){ margin-top:0; }
   #metric-page .hist-bar{ margin-top:0; }
   .hist-bar > * + *{ margin-top:8px; }
-  .spread-history-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }
   .spread-history-band{ fill:var(--border); opacity:0.7; }
   .spread-history-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
 

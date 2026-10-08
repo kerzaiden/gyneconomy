@@ -322,6 +322,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (potential) out.potentialYoYHistory = q(potential);
   if (credit) Object.assign(out, { delinquencyHistory: q(credit.delinquency), marginHistory: m(credit.margin) });
   if (credit && credit.consumer) out.consumerCreditHistory = m(credit.consumer);
+  if (credit && credit.dsr) out.dsrQuarterly = q(credit.dsr);
   if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v },
     interestQuarterly: q(dollars.share), interestDollarsQuarterly: q(dollars.interest) });
   if (activity) Object.assign(out, { payrollsHistory: m(activity.payrolls), retailHistory: m(activity.retail) });
@@ -413,11 +414,12 @@ async function main() {
   const credit = {
     delinquency: quarterly(await fredSeries('DRALACBS', '1985-01-01'), 0, 20),
     margin: yoyMonthly(await finraMargin(), -80, 200),
-    consumer: yoyMonthly(await fredSeries('TOTALSL', '1943-01-01'), -40, 80)
+    consumer: yoyMonthly(await fredSeries('TOTALSL', '1943-01-01'), -40, 80),
+    dsr: quarterly(await fredSeries('TDSP', '2005-01-01'), 5, 25)
   };
-  if (credit.delinquency[0].q !== '1985 Q1' || credit.margin[0].m !== '1998-01' || credit.consumer[0].m !== '1944-01')
-    throw new Error('credit: expected delinquency from 1985 Q1, margin growth from 1998-01 and consumer credit growth from 1944-01');
-  for (const k of ['delinquency', 'margin', 'consumer']) {
+  if (credit.delinquency[0].q !== '1985 Q1' || credit.margin[0].m !== '1998-01' || credit.consumer[0].m !== '1944-01' || credit.dsr[0].q !== '2005 Q1')
+    throw new Error('credit: expected delinquency from 1985 Q1, margin growth from 1998-01, consumer credit growth from 1944-01 and debt service from 2005 Q1');
+  for (const k of ['delinquency', 'margin', 'consumer', 'dsr']) {
     const a = credit[k];
     say(('credit ' + k).padEnd(13) + ' ' + a.length + ' periods, ' + (a[0].q || a[0].m) + ' → ' + (a[a.length - 1].q || a[a.length - 1].m));
   }

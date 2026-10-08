@@ -64,7 +64,7 @@ export function redrawReading(id: string){
 }
 // ---- One record, read the same way on every page ----
 export type RecordPoint = Point & { v: number; d?: string };
-export type RecordWords = { lede: string; fmt: (v: number) => string; mid: number; state?: Tone; band?: [number, number]; line?: string; facts?: string };
+export type RecordWords = { lede: string; fmt: (v: number) => string; mid: number; state?: Tone; band?: [number, number]; line?: string; facts?: string; more?: string };
 export function recordPoints(R: RosterRow): RecordPoint[] {
   var h = R.hist as HistSpec;
   if (h.k === "qi" || h.k === "yi") return keyed(h).filter(function(d){ return d.v != null; })
@@ -82,12 +82,12 @@ export function recordInsight(h: readonly RecordPoint[], o: RecordWords){
     hiCard("The Latest Reading", o.state || "", pointLabel(last) + " read " + o.fmt(last.v) + ", " + side(last) + " " + line +
       (cross && side(last) !== "on" ? ", where it has been since " + pointLabel(cross) + "." : ".")),
     hiCard("Against the Record", "", higher + " of its " + h.length + " readings since " + pointLabel(h[0]) + " ran higher, and " + n +
-      (b ? " sat inside the band." : " sat at or above the line."))], o.facts || "");
+      (b ? " sat inside the band." : " sat at or above the line.")), o.more || ""], o.facts || "");
 }
-export function indicatorInsight(R: RosterRow, ind: Indicator, fmt: (v: number) => string){
+export function indicatorInsight(R: RosterRow, ind: Indicator, fmt: (v: number) => string, more?: string){
   var caption = String(ind.caption || ""), first = ind.shortCaption || (/^[\s\S]*?[.!?](?=\s|$)/.exec(caption) || [caption])[0], band = ind.meter.optimal;
   if (!band || !("from" in band)) throw new Error(R.id + " has no band to read its record against");
   return recordInsight(recordPoints(R), { lede:first, fmt:fmt, mid:R.mid || 0, band:[band.from, band.to], line:"the band at " + band.label,
-    state:ind.tag ? ind.tag.state : "",
+    state:ind.tag ? ind.tag.state : "", more:more,
     facts:([] as AuxFact[]).concat(ind.facts || [], ind.aux || []).map(auxStat).join("") });
 }

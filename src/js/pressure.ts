@@ -5,10 +5,11 @@ import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom,
 import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
 import { headPickRow, histControls, page, pageCycle, qWindowFrom } from "./history.ts";
-import { indOf, pressureTendency, pressureZone, pulseBlock, pulseInfoHtml, volumeInfoHtml } from "./readings.ts";
+import { indOf, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, volumeInfoHtml } from "./readings.ts";
 import { chartShell, defineReading, indicatorInsight, redrawReading } from "./reading.ts";
 import { ROSTER_BY } from "./roster.ts";
 import { m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
+import { rhythmCard, rhythmInfo } from "./rhythm.ts";
 type YieldPt = { q: string; v: number | null; latest?: boolean };
 type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string };
 type Plot = (i: number) => number;
@@ -67,7 +68,7 @@ function flowRow(term: string){ var ind = indOf({ term:term }); if (!ind) throw 
 function defineFlow(){
   defineReading("sheet-sign-pulse", {
     face:function(){ var ind = flowRow("Pulse"); return [ind.metric, ind.tag ? ind.tag.text : ""]; },
-    info:function(){ return pulseInfoHtml(flowRow("Pulse")); },
+    info:function(){ return pulseInfoHtml(flowRow("Pulse")) + rhythmInfo(); },
     controls:function(){ return histControls("pulse-range", { depth:Math.floor(m2vHistory.length / 4) }); },
     history:function(){
       var key = page.range["pulse-range"], cyc = pageCycle("pulse-range"), idx = cyc ? cycleQtrIdx(M2V_FROM_YEAR, cyc, m2vHistory.length) : null;
@@ -75,8 +76,7 @@ function defineFlow(){
       return { geom:"velocityHistoryChart", wrap:"vh-host", chart:function(w: number){ return velocityHistoryChart(w, from, to); },
         trend:trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, true, { rising:"accelerating", falling:"decelerating" }) };
     },
-    aside:function(){ var ind = flowRow("Pulse"); return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind); },
-    insight:function(){ return indicatorInsight(ROSTER_BY["sheet-sign-pulse"], flowRow("Pulse"), function(v){ return v.toFixed(2) + "\u00d7"; }); },
+    insight:function(){ var ind = flowRow("Pulse"); return indicatorInsight(ROSTER_BY["sheet-sign-pulse"], ind, function(v){ return v.toFixed(2) + "\u00d7"; }, pulseCard(metered(ind.meter), PULSE_PRE2008, ind) + rhythmCard()); },
     src:flowRow("Pulse").src
   });
   defineReading("sheet-sign-volume", {

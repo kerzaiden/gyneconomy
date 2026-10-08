@@ -5,7 +5,7 @@ import { DSR_FROM_YEAR, DSR_MEAN, dsrHistory, SAV_FROM_YEAR, SAV_HIGH, SAV_LOW, 
 import { activitySpecs } from "./activity.ts";
 import { concentrationSpecs } from "./concentration.ts";
 
-// ---- Credit, households and debt: consumer credit, margin debt, the saving rate, debt payments and delinquencies ----
+// ---- Credit, households and debt: consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies ----
 export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
 export type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
 
@@ -65,10 +65,10 @@ function householdSpecs(): CreditSpec[] {
       band:"<b>The band is computed, not chosen</b>: the tenth to ninetieth percentile of every quarter since " + SAV_FROM_YEAR + ", and the line is their median. " +
         "No convention sets a normal saving rate. Below the band households have little set aside for a month that goes wrong.",
       lede:"What households keep of what they earn: the cushion against a bad month." },
-    { id:"sheet-metric-debt-payments", term:"Debt payments", econ:"Debt payments", unit:"of income", series:debtPaymentPoints, mid:DSR_MEAN, line:"Average since " + DSR_FROM_YEAR,
+    { id:"sheet-metric-debt-payments", term:"Debt-to-income ratio", econ:"Debt-to-income ratio", unit:"of income", series:debtPaymentPoints, mid:DSR_MEAN, line:"Average since " + DSR_FROM_YEAR,
       optimal:{ lte:DSR_MEAN, label:"\u2264 " + DSR_MEAN.toFixed(1) + "%" }, ends:{ high:"Above average" }, fmt:pct, word:debtPaymentsWord, src:DEBT_PAYMENTS_SRC,
       about:"What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, " +
-        "as the Federal Reserve estimates it.",
+        "as the Federal Reserve estimates it: the debt-to-income ratio a lender checks, taken across every household and measured against income after tax. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month.",
       band:"<b>The line is the series\u2019 own average since " + DSR_FROM_YEAR + "</b>. No convention sets a band, so the line is derived from the record and " +
         "only above it is flagged: a light debt bill is not a condition.",
       lede:"The share of take-home pay that goes to paying debts: the load households carry each month." }
@@ -96,7 +96,7 @@ function specs(): CreditSpec[] {
         "against the same month a year earlier.",
       band:"<b>Zero is the only line.</b> Above it investors are borrowing more to own stocks than a year ago; below it they are paying it back.",
       lede:"Money borrowed to buy stocks, against the same month a year earlier: the market’s own appetite for credit." },
-    { id:"sheet-metric-delinquency", term:"Delinquencies", econ:"Delinquencies", unit:"of bank loans", series:delinquencyHistory, mid:DELINQUENCY_MEAN,
+    { id:"sheet-metric-delinquency", term:"Default risk", econ:"Default risk", unit:"of bank loans", series:delinquencyHistory, mid:DELINQUENCY_MEAN,
       line:avgSpan() + " average", optimal:{ lte:DELINQUENCY_MEAN, label:"≤ " + DELINQUENCY_MEAN.toFixed(2) + "%" }, ends:{ high:"Above average" },
       fmt:function(v){ return v.toFixed(2) + "%"; }, word:delinquencyWord, src:DELINQUENCY_SRC,
       about:"The share of all loans at US commercial banks that are 30 days or more past due, or no longer accruing interest, as the Federal Reserve " +

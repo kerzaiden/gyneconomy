@@ -15,6 +15,7 @@ import { nowModel, growthWord, cycleNowNote, realReturn, yearInflation } from '.
 import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/reading.ts';
+import { rhythmRecord, RHYTHM_WINDOW } from '../../src/js/rhythm.ts';
 import { catInsight } from '../../src/js/insights.ts';
 import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 
@@ -53,7 +54,7 @@ const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
   Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.6975, to: 2.1365 }, Volume: { from: 3.4, to: 10.3 }, Activity: { from: 3.5, to: 5 },
   Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 }, 'Real return': { gte: 0 },
-  Delinquencies: { lte: 3.14 }, 'Saving rate': { from: 4.5, to: 12.2 }, 'Debt payments': { lte: 12.427139476744179 },
+  'Default risk': { lte: 3.14 }, 'Saving rate': { from: 4.5, to: 12.2 }, 'Debt-to-income ratio': { lte: 12.427139476744179 },
   'Nonfarm payrolls': { gte: 0 }, 'Growth gap': { gte: 0 }, 'Retail sales': { gte: 0 }, 'Concentration risk': { lte: 22.8 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 3.5 }, 'sheet-marker-deficit': { lte: 3.8 }
 };
@@ -381,4 +382,17 @@ test('Stress has its insight, naming credit and debt, and Circulation no longer 
   ['weather', 'circulation', 'mood', 'stress'].forEach(k => assert.ok(catInsight(k).length > 0, k));
   assert.match(catInsight('stress'), /Credit[^<]*debt/);
   assert.doesNotMatch(catInsight('circulation'), /Credit is the money lent/);
+});
+
+test('the Pulse page reads its rhythm: two years of quarterly changes, cut at the pre-2008 ninetieth percentile', () => {
+  const r = rhythmRecord(), last = r.history.at(-1);
+  assert.equal(r.history.length, m2vHistory.length - RHYTHM_WINDOW);
+  assert.equal(r.history[0].q, '1961 Q1');
+  assert.ok(Math.abs(r.edge - 1.309) < 0.001, String(r.edge));
+  assert.ok(Math.abs(last.v - 0.296) < 0.001, String(last.v));
+  sheetRenderers['sheet-sign-pulse'](360);
+  const page = document.getElementById('sheet-sign-pulse').textContent;
+  assert.match(page, /Rhythm/);
+  assert.match(page, /Steady: in the two years to Q2 2026 velocity’s quarterly changes spread by 0\.30 points, the steadiest of the 262/);
+  assert.match(page, /1981–1984, 2008–2010 and 2020–2022/);
 });
