@@ -1096,6 +1096,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Figures
 
+- **Every closed cycle and every finished year show the S&P 500's real return, beside its nominal one.** Keren asked for
+  an "inflation-adjusted return for each cycle" and chose cycle pages over a new reading (0.9.19): a real return
+  only means something over a span, and nominal flatters the inflationary cycles (Volcker +58% nominal, +5% real).
+  It deflates by the app's own inflation gauge rather than Shiller's CPI, so one inflation figure is used everywhere.
+  The open year and the open cycle carry none, since their return is year-to-date. (0.9.19)
+
 - **An inflation reading past the 1–3% band never prints as the band's edge: one decimal, or two when one would
   round onto 1.0 or 3.0 (3.04% is "3.04%", not "Above range (3.0%)").** Written once, `inflationFigure` in
   model.ts, and read on every card, page and note that prints the reading. Keren asked for the fix after the

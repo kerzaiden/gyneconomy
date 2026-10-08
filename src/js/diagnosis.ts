@@ -4,7 +4,7 @@ import { GYN } from "./live.ts";
 import { calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
-import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
+import { cycleYtdFraction, diagnoseToday, nowModel, realReturn, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor, IND } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage } from "./ai-insights.ts";
@@ -26,7 +26,7 @@ function yearByYear(m: CycleModel){
   for (var y = m.era.from; y <= m.endYear; y++){
     var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), ytd = m.ongoing && y === calendarTodayY, now = yearSoFar(y);
     rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd),
-      econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
+      econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, ytd ? null : realReturn(sp500AnnualReturns[y] ?? null, yearInflation(y)), 0, false, " dx-year-foot")));
   }
   return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
 }

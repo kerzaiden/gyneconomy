@@ -2,7 +2,7 @@ import { CHEV } from "./format.ts";
 import { addSources, need, ui, viewMore } from "./dom.ts";
 import { GYN, repaintLive } from "./live.ts";
 import { marketCycles, sp500AnnualReturnSource, typicalCycleSrc } from "./data.ts";
-import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel } from "./model.ts";
+import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel, realReturn } from "./model.ts";
 import { page } from "./history.ts";
 import { econChips } from "./render-core.ts";
 import { setTopbar } from "./render-pages.ts";
@@ -15,11 +15,11 @@ function cycleRowsHtml(){
   var strips: Record<number, Strip> = {};
   marketCycles.forEach(function(c){ strips[c.from] = seasonStripHtml(c); });
   return marketCycles.slice().reverse().map(function(cyc){
-    var total = eraMarketTotal(cyc), strip = strips[cyc.from];
+    var total = eraMarketTotal(cyc), strip = strips[cyc.from], prices = eraInflation(cyc).total;
     var head = '<span class="era-name">' + cyc.name + '</span>' +
       '<span class="era-years">' + cycLabel(cyc).years + ' <b>(' + strip.years + 'Y)</b></span>' + CHEV;
     var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
-    var foot = econChips(eraGrowth(cyc).total, eraInflation(cyc).total, total, 0, !!cyc.ongoing, "");
+    var foot = econChips(eraGrowth(cyc).total, prices, total, cyc.ongoing ? null : realReturn(total, prices), 0, !!cyc.ongoing, "");
     return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div>' +
           '<div class="era-bands">' + bands + '</div>' + foot + '</div>';
   }).join('');

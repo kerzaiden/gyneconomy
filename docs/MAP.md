@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,140 lines** in 38 files, about 619 KB, roughly **176 thousand tokens**. No session can
+The source is **9,143 lines** in 38 files, about 619 KB, roughly **176 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `d766c1e` on 2026-10-08.
+Generated from commit `4b2d770` on 2026-10-08.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `d766c1e` on 2026-10-08.
 | `js/main.ts` | 34 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **34** modules, **728** top-level functions, **123** top-level vars, **357** exported names, **20** boots.
+Counts: **34** modules, **729** top-level functions, **123** top-level vars, **358** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -34,7 +34,7 @@ Counts: **34** modules, **728** top-level functions, **123** top-level vars, **3
 | `js/refresh-season.ts` | 41 | 5 | `format`, `history-fred` |
 | `js/data.ts` | 573 | 82 | `format`, `history-fred`, `live` |
 | `js/credit.ts` | 134 | 11 | `activity`, `charts`, `concentration`, `format`, `history-fred` |
-| `js/model.ts` | 381 | 56 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
+| `js/model.ts` | 384 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 817 | 70 | `charts`, `credit`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 151 | 5 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
@@ -78,7 +78,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–40 |
 | 5 | `bootData` | `js/data.ts:521`–572 |
 | 6 | `bootCredit` | `js/credit.ts:126`–133 |
-| 7 | `bootModel` | `js/model.ts:356`–380 |
+| 7 | `bootModel` | `js/model.ts:359`–383 |
 | 8 | `bootHistory` | `js/history.ts:452`–475 |
 | 9 | `bootReadings` | `js/readings.ts:639`–707 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:751`–816 |
@@ -391,10 +391,11 @@ falls in. **export** marks a name other modules import.
 | 293 | `yearSoFar` · export | `function yearSoFar(` |
 | 297 | `eraInflation` · export | `function eraInflation(` |
 | 306 | `eraGrowth` · export | `function eraGrowth(` |
-| 322 | `eraMarketTotal` · export | `function eraMarketTotal(` |
-| 327 | `forgetMood` · export | `function forgetMood(` |
-| 333 | `seasonYears` | `function seasonYears(` |
-| 344 | `seasonQuarters` | `function seasonQuarters(` |
+| 322 | `realReturn` · export | `function realReturn(` |
+| 325 | `eraMarketTotal` · export | `function eraMarketTotal(` |
+| 330 | `forgetMood` · export | `function forgetMood(` |
+| 336 | `seasonYears` | `function seasonYears(` |
+| 347 | `seasonQuarters` | `function seasonQuarters(` |
 
 ### `js/history.ts`
 

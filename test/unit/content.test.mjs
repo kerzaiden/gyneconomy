@@ -11,7 +11,7 @@ import { topTenHistory, topTenReadings } from '../../src/js/concentration.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory, topTenRecent } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
-import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
+import { nowModel, growthWord, cycleNowNote, eraInflation, eraMarketTotal, realReturn } from '../../src/js/model.ts';
 import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/era.ts';
@@ -280,6 +280,18 @@ test('GDP growth’s word reads its own sign, and Weather’s opening line follo
 test('a boot failure with no stored documents is not swallowed', () => {
   localStorage.removeItem('gyn.live');
   assert.throws(() => forgetLive(new Error('boot')), /boot/);
+});
+
+test('a closed cycle and every finished year show the S&P 500 after inflation; the open cycle and year do not', () => {
+  const chip = (el, label) => [...el.querySelectorAll('.chip')].find(c => c.querySelector('i').textContent === label);
+  const volcker = marketCycles.find(c => c.from === 1978), row = document.querySelector('#cycle-list .era-row[data-era="1978"]');
+  const real = realReturn(eraMarketTotal(volcker), eraInflation(volcker).total);
+  assert.equal(chip(row, 'Real return').textContent, 'Real return' + fmtSigned(real, 0) + '%');
+  assert.ok(real < eraMarketTotal(volcker) - 40, String(real));
+  assert.equal(chip(document.querySelector('#cycle-list .era-row[data-era="' + nowModel.era.from + '"]'), 'Real return'), undefined);
+  const years = [...document.querySelectorAll('#diagnosis .dx-year')];
+  assert.equal(chip(years[0], 'Real return'), undefined);
+  years.slice(1).forEach(y => assert.ok(chip(y, 'Real return'), y.querySelector('.dx-year-n').textContent));
 });
 
 test('a past cycle shows its own record on the Diagnosis, and Back restores today', () => {

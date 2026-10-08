@@ -1382,7 +1382,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.17 (788)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.19 (790)</span></p>
     </div>
   </div>
 
@@ -42507,6 +42507,9 @@
       avg: my
     };
   }
+  function realReturn(market, prices) {
+    return market == null || prices == null ? null : ((1 + market / 100) / (1 + prices / 100) - 1) * 100;
+  }
   function eraMarketTotal(cyc) {
     var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to).cumByYear, years = Object.keys(cum);
     return years.length ? cum[years[years.length - 1]] : null;
@@ -45875,11 +45878,11 @@
       return stripGroupName[r.g] + " " + r.n + (r.n === 1 ? " quarter" : " quarters");
     }).join(", ");
   }
-  function econChips(growth, prices, market, digits, soFar, cls) {
+  function econChips(growth, prices, market, real, digits, soFar, cls) {
     function chip(label, v, unit) {
       return v == null ? "" : '<span class="chip"><i>' + label + "</i>" + fmtSigned(v, digits) + "%" + unit + "</span>";
     }
-    return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") + chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + "</span></span>";
+    return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") + chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + chip("Real return", real, "") + "</span></span>";
   }
   function dxHead(mark2, title, open) {
     var inner = (mark2 ? '<span class="dx-mark" aria-hidden="true">' + mark2 + "</span>" : "") + titleCase(title);
@@ -48903,7 +48906,7 @@
     return m.ongoing ? aiInsights() : chartDoor(m);
   }
   function yearByYear(m) {
-    var _a;
+    var _a, _b;
     var segs = m.track.filter(function(seg) {
       return !seg.isNow && seg.to > seg.from;
     }), rows = [];
@@ -48911,7 +48914,7 @@
       var inYear = segs.filter(function(seg) {
         return parseInt(seg.q, 10) === y;
       }), ytd = m.ongoing && y === calendarTodayY, now2 = yearSoFar(y);
-      rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
+      rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, ytd ? null : realReturn((_b = sp500AnnualReturns[y]) != null ? _b : null, yearInflation(y)), 0, false, " dx-year-foot")));
     }
     return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
   }
@@ -49459,10 +49462,10 @@
       strips[c.from] = seasonStripHtml(c);
     });
     return marketCycles.slice().reverse().map(function(cyc) {
-      var total = eraMarketTotal(cyc), strip2 = strips[cyc.from];
+      var total = eraMarketTotal(cyc), strip2 = strips[cyc.from], prices = eraInflation(cyc).total;
       var head = '<span class="era-name">' + cyc.name + '</span><span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip2.years + "Y)</b></span>" + CHEV;
       var bands = strip2.strip + marketStripHtml(cyc, strip2.span, strip2.done);
-      var foot = econChips(eraGrowth(cyc).total, eraInflation(cyc).total, total, 0, !!cyc.ongoing, "");
+      var foot = econChips(eraGrowth(cyc).total, prices, total, cyc.ongoing ? null : realReturn(total, prices), 0, !!cyc.ongoing, "");
       return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div><div class="era-bands">' + bands + "</div>" + foot + "</div>";
     }).join("");
   }

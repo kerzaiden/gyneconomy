@@ -319,6 +319,9 @@ export function eraGrowth(cyc: Cycle){
   var trend = slope > 0.1 ? "rising" : slope < -0.1 ? "falling" : "flat";
   return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
 }
+export function realReturn(market: number | null, prices: number | null){
+  return market == null || prices == null ? null : ((1 + market / 100) / (1 + prices / 100) - 1) * 100;
+}
 export function eraMarketTotal(cyc: Cycle){
   var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to!).cumByYear, years = Object.keys(cum);
   return years.length ? cum[years[years.length - 1]] : null;
