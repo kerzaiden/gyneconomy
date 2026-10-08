@@ -210,7 +210,7 @@ renderer speaks. Listed most-used first.
 | **`byId`** | dom.ts | 28 places |
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 22 places |
-| **`fmtSigned`** | format.ts | 19 places |
+| **`fmtSigned`** | format.ts | 20 places |
 | **`titleCase`** | format.ts | 19 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`metered`** | format.ts | 11 places |

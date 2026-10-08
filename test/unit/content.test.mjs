@@ -54,7 +54,7 @@ const BANDS = {
   Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.6975, to: 2.1365 }, Volume: { from: 3.4, to: 10.3 }, Activity: { from: 3.5, to: 5 },
   Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
   'Credit gap': { lte: 2 }, 'Delinquency rate': { lte: 3.14 },
-  'Nonfarm payrolls': { gte: 0 }, 'Retail sales': { gte: 0 }, 'Concentration risk': { lte: 22.8 },
+  'Nonfarm payrolls': { gte: 0 }, 'Growth gap': { gte: 0 }, 'Retail sales': { gte: 0 }, 'Concentration risk': { lte: 22.8 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 3.5 }, 'sheet-marker-deficit': { lte: 3.8 }
 };
 
@@ -337,7 +337,7 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });
 
-test('Cycle length is judged once, by Tukey’s fences, and variation is a figure left to Cycle Statistics rather than Vitals', () => {
+test('Cycle length is judged once, by Tukey’s fences, and variation is a figure left to Cycle Statistics rather than Elements', () => {
   assert.equal(labs().find(l => l.id === 'regularity'), undefined);
   assert.equal(document.querySelector('#sheet-find .cat-cycle, #sheet-find [data-ind-cat="cycle"]'), null);
 });

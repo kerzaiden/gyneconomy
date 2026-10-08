@@ -94,6 +94,7 @@ export var uninvLagToday = {
   months: 0, altMonths: 0, altFrom: "September 2025",
   meter: { value: 0, min: 0, max: 26, optimal: {from: 1, to: 10, label: "1–10 mo (past cycles)"} }
 };
+export var HOLD_BAND = 0.47;
 export var gdpSrc: Src[] = [{t:"World Bank — GDP growth, annual % (NY.GDP.MKTP.KD.ZG)", u:"https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG"},
   {t:"BEA via FRED — Real GDP, percent change from preceding period, annual, before 1990 (A191RL1A225NBEA)", u:"https://fred.stlouisfed.org/series/A191RL1A225NBEA"},
   {t:"MeasuringWorth (Johnston and Williamson) — What Was the U.S. GDP Then?, real GDP before 1930", u:"https://www.measuringworth.com/datasets/usgdp/"},

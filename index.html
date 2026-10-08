@@ -336,7 +336,7 @@
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
-    --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --summer-ink:#b04f24;
+    --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f; --summer-ink:#b04f24;
 
     --mini-h:42px;
     --pad:10px;
@@ -349,8 +349,8 @@
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
     --type-section:20px; --type-reading-head:26px; --type-page-title:30px;
   }
-  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --summer-ink:#f29a6e; }
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --summer-ink:#f29a6e; } }
+  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; --summer-ink:#f29a6e; }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; --summer-ink:#f29a6e; } }
 
   .season-wheel-wrap{ --dial:min(calc(100vw - 76px), calc(100vh - 220px), 560px); width:100%; flex:none; display:flex; flex-direction:column; align-items:center; }
   .season-wheel{ position:relative; width:var(--dial); max-width:100%; height:var(--dial); }
@@ -887,7 +887,7 @@
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
 
-  .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
+  .cat-weather{ --cat:var(--season-summer); } .cat-activity{ --cat:var(--earth); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
   .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
@@ -1372,7 +1372,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.11 (782)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.12 (783)</span></p>
     </div>
   </div>
 
@@ -40305,6 +40305,7 @@
       }
     }
   };
+  var HOLD_BAND = .47;
   var gdpSrc = [ {
     t: "World Bank — GDP growth, annual % (NY.GDP.MKTP.KD.ZG)",
     u: "https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG"
@@ -41455,6 +41456,8 @@
   }
   var PAYROLLS_LINE = 0;
   var RETAIL_LINE = 0;
+  var GAP_LINE = 0;
+  var growthGapHistory = [];
   var PAYROLLS_SRC = [ {
     t: "Bureau of Labor Statistics — Current Employment Statistics, the monthly survey of employers",
     u: "https://www.bls.gov/ces/"
@@ -41483,11 +41486,56 @@
       };
     };
   }
+  function gapOf() {
+    var pot = {};
+    potentialYoYHistory.forEach(function(d) {
+      pot[d.q] = d.v;
+    });
+    return gdpQuarterlyYoY.filter(function(d) {
+      return pot[d.q] != null;
+    }).map(function(d) {
+      return {
+        q: d.q,
+        v: Math.round((d.v - pot[d.q]) * 100) / 100
+      };
+    });
+  }
+  function gapSpec() {
+    var pt = function(v) {
+      return fmtSigned(v, 1) + " pt";
+    };
+    growthGapHistory = gapOf();
+    return {
+      id: "sheet-sign-growth-gap",
+      goodAbove: true,
+      term: "Growth gap",
+      econ: "Growth gap",
+      unit: "vs potential",
+      series: growthGapHistory,
+      mid: GAP_LINE,
+      line: "Potential",
+      optimal: {
+        gte: GAP_LINE,
+        label: "≥ 0 pt"
+      },
+      ends: {
+        low: "Below potential"
+      },
+      fmt: pt,
+      src: gdpSrc.filter(function(s) {
+        return /GDPPOT|Fixler/.test(s.t);
+      }),
+      word: sideWord("Above potential", "Below potential", "real GDP is growing faster than the economy’s potential", "real GDP is growing more slowly than the economy’s potential"),
+      about: "Real GDP growth against the same quarter a year earlier, less the growth the Congressional Budget Office estimates the economy can sustain, its potential. This is the figure the Season Model reads for growth, after the Investment Clock (Merrill Lynch, 2004): above potential is expansion, below it contraction. Real GDP growth itself is under Activity.",
+      band: "<b>Zero is the line: growth equal to potential.</b> The Season Model changes a quarter’s regime only once the gap passes " + HOLD_BAND + " points either side, the typical revision to GDP growth (Fixler and others, BEA, 2018), so a small gap is not yet a turn.",
+      lede: "Real GDP growth less its potential: the growth half of the Economic Season."
+    };
+  }
   function activitySpecs() {
     var pct2 = function(v) {
       return fmtSigned(v, 1) + "%";
     };
-    return [ {
+    return [ gapSpec(), {
       id: "sheet-sign-payrolls",
       goodAbove: true,
       term: "Nonfarm payrolls",
@@ -41919,7 +41967,6 @@
     var c12 = cpiYear(endMonth);
     return c12.length < 11 ? null : cpiDirectionOf(cpiTrend(c12));
   }
-  var HOLD_BAND = .47;
   var PEAK_YEARS = [ 1929, 1948 ];
   var PEAK_TREND;
   var potentialByQ;
@@ -44322,6 +44369,12 @@
   function moodSvg() {
     return markSvg('<path d="M3.6 6.4q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/><path d="M3.6 12q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/><path d="M3.6 17.6q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>');
   }
+  function sproutSvg() {
+    return markSvg('<path d="M4.8 20.4c1.3-3.3 4-5 7.2-5s5.9 1.7 7.2 5z" stroke-width="1.8"/><path d="M12 15.4V10.6" stroke-width="1.8"/><path d="M12 11.8C11.6 8.4 9.1 6.4 4.9 6.5c.1 3.9 2.6 6 7.1 5.3zM12 10.6c.5-3.9 3.3-6.2 7.6-6.1-.1 4.2-2.9 6.6-7.6 6.1z" stroke-width="1.8"/>');
+  }
+  function factorySvg() {
+    return markSvg('<path d="M3.8 20.2V8.8l5.2 3.3V8.8l5.2 3.3V8.8l6 3.8v7.6z" stroke-width="1.8"/><path d="M7.5 16.5h1.5M11.3 16.5h1.5M15.1 16.5h1.5" stroke-width="1.8"/>');
+  }
   function circulationSvg() {
     return dropSvg(1.9);
   }
@@ -44354,26 +44407,31 @@
     shown: 0,
     onDial: true
   }, {
+    key: "activity",
+    title: "Activity",
+    shown: 1
+  }, {
     key: "circulation",
     title: "Circulation",
-    shown: 3
+    shown: 4
   }, {
     key: "mood",
     title: "Mood",
-    shown: 1
+    shown: 2
   }, {
     key: "desire",
     title: "Desire",
-    shown: 2
+    shown: 3
   }, {
     key: "stress",
     title: "Stress",
-    shown: 4
+    shown: 5
   } ];
   var SUB_MARK = {
     "Economic Season": thermoSvg,
     Market: marketSvg,
-    Activity: personSvg,
+    Labor: personSvg,
+    Output: factorySvg,
     Pressure: gaugeSvg,
     Money: ecgSvg,
     Credit: creditSvg,
@@ -44464,20 +44522,21 @@
         why: "the Season Model’s band, a point either side of the Fed’s 2% target"
       }
     }, {
-      id: "sheet-metric-gdp",
-      name: "Growth",
+      id: "sheet-sign-growth-gap",
+      name: "Growth gap",
       cat: "weather",
       sub: "Economic Season",
       good: "up",
       timing: "coincident",
-      door: "peek",
-      slot: "gdp",
-      head: "Real GDP",
+      door: "row",
+      term: "Growth gap",
+      head: "GDP Growth versus Potential",
       hist: {
-        s: gdpQuarterlyYoY,
+        s: growthGapHistory,
         k: "q"
       },
-      cardUnit: "YoY"
+      mid: GAP_LINE,
+      cardUnit: "vs potential"
     }, {
       id: "sheet-sign-market",
       name: "S&P 500",
@@ -44497,8 +44556,8 @@
     }, {
       id: "sheet-sign-activity",
       name: "Unemployment rate",
-      cat: "weather",
-      sub: "Activity",
+      cat: "activity",
+      sub: "Labor",
       good: "down",
       timing: "lagging",
       door: "row",
@@ -44509,25 +44568,10 @@
         k: "m"
       }
     }, {
-      id: "sheet-sign-productivity-growth",
-      name: "Productivity growth",
-      cat: "weather",
-      sub: "Activity",
-      good: "up",
-      timing: "structural",
-      door: "row",
-      term: "Productivity growth",
-      head: "Output per Hour, YoY",
-      hist: {
-        s: productivityHistory,
-        k: "q"
-      },
-      mid: PRODUCTIVITY_SLOWDOWN
-    }, {
       id: "sheet-sign-payrolls",
       name: "Nonfarm payrolls",
-      cat: "weather",
-      sub: "Activity",
+      cat: "activity",
+      sub: "Labor",
       good: "up",
       timing: "coincident",
       door: "row",
@@ -44539,6 +44583,36 @@
       },
       mid: PAYROLLS_LINE,
       cardUnit: "YoY"
+    }, {
+      id: "sheet-metric-gdp",
+      name: "GDP growth",
+      cat: "activity",
+      sub: "Output",
+      good: "up",
+      timing: "coincident",
+      door: "peek",
+      slot: "gdp",
+      head: "Real GDP",
+      hist: {
+        s: gdpQuarterlyYoY,
+        k: "q"
+      },
+      cardUnit: "YoY"
+    }, {
+      id: "sheet-sign-productivity-growth",
+      name: "Productivity growth",
+      cat: "activity",
+      sub: "Output",
+      good: "up",
+      timing: "structural",
+      door: "row",
+      term: "Productivity growth",
+      head: "Output per Hour, YoY",
+      hist: {
+        s: productivityHistory,
+        k: "q"
+      },
+      mid: PRODUCTIVITY_SLOWDOWN
     }, {
       id: "sheet-sign-hormones",
       name: "Federal funds rate",
@@ -45756,7 +45830,7 @@
     return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") + chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + "</span></span>";
   }
   function dxHead(mark2, title, open) {
-    var inner = '<span class="dx-mark" aria-hidden="true">' + mark2 + "</span>" + titleCase(title);
+    var inner = (mark2 ? '<span class="dx-mark" aria-hidden="true">' + mark2 + "</span>" : "") + titleCase(title);
     return open ? '<button type="button" class="dx-sys-head"' + open + ">" + inner + CHEV + "</button>" : '<div class="dx-sys-head">' + inner + "</div>";
   }
   function dxSys(cls, inner) {
@@ -47957,6 +48031,7 @@
   }
   var CAT_MARK = {
     weather: weatherSvg,
+    activity: sproutSvg,
     mood: moodSvg,
     desire: flameSvg,
     circulation: circulationSvg,
@@ -48032,7 +48107,7 @@
   }
   function finder(id, slot) {
     var f = findOf(id);
-    return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search vitals" aria-label="Search vitals" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' + filterDoor("lab-filter", slot, ' aria-label="Filter"', slidersSvg() + filterTag(id))) + "</div>";
+    return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search elements" aria-label="Search elements" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' + filterDoor("lab-filter", slot, ' aria-label="Filter"', slidersSvg() + filterTag(id))) + "</div>";
   }
   function stepBtn(row, cls, label) {
     return '<button type="button" class="period-arrow' + cls + '" data-pick-period="' + (row ? row.key : "") + '" aria-label="' + label + (row ? ", " + row.name : "") + '"' + (row ? "" : " disabled") + ">" + CHEV + "</button>";
@@ -48273,7 +48348,7 @@
     return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on ' + closedCount() + " closed market cycles since " + marketCycles[0].from + ".</p>" + healthRow(i) + statRow("Cycle length", meanOf(closed.map(len)), top(len), mark(typical(x.years, open) ? " ok" : " odd", yearsWord(x.years) + " yrs"), lengthPage(i), tone(typical(x.years, open))) + statRow("Cycle variation", sdOf(lengths()), meanOf(lengths()), mark(typical(x.years, open) ? " ok" : " odd", driftWord(i)), variationPage(i), tone(typical(x.years, open)), "±" + yearsWord(sdOf(lengths())) + " years") + statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
   }
   function insightSec(k, ls) {
-    return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Vitals" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
+    return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Elements" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
   }
   function catName(k) {
     return markName(CAT_MARK[k], catTitle(k));
@@ -48282,7 +48357,7 @@
     return '<span class="lab-mark">' + mark2() + "</span>" + name;
   }
   function countTag(n) {
-    return '<small class="lab-n" aria-label="' + n + ' vitals">' + n + "</small>";
+    return '<small class="lab-n" aria-label="' + n + ' readings">' + n + "</small>";
   }
   function insightsHome(i) {
     var at = atCycle(i), j = judged(at), rank = TIERS.map(function(t) {
@@ -48298,7 +48373,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return statsHome(i) + fedEnvironment(nowModel) + dxSys("", dxHead(chartSvg(), "Vitals", IND_ALL) + insightsHome(i));
+    return statsHome(i) + fedEnvironment(nowModel) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -48326,7 +48401,7 @@
     narrow(host, id);
   }
   var IND = "sheet-find";
-  var IND_ALL = ' data-open="' + IND + '" data-title="Vitals" data-ind-cat=""';
+  var IND_ALL = ' data-open="' + IND + '" data-title="Elements" data-ind-cat=""';
   function searchShell(tag, cls, attrs, inner) {
     return "<" + tag + ' class="search-field' + cls + '"' + attrs + ">" + LENS + inner + "</" + tag + ">";
   }
@@ -48799,7 +48874,7 @@
     return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
   }
   function yearRow(year, lead, foot) {
-    return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Vitals" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
+    return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Elements" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
   }
   function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
@@ -49014,7 +49089,7 @@
     b.removeAttribute("data-ind-cat");
     b.disabled = !open;
     b.setAttribute("data-open", IND);
-    b.setAttribute("data-title", "Vitals");
+    b.setAttribute("data-title", "Elements");
     b.setAttribute("data-ind-when", open ? open.when : "");
     if (open && open.cat) b.setAttribute("data-ind-cat", open.cat.key);
   }

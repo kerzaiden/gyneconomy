@@ -2,8 +2,8 @@ import { facts, ledeHtml, srcBlock, titleCase } from "./format.ts";
 import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
-import { CLOCK_SRC, frameworkRows, marketCycles } from "./data.ts";
-import { cpiNow, currentEra, currentSeason, HOLD_BAND, inflationFigure, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
+import { CLOCK_SRC, frameworkRows, HOLD_BAND, marketCycles } from "./data.ts";
+import { cpiNow, currentEra, currentSeason, inflationFigure, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { sourceIndex } from "./pages-nav.ts";
 

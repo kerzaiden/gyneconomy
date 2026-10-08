@@ -2,7 +2,7 @@ import { CHEV, facts, qLabel, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
-import { boltSvg, calendarSvg, chartSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, weatherSvg } from "./marks.ts";
+import { boltSvg, calendarSvg, chartSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayFace, todayValue } from "./era.ts";
@@ -172,7 +172,7 @@ function scoreBox(i: number){ return healthTile(i, "span"); }
 function scoreRing(v: number, label: string){ return '<span class="lab-score-v">' + ring(v) + label + '</span>'; }
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
 }
-var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, mood:moodSvg, desire:flameSvg, circulation:circulationSvg, stress:boltSvg };
+var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, activity:sproutSvg, mood:moodSvg, desire:flameSvg, circulation:circulationSvg, stress:boltSvg };
 function foldSec(k: string, title: string, name: string, ls: Lab[], at: At){
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"", name:name,
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + countTag(ls.length) + CHEV + '</button>' },
@@ -213,7 +213,7 @@ function filterTag(id: string){
 }
 function finder(id: string, slot: number){
   var f = findOf(id);
-  return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search vitals" aria-label="Search vitals" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
+  return '<div class="lab-find">' + searchShell("div", "", "", '<input type="search" class="lab-q" placeholder="Search elements" aria-label="Search elements" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
     filterDoor("lab-filter", slot, ' aria-label="Filter"', slidersSvg() + filterTag(id))) + '</div>';
 }
 function stepBtn(row: PeriodRow | undefined, cls: string, label: string){
@@ -366,11 +366,11 @@ function statsHome(i: number){
     statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
 }
 function insightSec(k: string, ls: Lab[]){
-  return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Vitals" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b>', countTag(ls.length)));
+  return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Elements" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b>', countTag(ls.length)));
 }
 function catName(k: string){ return markName(CAT_MARK[k], catTitle(k)); }
 function markName(mark: () => string, name: string){ return '<span class="lab-mark">' + mark() + '</span>' + name; }
-function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' vitals">' + n + '</small>'; }
+function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' readings">' + n + '</small>'; }
 function insightsHome(i: number){
   var at = atCycle(i), j = judged(at), rank = TIERS.map(function(t){ return t.key; });
   return categoriesShown().map(function(c){
@@ -380,7 +380,7 @@ function insightsHome(i: number){
 }
 function homeSections(i: number){
   return statsHome(i) + fedEnvironment(nowModel) +
-    dxSys("", dxHead(chartSvg(), "Vitals", IND_ALL) + insightsHome(i));
+    dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){
   var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -400,7 +400,7 @@ function drawChart(id: string){
   narrow(host, id);
 }
 export var IND = "sheet-find";
-var IND_ALL = ' data-open="' + IND + '" data-title="Vitals" data-ind-cat=""';
+var IND_ALL = ' data-open="' + IND + '" data-title="Elements" data-ind-cat=""';
 function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
 function pickCat(t: Element, id: string){
   var b = t.closest && t.closest("[data-ind-cat]"); if (!b) return false;
