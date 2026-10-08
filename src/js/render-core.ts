@@ -6,7 +6,7 @@ import { dataCompiledLabel, wheelMeta } from "./refresh-season.ts";
 import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle, seasonGroup, seasonTitle } from "./model.ts";
 import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, page, pageCycle, qWindowFrom } from "./history.ts";
-import { horizonInfoHtml, indOf, pressureZone } from "./readings.ts";
+import { indOf, pressureZone } from "./readings.ts";
 import { m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
 import { ROSTER_BY, TIMING } from "./roster.ts";
 import type { ModelReading, TrackSeg } from "./model.ts";
@@ -291,27 +291,18 @@ function ylmFitLine(svg: Element, maturities: Maturity[], ylmFrom: number, ylmTo
       x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
 }
 function pressureHead(maturities: Maturity[], mat: Maturity | undefined, title: string, note: string){
-  var H = page.head["pressure-range"], spread = pressureView === "spread";
-  H.title = spread ? spreadLabel(spreadPick) + " Treasury Spread" : title;
+  var H = page.head["pressure-range"];
+  H.title = title;
   H.menu = function(){
     return [
-      { key:"levels", label:"Treasury yields", on:!spread, value:(mat || {} as Partial<Maturity>).name || "",
+      { key:"levels", label:"Treasury yields", on:true, value:(mat || {} as Partial<Maturity>).name || "",
         rows:maturities.map(function(m){
-          return headPickRow(!spread && mat === m, "data-ylm-mat", m.code, m.name);
-        }).join("") },
-      { key:"spreads", label:"Treasury spreads", on:spread, value:spreadLabel(spreadPick),
-        rows:HZN_SPREADS.map(function(r){
-          return headPickRow(spread && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+          return headPickRow(mat === m, "data-ylm-mat", m.code, m.name);
         }).join("") }
     ];
   };
-  HIST_NOTE["pressure-range"] = spread ? horizonInfoHtml(spreadPick) : note;
+  HIST_NOTE["pressure-range"] = note;
   put("pressure-head", histHead("pressure-range"));
-}
-function showPressureView(spread: boolean){
-  ([["ylm-shell", !spread], ["spread-history-shell", spread]] as [string, boolean][]).forEach(function(p){
-    var e = byId(p[0]); if (e) e.hidden = !p[1];
-  });
 }
 function renderPressurePage(){
   var svg = need("ylm-svg");
@@ -400,10 +391,9 @@ function renderPressurePage(){
 
   var matPick = "10y";
   GYN.on("pickSeries", function(bar: unknown, code: string){
-    matPick = code; pressureView = "yield"; maturities.forEach(function(m){ m.on = (m.code === matPick); });
+    matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
     drawPressure();
   });
-  GYN.on("pickSpread", function(code: string){ spreadPick = code; pressureView = "spread"; drawPressure(); });
   registerFlowPages();
 
   function matOf(code: string){ return maturities.filter(function(m){ return m.code === code; })[0]; }
@@ -430,9 +420,7 @@ function renderPressurePage(){
   }
   function drawPressureHead(){ pressureHead(maturities, matOf(matPick), matTitle(), '<h4>' + titleCase(matTitle()) + '</h4>' + factsFrom(matDetail())); }
   function drawPressure(){
-    var spread = pressureView === "spread" && GYN.has("drawSpreadView");
-    showPressureView(spread);
-    if (spread) GYN.fire("drawSpreadView"); else { drawYlm(); renderPressureInsights(); }
+    drawYlm(); renderPressureInsights();
     drawPressureHead();
   }
   drawsPage("sheet-sign-pressure", drawPressure);
@@ -469,17 +457,11 @@ function renderPressureInsights(){
     "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q +
     " to " + pct(hi.v) + " in " + hi.q + "."));
   cards.push(hiCard("Level, Not Slope", "",
-    "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the \u22ef menu, " +
+    "This page reads the LEVEL. The gap between this yield and the three-month bill is the Treasury spreads reading, under it, " +
     "because that gap is the market’s forecast of the next few years rather than a pressure it is under " +
     "now. Read them together: a high level with a flat or inverted curve is a body under strain that expects " +
     "relief; a low level with a steep curve is one at rest that expects to work."));
   ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '</section>';
-}
-export var spreadPick = "3m", pressureView = "yield";
-var HZN_SPREADS = [{ key:"3m", label:"10Y − 3M" }, { key:"2y", label:"10Y − 2Y" }];
-function spreadLabel(key: string){
-  var r = HZN_SPREADS.filter(function(x){ return x.key === key; })[0];
-  return r ? r.label : HZN_SPREADS[0].label;
 }
 export function tempWord(r: ModelReading){
   return (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " \u00b7 " +

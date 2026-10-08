@@ -238,26 +238,29 @@ async function openPage(p, url, sheet) {
       (root.length >= 1 && drilled && drilled.picks > 1 && drilled.back && back && back.groups === root.length && back.picks === 0)
         ? ok('head menu drills and returns', root.join(', '))
         : bad('head menu drills and returns', JSON.stringify({ root, drilled, back }));
-      const view = () => gp.evaluate(() => {
+      const view = (sheet, ins) => gp.evaluate(([sheet, ins]) => {
         const vis = id => { const e = document.getElementById(id); return !!e && !e.hidden && !!e.offsetParent; };
-        return { title: (document.querySelector('#pressure-head .bh-title') || {}).textContent, ylm: vis('ylm-shell'), spread: vis('spread-history-shell'),
-                 level: /risk-free loan/i.test(document.getElementById('pressure-insights').textContent),
-                 slope: /un-inversion/i.test(document.getElementById('pressure-insights').textContent),
-                 boxes: document.querySelectorAll('#sheet-sign-pressure .insights').length, cols: document.querySelectorAll('#spread-history-svg .hzn-col').length };
-      });
+        const txt = (document.getElementById(ins) || {}).textContent || '';
+        return { title: (document.querySelector('#' + sheet + ' .bh-title') || {}).textContent, ylm: vis('ylm-shell'), spread: vis('spread-history-shell'),
+                 level: /risk-free loan/i.test(txt), slope: /un-inversion/i.test(txt),
+                 boxes: document.querySelectorAll('#' + sheet + ' .insights').length, cols: document.querySelectorAll('#spread-history-svg .hzn-col').length };
+      }, [sheet, ins]);
       if (!(await gp.evaluate(() => !!document.querySelector('.bh-grp-row'))))
         await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click());
-      await gp.click('[data-head-grp="spreads"]'); await settle(gp);
-      await gp.click('[data-hzn-spread="2y"]'); await settle(gp);
-      const sp = await view();
-      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click()); await settle(gp);
       await gp.click('[data-head-grp="levels"]'); await settle(gp);
       await gp.click('[data-ylm-mat="10y"]'); await settle(gp);
-      const lv = await view();
-      (root.join() === 'levels,spreads' && /10Y \u2212 2Y Treasury Spread/.test(sp.title || '') && sp.spread && !sp.ylm && sp.slope && !sp.level && sp.cols > 10 && sp.boxes === 1 && lv.boxes === 1 &&
-       /10-Year/.test(lv.title || '') && lv.ylm && !lv.spread && lv.level && !lv.slope)
-        ? ok('Pressure holds the Treasury spreads under its \u22ef menu', sp.title + ' \u00b7 ' + lv.title)
-        : bad('Pressure holds the Treasury spreads under its \u22ef menu', JSON.stringify({ root, sp, lv }));
+      const lv = await view('sheet-sign-pressure', 'pressure-insights');
+      let sp = {};
+      if (await openPage(gp, url, 'sheet-sign-spreads')) {
+        await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="spreads-range"]').click()); await settle(gp);
+        await gp.click('[data-head-grp="spreads"]'); await settle(gp);
+        await gp.click('[data-hzn-spread="2y"]'); await settle(gp);
+        sp = await view('sheet-sign-spreads', 'spreads-insights');
+      }
+      (root.join() === 'levels' && /10-Year/.test(lv.title || '') && lv.ylm && lv.level && !lv.slope && lv.boxes === 1 &&
+       /10Y − 2Y Treasury Spread/.test(sp.title || '') && sp.spread && sp.slope && !sp.level && sp.cols > 10 && sp.boxes === 1)
+        ? ok('Pressure and Treasury spreads are two readings', lv.title + ' · ' + sp.title)
+        : bad('Pressure and Treasury spreads are two readings', JSON.stringify({ root, lv, sp }));
     } else bad('head menu drills and returns', 'no door to Pressure');
     await gp.close();
   }
@@ -476,7 +479,7 @@ async function openPage(p, url, sheet) {
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
     (door.first === 'home-secs' && door.rows === 'weather,activity,mood,desire,circulation,stress' && weather.title === 'Elements' && weather.shown === 'weather' &&
-     weather.subs === 'Economic Season 2,Market 1')
+     weather.subs === 'Economic Season 3,Market 1')
       ? ok('Elements lists the categories, each opening Elements on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Elements lists the categories, each opening Elements on its own, grouped by subcategory', JSON.stringify({ door, weather }));
     await filt(p, '[data-pick-cat=""]'); await shut(p);
@@ -599,7 +602,7 @@ async function openPage(p, url, sheet) {
     if (wx) wx.cards = await p.evaluate(() => [...document.querySelectorAll('#detail-modal-body .hi-name')].map(n => n.textContent.trim()));
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (wx && wx.bar === 'Elements' && wx.names === 'Growth gap+S&P 500+Temperature' && !wx.modal &&
+    (wx && wx.bar === 'Elements' && wx.names === 'Federal funds rate+Growth gap+S&P 500+Temperature' && !wx.modal &&
      wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
       ? ok('the season in the dial opens Elements on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Elements on Weather, with the market and what the season means', JSON.stringify(wx));

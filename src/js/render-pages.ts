@@ -6,10 +6,10 @@ import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { curveNoteFull, fedFundsRange, fileRow, now, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cycleQtrIdx, cycleSlice } from "./model.ts";
-import { attachHistory, HIST_NOTE, histControls, histHead, histNote, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.ts";
-import { curveVerdict, fearCurve, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
+import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, histNote, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.ts";
+import { curveVerdict, fearCurve, horizonInfoHtml, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
 import { fedFundsHistoryChart } from "./history-charts.ts";
-import { drawsPage, spreadPick } from "./render-core.ts";
+import { drawsPage } from "./render-core.ts";
 type SpreadSeries = { title: string; lede: string; data: typeof t10y3mHistory; detail: string; sources: Src[] };
 type VolPoint = (typeof volatilityHistory)[number];
 
@@ -169,30 +169,49 @@ function deriveUninversionDetail(){
     {t:"Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)", u:"https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"}
   ]);
 }
-// ---- RENDER: the Treasury spreads, inside Pressure ----
+// ---- RENDER: the Treasury spreads ----
+var spreadPick = "3m";
+var HZN_SPREADS = [{ key:"3m", label:"10Y \u2212 3M" }, { key:"2y", label:"10Y \u2212 2Y" }];
+function spreadLabel(key: string){
+  var r = HZN_SPREADS.filter(function(x){ return x.key === key; })[0];
+  return r ? r.label : HZN_SPREADS[0].label;
+}
+function spreadsHead(){
+  var H = page.head["spreads-range"];
+  H.title = spreadLabel(spreadPick) + " Treasury Spread";
+  H.menu = function(){
+    return [
+      { key:"spreads", label:"Treasury spreads", on:true, value:spreadLabel(spreadPick),
+        rows:HZN_SPREADS.map(function(r){
+          return headPickRow(spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+        }).join("") }
+    ];
+  };
+  HIST_NOTE["spreads-range"] = horizonInfoHtml(spreadPick);
+  put("spreads-head", histHead("spreads-range"));
+}
 function renderHorizonPage(){
-  var host = need("pressure-timeline");
+  var host = need("spreads-timeline");
   var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
   function hznData(){ return spreadPick === "2y" ? t10y2yHistory : t10y3mHistory; }
   function drawHzn(){
     var data = hznData();
-    var cyc = pageCycle("pressure-range", hznY0);
+    var cyc = pageCycle("spreads-range", hznY0);
     var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
-    var from = idx ? idx[0] : qWindowFrom(data.length, page.range["pressure-range"]);
+    var from = idx ? idx[0] : qWindowFrom(data.length, page.range["spreads-range"]);
     var to = idx ? idx[1] : data.length;
-    host.innerHTML = histControls("pressure-range",
+    host.innerHTML = histControls("spreads-range",
       { depth:Math.floor(data.length / 4) }, hznY0);
     GYN.fire("drawSpreadWindow", spreadPick, [from, to]);
-    var tr = byId("ylm-trend");
-    if (tr){
-      var w: number[] = [];
-      data.slice(from, to).forEach(function(d){ if (d.v != null) w.push(d.v); });
-      tr.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
-        { rising:"steepening", falling:"flattening" });
-    }
-    put("pressure-insights", spreadInsights());
+    var w: number[] = [];
+    data.slice(from, to).forEach(function(d){ if (d.v != null) w.push(d.v); });
+    put("spreads-trend", trendPill(trendOf(w, "points", "quarter"), null, true,
+      { rising:"steepening", falling:"flattening" }));
+    put("spreads-insights", spreadInsights());
+    spreadsHead();
   }
-  GYN.on("drawSpreadView", drawHzn);
+  GYN.on("pickSpread", function(code: string){ spreadPick = code; drawHzn(); });
+  drawsPage("sheet-sign-spreads", drawHzn);
 }
 function spreadInsights(){
   var r = horizonRead;

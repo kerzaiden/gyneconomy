@@ -1,9 +1,9 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
-import { bagSvg, creditSvg, debtSvg, diamondSvg, diceSvg, ecgSvg, factorySvg, gaugeSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
+import { bagSvg, creditSvg, debtSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { confidenceHistory, creditGapHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
+import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
 import { DELINQUENCY_MEAN, GAP_BUILD, LENDING_LINE, MARGIN_LINE } from "./credit.ts";
 import { GAP_LINE, growthGapHistory, PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
@@ -26,7 +26,7 @@ export var CATEGORIES: Category[] = [
   { key:"stress", title:"Stress", shown:5 }
 ];
 export var SUB_MARK: Record<string, () => string> = {
-  "Economic Season":thermoSvg, "Market":marketSvg, "Labor":personSvg, "Output":factorySvg, "Pressure":gaugeSvg, "Money":ecgSvg,
+  "Economic Season":thermoSvg, "Market":marketSvg, "Labor":personSvg, "Output":factorySvg, "Pressure":gaugeSvg, "Money":heartSvg,
   "Credit":creditSvg, "Debt":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
 };
 export var ROSTER_BY: Record<string, RosterRow> = {};
@@ -71,6 +71,8 @@ function declareRoster(): RosterRow[] {
       normal:{ lo:TEMP_BAND_LO, hi:TEMP_BAND_HI, why:"the Season Model\u2019s band, a point either side of the Fed\u2019s 2% target" } },
     { id:"sheet-sign-growth-gap", name:"Growth gap", cat:"weather", sub:"Economic Season", good:"up", timing:"coincident", door:"row",
       term:"Growth gap", head:"GDP Growth vs Potential", hist:{ s:growthGapHistory, k:"q" }, mid:GAP_LINE, cardUnit:"vs potential" },
+    { id:"sheet-sign-hormones", name:"Federal funds rate", cat:"weather", sub:"Economic Season", timing:"leading", door:"subject", hk:"hormones-range",
+      head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, cardUnit:"Fed funds target", live:["fedFunds"] },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, cardUnit:"total return" },
     { id:"sheet-sign-activity", name:"Unemployment rate", cat:"activity", sub:"Labor", good:"down", timing:"lagging", door:"row",
@@ -82,10 +84,10 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"activity", sub:"Output", good:"up", timing:"structural",
       door:"row", term:"Productivity growth", head:"Output per Hour, YoY", hist:{ s:productivityHistory, k:"q" },
       mid:PRODUCTIVITY_SLOWDOWN },
-    { id:"sheet-sign-hormones", name:"Federal funds rate", cat:"circulation", sub:"Pressure", timing:"leading", door:"subject", hk:"hormones-range",
-      head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, cardUnit:"Fed funds target", live:["fedFunds"] },
     { id:"sheet-sign-pressure", name:"US 10-year Treasury", cat:"circulation", sub:"Pressure", timing:"leading", door:"subject", hk:"pressure-range",
       head:"", stops:["5y", "10y", "max"], hist:{ s:t10yYieldHistory, k:"q" }, cardUnit:"10-year Treasury", live:["yieldCurve"] },
+    { id:"sheet-sign-spreads", name:"Treasury spreads", cat:"circulation", sub:"Pressure", timing:"leading", door:"subject", hk:"spreads-range",
+      head:"", hist:{ s:t10y3mHistory, k:"q" }, mid:0, cardUnit:"10Y \u2212 3M, points", live:["yieldCurve"] },
     { id:"sheet-sign-pulse", name:"Pulse", cat:"circulation", sub:"Money", timing:"coincident", door:"pair", term:"Pulse", hk:"pulse-range",
       head:"Velocity of Money (M2)", hist:{ s:m2vHistory, k:"qi", y0:M2V_FROM_YEAR },
       cardUnit:"M2 velocity", live:["coincident"] },

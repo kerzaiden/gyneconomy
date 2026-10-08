@@ -249,7 +249,7 @@ with no handler is recorded, which makes the suite able to see it.
 ```
 
 Since V707 the same holds between modules: the view hooks that rode on `ui` behind a silent `if`
-(`calendarReset`, `metricPageReset`, `drawSpreadView`, `drawSpreadWindow`) are `GYN` actions, and the
+(`calendarReset`, `metricPageReset`, `drawSpreadWindow`) are `GYN` actions, and the
 `window` channel is an export (`sourceIndex` from `pages-nav`). `ui.topbarBack` and `ui.eraPageBack` stay in the store: they are state (what Back does now),
 not hooks.
 
@@ -446,7 +446,7 @@ Rules that shape the pages:
   the color." `wearCategories` (`cycle-tab`) marks each reading's page with
   its category class, so the page head disc and the history head take `--cat`. Group rows keep a mark
   of their own (`GROUP_MARK`: Debt the bolt; Valuations its first member's).
-  The two Treasury spreads (one view of Pressure) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
+  The two Treasury spreads (one page, Treasury spreads) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
 - **Analysis shows every cycle as one `.era-row`** (V631), opening the cycle's page.
   Don't split it into list + overview.
 - **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
@@ -760,12 +760,11 @@ the row is today and the plate is an average, and without the words the two read
 (Keren caught it in Version 294 and again in V640). This reversed V597 (the loan survey as "resistance") and V598
 (the levels folded into Horizon's menu); the survey was dropped at her choice and is at tag v638-fewer-words.
 The gap is a forecast, not a pressure, judged optimistic or pessimistic; it sat in Mood until V685, was
-Circulation's own Horizon card for V685–V687, and since V688 is Pressure's second ⋯ group, Treasury spreads
-(Keren). One state, `pressureView` ("yield" or "spread", in model beside `spreadPick`), picks what the page
-draws: `drawPressure` shows one chart shell (`showPressureView`), draws that view (`drawYlm` or the spread view
-`drawSpreadView`, the action `renderHorizonPage` registers), and writes its Insights into the one `#pressure-insights` box, so
-the page keeps one Insights box; `pressureHead` builds the title, both menu groups and the note. Both views share
-the `pressure-range` window. **The spread's word is slope AND
+Circulation's own Horizon card for V685–V687, Pressure's second ⋯ group from V688 to 0.9.15, and since 0.9.16 its
+own reading in Pressure, Treasury spreads (Keren). The 10-year's page (`drawPressure`, `pressure-range`) draws
+only the yields; the spreads' page (`renderHorizonPage`, `spreads-range`, `#sheet-sign-spreads`) owns `spreadPick`,
+its head (`spreadsHead`: one menu group and the note), its trend and its Insights, and redraws the spread chart
+through `drawSpreadWindow`. Each page has its own window. **The spread's word is slope AND
 direction, never slope alone** (2008 and 2021 both show a steep curve with opposite meanings); its lookback
 is fixed at four quarters and does not follow the chart's window; its (i) carries the NY Fed's caution that
 it is the level of the spread that forecasts, not the crossing.
