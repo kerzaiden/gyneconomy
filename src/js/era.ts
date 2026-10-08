@@ -1,6 +1,6 @@
 import { curveAt, dsrNow, fedFundsRange, fileRow, now, policyDirection, savNow } from "./data.ts";
 import { nowModel } from "./model.ts";
-import { DATED_UNIT, gdpWord, horizonRead, householdsNow, volatilityTag } from "./readings.ts";
+import { DATED_UNIT, gdpWord, horizonRead, householdsNow, pressureTendency, volatilityTag } from "./readings.ts";
 import { gdpFigure, needInd, tempWord } from "./render-core.ts";
 import { meterWord, splitRow } from "./indicators.ts";
 
@@ -18,7 +18,7 @@ var OWN_FACE: Record<string, () => [string, string]> = {
   "sheet-metric-valuation": function(){ return [fileRow("cape").flagValue, (now.valuation.tag || { text:"" }).text]; },
   "sheet-metric-households": function(){ return [dsrNow.toFixed(1) + "/" + savNow.toFixed(1), householdsNow.word]; },
   "sheet-sign-hormones": function(){ return [fedFundsRange(), policyDirection()]; },
-  "sheet-sign-pressure": function(){ var y = curveAt("10Y"); return [y == null ? "\u2014" : y.toFixed(2) + "%", ""]; },
+  "sheet-sign-pressure": function(){ var y = curveAt("10Y"); return [y == null ? "\u2014" : y.toFixed(2) + "%", pressureTendency.word]; },
   "sheet-sign-spreads": function(){ var s = horizonRead.spread; return [(s < 0 ? "\u2212" : "+") + Math.abs(s).toFixed(2), horizonRead.word]; },
   "sheet-sign-sentiment": function(){ return [now.vixRow!.flagValue, volatilityTag().text]; }
 };

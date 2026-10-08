@@ -6,7 +6,7 @@ import { dataCompiledLabel, wheelMeta } from "./refresh-season.ts";
 import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle, seasonGroup, seasonTitle } from "./model.ts";
 import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, page, pageCycle, qWindowFrom } from "./history.ts";
-import { indOf, pressureZone } from "./readings.ts";
+import { indOf, pressureTendency, pressureZone } from "./readings.ts";
 import { m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
 import { ROSTER_BY, TIMING } from "./roster.ts";
 import type { ModelReading, TrackSeg } from "./model.ts";
@@ -176,6 +176,16 @@ function withLatestPoint(base: YieldPt[], pt: YieldPt | null){
   if (pt && last.q === pt.q) data[data.length - 1] = pt; else if (pt && pt.q > last.q) data.push(pt);
   return data;
 }
+function tendencyNote(){
+  var T = pressureTendency, pt = function(v: number){ return v.toFixed(2); };
+  return " The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) +
+    " points in the quarterly average over the last four quarters. A shipping forecast grades a barometer steady, rising " +
+    "or falling, and quickly when the move is large; nothing grades a yield that way, so the cut-offs come from this " +
+    "record: steady within " + pt(T.still) + " points, quickly past " + pt(T.fast) + ", the lower and upper quartiles of " +
+    "every four-quarter move since " + T.from + ". A barometer is corrected to sea level before two readings can be " +
+    "compared, and a yield’s sea level is the neutral rate, the rate that neither presses on growth nor lifts it; nobody " +
+    "can observe it, so the Fed’s economists estimate it.";
+}
 function pressureMaturities(): Maturity[]{
   return [
     {code:"3m", name:"3-Month", data: t3mYieldHistory, on:true,
@@ -192,8 +202,10 @@ function pressureMaturities(): Maturity[]{
         srcBlock([{t:"FRED — 5-Year Treasury Rate (GS5)", u:"https://fred.stlouisfed.org/series/GS5"}])},
     {code:"10y", name:"10-Year", data: t10yYieldHistory, on:true,
       detail: '<h4>10-Year Treasury</h4>' +
-        '<p class="caption">The single most-referenced benchmark in the credit market. A 30-year fixed mortgage sounds like a 30-year commitment, but between moves and refinances its real average lifespan runs closer to 7–10 years — which is why mortgage rates track this maturity rather than the 30-year bond. Most investment-grade corporate bonds are also quoted as this yield plus a spread, and it\'s the standard discount-rate proxy used in stock valuation.</p>' +
-        srcBlock([{t:"FRED — 10-Year Treasury Rate (GS10)", u:"https://fred.stlouisfed.org/series/GS10"}])},
+        '<p class="caption">The single most-referenced benchmark in the credit market. A 30-year fixed mortgage sounds like a 30-year commitment, but between moves and refinances its real average lifespan runs closer to 7–10 years — which is why mortgage rates track this maturity rather than the 30-year bond. Most investment-grade corporate bonds are also quoted as this yield plus a spread, and it\'s the standard discount-rate proxy used in stock valuation.' + tendencyNote() + '</p>' +
+        srcBlock([{t:"FRED — 10-Year Treasury Rate (GS10)", u:"https://fred.stlouisfed.org/series/GS10"},
+          {t:"Met Office — Shipping forecast glossary (pressure tendency)", u:"https://www.metoffice.gov.uk/weather/guides/coast-and-sea/glossary"},
+          {t:"Federal Reserve Bank of New York — Measuring the Natural Rate of Interest", u:"https://www.newyorkfed.org/research/policy/rstar"}])},
     {code:"30y", name:"30-Year", data: t30yYieldHistory, on:true,
       detail: '<h4>30-Year Treasury</h4>' +
         '<p class="caption">Reflects the compensation investors demand for the genuine uncertainty of the longest possible horizon — economists call this the term premium. It anchors the longest corporate and government bonds. The line has a real gap in 2005: the Treasury suspended the 30-year bond from October 2001 to February 2006, and no 30-year constant-maturity yield was published from February 2002 until it returned — shown here as a break rather than a guessed figure.</p>' +

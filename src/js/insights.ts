@@ -81,7 +81,7 @@ function insightWeather(){
       " \u2014 the economy costing more faster than it is growing bigger.";
   else
     txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
-  return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The Barometer", "", txt);
+  return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The Balance", "", txt);
 }
 function seasonCards(m: CycleModel){
   var r = seasonReading[m.season] || {};

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `5a3b049` on 2026-10-08. **100 components**, **28 shared patterns**.
+Generated from commit `d766c1e` on 2026-10-08. **100 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -210,7 +210,7 @@ renderer speaks. Listed most-used first.
 | **`byId`** | dom.ts | 26 places |
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 23 places |
-| **`fmtSigned`** | format.ts | 20 places |
+| **`fmtSigned`** | format.ts | 21 places |
 | **`titleCase`** | format.ts | 19 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`metered`** | format.ts | 11 places |

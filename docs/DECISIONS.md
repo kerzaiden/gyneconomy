@@ -77,8 +77,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   before touching it.** That table is the book's, not the app's. (V228, V357)
 - **Pulse's reading is Money velocity; "nominal GDP divided by M2" lives in its (i), not in the name.** Keren:
   "just write money velocity, and put the M2 data inside the info"; precision belongs one tap in. (V487)
-- **Weather's gap card is "The barometer", named for the instrument, not for its verdict.** Keren's word: two
-  totals pulling apart say which way the weather is going. (V468)
+- **Weather's gap card is "The Balance", for two totals that should finish level over a cycle, not for its
+  verdict.** It was "The Barometer" from V468 (Keren: two totals pulling apart say which way the weather is going)
+  until 0.9.17, when Keren chose "The Balance": a barometer reads pressure, and the card compares price rise with
+  real growth, so the instrument's name now belongs to Pressure. (V468, 0.9.17)
 - **The policy-rate chart is titled "Federal Funds Rate", and its note says it plots the effective rate.**
   "Effective" was doing the note's job in the title. (V608)
 - **A section of sentences about the figures above it is called Insights, on every reading's page.** The app had
@@ -128,6 +130,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Value ÷ GDP"). (V670)
 
 ### Words for verdicts and trends
+
+- **The US 10-year Treasury's word is its tendency, read like a barometer: Steady, Rising or Falling, with "quickly"
+  when the move is large.** Keren took the recommendation ("I want to take your recommendation option A", 0.9.17): a
+  barometer is read by which way it moves, not where it stands. The move is the quarterly average's change over four
+  quarters (`horizonRead.dLong`, the figure Treasury spreads already reads). The words are a shipping forecast's;
+  their cut-offs are hectopascals and do not carry over, so Steady is within the lower quartile of every four-quarter
+  move in the record and "quickly" past the upper one (Claude's call from the app's own data). The word carries no
+  state colour and says nothing about what comes next. The (i) adds sea level: a yield means something only against
+  the neutral rate. (0.9.17)
 
 - **On the Elements page the Federal budget is a signed number: a deficit is minus, a surplus plain, and the word
   under it says "Large deficit".** Keren: "Instead of saying deficits, just use minus", so the word is not said twice
@@ -1098,7 +1109,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A reading's card says today, from the live figure, never the last point of a quarterly average; one thing
   gets one number on a page.** Keren: "you write 10-year 4.94 and I see inside the container 10-year 4.70".
   (V294)
-- **The barometer measures the gap between total price change and total real growth over a cycle, using the
+- **The Balance measures the gap between total price change and total real growth over a cycle, using the
   pages' own methods (`totalRiseIn`, `totalGrowthYears`), and carries no state colour.** The figures must be
   the ones the Temperature and Growth pages print, and whether prices outrunning output is good is a judgement
   about what comes next. (V468)
