@@ -1363,7 +1363,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A mark names the subject and the word carries the verdict: a mark never fills, changes or colours itself
   by the reading's state; its colour is its category's.** Keren: "make the icons without colour" (the piggy
   bank went because it carried the verdict); "I don't want the individual icons to disappear. I just want them
-  to inherit the color." (V301, V302, V457, V490, V657, V661)
+  to inherit the color." (V301, V302, V457, V490, V657, V661) On Analysis, each Elements row's icon wears its category's colour (Activity olive, Weather red, Mood
+  purple, Desire red, Circulation blue, Stress gold) while the title stays dark purple (Claude, 0.9.14, pending Keren's card).
 - **A reading wears its subcategory's mark: one mark per subcategory, declared once (`SUB_MARK` in the roster),
   on the Vitals subcategory heading and on every history head in it; the history head's mark is grey.** Keren:
   "the federal funds rate icon in the history component … doesn't match the icon of the category … I would assume
