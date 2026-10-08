@@ -200,6 +200,7 @@
     border-bottom:1px solid var(--border);
   }
   .wrap > .topbar:has(> .back-btn:not([hidden])) .menu-btn{ position:static; background:none; -webkit-backdrop-filter:none; backdrop-filter:none; border:0; box-shadow:none; }
+  .wrap > .topbar:has(> .back-btn:not([hidden])) .menu-btn:not(.back-btn){ display:none; }
   .topbar-title{
     grid-column:2; text-align:center; margin:0; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal;
     font-size:var(--type-section); font-weight:500; letter-spacing:0; line-height:1.15; color:var(--accent-ink);

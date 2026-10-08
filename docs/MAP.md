@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,765 lines** in 39 files, about 600 KB, roughly **170 thousand tokens**. No session can
+The source is **8,766 lines** in 39 files, about 600 KB, roughly **170 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `2a3042f` on 2026-10-08.
+Generated from commit `e9183e7` on 2026-10-08.
 
 ## The page
 
@@ -18,7 +18,7 @@ Generated from commit `2a3042f` on 2026-10-08.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,200 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,201 | the whole stylesheet, every token and rule |
 | `page-body.html` | 251 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 35 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
@@ -1396,25 +1396,25 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | Line | Section |
 |---|---|
 | 179 | top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu |
-| 287 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
-| 318 | season strip |
-| 345 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
-| 408 | tab bar (app-style segmented navigation) |
-| 432 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
-| 520 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 654 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 692 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 741 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 883 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 892 | The symptoms: a cycle's years against today |
-| 1,039 | yield curve charts |
-| 1,063 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,082 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,097 | un-inversion-to-recession historical lag panel |
-| 1,106 | the reading's tag |
-| 1,114 | info icon + popover (progressive disclosure for longer notes) |
-| 1,128 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,191 | footer |
+| 288 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
+| 319 | season strip |
+| 346 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
+| 409 | tab bar (app-style segmented navigation) |
+| 433 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
+| 521 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
+| 655 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 693 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 742 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 884 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 893 | The symptoms: a cycle's years against today |
+| 1,040 | yield curve charts |
+| 1,064 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,083 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,098 | un-inversion-to-recession historical lag panel |
+| 1,107 | the reading's tag |
+| 1,115 | info icon + popover (progressive disclosure for longer notes) |
+| 1,129 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,192 | footer |
 
 ## Markup landmarks
 
