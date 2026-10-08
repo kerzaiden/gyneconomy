@@ -1089,8 +1089,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   derived and the (i) says so; the window and the percentile are Claude's. The Now trace beats at each quarter's own
   velocity across its five years, so its spacing shows the rhythm. The Pulse history is a true EKG strip (Keren: "I want a true EKG
   and I want the velocity to appear. I don't want to count the amount of beats"): EKG paper, one large square per quarter
-  with its velocity written under it, the strip riding at its velocity on the history's shared scale (every history keeps
-  its frame, grid and y labels; a flat strip was built and dropped for that), a year to a screen, scrolling sideways through the period chosen, with a bar under the
+  with its velocity written at its top, the strip a flat line at 0% (Keren: "I thought we had a horizontal line that we see
+  changing its amounts of beats per square … Why did you do it like a slope?"; a strip riding at its velocity was built and
+  dropped), and the y-axis is Volume: each beat's height is that quarter's M2 growth year on year, so shrinking money
+  beats downward (Keren: "we said the y-axis would measure volume"). It keeps the shared frame, grid and y labels, a year to a screen, scrolling sideways through the period chosen, with a bar under the
   axis showing the position. Keren: "I think the solution is horizontal scroll. I want one history component in this page, with
   a pulse and a rhythm combined into an EKG style reading. The y-axis will be the Velocity … and also some kind of an
   indicator in the x-axis that we can scroll". Velocity is the beats-per-minute: ten beats per turnover, the gap

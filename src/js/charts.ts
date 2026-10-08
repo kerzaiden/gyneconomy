@@ -219,13 +219,13 @@ function refName(t?: string | null){
 }
 export var PULSE_WINDOW = 5;
 var pulseClipN = 0;
-export function beatPath(x0: number, x1: number, base: number | ((x: number) => number), period: number | ((x: number) => number), amp: number, wide?: number){
+export function beatPath(x0: number, x1: number, base: number | ((x: number) => number), period: number | ((x: number) => number), amp: number | ((x: number) => number), wide?: number){
   var f = function(n: number){ return n.toFixed(1); };
   var at = function(x: number){ return typeof period === "number" ? period : period(x); };
   var lvl = function(x: number){ return typeof base === "number" ? base : base(x); };
-  var d = ["M" + f(x0) + "," + f(lvl(x0))], x = x0, p = at(x0), A = amp;
+  var d = ["M" + f(x0) + "," + f(lvl(x0))], x = x0, p = at(x0);
   while (x < x1 + p){
-    p = at(x); var s = wide ? Math.min(p, wide) : p, y = lvl(x);
+    p = at(x); var s = wide ? Math.min(p, wide) : p, y = lvl(x), A = typeof amp === "number" ? amp : amp(x);
     d.push("L" + f(x + s * 0.08) + "," + f(y));
     d.push("Q" + f(x + s * 0.15) + "," + f(y - A * 0.24) + " " + f(x + s * 0.22) + "," + f(y));
     d.push("H" + f(x + s * 0.30));
