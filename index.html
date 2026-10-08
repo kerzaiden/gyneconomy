@@ -194,6 +194,12 @@
     border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
   }
   .wrap > .topbar .back-btn{ right:auto; left:max(16px, calc((100vw - 1180px) / 2 + 16px)); }
+  .wrap > .topbar:has(> .back-btn:not([hidden])){
+    position:sticky; z-index:30; margin-top:calc(-1 * env(safe-area-inset-top, 0px)); padding:calc(10px + env(safe-area-inset-top, 0px)) 20px 10px;
+    background:color-mix(in srgb, var(--page) 86%, transparent); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .wrap > .topbar:has(> .back-btn:not([hidden])) .menu-btn{ position:static; background:none; -webkit-backdrop-filter:none; backdrop-filter:none; border:0; box-shadow:none; }
   .topbar-title{
     grid-column:2; text-align:center; margin:0; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal;
     font-size:var(--type-section); font-weight:500; letter-spacing:0; line-height:1.15; color:var(--accent-ink);
@@ -1268,7 +1274,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.21 (792)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.23 (794)</span></p>
     </div>
   </div>
 
