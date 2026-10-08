@@ -63,12 +63,7 @@ function spanOf(print: (v: number) => string){
 }
 function cardPrint(R: RosterRow){
   var g = eraFig(todayFace(R).text), pc = R.pair ? "%" : "", f = function(v: number){ return g(v) + pc; };
-  if (!R.flip) return { print:function(v: number){ return f(v); }, span:spanOf(function(v){ return f(v); }) };
-  var word = function(v: number){ return v > 0 ? " surplus" : " deficit"; }, print = function(v: number){ return f(Math.abs(v)) + word(v); };
-  return { print:print, span:function(lo: number, hi: number){
-    var a = [Math.abs(lo), Math.abs(hi)].sort(function(x, y){ return x - y; });
-    return (lo > 0) !== (hi > 0) ? print(lo) + " – " + print(hi) : f(a[0]) === f(a[1]) ? print(lo) : f(a[0]) + " – " + f(a[1]) + word(hi);
-  } };
+  return { print:function(v: number){ return f(v); }, span:spanOf(function(v){ return f(v); }) };
 }
 function readingLab(R: RosterRow): Lab {
   var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; }, p = cardPrint(R);

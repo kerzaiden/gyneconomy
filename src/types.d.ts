@@ -8,7 +8,7 @@ type Meter = {
   max: number;
   value: number | null;
   optimal?: Band;
-  ends?: { zone?: string; high?: string; low?: string };
+  ends?: { zone?: string; high?: string; low?: string; negative?: string };
 };
 type Row = {
   key?: string;
