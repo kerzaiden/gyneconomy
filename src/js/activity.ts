@@ -33,7 +33,7 @@ function gapSpec(): CreditSpec {
       optimal:{ gte:GAP_LINE, label:"≥ 0 pt" }, ends:{ low:"Below potential" }, fmt:pt, src:gdpSrc.filter(function(s){ return /GDPPOT|Fixler/.test(s.t); }),
       word:sideWord("Above potential", "Below potential", "real GDP is growing faster than the economy’s potential", "real GDP is growing more slowly than the economy’s potential"),
       about:"Real GDP growth against the same quarter a year earlier, less the growth the Congressional Budget Office estimates the economy can sustain, its potential. " +
-        "This is the figure the Season Model reads for growth, after the Investment Clock (Merrill Lynch, 2004): above potential is expansion, below it contraction. " +
+        "This is the figure the Season Model reads for growth, after the Investment Clock (Merrill Lynch, 2004): growth above potential warms the season towards Spring and Summer, growth below it cools it towards Autumn and Winter. " +
         "Real GDP growth itself is under Activity.",
       band:"<b>Zero is the line: growth equal to potential.</b> The Season Model changes a quarter’s regime only once the gap passes " + HOLD_BAND +
         " points either side, the typical revision to GDP growth (Fixler and others, BEA, 2018), so a small gap is not yet a turn.",

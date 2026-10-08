@@ -372,8 +372,8 @@ export function bootDialCycle(){
     facts([
       'Each point is a quarter against <b>the same quarter a year earlier</b> \u2014 the reading the OECD, Eurostat and the World Bank headline.',
       'US news usually quotes a different figure for \u201cgrowth this quarter\u201d: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.',
-      '<b>Gold is expansion, periwinkle is contraction</b> \u2014 the season model\u2019s own reading: growth at or above the economy\u2019s potential is expansion, below it is contraction, the same colours as everywhere Growth appears.',
-      'Within ' + HOLD_BAND + ' points of potential a quarter keeps the colour before it, so a column can stay periwinkle while growth edges past potential. A quarter below zero is far below potential, so it is always contraction.',
+      '<b>Gold is growth above potential, periwinkle growth below it</b> \u2014 the season model\u2019s own reading of growth against the economy\u2019s potential, the same colours as everywhere Growth appears.',
+      'Within ' + HOLD_BAND + ' points of potential a quarter keeps the colour before it, so a column can stay periwinkle while growth edges past potential. A quarter below zero is far below potential, so it is always periwinkle.',
       'The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.'
     ]) +
     srcBlock(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]));

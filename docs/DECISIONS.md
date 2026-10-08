@@ -35,7 +35,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   market are read from: Economic Season (Temperature, Growth gap) and Market. Real GDP growth moved to Output and
   Economic Season shows the Growth gap instead, the figure the season actually reads, headed "GDP Growth versus Potential" (Keren); Keren: "are we really looking at
   pure growth when we're looking at the economic season?", then chose "Move, add gap" (0.9.11). Only the Growth gap says
-  expansion or contraction; GDP growth reads its own sign against zero, Growing or Shrinking, and its trend accelerating or slowing,
+  above or below potential; GDP growth reads its own sign against zero, Growing or Shrinking, and its trend accelerating or slowing,
   like Nonfarm payrolls and Retail sales (Claude, 0.9.13: it had kept the season's word and read "Contraction" at +2.1%). Stress keeps its name.
   Stress holds two subcategories, Credit and Debt, and its mark is the lightning bolt.** Keren: "stress should have its own
   category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3); "Under stress category, put credit
@@ -128,14 +128,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Words for verdicts and trends
 
-- **Growth is said in one pair of words everywhere: Expansion and Contraction ("expanding", "contracting" in a
-  sentence), the model's own regime.** The season table, the Growth card, the chart legend, the season notes and
-  pop-ups, Weather's opening line and the Growth page's trend all say the same side. Keren, on the 1929 pop-up that
-  still said "quickening": "check that the vocabulary is the same across the app"; earlier, "I like the
-  terminology expansion and contraction better." Where the economy is contracting while output is still above a
-  year earlier, the sentence says so beside the figure, so the word never hides the number. This replaces the
-  participles quickening, slowing and steady (V304, V698) and the table-only split of 1.6.0. (V304, V698, 1.6.0,
-  1.7.0, Oct 3, 2026)
+- **Growth is said in one pair of words everywhere: above potential and below potential, the model's own regime.**
+  The season table, the season notes and pop-ups, Weather's opening line, the Interest Rates Environment's Growth line
+  and the GDP chart legend all say the same side, and a growing economy is never called contracting: below potential
+  is not shrinking. Keren: "what bothered me is that we are calling contraction on a growing economy. It's just not
+  growing at the pace that we expect" (0.9.15). This replaces Expansion and Contraction (1.7.0, "I like the
+  terminology expansion and contraction better"), which replaced quickening, slowing and steady (V304, V698).
 - **A verdict is said in one family of words on one axis, never a hand-set word that belongs to no scale.**
   Keren: "use overvalued or undervalued, and for the range in between choose words from the same family, maybe
   fairly valued" (CAPE's family is now cheap to rich, 0.8.5); the same pattern gave Pulse a fast/slow scale. (V290, V298)

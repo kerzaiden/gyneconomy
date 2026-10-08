@@ -245,7 +245,7 @@ function gdpHighlights(r: typeof nowModel.reading, gq: QuarterPoint[]){
     "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
   cards.push(hiCard("The Latest Quarter", phaseClass(r.regime),
     qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
-    (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average and " + potentialGap(r) + " the economy\u2019s potential of " + r.potential.toFixed(1) + "%, so the season model reads the economy as " +
+    (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average and " + potentialGap(r) + " the economy\u2019s potential of " + r.potential.toFixed(1) + "%, so the season model reads growth as " +
     growthWord(r) + "."));
   put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
 }

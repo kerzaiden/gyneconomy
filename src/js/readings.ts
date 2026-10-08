@@ -281,7 +281,7 @@ function potentialSentence(){
   return 'And the economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 is the line the Season Model ' +
     'reads growth against. The CBO puts it at ' + r.potential.toFixed(1) + '% for ' + qPretty(r.gdpLatest.q) +
     ', and at 2.1% a year through 2030, easing to 1.8% after that as the population ages. The latest quarter, ' +
-    fmtSigned(r.gdpLatest.v, 1) + '%, is ' + potentialGap(r) + ' potential, so the economy reads as ' +
+    fmtSigned(r.gdpLatest.v, 1) + '%, is ' + potentialGap(r) + ' potential, so growth reads as ' +
     growthWord(r) + (Math.abs(r.gdpLatest.v - r.potential) <= HOLD_BAND ? ', the side it was already on' : '') + '.';
 }
 export function growthInfoHtml(){

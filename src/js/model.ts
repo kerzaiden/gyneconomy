@@ -129,12 +129,12 @@ export function cycleModel(era: Cycle){
            endMonth:endMonth, cpi:cpi, reading:reading, season:season, track:track, growth:eraGrowth(era) };
 }
 var seasonRuleSentence: Record<Season, string> = {
-  spring:"Expansion with prices heating, within or below the range, is reflation — Spring.",
-  springdeflation:"Expansion with prices cooling, within or below the range, is Spring — deflation.",
-  summer:"Expansion with prices above the range — hot — is inflation, Summer.",
-  autumn:"Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
-  lateautumn:"Contraction with prices heating, within or above the range, is Autumn — stagflation.",
-  winter:"Contraction with prices below the range — cold — is deflation, Winter."
+  spring:"Growth above potential with prices heating, within or below the range, is reflation — Spring.",
+  springdeflation:"Growth above potential with prices cooling, within or below the range, is Spring — deflation.",
+  summer:"Growth above potential with prices above the range — hot — is inflation, Summer.",
+  autumn:"Growth below potential with prices cooling, within or above the range, is disinflation — Autumn.",
+  lateautumn:"Growth below potential with prices heating, within or above the range, is Autumn — stagflation.",
+  winter:"Growth below potential with prices below the range — cold — is deflation, Winter."
 };
 export function potentialGap(r: ModelReading){
   var gap = r.gdpLatest.v - r.potential;
@@ -142,7 +142,7 @@ export function potentialGap(r: ModelReading){
 }
 function seasonWhyFor(m: CycleModel){
   var r = m.reading;
-  return "Today the economy is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " +
+  return "Today growth is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " +
     pricesWord(r) + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + inflationFigure(r.cpiNow) + "%). " +
     seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
 }
@@ -156,16 +156,12 @@ export function inflationFigure(v: number){
   return s.replace("-", "\u2212");
 }
 export function growthWord(r: ModelReading){
-  return r.regime === "contraction" ? "contracting" : "expanding";
-}
-function contractingClause(r: ModelReading){
-  if (r.gdpLatest.v < 0) return "the economy is contracting and output is shrinking";
-  return "the economy is contracting, though output is still growing " + (Math.abs(r.gdpLatest.v - r.potential) <= HOLD_BAND ? "at about" : "more slowly than") + " its potential";
+  return r.regime === "contraction" ? "below potential" : "above potential";
 }
 export function cycleNowNote(m: CycleModel){
   var r = m.reading, w = growthWord(r), n = Math.round(m.elapsedYears);
   var years = (["Less than a year", "One year", "Two years", "Three years", "Four years", "Five years", "Six years", "Seven years", "Eight years", "Nine years", "Ten years"][n] || n + " years");
-  var growth = w === "expanding" ? "the economy is expanding" : contractingClause(r);
+  var growth = r.gdpLatest.v < 0 ? "output is shrinking" : "the economy is growing " + w;
   var prices = "prices are " + (r.cpiHot ? "running hot" : r.cpiCold ? "running cold" : "inside the range") +
     (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
   return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";

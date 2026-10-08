@@ -273,8 +273,8 @@ test('GDP growth’s word reads its own sign, and Weather’s opening line follo
   assert.equal(word('sheet-metric-gdp'), 'Growing');
   nowModel.reading.gdpLatest = g;
   nowModel.reading.regime = regime;
-  assert.equal(w, nowModel.reading.regime === 'contraction' ? 'contracting' : 'expanding');
-  assert.match(cycleNowNote(nowModel), new RegExp({ contracting: 'contracting', expanding: 'expanding' }[w]));
+  assert.equal(w, nowModel.reading.regime === 'contraction' ? 'below potential' : 'above potential');
+  assert.match(cycleNowNote(nowModel), nowModel.reading.gdpLatest.v < 0 ? /output is shrinking/ : new RegExp('growing ' + w));
 });
 
 test('a boot failure with no stored documents is not swallowed', () => {
