@@ -141,7 +141,7 @@ one row per reading in card order), and everything that used to name it again re
 subcategories (`sub`) and groups, Cycle analysis's rows and each reading's good side, the timing chips, the split pages (`splitPages` holds only what a split page adds to its row), today's
 figure (`todayFace`), the history heads (`HIST_HEAD`), every page's window, mode and cycle state and its range stops
 (`pageState`), the past cycles' series (`hist`, read through `keyed`), and the marks on every door and head.
-`CATEGORIES` beside it holds the four categories in source order with `shown`, their place in Cycle analysis and the
+`CATEGORIES` beside it holds the six categories in source order with `shown`, their place in Cycle analysis and the
 Diagnosis (two orders, both Keren's). A row's fields:
 
 ```text
@@ -377,7 +377,7 @@ the manifest's; now each module says what it imports.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
-  `data` (the figures, their constants and sources), `activity` (nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (the credit gap, margin debt and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
+  `data` (the figures, their constants and sources), `activity` (the growth gap, nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (the credit gap, margin debt and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
   and inner pages), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
@@ -395,8 +395,8 @@ The conversion was proved by the snapshot (every state identical) and the browse
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
 to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio (labels; the panels keep their keys `chart` and `analysis`. Cycle Statistics (Cycle analysis until 0.6.8) took Search's place in 0.6.1 and is labelled Analysis, and the cycle list is labelled Herstory; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
-Browse: Weather (Economic Season · Market · Activity) · Circulation (Pressure · Money) ·
-Mood (Valuations · Sentiment · Desire) · Stress (Credit · Debt); four categories since 0.9.3, when Debt left Circulation for its own category, Stress (key `stress`), which Credit joined in 0.9.4; three in 0.9.0, when the Activity category (key `energy`) became Weather's subcategory Activity. Named Weather, never
+Browse: Weather (Economic Season · Market) · Activity (Labor · Output) · Mood (Valuations · Sentiment) ·
+Desire (Demand · Risk) · Circulation (Pressure · Money) · Stress (Credit · Debt); six since 0.9.11, when Activity (key `activity`) left Weather; four categories since 0.9.3, when Debt left Circulation for its own category, Stress (key `stress`), which Credit joined in 0.9.4; three in 0.9.0, when the Activity category (key `energy`) became Weather's subcategory Activity. Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:

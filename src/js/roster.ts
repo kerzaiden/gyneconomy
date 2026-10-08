@@ -1,12 +1,12 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
-import { bagSvg, creditSvg, debtSvg, diamondSvg, diceSvg, ecgSvg, gaugeSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
+import { bagSvg, creditSvg, debtSvg, diamondSvg, diceSvg, ecgSvg, factorySvg, gaugeSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { confidenceHistory, creditGapHistory, payrollsHistory, retailHistory, delinquencyHistory, durablesHistory, lendingHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
 import { DELINQUENCY_MEAN, GAP_BUILD, LENDING_LINE, MARGIN_LINE } from "./credit.ts";
-import { PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
+import { GAP_LINE, growthGapHistory, PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
 import { CONCENTRATION_MEAN, topTenHistory } from "./concentration.ts";
 
 // ---- The roster: every reading, declared once ----
@@ -19,13 +19,14 @@ export var TIMING: Record<RosterTiming, { label: string }> = {
 };
 export var CATEGORIES: Category[] = [
   { key:"weather", title:"Weather", shown:0, onDial:true },
-  { key:"circulation", title:"Circulation", shown:3 },
-  { key:"mood", title:"Mood", shown:1 },
-  { key:"desire", title:"Desire", shown:2 },
-  { key:"stress", title:"Stress", shown:4 }
+  { key:"activity", title:"Activity", shown:1 },
+  { key:"circulation", title:"Circulation", shown:4 },
+  { key:"mood", title:"Mood", shown:2 },
+  { key:"desire", title:"Desire", shown:3 },
+  { key:"stress", title:"Stress", shown:5 }
 ];
 export var SUB_MARK: Record<string, () => string> = {
-  "Economic Season":thermoSvg, "Market":marketSvg, "Activity":personSvg, "Pressure":gaugeSvg, "Money":ecgSvg,
+  "Economic Season":thermoSvg, "Market":marketSvg, "Labor":personSvg, "Output":factorySvg, "Pressure":gaugeSvg, "Money":ecgSvg,
   "Credit":creditSvg, "Debt":debtSvg, "Valuations":diamondSvg, "Sentiment":volatilitySvg, "Demand":bagSvg, "Risk":diceSvg
 };
 export var ROSTER_BY: Record<string, RosterRow> = {};
@@ -68,17 +69,19 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-metric-temp", name:"Temperature", cat:"weather", sub:"Economic Season", timing:"lagging", door:"peek", slot:"temp", term:"Temperature",
       head:"CPI and PCE Inflation", hist:{ s:inflationHistory, k:"m" }, cardUnit:"PCE, YoY",
       normal:{ lo:TEMP_BAND_LO, hi:TEMP_BAND_HI, why:"the Season Model\u2019s band, a point either side of the Fed\u2019s 2% target" } },
-    { id:"sheet-metric-gdp", name:"Growth", cat:"weather", sub:"Economic Season", good:"up", timing:"coincident", door:"peek", slot:"gdp",
-      head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, cardUnit:"YoY" },
+    { id:"sheet-sign-growth-gap", name:"Growth gap", cat:"weather", sub:"Economic Season", good:"up", timing:"coincident", door:"row",
+      term:"Growth gap", head:"GDP Growth versus Potential", hist:{ s:growthGapHistory, k:"q" }, mid:GAP_LINE, cardUnit:"vs potential" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, cardUnit:"total return" },
-    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"weather", sub:"Activity", good:"down", timing:"lagging", door:"row",
+    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"activity", sub:"Labor", good:"down", timing:"lagging", door:"row",
       term:"Activity", head:"Unemployment Rate", hist:{ s:unempHistory, k:"m" } },
-    { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"weather", sub:"Activity", good:"up", timing:"structural",
+    { id:"sheet-sign-payrolls", name:"Nonfarm payrolls", cat:"activity", sub:"Labor", good:"up", timing:"coincident", door:"row",
+      term:"Nonfarm payrolls", head:"Nonfarm Payrolls, YoY", hist:{ s:payrollsHistory, k:"m" }, mid:PAYROLLS_LINE, cardUnit:"YoY" },
+    { id:"sheet-metric-gdp", name:"GDP growth", cat:"activity", sub:"Output", good:"up", timing:"coincident", door:"peek", slot:"gdp",
+      head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, cardUnit:"YoY" },
+    { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"activity", sub:"Output", good:"up", timing:"structural",
       door:"row", term:"Productivity growth", head:"Output per Hour, YoY", hist:{ s:productivityHistory, k:"q" },
       mid:PRODUCTIVITY_SLOWDOWN },
-    { id:"sheet-sign-payrolls", name:"Nonfarm payrolls", cat:"weather", sub:"Activity", good:"up", timing:"coincident", door:"row",
-      term:"Nonfarm payrolls", head:"Nonfarm Payrolls, YoY", hist:{ s:payrollsHistory, k:"m" }, mid:PAYROLLS_LINE, cardUnit:"YoY" },
     { id:"sheet-sign-hormones", name:"Federal funds rate", cat:"circulation", sub:"Pressure", timing:"leading", door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, cardUnit:"Fed funds target", live:["fedFunds"] },
     { id:"sheet-sign-pressure", name:"US 10-year Treasury", cat:"circulation", sub:"Pressure", timing:"leading", door:"subject", hk:"pressure-range",

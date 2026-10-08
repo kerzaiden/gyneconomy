@@ -110,7 +110,7 @@ export function econChips(growth: number | null, prices: number | null, market: 
     chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + '</span></span>';
 }
 export function dxHead(mark: string, title: string, open?: string){
-  var inner = '<span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(title);
+  var inner = (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + '</span>' : "") + titleCase(title);
   return open ? '<button type="button" class="dx-sys-head"' + open + '>' + inner + CHEV + '</button>' : '<div class="dx-sys-head">' + inner + '</div>';
 }
 export function dxSys(cls: string, inner: string){ return '<section class="dx-sys' + cls + '">' + inner + '</section>'; }

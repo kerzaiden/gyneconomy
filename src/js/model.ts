@@ -7,7 +7,7 @@ type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: Model
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
 type MoodPoint = { k: string; v: number | null };
 export type Mood = { m: string; valuations: number; calm: number; confidence: number; market: number; score: number; pct?: number | null; change?: number | null; ago?: Mood | null; word?: string | null };
-import { buffettHistory, capeHistory, gdpSrc, marketCycles, NBER_RECESSIONS, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.ts";
+import { buffettHistory, capeHistory, gdpSrc, HOLD_BAND, marketCycles, NBER_RECESSIONS, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.ts";
 
 // ---- The season, computed ----
 function monthIndex(k: string){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)); }
@@ -26,7 +26,6 @@ export function cpiDirectionAt(endMonth: string){
   var c12 = cpiYear(endMonth);
   return c12.length < 11 ? null : cpiDirectionOf(cpiTrend(c12));
 }
-export var HOLD_BAND = 0.47;
 export var PEAK_YEARS = [1929, 1948];
 export var PEAK_TREND: number;
 var potentialByQ: Record<string, number>;

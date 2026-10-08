@@ -301,16 +301,16 @@ async function openPage(p, url, sheet) {
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
     (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'fed,trend,sys' && past.doors === 2 && !past.after &&
      yearRun(past.years) && past.opens === past.years.length)
-      ? ok('the cycle reads year by year, newest first, each year opening Vitals, today and at a close', today.years.join() + ' · ' + past.years.join())
-      : bad('the cycle reads year by year, newest first, each year opening Vitals, today and at a close', JSON.stringify([today, past]));
+      ? ok('the cycle reads year by year, newest first, each year opening Elements, today and at a close', today.years.join() + ' · ' + past.years.join())
+      : bad('the cycle reads year by year, newest first, each year opening Elements, today and at a close', JSON.stringify([today, past]));
     await p.evaluate(() => [...document.querySelectorAll('#diagnosis .dx-year')].find(b => b.dataset.indWhen === '2010').click()); await settle(p);
     const yearInd = await p.evaluate(() => { const h = document.getElementById('sheet-find');
       return { title: document.getElementById('topbar-title').textContent, shown: !!h.offsetParent,
         year: h.querySelector('.period-now b').textContent, cycle: h.querySelector('.period-now small').textContent, items: h.querySelectorAll('.lab-item').length,
         popup: document.getElementById('detail-backdrop').classList.contains('show') }; });
-    (yearInd.title === 'Vitals' && yearInd.shown && yearInd.year === '2010' && yearInd.cycle === 'Year 2 of the Big Tech Cycle' && yearInd.items > 10 && !yearInd.popup)
-      ? ok('a year in Year by Year opens Vitals on that year', yearInd.items + ' readings in 2010')
-      : bad('a year in Year by Year opens Vitals on that year', JSON.stringify(yearInd));
+    (yearInd.title === 'Elements' && yearInd.shown && yearInd.year === '2010' && yearInd.cycle === 'Year 2 of the Big Tech Cycle' && yearInd.items > 10 && !yearInd.popup)
+      ? ok('a year in Year by Year opens Elements on that year', yearInd.items + ' readings in 2010')
+      : bad('a year in Year by Year opens Elements on that year', JSON.stringify(yearInd));
     await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
@@ -467,18 +467,18 @@ async function openPage(p, url, sheet) {
     await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p);
     const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
-    (all.title === 'Vitals' && all.shown === 'weather,mood,desire,circulation,stress')
-      ? ok('the Vitals head opens the Vitals page on All', all.shown)
-      : bad('the Vitals head opens the Vitals page on All', JSON.stringify(all));
+    (all.title === 'Elements' && all.shown === 'weather,activity,mood,desire,circulation,stress')
+      ? ok('the Elements head opens the Elements page on All', all.shown)
+      : bad('the Elements head opens the Elements page on All', JSON.stringify(all));
     await p.goto('file://' + url); await ready(p); await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
     await p.click('#chart-home .insight-row[data-ind-cat="weather"]'); await settle(p);
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
-    (door.first === 'home-secs' && door.rows === 'weather,mood,desire,circulation,stress' && weather.title === 'Vitals' && weather.shown === 'weather' &&
-     weather.subs === 'Economic Season 2,Market 1,Activity 3')
-      ? ok('Vitals lists the categories, each opening Vitals on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
-      : bad('Vitals lists the categories, each opening Vitals on its own, grouped by subcategory', JSON.stringify({ door, weather }));
+    (door.first === 'home-secs' && door.rows === 'weather,activity,mood,desire,circulation,stress' && weather.title === 'Elements' && weather.shown === 'weather' &&
+     weather.subs === 'Economic Season 2,Market 1')
+      ? ok('Elements lists the categories, each opening Elements on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
+      : bad('Elements lists the categories, each opening Elements on its own, grouped by subcategory', JSON.stringify({ door, weather }));
     await filt(p, '[data-pick-cat=""]'); await shut(p);
     const tab = await p.evaluate(() => {
       const h = document.getElementById('sheet-find'), rows = [...h.querySelectorAll('.lab-row[data-open]')];
@@ -488,10 +488,10 @@ async function openPage(p, url, sheet) {
         rows: rows.length, doors: rows.every(r => document.getElementById(r.dataset.open)),
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.indCat).join(), regularity: !!h.querySelector('.cat-cycle, [data-ind-cat="cycle"]') };
     });
-    (tab.title === 'Vitals' && tab.first === 'period-step' && tab.under && tab.chips === 0 && tab.menu && tab.rows > 15 && tab.doors &&
-     tab.cats === 'weather,mood,desire,circulation,stress' && !tab.regularity)
-      ? ok('Vitals opens on its period stepper, then its search box with the one filter, every reading and category a door', tab.rows + ' readings')
-      : bad('Vitals opens on its period stepper, then its search box with the one filter, every reading and category a door', JSON.stringify(tab));
+    (tab.title === 'Elements' && tab.first === 'period-step' && tab.under && tab.chips === 0 && tab.menu && tab.rows > 15 && tab.doors &&
+     tab.cats === 'weather,activity,mood,desire,circulation,stress' && !tab.regularity)
+      ? ok('Elements opens on its period stepper, then its search box with the one filter, every reading and category a door', tab.rows + ' readings')
+      : bad('Elements opens on its period stepper, then its search box with the one filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {
       await p.fill('#sheet-find .lab-q', q); await settle(p);
       return p.evaluate(() => ({
@@ -536,8 +536,8 @@ async function openPage(p, url, sheet) {
     (sub.cal[0] > 15 && sub.cal[1] > 90 && sub.cal[2] > 350 && dot.label === 'Dot-Com Cycle' && dot.on === 'Dot-Com Cycle1991\u20132002' && dot.items > 10 &&
      y99.label === '1999' && y99.on === '1999' && y99.cap === 'Year 9 of the Dot-Com Cycle' && /^\+21\.0%/.test(y99.sp || '') && q99.label === 'Q4 1999' && q99.on === 'Q4' &&
      stepBack.label === 'Q3 1999' && reset.tier === 'all' && reset.label === 'AI Cycle' && reset.show === 'Show ' + reset.items + ' readings' && closed)
-      ? ok('Vitals moves by cycle, year or quarter on one season calendar or the stepper\u2019s arrows, and Reset brings it home', sub.cal[0] + ' cycles, ' + sub.cal[1] + ' years, ' + sub.cal[2] + ' quarters; 1999 S&P 500 ' + y99.sp)
-      : bad('Vitals moves by cycle, year or quarter on one season calendar or the stepper\u2019s arrows, and Reset brings it home', JSON.stringify({ sub, dot, y99, q99, stepBack, reset, closed }));
+      ? ok('Elements moves by cycle, year or quarter on one season calendar or the stepper\u2019s arrows, and Reset brings it home', sub.cal[0] + ' cycles, ' + sub.cal[1] + ' years, ' + sub.cal[2] + ' quarters; 1999 S&P 500 ' + y99.sp)
+      : bad('Elements moves by cycle, year or quarter on one season calendar or the stepper\u2019s arrows, and Reset brings it home', JSON.stringify({ sub, dot, y99, q99, stepBack, reset, closed }));
     await p.click('#sheet-find .cat-mood .lab-fold'); await settle(p);
     const folded = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       hid: !document.querySelector('#sheet-find .cat-mood .lab-item').offsetParent }));
@@ -549,9 +549,9 @@ async function openPage(p, url, sheet) {
     await filt(p, '[data-pick-cat=""]'); await shut(p);
     const after = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       list: !document.getElementById('sheet-find').hidden }));
-    (folded.title === 'Vitals' && folded.hid && head.title === 'Vitals' && head.shown === 'mood' && / \u00b7 /.test(head.words) && after.title === 'Vitals' && after.list)
-      ? ok('a category name narrows Vitals to it, its verdict words beside each tier; its chevron only folds it')
-      : bad('a category name narrows Vitals to it, its verdict words beside each tier; its chevron only folds it', JSON.stringify({ folded, head, after }));
+    (folded.title === 'Elements' && folded.hid && head.title === 'Elements' && head.shown === 'mood' && / \u00b7 /.test(head.words) && after.title === 'Elements' && after.list)
+      ? ok('a category name narrows Elements to it, its verdict words beside each tier; its chevron only folds it')
+      : bad('a category name narrows Elements to it, its verdict words beside each tier; its chevron only folds it', JSON.stringify({ folded, head, after }));
     await p.click('#sheet-find .lab-row[data-open="sheet-sign-confidence"]'); await settle(p);
     const fromChart = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle'); if (!b) return null;
@@ -599,10 +599,10 @@ async function openPage(p, url, sheet) {
     if (wx) wx.cards = await p.evaluate(() => [...document.querySelectorAll('#detail-modal-body .hi-name')].map(n => n.textContent.trim()));
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (wx && wx.bar === 'Vitals' && wx.names === 'Growth+Nonfarm payrolls+Productivity growth+S&P 500+Temperature+Unemployment rate' && !wx.modal &&
+    (wx && wx.bar === 'Elements' && wx.names === 'Growth gap+S&P 500+Temperature' && !wx.modal &&
      wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
-      ? ok('the season in the dial opens Vitals on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
-      : bad('the season in the dial opens Vitals on Weather, with the market and what the season means', JSON.stringify(wx));
+      ? ok('the season in the dial opens Elements on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
+      : bad('the season in the dial opens Elements on Weather, with the market and what the season means', JSON.stringify(wx));
     await p.evaluate(() => document.querySelector('.dial-moon[data-q="0"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))); await settle(p);
     const qhub = await p.evaluate(() => ({ date: document.getElementById('season-wheel-hub-date').textContent.trim(),
       ret: (document.querySelector('#season-wheel-hub-detail .hub-line b') || {}).textContent }));
@@ -614,10 +614,10 @@ async function openPage(p, url, sheet) {
         where: (h.querySelector('.lab-row[data-open="sheet-sign-market"] .lab-where') || {}).textContent || '',
         modal: document.getElementById('detail-backdrop').classList.contains('show') }; });
     await p.click('#topbar-back'); await settle(p);
-    (qs.bar === 'Vitals' && qs.shown && qs.label === qhub.date && qhub.ret && qs.market.indexOf(qhub.ret) === 0 &&
+    (qs.bar === 'Elements' && qs.shown && qs.label === qhub.date && qhub.ret && qs.market.indexOf(qhub.ret) === 0 &&
      qs.where.endsWith(qhub.date.slice(-4)) && !qs.modal)
-      ? ok('a tapped quarter opens Vitals on that quarter, the year\u2019s S&P 500 one number with the dial', qhub.date + ' \u00b7 ' + qhub.ret)
-      : bad('a tapped quarter opens Vitals on that quarter, the year\u2019s S&P 500 one number with the dial', JSON.stringify({ qhub, qs }));
+      ? ok('a tapped quarter opens Elements on that quarter, the year\u2019s S&P 500 one number with the dial', qhub.date + ' \u00b7 ' + qhub.ret)
+      : bad('a tapped quarter opens Elements on that quarter, the year\u2019s S&P 500 one number with the dial', JSON.stringify({ qhub, qs }));
     await p.goto('file://' + url); await ready(p);
     await openPage(p, url, 'sheet-metric-valuation');
     const headCol = await p.evaluate(() => {
@@ -804,11 +804,11 @@ async function openPage(p, url, sheet) {
       try { step.fn(); } finally { R.pop(); console.warn = warn; }
       return { ids: R.map(r => r.id), cards, warned: warned.join(' ') };
     });
-    if (!roster) bad('the roster is every reading on Vitals', 'no GYN.ROSTER or no checkRoster step');
+    if (!roster) bad('the roster is every reading on Elements', 'no GYN.ROSTER or no checkRoster step');
     else {
       JSON.stringify(roster.ids.slice().sort()) === JSON.stringify(roster.cards)
-        ? ok('the roster is every reading on Vitals', roster.ids.length + ' readings')
-        : bad('the roster is every reading on Vitals', 'roster ' + roster.ids.join(',') + ' / cards ' + roster.cards.join(','));
+        ? ok('the roster is every reading on Elements', roster.ids.length + ' readings')
+        : bad('the roster is every reading on Elements', 'roster ' + roster.ids.join(',') + ' / cards ' + roster.cards.join(','));
       ['declared twice', 'is split', 'no live reading nowhere'].every(w => roster.warned.indexOf(w) !== -1)
         ? ok('checkRoster refuses a reading declared twice, a split group and an unknown live name')
         : bad('checkRoster refuses a reading declared twice, a split group and an unknown live name', roster.warned || 'no warning');
@@ -859,8 +859,8 @@ async function openPage(p, url, sheet) {
       ? ok('site feed is asked for over http')
       : bad('site feed is asked for over http', 'requests: ' + asked.join(' '));
     (cape.length >= 1 && cape.every(t => /^50\.5/.test(t)))
-      ? ok('site feed moves a scalar on Vitals', cape.join(' · '))
-      : bad('site feed moves a scalar on Vitals', JSON.stringify(cape));
+      ? ok('site feed moves a scalar on Elements', cape.join(' · '))
+      : bad('site feed moves a scalar on Elements', JSON.stringify(cape));
     (ff.length >= 1 && ff.every(t => /^1\.25/.test(t)) && ff.some(t => /Easing/.test(t)) && ff.every(t => !/Tightening/.test(t)))
       ? ok('site feed moves an object doc, word and all', ff.join(' · '))
       : bad('site feed moves an object doc, word and all', JSON.stringify(ff));

@@ -1,8 +1,11 @@
 import { fmtSigned } from "./format.ts";
-import { payrollsHistory, retailHistory } from "./history-fred.ts";
+import { payrollsHistory, potentialYoYHistory, retailHistory } from "./history-fred.ts";
+import { gdpQuarterlyYoY } from "./refresh-season.ts";
+import { gdpSrc, HOLD_BAND } from "./data.ts";
 
 // ---- Activity: nonfarm payrolls and retail sales, each against a year earlier ----
-export var PAYROLLS_LINE = 0, RETAIL_LINE = 0;
+export var PAYROLLS_LINE = 0, RETAIL_LINE = 0, GAP_LINE = 0;
+export var growthGapHistory: QuarterPoint[] = [];
 export var PAYROLLS_SRC: Src[] = [
   { t:"Bureau of Labor Statistics — Current Employment Statistics, the monthly survey of employers", u:"https://www.bls.gov/ces/" },
   { t:"FRED — All Employees, Total Nonfarm, seasonally adjusted, monthly since 1939 (PAYEMS)", u:"https://fred.stlouisfed.org/series/PAYEMS" }
@@ -18,9 +21,27 @@ function sideWord(up: string, down: string, more: string, less: string){
     return { state:"warning", text:down, says:"below zero: " + less + " than a year earlier" };
   };
 }
+function gapOf(): QuarterPoint[] {
+  var pot: Record<string, number> = {};
+  potentialYoYHistory.forEach(function(d){ pot[d.q] = d.v; });
+  return gdpQuarterlyYoY.filter(function(d){ return pot[d.q] != null; }).map(function(d){ return { q:d.q, v:Math.round((d.v - pot[d.q]) * 100) / 100 }; });
+}
+function gapSpec(): CreditSpec {
+  var pt = function(v: number){ return fmtSigned(v, 1) + " pt"; };
+  growthGapHistory = gapOf();
+  return { id:"sheet-sign-growth-gap", goodAbove:true, term:"Growth gap", econ:"Growth gap", unit:"vs potential", series:growthGapHistory, mid:GAP_LINE, line:"Potential",
+      optimal:{ gte:GAP_LINE, label:"≥ 0 pt" }, ends:{ low:"Below potential" }, fmt:pt, src:gdpSrc.filter(function(s){ return /GDPPOT|Fixler/.test(s.t); }),
+      word:sideWord("Above potential", "Below potential", "real GDP is growing faster than the economy’s potential", "real GDP is growing more slowly than the economy’s potential"),
+      about:"Real GDP growth against the same quarter a year earlier, less the growth the Congressional Budget Office estimates the economy can sustain, its potential. " +
+        "This is the figure the Season Model reads for growth, after the Investment Clock (Merrill Lynch, 2004): above potential is expansion, below it contraction. " +
+        "Real GDP growth itself is under Activity.",
+      band:"<b>Zero is the line: growth equal to potential.</b> The Season Model changes a quarter’s regime only once the gap passes " + HOLD_BAND +
+        " points either side, the typical revision to GDP growth (Fixler and others, BEA, 2018), so a small gap is not yet a turn.",
+      lede:"Real GDP growth less its potential: the growth half of the Economic Season." };
+}
 export function activitySpecs(): CreditSpec[] {
   var pct = function(v: number){ return fmtSigned(v, 1) + "%"; };
-  return [
+  return [gapSpec(),
     { id:"sheet-sign-payrolls", goodAbove:true, term:"Nonfarm payrolls", econ:"Nonfarm payrolls", unit:"YoY", series:payrollsHistory, mid:PAYROLLS_LINE, line:"No change",
       optimal:{ gte:PAYROLLS_LINE, label:"≥ 0%" }, ends:{ low:"Losing jobs" }, fmt:pct, src:PAYROLLS_SRC,
       word:sideWord("Adding jobs", "Losing jobs", "more people are on payrolls", "fewer people are on payrolls"),

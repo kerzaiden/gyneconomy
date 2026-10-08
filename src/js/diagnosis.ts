@@ -31,7 +31,7 @@ function yearByYear(m: CycleModel){
   return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
 }
 function yearRow(year: string, lead: string, foot: string){
-  return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Vitals" data-ind-when="' + year + '">' +
+  return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Elements" data-ind-when="' + year + '">' +
     '<span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + '</span>' : "") +
     '</span>' + CHEV + foot + '</button>';
 }
