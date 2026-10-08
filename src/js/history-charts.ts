@@ -80,20 +80,15 @@ function colScale(F: HistFrame, n: number, lo: number, hi: number){
   return { X:function(i: number){ return F.L + h + (F.R - F.L - 2 * h) * i / Math.max(1, n - 1); },
            Y:function(v: number){ return F.B - (F.B - F.T) * (v - lo) / (hi - lo); } };
 }
-export var PULSE_BEATS = 10, PULSE_SWING = 0.12;
-function pulseTrace(ser: readonly number[], from: number, X: (i: number) => number, Y: (v: number) => number){
+export var PULSE_BEATS = 10;
+function pulseTrace(ser: readonly number[], X: (i: number) => number, Y: (v: number) => number){
   var n = ser.length, year = (X(4) - X(0)), wide = year / (PULSE_BEATS * 1.9);
-  var qOf = function(x: number){ return Math.max(0, Math.min(n - 1, Math.round((x - X(0)) / (X(1) - X(0))))); };
-  var level = function(x: number){
+  var vAt = function(x: number){
     var t = (x - X(0)) / (X(1) - X(0)), i = Math.max(0, Math.min(n - 1, Math.floor(t))), j = Math.min(n - 1, i + 1), u = Math.max(0, Math.min(1, t - i));
-    return Y(ser[i] + (ser[j] - ser[i]) * u);
+    return ser[i] + (ser[j] - ser[i]) * u;
   };
-  var at = function(x: number){
-    var q = qOf(x), i = from + q, change = i > 0 ? (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100 : 0;
-    var p = year / (PULSE_BEATS * ser[q]) * Math.exp(-PULSE_SWING * change);
-    return Math.min(p, Math.max(X(q + 0.5) - x, wide));
-  };
-  return '<path class="pt-now pv-trace" d="' + beatPath(X(-0.5), X(n - 0.5), level, at, 16, wide) + '"/>';
+  var gap = function(x: number){ return year / (PULSE_BEATS * vAt(x)); };
+  return '<path class="pt-now pv-trace" d="' + beatPath(X(-0.5), X(n - 0.5), function(x: number){ return Y(vAt(x)); }, gap, 16, wide) + '"/>';
 }
 function pulseAxisRepeat(ticks: number[], Y: (v: number) => number, xs: number[]){
   return xs.map(function(x){
@@ -130,11 +125,11 @@ export function velocityHistoryChart(Wpx: number, from: number, to?: number | nu
                    refs:[{ label:"Average", v:pAvg }, { label:"Pre-2008 mean", v:PULSE_PRE2008, dash:true }],
                    vals:ser.map(function(v: number){ return { v:v }; }) });
   out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
-  out.push(pulseTrace(ser, from, X, Y));
+  out.push(pulseTrace(ser, X, Y));
   out.push(fitLine(ser, "quarter", function(v: number){ return v.toFixed(2) + "\u00d7"; }, X(0), X(n - 1), Y, R, L, 0));
   return vhOpen(Math.round(W), H, F.W) +
     'aria-label="Velocity of M2 drawn as a heartbeat, every quarter from ' + y0 + ' to ' + y1 +
-    ', a year to a screen, against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times; beats close up when velocity rose that quarter and spread out when it fell">' +
+    ', a year to a screen, against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times; the gap between beats is a year divided by ten times that quarter\u2019s velocity">' +
     out.join("") + '</svg>';
 }
 function yearTicks(out: string[], vals: { m: string }[], w: { y0: number; y1: number; cycle?: boolean; narrow: boolean }, X: (i: number) => number, T: number, B: number, f: (v: number) => string){

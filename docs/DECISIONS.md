@@ -1091,8 +1091,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   trace riding at each quarter's level, a year to a screen, scrolling sideways through the period chosen, with a bar under the
   axis showing the position. Keren: "I think the solution is horizontal scroll. I want one history component in this page, with
   a pulse and a rhythm combined into an EKG style reading. The y-axis will be the Velocity … and also some kind of an
-  indicator in the x-axis that we can scroll". It beats ten times per turnover; a quarter's beats close up or spread by
-  e^(−0.12 × its % change in velocity), Claude's scale. The value labels repeat at each year so a scrolled screen keeps its
+  indicator in the x-axis that we can scroll". Velocity is the beats-per-minute: ten beats per turnover, the gap
+  between beats a year ÷ (10 × velocity), nothing magnified. Keren: "The rhythm right is the gap between every beat. Right,
+  like BPM" (a 12%-per-point magnification of each quarter's change was built and dropped as off). The value labels repeat at each year so a scrolled screen keeps its
   scale; the reading plate shows the last quarter in view. The rate columns, red bands, per-year strips and the separate
   heartbeat line under the chart were built and dropped the same day; Keren on the bands: "not understandable,
   not intuitively". Familiar metrics are a guideline, not a rule: Keren,
