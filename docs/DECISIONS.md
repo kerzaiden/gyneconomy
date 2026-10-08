@@ -130,8 +130,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **On the Elements page the Federal budget is a signed number: a deficit is minus, a surplus plain, and the word
   under it says "Large deficit".** Keren: "Instead of saying deficits, just use minus", so the word is not said twice
-  and the row matches the others (0.9.15). The word flags only a deficit past the 3.8% line; a surplus sits on the
-  good side and reads "50-year average".
+  and the row matches the others (0.9.15). A surplus reads "Surplus" (Keren: "If it has extra budget, meaning it's
+  earning more than it's spending, then I would call it a surplus"); a deficit within the 3.8% line reads "50-year average".
 
 - **Growth is said in one pair of words everywhere: Expansion and Contraction ("expanding", "contracting" in a
   sentence), the model's own regime.** The season table, the Growth card, the chart legend, the season notes and

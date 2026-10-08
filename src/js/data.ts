@@ -123,7 +123,7 @@ var labPanel: Row[] = [
   {
     sub:"federal deficit or surplus ÷ GDP",
     meter:{min:-2.3, max:26.9, value:5.8, optimal:{lte:DEFICIT_LINE, label:"\u2264 " + DEFICIT_LINE + "%"},
-           ends:{ zone:"50-year average", high:"Large deficit" }},
+           ends:{ zone:"50-year average", high:"Large deficit", negative:"Surplus" }},
     shortNote:"FY2026, ~$1.9T — this size deficit once required a recession or a war. Neither is present.",
     note:"FY2026, ~$1.9T, CBO's February 2026 projection (FY2025 actual: 5.8%). Below emergency-level spikes, but deficits this size used to require a recession or a war — neither is present now. Range spans the largest surplus of the modern era (FY2000, +2.3% of GDP; the last one was FY2001, +1.2%) to the WWII deficit peak (FY1943, 26.9%), both from the OMB series on FRED. The green band ends at 3.8% of GDP, CBO's stated average deficit over the last fifty years; this year's 5.8% is half again as large.",
     direction:"up", flagValue:"5.8%", flagState:"na",

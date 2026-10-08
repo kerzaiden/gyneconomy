@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { window } from './dom.mjs';
 import { detailTexts } from '../../src/js/dom.ts';
 import { refreshLiveData } from '../../src/js/live.ts';
-import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
+import { labRow, marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
+import { meterWord } from '../../src/js/indicators.ts';
 import { calendarTodayY } from '../../src/js/refresh-season.ts';
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
 import { todayFace } from '../../src/js/era.ts';
@@ -22,6 +23,9 @@ test('the open cycle’s results are today’s figures, printed as the model pri
   });
   assert.equal(lab('sheet-marker-deficit').print(-5.77), '\u22125.8%');
   assert.equal(lab('sheet-marker-deficit').print(1.2), '1.2%');
+  const m = labRow('sheet-marker-deficit').meter;
+  assert.equal(meterWord({ ...m, value: -1.2 }), 'Surplus');
+  assert.equal(meterWord({ ...m, value: 5.8 }), 'Large deficit');
   assert.doesNotMatch(row('sheet-sign-market').querySelector('.lab-res b').textContent, /so far/);
 });
 

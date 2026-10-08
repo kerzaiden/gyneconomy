@@ -40378,7 +40378,8 @@
       },
       ends: {
         zone: "50-year average",
-        high: "Large deficit"
+        high: "Large deficit",
+        negative: "Surplus"
       }
     },
     shortNote: "FY2026, ~$1.9T — this size deficit once required a recession or a war. Neither is present.",
@@ -46852,7 +46853,7 @@
     return R.mid;
   }
   function meterWord(m) {
-    return meterFlagged(m) ? m.ends && m.ends.high || "High" : m.ends && m.ends.zone || "In range";
+    return m.ends && m.ends.negative && m.value != null && m.value < 0 ? m.ends.negative : meterFlagged(m) ? m.ends && m.ends.high || "High" : m.ends && m.ends.zone || "In range";
   }
   function splitPages() {
     var tenth = function(v) {

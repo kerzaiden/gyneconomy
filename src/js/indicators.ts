@@ -26,7 +26,7 @@ var BUFFETT_2001 = [
 ];
 function dollars(billions: number){ return billions >= 1000 ? "$" + (billions / 1000).toFixed(billions < 10000 ? 2 : 1) + " trillion" : "$" + Math.round(billions) + " billion"; }
 function midOf(R: RosterRow): number { if (R.mid == null) throw new Error(R.id + " has no middle line"); return R.mid; }
-export function meterWord(m: Meter){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
+export function meterWord(m: Meter){ return m.ends && m.ends.negative && m.value != null && m.value < 0 ? m.ends.negative : meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
 function splitPages(): Record<string, SplitPage> {
   var tenth = function(v: number){ return v.toFixed(1) + "%"; };
   return withCredit({
