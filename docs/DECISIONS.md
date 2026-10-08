@@ -318,7 +318,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   one reading component from its roster row: the same figure and word, (i) note, history card and Insights, with
   the same "The Latest Reading" and "Against the Record" cards wherever a reading is read against its own record.
   Keren: "make sure the readings all drive from the same source because basically all categories should have the
-  same behavior even though they present different data." (0.9.18)
+  same behavior even though they present different data." (0.9.20)
 - **A reading is a row or card that opens a page; it never unfolds where it stands, and a popup is for a note,
   never for a page's content.** Keren asked for inner pages "aligning to our inner pages format"; a long
   record "is not a footnote you glance at and dismiss". (V269, V303)
@@ -856,6 +856,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 ## Readings and bands
 
 ### Where each reading belongs
+
+- **Real return is its own reading in Weather, under Market, after the S&P 500: the index's total return each year with
+  inflation taken out.** Keren: "it needs to be under the weather category, under market subcategory" (0.9.19), over
+  chips on the cycle pages. It deflates by the app's own inflation gauge (CPI before 2000, PCE since), so one inflation
+  figure is used everywhere; the open year's inflation is the latest twelve-month rate taken for the share of the year
+  gone (Claude's call: the app holds no price index to measure the year so far). Zero is the definitional line, like the
+  S&P 500's; the words are "Beat inflation" and "Lost to inflation". A cycle's real years are read on its page through
+  the Cycles window. (0.9.19)
 
 - **Credit and debt are one system, and both live in Stress: Credit is the appetite, Debt is the burden.** Credit
   (Credit gap, Margin debt, Lending standards) is borrowing as it builds and banks' willingness to lend; Debt (Federal debt,

@@ -4,19 +4,19 @@ import { errors, window } from './dom.mjs';
 import { detailTexts, ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, liveIsoOf, forgetLive, READINGS } from '../../src/js/live.ts';
 import { now, capeHistory, curveAsOf, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
-import { inflationHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
-import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead, pressureTendency } from '../../src/js/readings.ts';
+import { inflationHistory, gdpQuarterlyYoY, calendarTodayY, yearDone } from '../../src/js/refresh-season.ts';
+import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead, pressureTendency, realYears, realReading } from '../../src/js/readings.ts';
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
 import { topTenHistory, topTenReadings } from '../../src/js/concentration.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory, topTenRecent } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
-import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
+import { nowModel, growthWord, cycleNowNote, realReturn, yearInflation } from '../../src/js/model.ts';
 import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/reading.ts';
 import { catInsight } from '../../src/js/insights.ts';
-import { marketCycles } from '../../src/js/data.ts';
+import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 
 const value = sheet => todayFace(ROSTER_BY[sheet]).text;
 const word = sheet => todayFace(ROSTER_BY[sheet]).word;
@@ -52,7 +52,7 @@ test('each card prints the last value of its own record', () => {
 const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
   Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.6975, to: 2.1365 }, Volume: { from: 3.4, to: 10.3 }, Activity: { from: 3.5, to: 5 },
-  Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
+  Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 }, 'Real return': { gte: 0 },
   'Credit gap': { lte: 2 }, 'Delinquency rate': { lte: 3.14 },
   'Nonfarm payrolls': { gte: 0 }, 'Growth gap': { gte: 0 }, 'Retail sales': { gte: 0 }, 'Concentration risk': { lte: 22.8 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 3.5 }, 'sheet-marker-deficit': { lte: 3.8 }
@@ -327,6 +327,17 @@ test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
   assert.equal(horizonRead.word, 'Pessimistic');
   await at(0.01, '2026-12-31');
   assert.notEqual(horizonRead.word, 'Pessimistic');
+});
+
+test('Real return is each year\'s S&P 500 total return deflated by the app\'s inflation gauge, the open year pro rata', () => {
+  const at = y => realYears.find(d => d.y === y).v;
+  assert.equal(at(1979), realReturn(sp500AnnualReturns[1979], yearInflation(1979)));
+  assert.ok(at(1974) < sp500AnnualReturns[1974]);
+  const open = realYears[realYears.length - 1], last = inflationHistory[inflationHistory.length - 1];
+  assert.equal(open.y, calendarTodayY);
+  assert.equal(open.v, realReturn(sp500AnnualReturns[calendarTodayY], last.v * yearDone()));
+  assert.equal(word('sheet-sign-real-return'), open.v >= 0 ? 'Beat inflation' : 'Lost to inflation');
+  assert.equal(realReading.metric, fmtSigned(open.v, 1) + '%');
 });
 
 test('the 10-year card reads its tendency like a barometer, by its own record\'s quartiles', () => {

@@ -30,6 +30,9 @@ export var DATA_COMPILED: Date, dataCompiledLabel: string, calendarTodayY: numbe
 function fedGauge(cpi: MonthPoint[]){
   return cpi.filter(function(d){ return d.m < PCE_FROM; }).concat(pceYoYHistory.filter(function(d){ return d.m >= PCE_FROM; }));
 }
+export function yearDone(){
+  return (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
+}
 export function bootRefreshSeason(){
   // ---- REFRESH: the one date to edit ----
   DATA_COMPILED = new Date(2026, 8, 25);

@@ -376,7 +376,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `activity` (the growth gap, nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (the credit gap, margin debt and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers),
-  `reading` (the one reading component: every reading's figure, word and page, 0.9.18), `render-pages` and `pressure`
+  `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
   (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `fed-phases` (the Fed's phases, under the dial and on Analysis), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
@@ -399,7 +399,7 @@ Season; Volatility, never Fear or Sentiment (V663); Households, never Debt servi
 
 Rules that shape the pages:
 
-- **Every reading is one component (0.9.18, Keren: "all categories should have the same behavior even though
+- **Every reading is one component (0.9.20, Keren: "all categories should have the same behavior even though
   they present different data").** `src/js/reading.ts` holds `READING`, one entry per roster row, declared by
   `defineReading(id, {face, info, controls, history, insight, aside?, src?})`: today's figure and word, the (i)
   note, the bar above the chart, the chart (`history(W)` returns its svg or shell, its tooltip geometry, its trend
@@ -409,7 +409,7 @@ Rules that shape the pages:
   that cannot say something through these fields is a finding, not a page of its own. The defines live with
   their data: `defineSplits` (indicators), `defineInnerReadings` (inner-pages), `defineSubjectReadings`
   (render-pages) and `defineMarketReadings` (pressure); `renderSignsList` calls them, then mounts.
-- **One record, read one way (0.9.18).** A reading whose Insights read its own record against a line or a band
+- **One record, read one way (0.9.20).** A reading whose Insights read its own record against a line or a band
   uses `recordInsight` (or `indicatorInsight`, which takes the band from the meter): "The Latest Reading" says
   where it sits and since when, "Against the Record" how many readings ran higher and how many held the line or
   band. Readings with a story of their own (Valuations, GDP, Temperature, the Fed, Fear, Pressure) keep their
@@ -708,7 +708,9 @@ emotion at the closing month, its years, and what followed a year later. Every l
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   Balance. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names
-  calendar years through the page option `at`.
+  calendar years through the page option `at`. Real return is built by the same `yearReading` from `realYears`: each year of
+  `sp500Years` deflated by `yearInflation` through `realReturn` (model.ts), the open year by the latest twelve-month
+  rate times `yearDone()`, the share of the year gone that the cycle view's `cycleYtdFraction` also reads.
 
 ## The season model
 
