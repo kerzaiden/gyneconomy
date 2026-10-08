@@ -70,7 +70,7 @@ function declareRoster(): RosterRow[] {
       head:"CPI and PCE Inflation", hist:{ s:inflationHistory, k:"m" }, cardUnit:"PCE, YoY",
       normal:{ lo:TEMP_BAND_LO, hi:TEMP_BAND_HI, why:"the Season Model\u2019s band, a point either side of the Fed\u2019s 2% target" } },
     { id:"sheet-sign-growth-gap", name:"Growth gap", cat:"weather", sub:"Economic Season", good:"up", timing:"coincident", door:"row",
-      term:"Growth gap", head:"GDP Growth versus Potential", hist:{ s:growthGapHistory, k:"q" }, mid:GAP_LINE, cardUnit:"vs potential" },
+      term:"Growth gap", head:"GDP Growth vs Potential", hist:{ s:growthGapHistory, k:"q" }, mid:GAP_LINE, cardUnit:"vs potential" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, cardUnit:"total return" },
     { id:"sheet-sign-activity", name:"Unemployment rate", cat:"activity", sub:"Labor", good:"down", timing:"lagging", door:"row",

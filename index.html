@@ -960,7 +960,7 @@
   .lab-fold{ display:flex; align-items:center; gap:8px; margin:-10px -6px -10px 0; padding:10px 6px; }
   .lab-head:has([aria-expanded="false"]){ border-bottom-color:transparent; }
   .lab-head:has([aria-expanded="false"]) + ul{ display:none; }
-  .lab-fold .peek-chev{ color:var(--cat); transform:rotate(90deg); transition:transform .16s ease; }
+  .lab-fold .peek-chev{ color:var(--text-muted); transform:rotate(90deg); transition:transform .16s ease; }
   .lab-fold[aria-expanded="false"] .peek-chev{ transform:none; }
   :is(.lab-cat, .lab-fold, .lab-row, .lab-filter):focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .lab-sec[hidden], .lab-item[hidden]{ display:none; }
@@ -1005,11 +1005,10 @@
   .ind-show{ width:100%; margin-top:24px; padding:14px 22px; }
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
-  .plain{ --cat:var(--text-muted); }
   .plain .cat-head{ padding:12px 16px; background:var(--surface); border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); }
   .plain ul{ background:var(--surface-2); }
   .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); }
-  .plain .lab-mark{ vertical-align:-3px; margin-right:6px; color:var(--normal); }
+  .plain .lab-mark{ vertical-align:-3px; margin-right:6px; }
   .plain .lab-mark svg{ width:16px; height:16px; }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--normal); border-bottom:1px solid var(--border); }
@@ -1372,7 +1371,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.14 (785)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.15 (786)</span></p>
     </div>
   </div>
 
@@ -44530,7 +44529,7 @@
       timing: "coincident",
       door: "row",
       term: "Growth gap",
-      head: "GDP Growth versus Potential",
+      head: "GDP Growth vs Potential",
       hist: {
         s: growthGapHistory,
         k: "q"

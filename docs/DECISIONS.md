@@ -33,7 +33,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Activity holds Labor (Unemployment rate, Nonfarm payrolls; Keren: "switch jobs to labor … it fits the context of fertility better") and Output (GDP growth, Productivity growth); the
   subcategory names, the factory mark on Output and the olive are Claude's picks. Weather keeps what the season and the
   market are read from: Economic Season (Temperature, Growth gap) and Market. Real GDP growth moved to Output and
-  Economic Season shows the Growth gap instead, the figure the season actually reads, headed "GDP Growth versus Potential" (Keren); Keren: "are we really looking at
+  Economic Season shows the Growth gap instead, the figure the season actually reads, headed "GDP Growth vs Potential" (Keren, 0.9.11; "vs" 0.9.15); Keren: "are we really looking at
   pure growth when we're looking at the economic season?", then chose "Move, add gap" (0.9.11). Only the Growth gap says
   expansion or contraction; GDP growth reads its own sign against zero, Growing or Shrinking, and its trend accelerating or slowing,
   like Nonfarm payrolls and Retail sales (Claude, 0.9.13: it had kept the season's word and read "Contraction" at +2.1%). Stress keeps its name.
@@ -1365,7 +1365,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   bank went because it carried the verdict); "I don't want the individual icons to disappear. I just want them
   to inherit the color." (V301, V302, V457, V490, V657, V661) On Analysis, each Elements row's icon wears its category's colour (Activity olive, Weather red, Mood
   purple, Desire red, Circulation blue, Stress gold) while the title stays dark purple. Keren: "I think the colors look good. So keep the colors and paint
-  the icons accordingly" (0.9.14).
+  the icons accordingly" (0.9.14). On the Elements page every mark wears its category's colour too, the category marks
+  and the subcategory marks under them, so Labor and Output are olive under Activity. Keren: "I would expect that
+  labor and output icons would also be olive green. So that it would like explain to me the context of where I am" (0.9.15).
 - **A reading wears its subcategory's mark: one mark per subcategory, declared once (`SUB_MARK` in the roster),
   on the Vitals subcategory heading and on every history head in it; the history head's mark is grey.** Keren:
   "the federal funds rate icon in the history component … doesn't match the icon of the category … I would assume
