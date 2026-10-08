@@ -626,8 +626,9 @@
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
-  .pv-col.over{ stroke:var(--good); }
+  .pv-beat{ fill:none; stroke:var(--accent); stroke-width:1.5; stroke-linejoin:round; stroke-linecap:round; }
+  .pv-beat.odd{ stroke:var(--critical); }
+  .pv-odd{ fill:var(--critical); opacity:0.08; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -700,7 +701,7 @@
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
   .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
-  .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
+  .trend-on .pv-beat{ stroke:var(--border-strong) !important; opacity:0.45; }
   .trend-on .temp-avg{ opacity:0.16; }
   .trend-on .dv-mid{ opacity:0.4; }
 
@@ -46790,6 +46791,70 @@
     wireDetailModal();
     need("asof-text").textContent = "Data compiled " + dataCompiledLabel;
   }
+  var RHYTHM_WINDOW = 8;
+  var RHYTHM_BEFORE = 2008;
+  var RHYTHM_PCTL = .9;
+  var RHYTHM_STRETCH = 4;
+  var rhythm = null;
+  function spread(xs) {
+    var m = xs.reduce(function(a, x) {
+      return a + x;
+    }, 0) / xs.length;
+    return Math.sqrt(xs.reduce(function(a, x) {
+      return a + (x - m) * (x - m);
+    }, 0) / xs.length);
+  }
+  function rhythmRecord() {
+    if (rhythm) return rhythm;
+    var moves = [], history2 = [];
+    for (var i = 1; i < m2vHistory.length; i++) moves.push((m2vHistory[i] / m2vHistory[i - 1] - 1) * 100);
+    for (var j = RHYTHM_WINDOW; j <= moves.length; j++) history2.push({
+      q: qAtIndex(M2V_FROM_YEAR, j),
+      v: spread(moves.slice(j - RHYTHM_WINDOW, j))
+    });
+    var edge = pctl(history2.filter(function(d) {
+      return +d.q.slice(0, 4) < RHYTHM_BEFORE;
+    }).map(function(d) {
+      return d.v;
+    }), RHYTHM_PCTL);
+    return rhythm = {
+      history: history2,
+      edge: edge
+    };
+  }
+  function pts(v) {
+    return v.toFixed(2) + " points";
+  }
+  function stretches(r) {
+    var runs = [];
+    r.history.forEach(function(d, i) {
+      if (d.v <= r.edge) return;
+      var last = runs[runs.length - 1];
+      if (last && i - last.b <= 2) last.b = i; else runs.push({
+        a: i,
+        b: i
+      });
+    });
+    return runs.filter(function(s) {
+      return s.b - s.a + 1 >= RHYTHM_STRETCH;
+    }).map(function(s) {
+      return r.history[s.a].q.slice(0, 4) + "–" + r.history[s.b].q.slice(0, 4);
+    });
+  }
+  function listed(xs) {
+    return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || "";
+  }
+  function rhythmCard() {
+    var r = rhythmRecord(), h = r.history, last = h[h.length - 1], odd = last.v > r.edge;
+    var steadier = h.filter(function(d) {
+      return d.v < last.v;
+    }).length;
+    return hiCard("Rhythm", odd ? "warning" : "good", (odd ? "Irregular" : "Steady") + ": in the two years to " + pointLabel(last) + " velocity’s quarterly changes spread by " + pts(last.v) + ", " + (steadier ? "steadier than all but " + steadier + " of the " + h.length + " two-year windows since " + pointLabel(h[0]) : "the steadiest of the " + h.length + " two-year windows since " + pointLabel(h[0])) + ". Past " + pts(r.edge) + " the rhythm is irregular; it ran irregular for a year or more in " + listed(stretches(r)) + ".");
+  }
+  function rhythmInfo() {
+    var r = rhythmRecord();
+    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p><p class="caption follow"><b>The history is a heartbeat</b>: the line runs at each quarter’s velocity and beats once each time a dollar turns over, so a faster pulse beats closer together. It turns red, on a shaded band, wherever the rhythm is irregular.</p>';
+  }
   function deficitChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -46908,6 +46973,48 @@
       }
     };
   }
+  function irregularAt(i) {
+    var r = rhythmRecord(), d = r.history[i - RHYTHM_WINDOW];
+    return !!d && d.v > r.edge;
+  }
+  function beatAt(xb, base, w, A) {
+    var f = function(n) {
+      return n.toFixed(1);
+    };
+    return "L" + f(xb - w / 2) + "," + f(base) + "L" + f(xb - w * .2) + "," + f(base + A * .15) + "L" + f(xb) + "," + f(base - A) + "L" + f(xb + w * .2) + "," + f(base + A * .34) + "L" + f(xb + w / 2) + "," + f(base);
+  }
+  function ekgTrace(ser, from, X, Y, F) {
+    var c = m2vHistory.slice(0, from).reduce(function(a, v) {
+      return a + v / 4;
+    }, 0), out = [], runs = [], run = null;
+    var w = Math.max(2, Math.min(9, F.slot * 1.1)), A = (F.B - F.T) * .07, f = function(n) {
+      return n.toFixed(1);
+    };
+    var base = function(x) {
+      var j = Math.max(0, Math.min(ser.length - 1, Math.floor((x - X(0)) / F.slot))), k = Math.min(ser.length - 1, j + 1), t = Math.max(0, Math.min(1, (x - X(j)) / F.slot));
+      return Y(ser[j]) + (Y(ser[k]) - Y(ser[j])) * t;
+    };
+    ser.forEach(function(v, i) {
+      var xl = Math.max(X(0), X(i) - F.slot / 2), xr = Math.min(X(ser.length - 1), X(i) + F.slot / 2), odd = irregularAt(from + i);
+      var at = [], pts2 = [ xl, X(i), xr ];
+      for (var k = Math.floor(c) + 1; k <= c + v / 4; k++) {
+        var xb = X(i) - F.slot / 2 + (k - c) / (v / 4) * F.slot;
+        pts2.push(xb);
+        at.push(f(xb));
+      }
+      c += v / 4;
+      var d = pts2.sort(function(a, b) {
+        return a - b;
+      }).map(function(x, j) {
+        return at.indexOf(f(x)) !== -1 ? beatAt(x, base(x), w, A) : (j ? "L" : "M") + f(x) + "," + f(base(x));
+      }).join("").replace(/^L/, "M");
+      if (odd && run) run[1] = xr; else if (odd) runs.push(run = [ xl, xr ]); else run = null;
+      out.push('<path class="pv-beat hcol' + (odd ? " odd" : "") + '" d="' + d + '"/>');
+    });
+    return runs.map(function(r) {
+      return '<rect class="pv-odd" x="' + f(r[0]) + '" y="' + f(F.T) + '" width="' + f(Math.max(1.5, r[1] - r[0])) + '" height="' + f(F.B - F.T) + '"/>';
+    }).join("") + out.join("");
+  }
   function velocityHistoryChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -46965,6 +47072,9 @@
         label: "Pre-2008 mean",
         v: PULSE_PRE2008,
         dash: true
+      }, {
+        label: "Irregular rhythm",
+        swatch: "var(--critical)"
       } ],
       vals: ser.map(function(v) {
         return {
@@ -46973,17 +47083,15 @@
       })
     });
     out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
-    var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
-    var pMidY = Y(PULSE_PRE2008);
-    ser.forEach(function(v, i) {
-      var y12 = Y(v);
-      if (Math.abs(y12 - pMidY) < .6) y12 = pMidY + (v >= PULSE_PRE2008 ? -.6 : .6);
-      out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' + pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y12, pSw) + '"/>');
-    });
+    out.push(ekgTrace(ser, from, X, Y, {
+      T: T,
+      B: B,
+      slot: (R - L) / Math.max(1, n)
+    }));
     out.push(fitLine(ser, "quarter", function(v) {
       return v.toFixed(2) + "×";
     }, X(0), X(n - 1), Y, R, L, 0));
-    return vhOpen(W, H) + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + ", against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + " as a heartbeat trace: it runs at the quarter’s velocity, beats once per turnover of a dollar, and turns red where the rhythm is irregular, against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
   }
   function yearTicks(out, vals, w, X, T, B, f) {
     var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
@@ -50447,70 +50555,6 @@
   }
   function bootPortfolio() {
     buildPortfolio();
-  }
-  var RHYTHM_WINDOW = 8;
-  var RHYTHM_BEFORE = 2008;
-  var RHYTHM_PCTL = .9;
-  var RHYTHM_STRETCH = 4;
-  var rhythm = null;
-  function spread(xs) {
-    var m = xs.reduce(function(a, x) {
-      return a + x;
-    }, 0) / xs.length;
-    return Math.sqrt(xs.reduce(function(a, x) {
-      return a + (x - m) * (x - m);
-    }, 0) / xs.length);
-  }
-  function rhythmRecord() {
-    if (rhythm) return rhythm;
-    var moves = [], history2 = [];
-    for (var i = 1; i < m2vHistory.length; i++) moves.push((m2vHistory[i] / m2vHistory[i - 1] - 1) * 100);
-    for (var j = RHYTHM_WINDOW; j <= moves.length; j++) history2.push({
-      q: qAtIndex(M2V_FROM_YEAR, j),
-      v: spread(moves.slice(j - RHYTHM_WINDOW, j))
-    });
-    var edge = pctl(history2.filter(function(d) {
-      return +d.q.slice(0, 4) < RHYTHM_BEFORE;
-    }).map(function(d) {
-      return d.v;
-    }), RHYTHM_PCTL);
-    return rhythm = {
-      history: history2,
-      edge: edge
-    };
-  }
-  function pts(v) {
-    return v.toFixed(2) + " points";
-  }
-  function stretches(r) {
-    var runs = [];
-    r.history.forEach(function(d, i) {
-      if (d.v <= r.edge) return;
-      var last = runs[runs.length - 1];
-      if (last && i - last.b <= 2) last.b = i; else runs.push({
-        a: i,
-        b: i
-      });
-    });
-    return runs.filter(function(s) {
-      return s.b - s.a + 1 >= RHYTHM_STRETCH;
-    }).map(function(s) {
-      return r.history[s.a].q.slice(0, 4) + "–" + r.history[s.b].q.slice(0, 4);
-    });
-  }
-  function listed(xs) {
-    return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || "";
-  }
-  function rhythmCard() {
-    var r = rhythmRecord(), h = r.history, last = h[h.length - 1], odd = last.v > r.edge;
-    var steadier = h.filter(function(d) {
-      return d.v < last.v;
-    }).length;
-    return hiCard("Rhythm", odd ? "warning" : "good", (odd ? "Irregular" : "Steady") + ": in the two years to " + pointLabel(last) + " velocity’s quarterly changes spread by " + pts(last.v) + ", " + (steadier ? "steadier than all but " + steadier + " of the " + h.length + " two-year windows since " + pointLabel(h[0]) : "the steadiest of the " + h.length + " two-year windows since " + pointLabel(h[0])) + ". Past " + pts(r.edge) + " the rhythm is irregular; it ran irregular for a year or more in " + listed(stretches(r)) + ".");
-  }
-  function rhythmInfo() {
-    var r = rhythmRecord();
-    return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' + RHYTHM_WINDOW + " of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is " + pts(r.edge) + ", the 90th percentile of every two-year window from " + M2V_FROM_YEAR + " to " + (RHYTHM_BEFORE - 1) + ", the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p>";
   }
   var CURVE_KEY = {
     "3m": "3M",

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `2a3042f` on 2026-10-08. **100 components**, **20 shared patterns**.
+Generated from commit `db92b0e` on 2026-10-08. **100 components**, **20 shared patterns**.
 
 ## ai-insights.ts
 
@@ -125,11 +125,11 @@ Generated from commit `2a3042f` on 2026-10-08. **100 components**, **20 shared p
 |---|---|---|
 | **`cpiHistoryChart`** | `.temp-col` | `inner-pages.ts:defineTemp` |
 | **`deficitChart`** | `.def-col` `.spread-history-band` | `inner-pages.ts:defineDeficit` |
+| **`ekgTrace`** | `.pv-beat` `.pv-odd` | `history-charts.ts:velocityHistoryChart` |
 | **`fedFundsHistoryChart`** | `.ff-col` | `render-pages.ts:defineHormones` |
 | **`gdpHistoryChart`** | `.growth-col` | `inner-pages.ts:defineGdp` |
 | **`m2GrowthChart`** | `.m2-col` | `pressure.ts:defineFlow` |
 | **`unempHistoryChart`** | `.unemp-col` | `inner-pages.ts:defineActivity` |
-| **`velocityHistoryChart`** | `.pv-col` | `pressure.ts:defineFlow` |
 
 ## history.ts
 
@@ -217,12 +217,12 @@ renderer speaks. Listed most-used first.
 | **`histFrame`** | charts.ts | 11 places |
 | **`metered`** | format.ts | 11 places |
 | **`publishGeom`** | charts.ts | 10 places |
-| **`colPath`** | charts.ts | 9 places |
-| **`colWidth`** | charts.ts | 9 places |
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
 | **`addSources`** | dom.ts | 8 places |
+| **`colPath`** | charts.ts | 8 places |
+| **`colWidth`** | charts.ts | 8 places |
 | **`cycleSlice`** | model.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
@@ -305,6 +305,7 @@ renderer speaks. Listed most-used first.
 | **`readingFor`** | reading.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
+| **`rhythmRecord`** | rhythm.ts | 3 places |
 | **`scoreTile`** | cycle-analysis.ts | 3 places |
 | **`seasonPills`** | render-core.ts | 3 places |
 | **`seasonRuns`** | render-core.ts | 3 places |
@@ -332,7 +333,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 |---|---|---|
 | `.caption` | 20 | `credit.ts:readingOf`, `dial-cycle.ts:renderCycleKicker`, `pressure.ts:pressureMaturities`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `readings.ts:yearLead`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
 | `.follow` | 16 | `credit.ts:readingOf`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
-| `.hcol` | 6 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart` |
+| `.hcol` | 5 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart` |
 | `.mono` | 3 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock` |
 | `.cycsel-nm` | 3 | `history.ts:headMenuHtml`, `history.ts:headPickRow`, `history.ts:nameAside` |
 | `.marker-sub` | 3 | `indicators.ts:splitInfo`, `inner-pages.ts:valuationInfo`, `readings.ts:volatilityDetailHtml` |

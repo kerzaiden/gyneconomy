@@ -7,6 +7,7 @@ import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, 
 import { quarterRegime } from "./model.ts";
 import { windowScale } from "./history.ts";
 import { unempState } from "./readings.ts";
+import { RHYTHM_WINDOW, rhythmRecord } from "./rhythm.ts";
 
 export function deficitChart(Wpx: number, from: number, to?: number | null){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
@@ -80,6 +81,35 @@ function colScale(F: HistFrame, n: number, lo: number, hi: number){
   return { X:function(i: number){ return F.L + h + (F.R - F.L - 2 * h) * i / Math.max(1, n - 1); },
            Y:function(v: number){ return F.B - (F.B - F.T) * (v - lo) / (hi - lo); } };
 }
+function irregularAt(i: number){
+  var r = rhythmRecord(), d = r.history[i - RHYTHM_WINDOW];
+  return !!d && d.v > r.edge;
+}
+function beatAt(xb: number, base: number, w: number, A: number){
+  var f = function(n: number){ return n.toFixed(1); };
+  return "L" + f(xb - w / 2) + "," + f(base) + "L" + f(xb - w * 0.2) + "," + f(base + A * 0.15) + "L" + f(xb) + "," + f(base - A) +
+    "L" + f(xb + w * 0.2) + "," + f(base + A * 0.34) + "L" + f(xb + w / 2) + "," + f(base);
+}
+function ekgTrace(ser: number[], from: number, X: (i: number) => number, Y: (v: number) => number, F: { T: number; B: number; slot: number }){
+  var c = m2vHistory.slice(0, from).reduce(function(a, v){ return a + v / 4; }, 0), out: string[] = [], runs: number[][] = [], run: number[] | null = null;
+  var w = Math.max(2, Math.min(9, F.slot * 1.1)), A = (F.B - F.T) * 0.07, f = function(n: number){ return n.toFixed(1); };
+  var base = function(x: number){
+    var j = Math.max(0, Math.min(ser.length - 1, Math.floor((x - X(0)) / F.slot))), k = Math.min(ser.length - 1, j + 1), t = Math.max(0, Math.min(1, (x - X(j)) / F.slot));
+    return Y(ser[j]) + (Y(ser[k]) - Y(ser[j])) * t;
+  };
+  ser.forEach(function(v, i){
+    var xl = Math.max(X(0), X(i) - F.slot / 2), xr = Math.min(X(ser.length - 1), X(i) + F.slot / 2), odd = irregularAt(from + i);
+    var at: string[] = [], pts = [xl, X(i), xr];
+    for (var k = Math.floor(c) + 1; k <= c + v / 4; k++){ var xb = X(i) - F.slot / 2 + (k - c) / (v / 4) * F.slot; pts.push(xb); at.push(f(xb)); }
+    c += v / 4;
+    var d = pts.sort(function(a, b){ return a - b; }).map(function(x, j){
+      return at.indexOf(f(x)) !== -1 ? beatAt(x, base(x), w, A) : (j ? "L" : "M") + f(x) + "," + f(base(x));
+    }).join("").replace(/^L/, "M");
+    if (odd && run) run[1] = xr; else if (odd) runs.push(run = [xl, xr]); else run = null;
+    out.push('<path class="pv-beat hcol' + (odd ? " odd" : "") + '" d="' + d + '"/>');
+  });
+  return runs.map(function(r){ return '<rect class="pv-odd" x="' + f(r[0]) + '" y="' + f(F.T) + '" width="' + f(Math.max(1.5, r[1] - r[0])) + '" height="' + f(F.B - F.T) + '"/>'; }).join("") + out.join("");
+}
 export function velocityHistoryChart(Wpx: number, from: number, to?: number | null){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
@@ -108,24 +138,18 @@ export function velocityHistoryChart(Wpx: number, from: number, to?: number | nu
   publishGeom("velocityHistoryChart", { L:L, R:R, T:T, B:B, W:W, n:n, at:function(d: unknown, i: number){ return qAtIndex(M2V_FROM_YEAR, from + i); },
                    fmt:function(v: number){ return v.toFixed(3) + "\u00d7"; },
                    refs:[{ label:"Average", v:pAvg },
-                         { label:"Pre-2008 mean", v:PULSE_PRE2008, dash:true }],
+                         { label:"Pre-2008 mean", v:PULSE_PRE2008, dash:true },
+                         { label:"Irregular rhythm", swatch:"var(--critical)" }],
                    vals:ser.map(function(v: number){ return { v:v }; }) });
   out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
 
-  var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
-  var pMidY = Y(PULSE_PRE2008);
-  ser.forEach(function(v, i){
-    var y1 = Y(v);
-    if (Math.abs(y1 - pMidY) < 0.6) y1 = pMidY + (v >= PULSE_PRE2008 ? -0.6 : 0.6);
-    out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' +
-      pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y1, pSw) + '"/>');
-  });
+  out.push(ekgTrace(ser, from, X, Y, { T:T, B:B, slot:(R - L) / Math.max(1, n) }));
 
   out.push(fitLine(ser, "quarter", function(v: number){ return v.toFixed(2) + "\u00d7"; }, X(0), X(n - 1), Y, R, L, 0));
 
   return vhOpen(W, H) +
     'aria-label="Velocity of M2, every quarter from ' + y0 + ' to ' + y1 +
-    ', against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times">' +
+    ' as a heartbeat trace: it runs at the quarter\u2019s velocity, beats once per turnover of a dollar, and turns red where the rhythm is irregular, against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times">' +
     out.join("") + '</svg>';
 }
 function yearTicks(out: string[], vals: { m: string }[], w: { y0: number; y1: number; cycle?: boolean; narrow: boolean }, X: (i: number) => number, T: number, B: number, f: (v: number) => string){
