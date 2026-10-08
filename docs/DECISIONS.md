@@ -40,7 +40,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Stress holds two subcategories, Credit and Debt, and its mark is the lightning bolt.** Keren: "stress should have its own
   category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3); "Under stress category, put credit
   and debt" (0.9.4). Desire left Mood to be its own category, after Mood, with two subcategories, Demand (Discretionary
-  spending, Retail sales) and Risk (Equity risk premium, Concentration risk). Keren: "desire should be its own category";
+  spending, Retail sales) and Risk (Equity risk premium, Concentration risk, Delinquencies). Keren: "desire should be its own category";
   "the subcategories … would be risk and demand" (0.9.8). Its mark is the flame and its colour the red of `--bleed-mid`;
   Demand wears a shopping bag and Risk a die: Claude's picks, for Keren to change.
   Before 0.9.11 the work readings were Weather's subcategory Activity; Keren: "we don't need a category named activity" (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3; Credit followed in 0.9.4.
@@ -52,11 +52,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Keren: "the opposite of confidence is fear. So if I would see confidence and fear, I would say, oh, she's not
   confident and she's fearful", chosen on the card over keeping Volatility. This overturns V663 ("instead of fear,
   call the indicator volatility"). (V663, 0.8.5)
-- **Households is a subcategory with two readings of its own, Saving rate and Debt payments, never one paired
+- **Households is a subcategory with two readings of its own, Saving rate and Debt-to-income ratio (Debt payments until 0.9.22), never one paired
   reading.** Keren found the paired chart "not very clear … not so intuitive" and chose "Split it" (0.9.21); both are
   headline figures (BEA's personal saving rate, the Fed's debt service ratio). "Debt service" stays off the screen:
   "there is government debt service and household debt service" (V463, V660). Their lines are unchanged: saving's
-  band is the 10th–90th percentile since 1947 (4.5–12.2%), debt payments' line the series' own mean since 2005.
+  band is the 10th–90th percentile since 1947 (4.5–12.2%), the debt-to-income ratio's line the series' own mean since 2005.
 - **The fiscal markers are Federal debt (not "Debt burden") and Federal interest payments (not "Interest burden").**
   Keren chose "Federal debt" because the card shows the debt itself (V660), and "federal government interest payments"
   so it is not read as the Federal funds rate reading (0.9.0).
@@ -366,7 +366,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "All the previous designs we made, we can throw them out." A closed cycle's figures are Cycle Statistics'. This
   replaced the group card (V688), the category page's ground (0.6.2), its cards and More details (1.5.0, 0.6.1), the
   equal-height cards (V688) and the past cycle's category cards (V660, V665). (0.8.6, Oct 6, 2026)
-- **Stress has two subcategories, Households (Saving rate, Debt payments, Margin debt, Delinquencies) and Government
+- **Debt-to-income ratio is the name of the Fed's household debt service ratio (TDSP), and Delinquencies sit under
+  Desire › Risk as default risk (0.9.22).** Keren: "Let's call debt payments debt to income ratio. It makes more sense",
+  and "delinquencies are default risk and should be put under risk subcategory". The series is unchanged: required
+  payments as a share of disposable (after-tax) income, the ratio a lender checks, across every household; the (i) says
+  it is measured against take-home pay. Since 0.9.22 the Backfill fetches it from FRED, so the record stays current.
+- **Stress has two subcategories, Households (Saving rate, Debt-to-income ratio, Margin debt) and Government
   (Federal debt, Federal interest payments, Federal budget), since 0.9.21; the name Economic power is retired.** Keren:
   "it should be divided to subcategories of household and government … because it's different things. And margin debt
   doesn't belong to credit. So I would say it belongs to households. And subcategory credit itself should go to
@@ -723,8 +728,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth gap, Federal funds rate, 0.9.16) and Market (S&P 500);
-  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium, Concentration risk); Circulation: Pressure (US 10-year
-  Treasury, Treasury spreads), Money (Pulse, Volume, Consumer credit; the Credit subcategory went in 0.9.22); Stress: Households (Saving rate, Debt payments, Margin debt, Delinquencies) and Government (Federal debt, Federal interest payments, Federal budget). There is no Activity category (Keren, 0.9.0). The
+  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium, Concentration risk, Delinquencies); Circulation: Pressure (US 10-year
+  Treasury, Treasury spreads), Money (Pulse, Volume, Consumer credit; the Credit subcategory went in 0.9.22); Stress: Households (Saving rate, Debt-to-income ratio, Margin debt) and Government (Federal debt, Federal interest payments, Federal budget). There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". Keren renamed

@@ -1,7 +1,7 @@
 import SERIES from "../data/series.json" with { type: "json" };
 import { bandEnds, mean, metered, pctl, round1 } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
-import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, interestDollarsQuarterly, interestQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
+import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, dsrQuarterly, grossDebtQuarterly, interestDollarsQuarterly, interestQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
 
 export var BUFFETT_LINE = 80, DEBT_LINE = 70, INTEREST_LINE = 3.5, DEFICIT_LINE = 3.8;
 type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number };
@@ -360,15 +360,13 @@ export var VIX_CONVENTION: Src[] = [
   {t:"TD Direct Investing \u2014 Understanding VIX or Volatility Index (the same lines at 20 and 30)", u:"https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"}
 ];
 export var DSR_FROM_YEAR = 2005;
-export var dsrHistory = SERIES.dsrHistory;
+export var dsrHistory: number[] = dsrQuarterly.map(function(d){ return d.v; });
 export var SAV_FROM_YEAR = 1947;
 export var savHistory = SERIES.savHistory;
 export var topTenQuarterly: QuarterPoint[] = SERIES.topTenQuarterly;
 export var SAV_THIN = pctl(savHistory, 0.05), SAV_LOW = pctl(savHistory, 0.1), SAV_MID = pctl(savHistory, 0.5), SAV_HIGH = pctl(savHistory, 0.9);
 function checkHouseholdHistories(){
-  var dHi = Math.max.apply(null, dsrHistory), dLo = Math.min.apply(null, dsrHistory);
-  if (dsrHistory.length !== 86 || Math.abs(dHi - 15.846367) > 1e-6 || Math.abs(dLo - 9.051457) > 1e-6)
-    console.warn("dsrHistory failed its check", dsrHistory.length, dHi, dLo);
+  if (dsrQuarterly[0].q !== DSR_FROM_YEAR + " Q1") console.warn("dsrQuarterly failed its check", dsrQuarterly[0].q);
   var sHi = Math.max.apply(null, savHistory), sLo = Math.min.apply(null, savHistory);
   if (savHistory.length !== 318 || Math.abs(sHi - 24.4) > 1e-9 || Math.abs(sLo - 1.8) > 1e-9)
     console.warn("savHistory failed its check", savHistory.length, sHi, sLo);

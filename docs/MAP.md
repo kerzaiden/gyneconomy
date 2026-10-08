@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,848 lines** in 40 files, about 606 KB, roughly **172 thousand tokens**. No session can
+The source is **8,847 lines** in 40 files, about 606 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `48c9893` on 2026-10-08.
+Generated from commit `c380adf` on 2026-10-08.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `48c9893` on 2026-10-08.
 | `js/main.ts` | 36 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **36** modules, **751** top-level functions, **120** top-level vars, **370** exported names, **20** boots.
+Counts: **36** modules, **751** top-level functions, **119** top-level vars, **369** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -32,7 +32,7 @@ Counts: **36** modules, **751** top-level functions, **120** top-level vars, **3
 | `js/dom.ts` | 165 | 25 | `format` |
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 44 | 6 | `format`, `history-fred` |
-| `js/data.ts` | 570 | 79 | `format`, `history-fred`, `live` |
+| `js/data.ts` | 568 | 78 | `format`, `history-fred`, `live` |
 | `js/credit.ts` | 138 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
 | `js/model.ts` | 384 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 476 | 46 | `charts`, `data`, `dom`, `format`, `live`, `model` |
@@ -56,7 +56,7 @@ Counts: **36** modules, **751** top-level functions, **120** top-level vars, **3
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
 | `js/history-charts.ts` | 390 | 16 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `rhythm` |
-| `js/history-fred.ts` | 30 | 14 | — |
+| `js/history-fred.ts` | 31 | 14 | — |
 | `js/indicators.ts` | 195 | 32 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/insights.ts` | 185 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
@@ -78,7 +78,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 2 | `bootDone` | `js/live.ts:198`–200 |
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:36`–43 |
-| 5 | `bootData` | `js/data.ts:518`–569 |
+| 5 | `bootData` | `js/data.ts:516`–567 |
 | 6 | `bootCredit` | `js/credit.ts:130`–137 |
 | 7 | `bootModel` | `js/model.ts:359`–383 |
 | 8 | `bootHistory` | `js/history.ts:452`–475 |
@@ -290,19 +290,18 @@ falls in. **export** marks a name other modules import.
 | 316 | `GDP_NORM` · export | `var GDP_NORM =` |
 | 317 | `checkMoneyStock` | `function checkMoneyStock(` |
 | 362 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
-| 363 | `dsrHistory` · export | `var dsrHistory =` |
 | 364 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
 | 365 | `savHistory` · export | `var savHistory =` |
 | 367 | `SAV_THIN` · export | `var SAV_THIN =` |
 | 368 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
-| 376 | `DSR_MEAN` · export | `var DSR_MEAN =` |
-| 377 | `curveNoteFull` · export | `var curveNoteFull =` |
-| 388 | `VOL_JOIN` · export | `var VOL_JOIN =` |
-| 510 | `typicalCycleYears` · export | `var typicalCycleYears =` |
+| 374 | `DSR_MEAN` · export | `var DSR_MEAN =` |
+| 375 | `curveNoteFull` · export | `var curveNoteFull =` |
+| 386 | `VOL_JOIN` · export | `var VOL_JOIN =` |
+| 508 | `typicalCycleYears` · export | `var typicalCycleYears =` |
 
 ### `js/credit.ts`
 
-#### Credit, households and debt: consumer credit, margin debt, the saving rate, debt payments and delinquencies
+#### Credit, households and debt: consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies
 
 | Line | Name | Anchor |
 |---|---|---|
