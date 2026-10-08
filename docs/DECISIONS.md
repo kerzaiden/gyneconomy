@@ -27,13 +27,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
 - **There are six categories, and each wears one of the I Ching's six forces as its mark: Weather (heaven: sun and cloud),
-  Activity (earth: a sprout, the colour `--earth`), Mood (wind: a spiral), Desire (fire), Circulation (water) and Stress (thunder: the bolt).**
+  Activity (earth: a sprout, the colour `--earth`), Mood (wind: three wind lines), Desire (fire), Circulation (water) and Stress (thunder: the bolt).**
   Keren: "we should separate activity from weather and make it its own category … there you can put the real economy";
-  she gave the sprout and the spiral ("I really like how the [spiral] looks at mood … let's change it") (0.9.11).
-  Activity holds Jobs (Unemployment rate, Nonfarm payrolls) and Output (Growth, Productivity growth); the
+  she gave the sprout. A spiral for Mood was tried and dropped: "it looks too mushed … let's switch to the former icon" (0.9.11).
+  Activity holds Jobs (Unemployment rate, Nonfarm payrolls) and Output (GDP growth, Productivity growth); the
   subcategory names, the factory mark on Output and the olive are Claude's picks. Weather keeps what the season and the
   market are read from: Economic Season (Temperature, Growth gap) and Market. Real GDP growth moved to Output and
-  Economic Season shows the Growth gap instead, the figure the season actually reads; Keren: "are we really looking at
+  Economic Season shows the Growth gap instead, the figure the season actually reads, headed "GDP Growth versus Potential" (Keren); Keren: "are we really looking at
   pure growth when we're looking at the economic season?", then chose "Move, add gap" (0.9.11). Stress keeps its name.
   Stress holds two subcategories, Credit and Debt, and its mark is the lightning bolt.** Keren: "stress should have its own
   category … Stress has a lightning bolt icon. And inside you can say, debt" (0.9.3); "Under stress category, put credit
