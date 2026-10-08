@@ -9,8 +9,7 @@ import { forgetLabs } from "./cycle-analysis.ts";
 import { forgetEchoes } from "./ai-insights.ts";
 
 function repaintPressureChart(){
-  var s = byIdMaybe("sheet-sign-pressure");
-  if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
+  ["sheet-sign-pressure", "sheet-sign-spreads"].forEach(function(id){ var s = byIdMaybe(id); if (s && !s.hidden && sheetRenderers[id]) sheetRenderers[id](); });
 }
 function syncCape(){ syncCapeHistory(); forgetMood(); }
 function repaintPolicy(){ put("policy-facts", policyFactRows()); }

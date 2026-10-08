@@ -1303,13 +1303,24 @@
           <svg id="ylm-svg" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
           <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
         </div>
-        <div class="chart-shell" id="spread-history-shell" hidden>
-          <svg id="spread-history-svg" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
-          <div class="tooltip mono" id="spread-history-tooltip"></div>
-        </div>
         <div id="ylm-trend"></div>
       </div>
       <div id="pressure-insights"></div>
+    </section>
+  </div>
+
+<div class="subject" data-subject="spreads">
+    <section class="hero" aria-label="Treasury spreads — the 10-year yield over the 3-month bill and the 2-year note">
+      <div class="hist-bar" id="spreads-timeline"></div>
+      <div class="spread-history">
+        <div id="spreads-head"></div>
+        <div class="chart-shell" id="spread-history-shell">
+          <svg id="spread-history-svg" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
+          <div class="tooltip mono" id="spread-history-tooltip"></div>
+        </div>
+        <div id="spreads-trend"></div>
+      </div>
+      <div id="spreads-insights"></div>
     </section>
   </div>
 
@@ -1371,7 +1382,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.15 (786)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.16 (787)</span></p>
     </div>
   </div>
 
@@ -44360,8 +44371,8 @@
   function chartSvg() {
     return markSvg('<rect x="3.5" y="4" width="17" height="16" rx="2.5" stroke-width="1.8"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5M14.5 9H17v2.5" stroke-width="1.8"/>');
   }
-  function ecgSvg() {
-    return markSvg('<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>');
+  function heartSvg() {
+    return markSvg('<path d="M12 20.2C7.4 16.9 3.6 13.6 3.6 9.4A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 8.4 1.8c0 4.2-3.8 7.5-8.4 10.8z" stroke-width="1.9"/>');
   }
   function weatherSvg() {
     return markSvg('<path d="M15.8 3.4v1.3M19.3 5.1l-.95.95M20.9 8.6h-1.3M19.3 12.1l-.95-.95M12.3 5.1l.95.95" stroke-width="1.9"/><path d="M12.75 8.06A3.1 3.1 0 1 1 15.26 11.65" stroke-width="1.9"/><path d="M7.8 19.2h6.9a3.2 3.2 0 0 0 .25-6.4 4.8 4.8 0 0 0-9.05-.95 3.7 3.7 0 0 0 1.9 7.35z" stroke-width="1.9"/>');
@@ -44433,7 +44444,7 @@
     Labor: personSvg,
     Output: factorySvg,
     Pressure: gaugeSvg,
-    Money: ecgSvg,
+    Money: heartSvg,
     Credit: creditSvg,
     Debt: debtSvg,
     Valuations: diamondSvg,
@@ -44538,6 +44549,21 @@
       mid: GAP_LINE,
       cardUnit: "vs potential"
     }, {
+      id: "sheet-sign-hormones",
+      name: "Federal funds rate",
+      cat: "weather",
+      sub: "Economic Season",
+      timing: "leading",
+      door: "subject",
+      hk: "hormones-range",
+      head: "Federal Funds Rate",
+      hist: {
+        s: fedFundsHistory,
+        k: "m"
+      },
+      cardUnit: "Fed funds target",
+      live: [ "fedFunds" ]
+    }, {
       id: "sheet-sign-market",
       name: "S&P 500",
       cat: "weather",
@@ -44614,21 +44640,6 @@
       },
       mid: PRODUCTIVITY_SLOWDOWN
     }, {
-      id: "sheet-sign-hormones",
-      name: "Federal funds rate",
-      cat: "circulation",
-      sub: "Pressure",
-      timing: "leading",
-      door: "subject",
-      hk: "hormones-range",
-      head: "Federal Funds Rate",
-      hist: {
-        s: fedFundsHistory,
-        k: "m"
-      },
-      cardUnit: "Fed funds target",
-      live: [ "fedFunds" ]
-    }, {
       id: "sheet-sign-pressure",
       name: "US 10-year Treasury",
       cat: "circulation",
@@ -44643,6 +44654,22 @@
         k: "q"
       },
       cardUnit: "10-year Treasury",
+      live: [ "yieldCurve" ]
+    }, {
+      id: "sheet-sign-spreads",
+      name: "Treasury spreads",
+      cat: "circulation",
+      sub: "Pressure",
+      timing: "leading",
+      door: "subject",
+      hk: "spreads-range",
+      head: "",
+      hist: {
+        s: t10y3mHistory,
+        k: "q"
+      },
+      mid: 0,
+      cardUnit: "10Y − 3M, points",
       live: [ "yieldCurve" ]
     }, {
       id: "sheet-sign-pulse",
@@ -46077,35 +46104,21 @@
     }, x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
   }
   function pressureHead(maturities, mat, title, note) {
-    var H = page.head["pressure-range"], spread = pressureView === "spread";
-    H.title = spread ? spreadLabel(spreadPick) + " Treasury Spread" : title;
+    var H = page.head["pressure-range"];
+    H.title = title;
     H.menu = function() {
       return [ {
         key: "levels",
         label: "Treasury yields",
-        on: !spread,
+        on: true,
         value: (mat || {}).name || "",
         rows: maturities.map(function(m) {
-          return headPickRow(!spread && mat === m, "data-ylm-mat", m.code, m.name);
-        }).join("")
-      }, {
-        key: "spreads",
-        label: "Treasury spreads",
-        on: spread,
-        value: spreadLabel(spreadPick),
-        rows: HZN_SPREADS.map(function(r) {
-          return headPickRow(spread && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+          return headPickRow(mat === m, "data-ylm-mat", m.code, m.name);
         }).join("")
       } ];
     };
-    HIST_NOTE["pressure-range"] = spread ? horizonInfoHtml(spreadPick) : note;
+    HIST_NOTE["pressure-range"] = note;
     put("pressure-head", histHead("pressure-range"));
-  }
-  function showPressureView(spread) {
-    [ [ "ylm-shell", !spread ], [ "spread-history-shell", spread ] ].forEach(function(p) {
-      var e = byId(p[0]);
-      if (e) e.hidden = !p[1];
-    });
   }
   function renderPressurePage() {
     var svg = need("ylm-svg");
@@ -46250,15 +46263,9 @@
     var matPick = "10y";
     GYN.on("pickSeries", function(bar, code) {
       matPick = code;
-      pressureView = "yield";
       maturities.forEach(function(m) {
         m.on = m.code === matPick;
       });
-      drawPressure();
-    });
-    GYN.on("pickSpread", function(code) {
-      spreadPick = code;
-      pressureView = "spread";
       drawPressure();
     });
     registerFlowPages();
@@ -46302,12 +46309,8 @@
       pressureHead(maturities, matOf(matPick), matTitle(), "<h4>" + titleCase(matTitle()) + "</h4>" + factsFrom(matDetail()));
     }
     function drawPressure() {
-      var spread = pressureView === "spread" && GYN.has("drawSpreadView");
-      showPressureView(spread);
-      if (spread) GYN.fire("drawSpreadView"); else {
-        drawYlm();
-        renderPressureInsights();
-      }
+      drawYlm();
+      renderPressureInsights();
       drawPressureHead();
     }
     drawsPage("sheet-sign-pressure", drawPressure);
@@ -46342,23 +46345,8 @@
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
     cards.push(hiCard("The Risk-Free Loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. The Federal funds rate is the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
     cards.push(hiCard("Pressure on the Borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments reading, under Debt. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
-    cards.push(hiCard("Level, Not Slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
+    cards.push(hiCard("Level, Not Slope", "", "This page reads the LEVEL. The gap between this yield and the three-month bill is the Treasury spreads reading, under it, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
-  }
-  var spreadPick = "3m";
-  var pressureView = "yield";
-  var HZN_SPREADS = [ {
-    key: "3m",
-    label: "10Y − 3M"
-  }, {
-    key: "2y",
-    label: "10Y − 2Y"
-  } ];
-  function spreadLabel(key) {
-    var r = HZN_SPREADS.filter(function(x) {
-      return x.key === key;
-    })[0];
-    return r ? r.label : HZN_SPREADS[0].label;
   }
   function tempWord(r) {
     return (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
@@ -46602,36 +46590,69 @@
       u: "https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"
     } ]);
   }
+  var spreadPick = "3m";
+  var HZN_SPREADS = [ {
+    key: "3m",
+    label: "10Y − 3M"
+  }, {
+    key: "2y",
+    label: "10Y − 2Y"
+  } ];
+  function spreadLabel(key) {
+    var r = HZN_SPREADS.filter(function(x) {
+      return x.key === key;
+    })[0];
+    return r ? r.label : HZN_SPREADS[0].label;
+  }
+  function spreadsHead() {
+    var H = page.head["spreads-range"];
+    H.title = spreadLabel(spreadPick) + " Treasury Spread";
+    H.menu = function() {
+      return [ {
+        key: "spreads",
+        label: "Treasury spreads",
+        on: true,
+        value: spreadLabel(spreadPick),
+        rows: HZN_SPREADS.map(function(r) {
+          return headPickRow(spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+        }).join("")
+      } ];
+    };
+    HIST_NOTE["spreads-range"] = horizonInfoHtml(spreadPick);
+    put("spreads-head", histHead("spreads-range"));
+  }
   function renderHorizonPage() {
-    var host = need("pressure-timeline");
+    var host = need("spreads-timeline");
     var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
     function hznData() {
       return spreadPick === "2y" ? t10y2yHistory : t10y3mHistory;
     }
     function drawHzn() {
       var data = hznData();
-      var cyc = pageCycle("pressure-range", hznY0);
+      var cyc = pageCycle("spreads-range", hznY0);
       var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
-      var from = idx ? idx[0] : qWindowFrom(data.length, page.range["pressure-range"]);
+      var from = idx ? idx[0] : qWindowFrom(data.length, page.range["spreads-range"]);
       var to = idx ? idx[1] : data.length;
-      host.innerHTML = histControls("pressure-range", {
+      host.innerHTML = histControls("spreads-range", {
         depth: Math.floor(data.length / 4)
       }, hznY0);
       GYN.fire("drawSpreadWindow", spreadPick, [ from, to ]);
-      var tr = byId("ylm-trend");
-      if (tr) {
-        var w = [];
-        data.slice(from, to).forEach(function(d) {
-          if (d.v != null) w.push(d.v);
-        });
-        tr.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true, {
-          rising: "steepening",
-          falling: "flattening"
-        });
-      }
-      put("pressure-insights", spreadInsights());
+      var w = [];
+      data.slice(from, to).forEach(function(d) {
+        if (d.v != null) w.push(d.v);
+      });
+      put("spreads-trend", trendPill(trendOf(w, "points", "quarter"), null, true, {
+        rising: "steepening",
+        falling: "flattening"
+      }));
+      put("spreads-insights", spreadInsights());
+      spreadsHead();
     }
-    GYN.on("drawSpreadView", drawHzn);
+    GYN.on("pickSpread", function(code) {
+      spreadPick = code;
+      drawHzn();
+    });
+    drawsPage("sheet-sign-spreads", drawHzn);
   }
   function spreadInsights() {
     var r = horizonRead;
@@ -47239,6 +47260,10 @@
     "sheet-sign-pressure": function() {
       var y = curveAt("10Y");
       return [ y == null ? "—" : y.toFixed(2) + "%", "" ];
+    },
+    "sheet-sign-spreads": function() {
+      var s = horizonRead.spread;
+      return [ (s < 0 ? "−" : "+") + Math.abs(s).toFixed(2), horizonRead.word ];
     },
     "sheet-sign-sentiment": function() {
       return [ now.vixRow.flagValue, volatilityTag().text ];
@@ -50747,8 +50772,10 @@
     wireMenu();
   }
   function repaintPressureChart() {
-    var s = byIdMaybe("sheet-sign-pressure");
-    if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
+    [ "sheet-sign-pressure", "sheet-sign-spreads" ].forEach(function(id) {
+      var s = byIdMaybe(id);
+      if (s && !s.hidden && sheetRenderers[id]) sheetRenderers[id]();
+    });
   }
   function syncCape() {
     syncCapeHistory();

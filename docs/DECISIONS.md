@@ -32,7 +32,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   she gave the sprout. A spiral for Mood was tried and dropped: "it looks too mushed … let's switch to the former icon" (0.9.11).
   Activity holds Labor (Unemployment rate, Nonfarm payrolls; Keren: "switch jobs to labor … it fits the context of fertility better") and Output (GDP growth, Productivity growth); the
   subcategory names, the factory mark on Output and the olive are Claude's picks. Weather keeps what the season and the
-  market are read from: Economic Season (Temperature, Growth gap) and Market. Real GDP growth moved to Output and
+  market are read from: Economic Season (Temperature, Growth gap, Federal funds rate) and Market. Real GDP growth moved to Output and
   Economic Season shows the Growth gap instead, the figure the season actually reads, headed "GDP Growth vs Potential" (Keren, 0.9.11; "vs" 0.9.15); Keren: "are we really looking at
   pure growth when we're looking at the economic season?", then chose "Move, add gap" (0.9.11). Only the Growth gap says
   expansion or contraction; GDP growth reads its own sign against zero, Growing or Shrinking, and its trend accelerating or slowing,
@@ -44,6 +44,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "the subcategories … would be risk and demand" (0.9.8). Its mark is the flame and its colour the red of `--bleed-mid`;
   Demand wears a shopping bag and Risk a die: Claude's picks, for Keren to change.
   Before 0.9.11 the work readings were Weather's subcategory Activity; Keren: "we don't need a category named activity" (0.9.0). The category was Energy (V457), shown as Activity (0.8.5); Debt left it for Circulation in 0.9.0, and Circulation for Stress in 0.9.3; Credit followed in 0.9.4.
+- **The Federal funds rate sits in Weather, under Economic Season, after Growth gap: it is the environment the season grows in, not a pressure.** Keren: "Federal funds rate is not pressure. It's an environment that matches or correlates best to hormones and progesterone and estrogen … I think it was my mistake to put it in pressure", then "put it under economic season". The rate is a setting the Fed chooses, where the 10-year is a price the market sets; it was under Circulation > Pressure from 0.8.5 to 0.9.15. It wears Economic Season's thermometer and keeps its door to its page from the Interest Rates Environment head. (0.9.16, Oct 8, 2026)
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)
@@ -307,8 +308,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   record "is not a footnote you glance at and dismiss". (V269, V303)
 - **One indicator gets one card and one page; a reading with a card has no second row.** The Buffett
   indicator, Federal debt, Interest payments and Federal budget each have their own; the two Treasury spreads
-  stay one view, Households' debt service and saving rate stay one page, and Pressure stays one card with its
-  maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
+  (10Y − 3M, 10Y − 2Y) stay one page, Households' debt service and saving rate stay one page, and the US 10-year
+  Treasury stays one card with its maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
 - **The Interest Rates Environment head is a door to the Federal funds rate page, with a chevron, wherever it stands:**
   Current Cycle, every past cycle and Analysis. Keren: "add a chevron to the interest rates environment container, both
   in the current cycle and in analysis, and let it land in the federal funds rate page." (0.9.1)
@@ -700,9 +701,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   current design of the results without spacing is good … It's all one container", "the gap between the containers
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
-  stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth) and Market (S&P 500);
-  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium, Concentration risk); Circulation: Pressure (Federal funds rate,
-  US 10-year Treasury), Money (Pulse, Volume); Stress: Credit (Credit gap, Margin debt, Lending standards) and Debt. There is no Activity category (Keren, 0.9.0). The
+  stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth gap, Federal funds rate, 0.9.16) and Market (S&P 500);
+  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium, Concentration risk); Circulation: Pressure (US 10-year
+  Treasury, Treasury spreads), Money (Pulse, Volume); Stress: Credit (Credit gap, Margin debt, Lending standards) and Debt. There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". Keren renamed
@@ -882,30 +883,33 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   output per hour measures what the body is doing. (V395)
 - **Institutional trust (Gallup's confidence survey) is not a Stress reading; don't re-add it.**
   Keren: "the trust is embodied in the bond market." (V392)
-- **Circulation reads in the order cause runs: Federal funds rate (the rate the Fed sets), Pressure (the rate the market
-  charges), Pulse (how fast money moves), Volume (how much of it there is).** The rate is the cause; pulse and
-  volume are what it acts on. (V317, V639)
+- **Circulation reads in the order cause runs: Pressure (the rate the market charges, then the spreads between its
+  maturities), Pulse (how fast money moves), Volume (how much of it there is).** The rate is the cause; pulse and
+  volume are what it acts on. The Federal funds rate led it until 0.9.15 and now sits in Weather. (V317, V639, 0.9.16)
 - **The policy-rate reading is the Federal funds rate, a member of Circulation; "hormones" is its word only in the
   Diagnosis.** Keren: "when I'm looking at circulation page I want to see interest rates instead of hormones and
   in the analysis … I would want to see hormones because hormones are not the official terminology of the
   market." Then, in 0.9.0: "instead of interest rates, write federal fund rate", its official name. The card, page, Search and Insights say Federal funds rate; the Diagnosis said "Hormones are …" until its
   systems left in 1.8.0. A hormone is a messenger secreted on purpose that sets the tempo
   of everything downstream, which is the rate the Fed sets; the Insights lede keeps that sentence. (V592, V683)
-- **Pressure is the Treasury yields and the Treasury spreads in one page, opening on the 10-year yield; its ⋯
-  menu holds two groups, Treasury yields and Treasury spreads (10Y − 3M, 10Y − 2Y), and the page shows one series
-  at a time, with that series' chart, note and Insights.** Keren: "merge horizon into pressure with the 3 dots
-  having another sub menu called treasury spreads" (V688). This overturns V639's "never folded into one page
-  again" ("Pressure should be yields, and the default should be the 10-year Treasury yield, because it's considered
-  the risk-free loan across the economy", which still sets the opening series). (V598, V639, V688)
+- **Pressure holds two readings, the US 10-year Treasury and, under it, Treasury spreads, each with its own card and
+  page.** The 10-year's ⋯ menu picks a maturity (Treasury yields, opening on the 10-year); the spreads' ⋯ menu picks
+  10Y − 3M (the default) or 10Y − 2Y. Keren: "separate the 10-year US Treasury yield from spreads. So I would see the
+  US 10-year Treasury yield and under it the spread … instead of just hovering in the three dot section … because it's
+  kind of hidden" (0.9.16). This overturns V688's one page with two menu groups ("merge horizon into pressure with the
+  3 dots having another sub menu called treasury spreads"); V639's "Pressure should be yields, and the default should
+  be the 10-year Treasury yield, because it's considered the risk-free loan across the economy" still sets the 10-year's
+  opening series. (V598, V639, V688, 0.9.16)
 - **Pressure is a leading sign.** The market's price of money moves before the activity it finances shows it.
   (V597, V639)
 - **Mood swings are Volatility: no separate mood-swing figure, and the VIX keeps the market's words (Calm,
   Elevated, Fearful).** Keren: "if we already have it as the vix lets use volatility - i prefer market
   terminology." (V686)
-- **Horizon has no card of its own: the yield spread lives in Pressure, under Treasury spreads.** It sat in Mood
-  from V473, left the mood reading in V685 (the curve steepens when the Fed cuts into a crash, so its level does
-  not sort mood), became Circulation's own card in V685 at Keren's choice, and folded into Pressure in V688. Its
-  spread view keeps the optimistic/pessimistic word in its Insights. (V473, V598, V685, V688)
+- **The yield spread is the Treasury spreads reading, under Pressure.** It sat in Mood from V473, left the mood
+  reading in V685 (the curve steepens when the Fed cuts into a crash, so its level does not sort mood), became
+  Circulation's own card in V685 at Keren's choice, folded into Pressure's ⋯ menu in V688, and became its own reading
+  in Pressure again in 0.9.16. Its word, optimistic or pessimistic, is its figure's word and leads its Insights.
+  (V473, V598, V685, V688, 0.9.16)
 - **The Senior Loan Officer Survey left Pressure by Keren's choice (kept at tag `v638-fewer-words`); don't
   bring it back without asking her.** (V639)
 - **In Valuations, Shiller CAPE comes before the Buffett indicator, and the page ends on its own evidence:
@@ -1378,7 +1382,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "the federal funds rate icon in the history component … doesn't match the icon of the category … I would assume
   that it would have a pressure icon. So make sure the icons match their categories", and "the icon should be gray
   everywhere in all history components" (0.9.6). This retires the rule below that every reading wears its own
-  mark; the per-reading glyphs no subcategory uses were deleted.
+  mark; the per-reading glyphs no subcategory uses were deleted. Money wears a heart (Keren: "in circulation change the
+  icon of money to a heart icon", 0.9.16); its ECG trace was Claude's 0.9.6 pick and was deleted.
 - **(Retired 0.9.6.) Every reading wears its own mark, the glyph alone with no disc, in its category's colour on its card, its
   Search row and its page.** Keren, with Apple Health: "they have an icon next to each title"; she asked for
   Desire's icon "grey and refined, without a green background". Related readings may share a mark (Shiller CAPE

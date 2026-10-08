@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `136af1c` on 2026-10-08. **100 components**, **28 shared patterns**.
+Generated from commit `5a3b049` on 2026-10-08. **100 components**, **28 shared patterns**.
 
 ## ai-insights.ts
 
@@ -138,7 +138,7 @@ Generated from commit `136af1c` on 2026-10-08. **100 components**, **28 shared p
 | **`cyclePicker`** | `.cycsel-btn` | `history.ts:histControls` |
 | **`headDots`** | `.bh-menu` | `history.ts:histHead` |
 | **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.ts:headDots`, `history.ts:paintHeadMenus` |
-| **`histHead`** | `.band-head` `.bh-mark` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `inner-pages.ts:registerTempGdpPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-core.ts:pressureHead`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
+| **`histHead`** | `.band-head` `.bh-mark` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `inner-pages.ts:registerTempGdpPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-core.ts:pressureHead`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility`, `render-pages.ts:spreadsHead` |
 | **`histLive`** | `.sr-only` | `history.ts:histKeysWire`, `history.ts:wireHistHover` |
 | **`histReadEnsure`** | `.hist-read` `.hr-label` `.hr-plate` `.hr-value` | `history.ts:histKeysWire`, `history.ts:wireHistHover` |
 
@@ -207,9 +207,9 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`byId`** | dom.ts | 28 places |
+| **`byId`** | dom.ts | 26 places |
 | **`need`** | dom.ts | 26 places |
-| **`put`** | dom.ts | 22 places |
+| **`put`** | dom.ts | 23 places |
 | **`fmtSigned`** | format.ts | 20 places |
 | **`titleCase`** | format.ts | 19 places |
 | **`histFrame`** | charts.ts | 12 places |
@@ -250,6 +250,7 @@ renderer speaks. Listed most-used first.
 | **`cycLabel`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`dollars`** | indicators.ts | 5 places |
+| **`drawsPage`** | render-core.ts | 5 places |
 | **`growthWord`** | model.ts | 5 places |
 | **`inflationFigure`** | model.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
@@ -265,7 +266,6 @@ renderer speaks. Listed most-used first.
 | **`cycleByName`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
 | **`cycleOfYear`** | model.ts | 4 places |
-| **`drawsPage`** | render-core.ts | 4 places |
 | **`dxSys`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`fill`** | ai-insights.ts | 4 places |
