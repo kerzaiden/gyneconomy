@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,850 lines** in 40 files, about 608 KB, roughly **173 thousand tokens**. No session can
+The source is **8,832 lines** in 40 files, about 607 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `136e21e` on 2026-10-08.
+Generated from commit `3e15fbf` on 2026-10-08.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `136e21e` on 2026-10-08.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,209 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,208 | the whole stylesheet, every token and rule |
 | `page-body.html` | 251 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 36 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **36** modules, **753** top-level functions, **119** top-level vars, **370** exported names, **20** boots.
+Counts: **36** modules, **752** top-level functions, **119** top-level vars, **369** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -35,7 +35,7 @@ Counts: **36** modules, **753** top-level functions, **119** top-level vars, **3
 | `js/data.ts` | 568 | 78 | `format`, `history-fred`, `live` |
 | `js/credit.ts` | 138 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
 | `js/model.ts` | 384 | 57 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
-| `js/history.ts` | 493 | 47 | `charts`, `data`, `dom`, `format`, `live`, `model` |
+| `js/history.ts` | 491 | 47 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 740 | 65 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 152 | 4 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
@@ -55,7 +55,7 @@ Counts: **36** modules, **753** top-level functions, **119** top-level vars, **3
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 365 | 16 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
+| `js/history-charts.ts` | 350 | 15 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 31 | 14 | — |
 | `js/indicators.ts` | 195 | 32 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -81,7 +81,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 5 | `bootData` | `js/data.ts:516`–567 |
 | 6 | `bootCredit` | `js/credit.ts:130`–137 |
 | 7 | `bootModel` | `js/model.ts:359`–383 |
-| 8 | `bootHistory` | `js/history.ts:469`–492 |
+| 8 | `bootHistory` | `js/history.ts:467`–490 |
 | 9 | `bootReadings` | `js/readings.ts:556`–611 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:674`–739 |
 | 11 | `bootRoster` | `js/roster.ts:139`–151 |
@@ -430,29 +430,29 @@ falls in. **export** marks a name other modules import.
 | 174 | `histReadFill` | `function histReadFill(` |
 | 223 | `histAxisEnds` | `function histAxisEnds(` |
 | 234 | `histLegend` | `function histLegend(` |
-| 293 | `wireHScroll` | `function wireHScroll(` |
-| 308 | `refitHistory` · export | `function refitHistory(` |
-| 318 | `wireHistHover` | `function wireHistHover(` |
-| 351 | `histShow` | `function histShow(` |
-| 360 | `histLive` | `function histLive(` |
-| 367 | `histKeysWire` | `function histKeysWire(` |
-| 381 | `mWindowFrom` · export | `function mWindowFrom(` |
-| 385 | `qWindowFrom` · export | `function qWindowFrom(` |
-| 389 | `defFrom` · export | `function defFrom(` |
-| 393 | `tabSegs` | `function tabSegs(` |
-| 401 | `tabBar` · export | `function tabBar(` |
-| 404 | `modeBar` | `function modeBar(` |
-| 408 | `controlKeys` · export | `function controlKeys(` |
-| 412 | `controlKeysIn` | `function controlKeysIn(` |
-| 418 | `histControls` · export | `function histControls(` |
-| 426 | `controlsBox` | `function controlsBox(` |
-| 427 | `pageCycle` · export | `function pageCycle(` |
-| 432 | `cyclePicker` | `function cyclePicker(` |
-| 444 | `pickRow` | `function pickRow(` |
-| 448 | `nameAside` | `function nameAside(` |
-| 449 | `rangeBar` | `function rangeBar(` |
-| 453 | `headSigma` · export | `function headSigma(` |
-| 458 | `attachHistory` · export | `function attachHistory(` |
+| 293 | `wireStrip` | `function wireStrip(` |
+| 306 | `refitHistory` · export | `function refitHistory(` |
+| 316 | `wireHistHover` | `function wireHistHover(` |
+| 349 | `histShow` | `function histShow(` |
+| 358 | `histLive` | `function histLive(` |
+| 365 | `histKeysWire` | `function histKeysWire(` |
+| 379 | `mWindowFrom` · export | `function mWindowFrom(` |
+| 383 | `qWindowFrom` · export | `function qWindowFrom(` |
+| 387 | `defFrom` · export | `function defFrom(` |
+| 391 | `tabSegs` | `function tabSegs(` |
+| 399 | `tabBar` · export | `function tabBar(` |
+| 402 | `modeBar` | `function modeBar(` |
+| 406 | `controlKeys` · export | `function controlKeys(` |
+| 410 | `controlKeysIn` | `function controlKeysIn(` |
+| 416 | `histControls` · export | `function histControls(` |
+| 424 | `controlsBox` | `function controlsBox(` |
+| 425 | `pageCycle` · export | `function pageCycle(` |
+| 430 | `cyclePicker` | `function cyclePicker(` |
+| 442 | `pickRow` | `function pickRow(` |
+| 446 | `nameAside` | `function nameAside(` |
+| 447 | `rangeBar` | `function rangeBar(` |
+| 451 | `headSigma` · export | `function headSigma(` |
+| 456 | `attachHistory` · export | `function attachHistory(` |
 
 ### `js/readings.ts`
 
@@ -895,7 +895,7 @@ falls in. **export** marks a name other modules import.
 | 85 | `colWidth` · export | `function colWidth(` |
 | 90 | `AXIS` · export | `var AXIS =` |
 | 91 | `histFrame` · export | `function histFrame(` |
-| 98 | `yLabel` · export | `function yLabel(` |
+| 98 | `yLabel` | `function yLabel(` |
 | 101 | `xLabel` · export | `function xLabel(` |
 | 104 | `crossLine` · export | `function crossLine(` |
 | 107 | `zeroRule` · export | `function zeroRule(` |
@@ -1171,18 +1171,17 @@ falls in. **export** marks a name other modules import.
 | 78 | `colScale` | `function colScale(` |
 | 83 | `PULSE_BEATS` · export | `var PULSE_BEATS =` |
 | 84 | `pulseTrace` | `function pulseTrace(` |
-| 91 | `pulseAxisRepeat` | `function pulseAxisRepeat(` |
-| 96 | `ekgPaper` | `function ekgPaper(` |
-| 102 | `velocityHistoryChart` · export | `function velocityHistoryChart(` |
-| 132 | `yearTicks` | `function yearTicks(` |
-| 147 | `unempHistoryChart` · export | `function unempHistoryChart(` |
-| 185 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 227 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 265 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 312 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 353 | `m2Step` | `function m2Step(` |
-| 357 | `heatEdges` | `function heatEdges(` |
-| 361 | `heatStep` | `function heatStep(` |
+| 89 | `ekgPaper` | `function ekgPaper(` |
+| 95 | `velocityHistoryChart` · export | `function velocityHistoryChart(` |
+| 117 | `yearTicks` | `function yearTicks(` |
+| 132 | `unempHistoryChart` · export | `function unempHistoryChart(` |
+| 170 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
+| 212 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 250 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 297 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 338 | `m2Step` | `function m2Step(` |
+| 342 | `heatEdges` | `function heatEdges(` |
+| 346 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 
@@ -1424,19 +1423,19 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 410 | tab bar (app-style segmented navigation) |
 | 434 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
 | 522 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 658 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 701 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 750 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 892 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 901 | The symptoms: a cycle's years against today |
-| 1,048 | yield curve charts |
-| 1,072 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,091 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,106 | un-inversion-to-recession historical lag panel |
-| 1,115 | the reading's tag |
-| 1,123 | info icon + popover (progressive disclosure for longer notes) |
-| 1,137 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,200 | footer |
+| 659 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 700 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 749 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 891 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 900 | The symptoms: a cycle's years against today |
+| 1,047 | yield curve charts |
+| 1,071 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,090 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,105 | un-inversion-to-recession historical lag panel |
+| 1,114 | the reading's tag |
+| 1,122 | info icon + popover (progressive disclosure for longer notes) |
+| 1,136 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,199 | footer |
 
 ## Markup landmarks
 

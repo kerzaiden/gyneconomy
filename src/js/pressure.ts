@@ -73,7 +73,7 @@ function defineFlow(){
     history:function(){
       var key = page.range["pulse-range"], cyc = pageCycle("pulse-range"), idx = cyc ? cycleQtrIdx(M2V_FROM_YEAR, cyc, m2vHistory.length) : null;
       var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : undefined;
-      return { geom:"velocityHistoryChart", wrap:"vh-host hscroll", scroll:true, chart:function(w: number){ return velocityHistoryChart(w, from, to); },
+      return { geom:"velocityHistoryChart", wrap:"vh-host ekg-strip", strip:true, chart:function(w: number){ return velocityHistoryChart(w, from, to); },
         trend:trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, false, { rising:"accelerating", falling:"decelerating" }) };
     },
     aside:function(){ var ind = flowRow("Pulse"); return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind); },

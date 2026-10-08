@@ -290,18 +290,16 @@ function histLegend(host: HTMLElement){
     x += it.w + GAP;
   });
 }
-function wireHScroll(box: HTMLElement){
-  var sc = box.querySelector<HTMLElement>(".hscroll"), bar = box.querySelector<HTMLElement>(".hscroll-bar span");
-  if (!sc || !bar) return;
-  var pane = sc, thumb = bar;
+function wireStrip(box: HTMLElement){
+  var sc = box.querySelector<HTMLElement>(".ekg-strip");
+  if (!sc) return;
+  var pane = sc;
   var fit = function(){
-    var w = pane.scrollWidth || 1; thumb.style.width = (100 * pane.clientWidth / w) + "%"; thumb.style.left = (100 * pane.scrollLeft / w) + "%";
     var g = box.__geom, svg = pane.querySelector("svg"), sw = svg ? svg.getBoundingClientRect().width : 0;
-    if (!g || !sw || box.classList.contains("hovering")) return;
-    var x = (pane.scrollLeft + pane.clientWidth) * g.W / sw, i = Math.max(0, Math.min(g.n - 1, Math.floor((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1))));
+    if (!g || !sw || !g.n || box.classList.contains("hovering")) return;
+    var i = Math.max(0, Math.min(g.n - 1, Math.round((pane.scrollLeft + pane.clientWidth) * g.W / sw * g.n / (g.W || 1)) - 1));
     histReadFill(box, g.vals[i], i);
   };
-  pane.scrollLeft = pane.scrollWidth;
   fit();
   pane.addEventListener("scroll", fit, { passive:true });
 }
@@ -462,7 +460,7 @@ export function attachHistory(host: HTMLElement | null, tipId?: string | null, e
     (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
   host.__geom = g;
   if (tipId) wireHistHover(host, tipId);
-  wireHScroll(host);
+  wireStrip(host);
   return g;
 }
 

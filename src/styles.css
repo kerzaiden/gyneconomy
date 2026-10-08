@@ -639,8 +639,9 @@
     stroke-linecap:round; stroke-linejoin:round; }
   .pv-trace{ fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   .pv-hit{ fill:transparent; }
-  .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--critical) 10%, transparent); stroke-width:0.6; }
-  .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--critical) 26%, transparent); stroke-width:1; }
+  .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--text-primary) 6%, transparent); stroke-width:0.6; }
+  .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--text-primary) 12%, transparent); stroke-width:0.8; }
+  .ekg-col{ fill:none; stroke:color-mix(in srgb, var(--text-primary) 24%, transparent); stroke-width:1; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -683,11 +684,9 @@
   .pulsetrace{ margin:0; }
   .pulsetrace .spread-history-head + .pt-head{ margin-top:12px; }
   .pulsetrace .pt-svg.solo{ height:42px; }
-  .hscroll{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; }
-  .hscroll::-webkit-scrollbar{ display:none; }
-  .hscroll > .vh-svg{ width:auto; max-width:none; }
-  .hscroll-bar{ position:relative; height:4px; border-radius:2px; background:var(--grid); margin:4px 0 2px; }
-  .hscroll-bar span{ position:absolute; top:0; bottom:0; border-radius:2px; background:var(--text-muted); }
+  .ekg-strip{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; margin-right:-14px; outline-offset:2px; }
+  .ekg-strip::-webkit-scrollbar{ display:none; }
+  .ekg-strip > .vh-svg{ display:block; width:auto; max-width:none; }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
   .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
   .pt-head:first-child{ margin-top:0; }

@@ -95,11 +95,11 @@ export function histFrame(Wpx?: number | null): HistFrame {
   return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
            T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
 }
-export function yLabel(x: number | string, text: string | number, y: number | string, anchor: string){
+function yLabel(x: number | string, text: string | number, y: number | string, anchor: string){
   return '<text class="bt-yl" x="' + x + '" y="' + y + '" text-anchor="' + anchor + '">' + text + '</text>';
 }
-export function xLabel(x: number | string, text: string | number, y: number | string){
-  return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + '</text>';
+export function xLabel(x: number | string, text: string | number, y: number | string, anchor?: string){
+  return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="' + (anchor || "middle") + '">' + text + '</text>';
 }
 export function crossLine(top: number | string, bot: number | string){
   return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
