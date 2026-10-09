@@ -48,7 +48,7 @@ function buildNav(){
                 hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
     analysis: { panel:analysisPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Herstory", null]; },
                 hide:function(){ return [byId(ui.eraOpen ? "calendar-cycle" : "calendar-list")]; } },
-    chart:    plainHome("chart", "Analysis"), portfolio:plainHome("portfolio", "Portfolio")
+    chart:    { panel:tabPanel("chart"), bar:function(){ return ["Analysis", ui.chartBack]; }, hide:function(){ return [byId("chart-home")]; } }, portfolio:plainHome("portfolio", "Portfolio")
   };
   var homeCtx = PAGE_HOME.cycle;
   var openSheet: HTMLElement | null = null, openHome: ParentNode | null = null, returnScroll = 0;

@@ -1589,6 +1589,7 @@
     shownEra: null,
     topbarBack: null,
     eraPageBack: null,
+    chartBack: null,
     uninvDetail: ""
   };
   function byId(id) {
@@ -47337,6 +47338,13 @@
       if (at) openWhen(at.getAttribute("data-ind-when") || "", at.getAttribute("data-ind-cat") || ""); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
     });
   }
+  function crossToChart() {
+    var era = ui.eraOpen, y = window.scrollY || 0;
+    need("tab-chart").click();
+    if (era) setTopbar("Analysis", ui.chartBack = function() {
+      GYN.fire("eraReturn", era.from, y);
+    });
+  }
   function buildCycleChart() {
     wireFinder(need(HOME_ID), HOME_ID);
     buildFind();
@@ -47345,7 +47353,7 @@
     document.addEventListener("click", function(e) {
       var door = e.target.closest && e.target.closest("[data-chart-cycle]");
       if (!door) return;
-      need("tab-chart").click();
+      crossToChart();
       page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
       drawChart(HOME_ID);
     });
@@ -48274,7 +48282,7 @@
       viewMore(btn, rows.slice(PREVIEW_CYCLES));
     })();
     var listWrap = need("calendar-list"), detail = need("calendar-cycle");
-    function open(from) {
+    function open(from, y) {
       var era = marketCycles.filter(function(c) {
         return c.from === from;
       })[0];
@@ -48295,8 +48303,8 @@
       detail.hidden = false;
       setTopbar(era.name, ui.eraPageBack = back);
       window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+        top: y || 0,
+        behavior: y ? "auto" : "smooth"
       });
     }
     function back() {
@@ -48318,6 +48326,10 @@
         e.preventDefault();
         open(parseInt(e.target.getAttribute("data-era") || "", 10));
       }
+    });
+    GYN.on("eraReturn", function(from, y) {
+      need("tab-analysis").click();
+      open(from, y);
     });
     GYN.on("calendarReset", function() {
       leaveEra();
@@ -50101,7 +50113,15 @@
           return [ byId(ui.eraOpen ? "calendar-cycle" : "calendar-list") ];
         }
       },
-      chart: plainHome("chart", "Analysis"),
+      chart: {
+        panel: tabPanel("chart"),
+        bar: function() {
+          return [ "Analysis", ui.chartBack ];
+        },
+        hide: function() {
+          return [ byId("chart-home") ];
+        }
+      },
       portfolio: plainHome("portfolio", "Portfolio")
     };
     var homeCtx = PAGE_HOME.cycle;
@@ -50405,7 +50425,7 @@
         GYN.fire("metricPageReset");
         GYN.fire("calendarReset");
         topTitle.textContent = tabTitles[tab] || "Gyneconomy";
-        ui.topbarBack = null;
+        ui.topbarBack = ui.chartBack = null;
         need("topbar-back").hidden = true;
         if (tab === "cycle" && target) {
           target.insertBefore(cycleView(), byId("today-analysis"));

@@ -1,5 +1,7 @@
 import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
-import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText } from "./dom.ts";
+import { byId, detailSlot, focusQuiet, moreRow, need, trendJump, trendText, ui } from "./dom.ts";
+import { GYN } from "./live.ts";
+import { setTopbar } from "./render-pages.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
@@ -459,11 +461,16 @@ function wireCatDoors(){
     if (at) openWhen(at.getAttribute("data-ind-when") || "", at.getAttribute("data-ind-cat") || ""); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
   });
 }
+function crossToChart(){
+  var era = ui.eraOpen, y = window.scrollY || 0;
+  need("tab-chart").click();
+  if (era) setTopbar("Analysis", (ui.chartBack = function(){ GYN.fire("eraReturn", (era as Cycle).from, y); }));
+}
 export function buildCycleChart(){
   wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
   document.addEventListener("click", function(e){
     var door = (e.target as Element).closest && (e.target as Element).closest("[data-chart-cycle]"); if (!door) return;
-    need("tab-chart").click();
+    crossToChart();
     page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
     drawChart(HOME_ID);
   });
