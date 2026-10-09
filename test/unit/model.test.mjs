@@ -125,7 +125,7 @@ test('a reading past the band never prints as the band\'s edge', () => {
   assert.deepEqual([3.04, 2.96, 3.4, 0.96, 1.04, -0.04, -1.26].map(inflationFigure), ['3.04', '3.0', '3.4', '0.96', '1.0', '0.0', '\u22121.3']);
 });
 
-test('every cycle tells its rates story under the chart, its peak month read from the record, Peak and 0% labelled on the plot', async () => {
+test('every cycle tells its rates story under the chart, its peak month read from the record, Peak and the levels labelled on the plot', async () => {
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   for (const c of marketCycles) {
     assert.match(c.rates, /\{month\}/, c.name);
@@ -133,7 +133,8 @@ test('every cycle tells its rates story under the chart, its peak month read fro
     const note = document.querySelector('#diagnosis .fp-note');
     assert.ok(note && note.textContent.length > 40 && !/[{}]/.test(note.textContent), c.name);
     assert.equal(document.querySelectorAll('#diagnosis .fp-plot .fp-peak-tag').length, 1, c.name + ' peak label');
-    assert.equal(document.querySelector('#diagnosis .fp-plot .fp-zero-tag')?.textContent, '0%', c.name + ' zero label');
+    const levels = [...document.querySelectorAll('#diagnosis .fp-plot .fp-level-tag')].map(t => t.textContent);
+    assert.ok(levels.length && levels.every(t => /^\u2212?\d+%$/.test(t)), c.name + ' level labels ' + levels);
     assert.ok(!/Peak/.test(document.querySelector('#diagnosis .fp-legend').textContent), c.name + ' legend');
   }
   const { nowModel } = await import('../../src/js/model.ts');

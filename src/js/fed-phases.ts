@@ -85,17 +85,25 @@ function tagHits(t: Tag, pts: number[][]){
   if (x0 < 0 || y0 < 0 || x0 + t.w > TAG.plotW || y0 + TAG.h > TAG.plotH) return Infinity;
   return pts.filter(function(q){ return q[0] > x0 - TAG.clear && q[0] < x0 + t.w + TAG.clear && q[1] > y0 - TAG.clear && q[1] < y0 + TAG.h + TAG.clear; }).length;
 }
+function curvePts(segs: number[][][]){
+  return ([] as number[][]).concat.apply([], segs.map(sample)).map(function(q){ return [q[0] / VIEW_W * TAG.plotW, q[1] / VIEW_H * TAG.plotH]; });
+}
 function tagHtml(cls: string, text: string, tags: Tag[], segs: number[][][]){
-  var pts = ([] as number[][]).concat.apply([], segs.map(sample)).map(function(q){ return [q[0] / VIEW_W * TAG.plotW, q[1] / VIEW_H * TAG.plotH]; });
-  var t = tags.map(function(c){ return { t: c, n: tagHits(c, pts) }; }).reduce(function(a, c){ return c.n < a.n ? c : a; }).t;
+  var pts = curvePts(segs);
+  return tagSpan(cls, text, tags.map(function(c){ return { t: c, n: tagHits(c, pts) }; }).reduce(function(a, c){ return c.n < a.n ? c : a; }).t);
+}
+function tagSpan(cls: string, text: string, t: Tag){
   return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ';top:' + pct(t.ay) + ';width:' + t.w + 'px;margin:' + t.dy + 'px 0 0 ' + t.dx + 'px">' + text + '</span>';
 }
 function peakTag(segs: number[][][], px: number, py: number){
   return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side){ return sideTag(px / VIEW_W, py / VIEW_H, 30, side); }), segs);
 }
-function zeroTag(segs: number[][][], zy: number){
-  var ay = zy / VIEW_H, w = 18;
-  return tagHtml("fp-zero-tag", "0%", [[0, 1, -1], [1, -1, -1], [0, 1, 1], [1, -1, 1]].map(function(c){ return sideTag(c[0], ay, w, [c[1], c[2]]); }), segs);
+function levelTags(segs: number[][][], y: (v: number) => number){
+  var pts = curvePts(segs);
+  return ruleLevels(y).map(function(v){
+    var text = (v < 0 ? "\u2212" : "") + Math.abs(v) + "%", t = { ax: 0, ay: y(v) / VIEW_H, w: 6 + 5 * text.length, dx: 5, dy: -TAG.h };
+    return tagHits(t, pts) ? "" : tagSpan("fp-level-tag", text, t);
+  }).join("");
 }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
 var GRID_STEPS = [1, 2, 5, 10];
@@ -104,11 +112,14 @@ function levelY(lines: Pt[][]){
   var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all);
   return function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
 }
-function rulesHtml(y: (v: number) => number){
-  var unit = y(0) - y(1), lo = (y(0) - VIEW_H + INSET) / unit, hi = (y(0) - INSET) / unit, out = "";
+function ruleLevels(y: (v: number) => number){
+  var unit = y(0) - y(1), lo = (y(0) - VIEW_H + INSET) / unit, hi = (y(0) - INSET) / unit, out: number[] = [];
   var step = GRID_STEPS.filter(function(s){ return (hi - lo) / s <= 6; })[0] || 20;
-  for (var v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9; v += step) out += '<i class="fp-rule' + (v === 0 ? " fp-zero" : "") + '" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
+  for (var v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9; v += step) out.push(v);
   return out;
+}
+function rulesHtml(y: (v: number) => number){
+  return ruleLevels(y).map(function(v){ return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>'; }).join("");
 }
 function bandsHtml(phases: Phase[], from: number, to: number, rules: string){
   var span = to - from + 1, bands = "";
@@ -130,7 +141,7 @@ function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open:
   var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; };
   var segs = lines.map(function(l){ return segments(l, x, y); });
   var paths = ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
-  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + zeroTag(segs, y(0)) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
+  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + levelTags(segs, y) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }

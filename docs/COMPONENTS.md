@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `dd27b86` on 2026-10-09. **104 components**, **18 shared patterns**.
+Generated from commit `d470742` on 2026-10-09. **105 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -106,7 +106,8 @@ Generated from commit `dd27b86` on 2026-10-09. **104 components**, **18 shared p
 | **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:fedPhasesCard` |
 | **`legendHtml`** | `.fp-legend` | `fed-phases.ts:fedPhasesCard` |
 | **`plotSvg`** | `.fp-line` | `fed-phases.ts:fedPhasesCard` |
-| **`tagHtml`** | `.fp-tag` | `fed-phases.ts:peakTag`, `fed-phases.ts:zeroTag` |
+| **`rulesHtml`** | `.fp-rule` | `fed-phases.ts:fedPhasesCard` |
+| **`tagSpan`** | `.fp-tag` | `fed-phases.ts:levelTags`, `fed-phases.ts:tagHtml` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
 
 ## format.ts

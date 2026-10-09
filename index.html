@@ -549,15 +549,14 @@
   .fp-plot{ position:relative; height:150px; margin-top:12px; }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
   .fp-band{ position:absolute; top:0; bottom:0; overflow:hidden; border-radius:10px; box-shadow:inset 0 0 0 1.5px var(--surface); }
-  .fp-rule{ position:absolute; left:1.5px; right:1.5px; height:1px; margin-top:-0.5px; background:var(--grid); }
+  .fp-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:repeating-linear-gradient(90deg, var(--border-strong) 0 3px, transparent 3px 6px); }
   .fp-tight{ --wash:var(--accent-wash); } .fp-ease{ --wash:var(--good-wash); } .fp-band{ background:var(--wash); }
   .fp-years{ position:relative; height:16px; margin-top:4px; }
   .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-label); color:var(--text-muted); }
-  .fp-rule.fp-zero{ background:repeating-linear-gradient(90deg, var(--border-strong) 0 2px, transparent 2px 6px); }
   .fp-line{ fill:none; stroke:var(--line); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.9; }
   .fp-peak-dot{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
   .fp-tag{ position:absolute; height:14px; font-size:var(--type-label); line-height:14px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
-  .fp-zero-tag{ text-align:left; font-size:calc(var(--type-label) - 2px); opacity:0.6; }
+  .fp-level-tag{ text-align:left; font-size:calc(var(--type-label) - 2px); opacity:0.6; }
   .fp-peak-tag{ color:var(--text-secondary); }
   .fp-peak-dot.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
   .fp-legend{ display:flex; flex-wrap:wrap; gap:6px 10px; margin:7px 0 0; padding:7px 0; list-style:none; border-top:1px solid var(--border); border-bottom:1px solid var(--border); font-size:var(--type-label); color:var(--text-secondary); }
@@ -47963,18 +47962,23 @@
       return q[0] > x0 - TAG.clear && q[0] < x0 + t.w + TAG.clear && q[1] > y0 - TAG.clear && q[1] < y0 + TAG.h + TAG.clear;
     }).length;
   }
-  function tagHtml(cls, text, tags, segs) {
-    var pts2 = [].concat.apply([], segs.map(sample)).map(function(q) {
+  function curvePts(segs) {
+    return [].concat.apply([], segs.map(sample)).map(function(q) {
       return [ q[0] / VIEW_W * TAG.plotW, q[1] / VIEW_H * TAG.plotH ];
     });
-    var t = tags.map(function(c) {
+  }
+  function tagHtml(cls, text, tags, segs) {
+    var pts2 = curvePts(segs);
+    return tagSpan(cls, text, tags.map(function(c) {
       return {
         t: c,
         n: tagHits(c, pts2)
       };
     }).reduce(function(a, c) {
       return c.n < a.n ? c : a;
-    }).t;
+    }).t);
+  }
+  function tagSpan(cls, text, t) {
     return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ";top:" + pct(t.ay) + ";width:" + t.w + "px;margin:" + t.dy + "px 0 0 " + t.dx + 'px">' + text + "</span>";
   }
   function peakTag(segs, px, py) {
@@ -47982,11 +47986,18 @@
       return sideTag(px / VIEW_W, py / VIEW_H, 30, side2);
     }), segs);
   }
-  function zeroTag(segs, zy) {
-    var ay = zy / VIEW_H, w = 18;
-    return tagHtml("fp-zero-tag", "0%", [ [ 0, 1, -1 ], [ 1, -1, -1 ], [ 0, 1, 1 ], [ 1, -1, 1 ] ].map(function(c) {
-      return sideTag(c[0], ay, w, [ c[1], c[2] ]);
-    }), segs);
+  function levelTags(segs, y) {
+    var pts2 = curvePts(segs);
+    return ruleLevels(y).map(function(v) {
+      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%", t = {
+        ax: 0,
+        ay: y(v) / VIEW_H,
+        w: 6 + 5 * text.length,
+        dx: 5,
+        dy: -TAG.h
+      };
+      return tagHits(t, pts2) ? "" : tagSpan("fp-level-tag", text, t);
+    }).join("");
   }
   function pct(n) {
     return (n * 100).toFixed(2) + "%";
@@ -48001,13 +48012,18 @@
       return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / (hi - lo || 1));
     };
   }
-  function rulesHtml(y) {
-    var unit = y(0) - y(1), lo = (y(0) - VIEW_H + INSET) / unit, hi = (y(0) - INSET) / unit, out = "";
+  function ruleLevels(y) {
+    var unit = y(0) - y(1), lo = (y(0) - VIEW_H + INSET) / unit, hi = (y(0) - INSET) / unit, out = [];
     var step = GRID_STEPS.filter(function(s) {
       return (hi - lo) / s <= 6;
     })[0] || 20;
-    for (var v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9; v += step) out += '<i class="fp-rule' + (v === 0 ? " fp-zero" : "") + '" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
+    for (var v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9; v += step) out.push(v);
     return out;
+  }
+  function rulesHtml(y) {
+    return ruleLevels(y).map(function(v) {
+      return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
+    }).join("");
   }
   function bandsHtml(phases, from, to, rules) {
     var span = to - from + 1, bands = "";
@@ -48037,7 +48053,7 @@
     var paths = [ "fp-prices", "fp-rate" ].map(function(cls, k) {
       return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>';
     }).join("");
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + zeroTag(segs, y(0)) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(segs, y) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
   }
   function rateSeries(toM) {
     return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
