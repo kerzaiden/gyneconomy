@@ -622,11 +622,11 @@ emotion at the closing month, its years, and what followed a year later. Every l
   (cached on the history's length and last value) with `cpiDirectionAt` (the season model's own 12-month trend,
   ±0.02) and gives each month that is not falling the top of its run; the cycle's opening months are skipped while
   they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak
-  ("Peak", on the prices curve and as a level line; "Peak so far", hollow, on the open cycle). The walk is over the
+  ("Peak" above the chart on a line down to its dot; "Peak (so far)" in the legend and hollow on the open cycle). The walk is over the
   whole record because a run crosses cycle edges.
   Bands, dot and labels are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and non-scaling strokes,
   so the card is fluid. Prices and the Fed funds rate are drawn as quarterly means through a Catmull-Rom curve, so
-  the lines flow as in her tracker; the peak sits on its quarter. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at
+  the lines flow as in her tracker; the peak sits on its quarter. The levels read `m.reading` (prices at the cycle's last quarter), the rate at its last month (`fedFundsRange` on the open cycle) and the phase at
   its last month.
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines with the health
   score under it (`cycleScore`, Cycle Statistics' one box; the open cycle has no Cycle Statistics card), opening the

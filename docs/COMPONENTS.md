@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `0b7bef8` on 2026-10-09. **102 components**, **18 shared patterns**.
+Generated from commit `632650a` on 2026-10-09. **103 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -103,6 +103,7 @@ Generated from commit `0b7bef8` on 2026-10-09. **102 components**, **18 shared p
 |---|---|---|
 | **`bandsHtml`** | `.fp-band` `.fp-ph` | `fed-phases.ts:fedPhasesCard` |
 | **`fedPhasesCard`** | `.fp-marks` `.fp-phases` `.fp-plot` `.fp-years` | `fed-phases.ts:fedEnvironment` |
+| **`level`** | `.fp-state` `.fp-val` | `fed-phases.ts:levelsHtml` |
 | **`levelsHtml`** | `.fp-levels` | `fed-phases.ts:fedPhasesCard` |
 | **`plotSvg`** | `.fp-line` `.fp-ov-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
@@ -209,7 +210,7 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`fmtSigned`** | format.ts | 24 places |
+| **`fmtSigned`** | format.ts | 23 places |
 | **`need`** | dom.ts | 23 places |
 | **`titleCase`** | format.ts | 17 places |
 | **`byId`** | dom.ts | 14 places |
@@ -247,7 +248,7 @@ renderer speaks. Listed most-used first.
 | **`cycleModel`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`factsFrom`** | format.ts | 5 places |
-| **`growthWord`** | model.ts | 5 places |
+| **`fedFundsRange`** | data.ts | 5 places |
 | **`inflationFigure`** | model.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
@@ -267,9 +268,9 @@ renderer speaks. Listed most-used first.
 | **`cycleOfYear`** | model.ts | 4 places |
 | **`dollars`** | indicators.ts | 4 places |
 | **`dxSys`** | render-core.ts | 4 places |
-| **`fedFundsRange`** | data.ts | 4 places |
 | **`fill`** | ai-insights.ts | 4 places |
 | **`fmt`** | cycle-analysis.ts | 4 places |
+| **`growthWord`** | model.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
 | **`listWords`** | cycle-analysis.ts | 4 places |

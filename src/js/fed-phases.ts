@@ -1,8 +1,8 @@
 import { fedFundsHistory, fedMoves } from "./history-fred.ts";
-import { now, usRealGdpGrowth } from "./data.ts";
-import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { cpiDirectionAt, growthWord, inflationFigure } from "./model.ts";
-import { fmtSigned, isoDay, MONTHS_SHORT } from "./format.ts";
+import { now, fedFundsRange } from "./data.ts";
+import { inflationHistory } from "./refresh-season.ts";
+import { cpiDirectionAt, inflationFigure } from "./model.ts";
+import { isoDay, MONTHS_SHORT } from "./format.ts";
 import { orbitSvg } from "./marks.ts";
 import { dxHead, dxSys } from "./render-core.ts";
 import { ROSTER_BY } from "./roster.ts";
@@ -50,12 +50,6 @@ export function cyclePeak(from: string, to: string){
 
 // ---- The phases chart ----
 var VIEW_W = 1000, VIEW_H = 300, INSET = 18;
-function growthPoints(from: number, to: number){
-  var pts: Pt[] = [], firstQ = gdpQuarterlyYoY.length ? Number(gdpQuarterlyYoY[0].q.slice(0, 4)) : Infinity;
-  Object.keys(usRealGdpGrowth).forEach(function(y){ if (Number(y) < firstQ) pts.push({ i: Number(y) * 12 + 6, v: usRealGdpGrowth[y] }); });
-  gdpQuarterlyYoY.forEach(function(d){ pts.push({ i: Number(d.q.slice(0, 4)) * 12 + (Number(d.q.slice(6)) - 1) * 3 + 1, v: d.v }); });
-  return pts.filter(function(p){ return p.i >= from && p.i <= to; }).sort(function(a, b){ return a.i - b.i; });
-}
 function monthPoints(list: MonthPoint[], from: number, to: number){
   var sums: Record<number, number[]> = {};
   list.forEach(function(d){ var i = monthIdx(d.m); if (i >= from && i <= to) (sums[Math.floor(i / 3)] = sums[Math.floor(i / 3)] || []).push(d.v); });
@@ -95,36 +89,40 @@ function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open:
   var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
   var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; }, y = function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
   var zero = lo < 0 ? '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
-  var mark = peak ? '<line class="fp-ov-line" x1="' + x(peak.i).toFixed(1) + '" x2="' + x(peak.i).toFixed(1) + '" y1="0" y2="' + VIEW_H + '" vector-effect="non-scaling-stroke"/>' : "";
-  var paths = ["fp-growth", "fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
+  var mark = peak ? '<line class="fp-ov-line" x1="' + x(peak.i).toFixed(1) + '" x2="' + x(peak.i).toFixed(1) + '" y1="0" y2="' + y(peak.v).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
+  var paths = ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
   var dot = peak ? '<span class="fp-ov' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
   return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark + paths + '</svg>' + dot;
 }
-function level(cls: string, label: string, text: string){ return '<li class="' + cls + '"><b>' + label + ':</b> ' + text + '</li>'; }
-function peakLevel(m: CycleModel, peak: MonthPoint | null){
-  return peak ? level("fp-prices" + (m.ongoing ? " fp-so-far" : ""), m.ongoing ? "Peak so far" : "Peak", peak.v.toFixed(1) + '% (' + monthName(peak.m) + ')') : "";
+function level(cls: string, name: string, state: string, value: string){ return '<li class="' + cls + '"><b>' + name + '</b><span class="fp-state">' + state + '</span><span class="fp-val">' + value + '</span></li>'; }
+function rateAt(m: CycleModel, toM: string){
+  if (m.ongoing) return fedFundsRange();
+  var upTo = fedFundsHistory.filter(function(d){ return d.m <= toM; });
+  return upTo.length ? upTo[upTo.length - 1].v.toFixed(2) + "%" : "";
 }
-function levelsHtml(m: CycleModel, at: Phase | null, peak: string){
-  var r = m.reading, word = growthWord(r);
-  var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
-  var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
-  return '<ul class="fp-levels">' + (at ? level("fp-rate", "Federal funds rate", (at.s > 0 ? "Tightening" : "Easing") + ' since ' + monthName(at.m)) : "") +
-    level("fp-prices", "Prices", range + ', ' + heat + ' (' + inflationFigure(r.cpiNow) + '%)') + peak +
-    level("fp-growth", "Growth", word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '%, potential ' + r.potential.toFixed(1) + '%)') + '</ul>';
+function levelsHtml(m: CycleModel, at: Phase | null, peak: MonthPoint | null, toM: string){
+  var r = m.reading, rate = rateAt(m, toM);
+  var trend = r.cpiDirection === "rising" ? "Rising" : r.cpiDirection === "falling" ? "Falling" : "Steady";
+  return '<ul class="fp-levels">' + (at && rate ? level("fp-rate", "Fed funds rate", at.s > 0 ? "Tightening" : "Easing", rate) : "") +
+    level("fp-prices", "Prices", trend, inflationFigure(r.cpiNow) + "%") +
+    (peak ? level("fp-prices fp-peak" + (m.ongoing ? " fp-so-far" : ""), m.ongoing ? "Peak (so far)" : "Peak", monthName(peak.m), peak.v.toFixed(1) + "%") : "") + '</ul>';
 }
 function endMonthOf(m: CycleModel){
   if (!m.ongoing) return m.endMonth;
   var ff = fedFundsHistory[fedFundsHistory.length - 1];
   return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
 }
+function peakLabel(at: number){
+  return '<span class="fp-ov-label' + (at > 0.92 ? " fp-end" : at < 0.08 ? " fp-start" : "") + '" style="left:' + pct(at) + '">Peak</span>';
+}
 function fedPhasesCard(m: CycleModel){
   var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
   var peak = cyclePeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
-  var lines = [growthPoints(from, to), monthPoints(inflationHistory, from, to), monthPoints(fedFundsHistory, from, to)];
-  var top = peak ? lines[1].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + 0.5) / (to - from + 1)) + '">' + (m.ongoing ? "Peak so far" : "Peak") + '</span>' : "";
+  var lines = [monthPoints(inflationHistory, from, to), monthPoints(fedFundsHistory, from, to)];
+  var top = peak ? lines[0].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
+  var ov = top ? peakLabel((top.i - from + 0.5) / (to - from + 1)) : "";
   return (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
-    '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at, peakLevel(m, peak));
+    '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at, peak, toM);
 }
 export function fedEnvironment(m: CycleModel){
   var rate = ROSTER_BY["sheet-sign-hormones"];

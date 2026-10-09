@@ -548,10 +548,10 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp-growth{ --line:var(--text-muted); --line-ink:var(--text-muted); } .fp-prices{ --line:var(--season-summer); --line-ink:var(--summer-ink); } .fp-rate{ --line:var(--ff-blue); --line-ink:var(--ff-blue); }
+  .fp-prices{ --line:var(--season-summer); --line-ink:var(--summer-ink); } .fp-rate{ --line:var(--ff-blue); --line-ink:var(--ff-blue); }
   .fp-marks{ position:relative; height:18px; margin-top:10px; }
-  .fp-ov-label{ position:absolute; bottom:2px; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
-  .fp-ov-label.fp-end{ transform:translateX(-100%); }
+  .fp-ov-label{ position:absolute; bottom:2px; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--summer-ink); }
+  .fp-ov-label.fp-end{ transform:translateX(-100%); } .fp-ov-label.fp-start{ transform:none; }
   .fp-plot{ position:relative; height:150px; margin-top:8px; }
   .fp-marks + .fp-plot{ margin-top:0; }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
@@ -561,17 +561,20 @@
   .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-label); color:var(--text-muted); }
   .fp-line{ fill:none; stroke:var(--line); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.9; }
   .fp-zero{ stroke:var(--border-strong); stroke-width:1; stroke-dasharray:2 3; }
-  .fp-ov-line{ stroke:var(--season-summer); stroke-width:1.5; stroke-dasharray:3 3; }
+  .fp-ov-line{ stroke:var(--season-summer); stroke-width:1.5; }
   .fp-ov{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
   .fp-ov.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
   .fp-phases{ position:relative; height:18px; margin-top:2px; }
   .fp-ph{ position:absolute; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; }
   .fp-ph.fp-tight{ color:var(--accent-ink); } .fp-ph.fp-ease{ color:var(--good-ink); }
-  .fp-levels{ margin:12px 0 0; padding:0; list-style:none; font-size:var(--type-meta); line-height:1.9; }
-  .fp-levels li{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .fp-levels li.fp-so-far::before{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--line); }
-  .fp-levels li::before{ content:""; display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; vertical-align:1px; background:var(--line); }
-  .fp-levels b{ color:var(--line-ink); font-weight:600; }
+  .fp-levels{ margin:16px 0 0; padding:0; list-style:none; font-size:var(--type-meta); border-top:1px solid var(--border); }
+  .fp-levels li{ display:grid; grid-template-columns:8.6em 1fr auto; align-items:center; column-gap:14px; padding:7px 0; border-bottom:1px solid var(--border); line-height:1.4; white-space:nowrap; }
+  .fp-levels b{ display:flex; align-items:center; gap:8px; color:var(--line-ink); font-weight:600; }
+  .fp-levels b::before{ content:""; flex:none; width:14px; height:3px; border-radius:2px; background:var(--line); }
+  .fp-levels li.fp-peak b::before{ width:9px; height:9px; margin:0 2.5px; border-radius:50%; }
+  .fp-levels li.fp-so-far b::before{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--line); }
+  .fp-state{ color:var(--text-secondary); }
+  .fp-val{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; color:var(--text-primary); }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
