@@ -875,13 +875,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
-- **Real return is its own reading in Weather, under Market, after the S&P 500: the index's total return each year with
-  inflation taken out.** Keren: "it needs to be under the weather category, under market subcategory" (0.9.19), over
-  chips on the cycle pages. It deflates by the app's own inflation gauge (CPI before 2000, PCE since), so one inflation
-  figure is used everywhere; the open year's inflation is the latest twelve-month rate taken for the share of the year
-  gone (Claude's call: the app holds no price index to measure the year so far). Zero is the definitional line, like the
-  S&P 500's; the words are "Beat inflation" and "Lost to inflation". A cycle's real years are read on its page through
-  the Cycles window. (0.9.19)
+- **There is no Real return reading; Market holds the S&P 500 alone.** Keren, 0.9.28: "I think it's obvious that the real
+  return is S&P 500 minus inflation. I think it doesn't really add much and it's just distracting. So let's remove it."
+  It was a reading under Weather > Market from 0.9.19 to 0.9.27 (the S&P 500's yearly total return deflated by the
+  app's inflation gauge, "Beat inflation" / "Lost to inflation"); its card, page, (i), insights and tests were deleted.
+  Don't re-propose it. (0.9.19, 0.9.28)
 
 - **Credit is households borrowing to spend and lives in Desire, under Demand (Consumer credit, 0.9.25); Stress holds what is owed,
   by Households and by Government.** Keren, 0.9.25: "I think consumer credit should belong under desire, demand". Before that it sat in
