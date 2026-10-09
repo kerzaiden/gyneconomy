@@ -96,8 +96,7 @@ settles it; none is open after V668.
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   In the box's colour the rest of the ring could not be seen. (0.6.5)
 - **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
-  inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, Lighter
-  Cycle Pages)
+  inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
 - **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
   is told inside the AI Insights page's first container.** The narrative belongs to AI Insights. A closed cycle,
   which has no AI Insights, keeps its story above Cycle analysis. Keren wanted a sophisticated analysis of the
@@ -306,7 +305,7 @@ settles it; none is open after V668.
 - **The door from Interest Rates Environment to the Federal funds rate page is an inline "Learn more ›" after the
   card's text, on Analysis, where it lands on the cycle Analysis shows.** Reading is what makes one want
   to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished. (0.9.1,
-  0.9.40, 0.9.43, 0.9.44, Lighter Cycle Pages)
+  0.9.40, 0.9.43, 0.9.44, 0.9.46)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -1471,12 +1470,12 @@ settles it; none is open after V668.
   is the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that cycle, and
   its Learn more opens the Federal funds rate on that same cycle. Past cycles have no AI Insights yet, so theirs
   is the one card missing until they do. The Health Score shows once, in Cycle Analysis, since the analysis is
-  what explains it; the AI Insights card carries only its story. (0.6.17, Lighter Cycle Pages)
+  what explains it; the AI Insights card carries only its story. (0.6.17, 0.9.46)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   A change once reached only today's page, because the Diagnosis branched on whether the cycle was open and the
   browser suite expected the past cycle's old layout. The page is one sequence (AI Insights, Cycle Analysis, Year by
   Year), and a unit test fails if any closed cycle's page differs in shape from today's, AI Insights aside until
-  past cycles have it. (0.6.13, 0.6.17, Lighter Cycle Pages)
+  past cycles have it. (0.6.13, 0.6.17, 0.9.46)
 - **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Titles were a mix of dark
   purple and black, and should be consistent; Interest Environment and Year by Year lost their small black
   capitals. (0.6.13)
