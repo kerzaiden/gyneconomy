@@ -3,7 +3,7 @@ import { AXIS, beatPath, chartAxes, histFrame, publishGeom, vGrid, vhOpen, xLabe
 import { M2_FLOOD, M2V_FROM_YEAR, m2vHistory, m2Yoy } from "./data.ts";
 import { fmtSigned, qAtIndex, quartile } from "./format.ts";
 
-export var PULSE_BEATS = 5, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_ROW = 64;
+export var PULSE_BEATS = 5, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_ROW = 44;
 var fences: number[] | null = null;
 function pulseMove(i: number){ return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100; }
 export function pulseFences(){
@@ -26,8 +26,8 @@ export function pulseStroke(i: number){
 type StripRow = { y: number; top: number; h: number; from: number; end: number; X: (q: number) => number };
 function stripQuarter(r: StripRow, q: number, x: number, limit: number){
   var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(34, r.h * 0.7 - 17) * (stroke == null ? 0.5 : stroke);
-  var cy = r.top + r.h * 0.7, d: string[] = [];
+  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * 0.58) * (stroke == null ? 0.5 : stroke);
+  var cy = r.top + r.h * 0.64, d: string[] = [];
   if (stroke == null) kind = kind || "blank";
   x = Math.max(x, xa);
   if (kind === "flat"){ d.push("M" + f1(xa) + "," + f1(cy) + "H" + f1(xb)); x = xb; }
@@ -46,9 +46,9 @@ function stripRow(r: StripRow){
   }
   var id = "psclip" + r.y, w = r.X(last + 1) - r.X(0);
   out = ['<clipPath id="' + id + '"><rect x="' + f1(r.X(0)) + '" y="' + f1(r.top - r.h) + '" width="' + f1(w) + '" height="' + f1(r.h * 3) + '"/></clipPath><g clip-path="url(#' + id + ')">' + out.join("") + '</g>'];
-  var vel = (sum / n).toFixed(2) + "\u00d7";
-  out.push(yLabel(r.X(0) - (AXIS.L + AXIS.RAIL) / 2, r.top + r.h * 0.7 + 3.5, r.y, "middle"));
-  out.push(yLabel(r.X(0) + 5, r.top + 12, vel, "start"));
+  var lx = r.X(0) - (AXIS.L + AXIS.RAIL) / 2, mid = r.top + r.h / 2;
+  out.push(yLabel(lx, mid - 2, r.y, "middle"));
+  out.push(yLabel(lx, mid + 11, (sum / n).toFixed(2), "middle"));
   return out.join("");
 }
 function stripPaper(L: number, R: number, T: number, B: number, h: number){
@@ -90,7 +90,7 @@ export function stripsInfo(){
   var flats: string[] = [];
   for (var i = 1; i < m2vHistory.length; i++) if (pulseBeat(i) === "flat") flats.push(qAtIndex(M2V_FROM_YEAR, i));
   return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, the newest on top and its quarters across. A beat is a fifth of one turnover of the money stock, ' +
-    'so a year at 1.4\u00d7 carries 7 beats and the gaps widen as money slows; the figure at the top of each strip is that year\u2019s average velocity. ' +
+    'so a year at 1.4\u00d7 carries 7 beats and the gaps widen as money slows; the figure under each year is its average velocity, in turnovers a year. ' +
     'Five beats a turnover is Claude\u2019s choice, made for legibility (Keren found ten too crowded).</p>' +
     '<p class="caption follow"><b>A beat\u2019s height is the money stock\u2019s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, ' +
     'full height at ' + M2_FLOOD.toFixed(1) + '%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. ' +
