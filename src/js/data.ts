@@ -418,7 +418,7 @@ export var marketCycles: Cycle[] = [
     name:"Space Race Cycle",
     story:"Sputnik set off a race in rockets and electronics, and almost any company with “tronics” in its name found buyers. Mrs. Market rode that Excitement into Thrill, until the slide of 1962 turned it to Fear.",
     blurb:"Sputnik sets off a race in rockets and electronics, and the market chases the new technology stocks of the day. It ends in the slide of 1962.",
-    rates:"A cut into the 1958 recession, a hike in 1959, and calm prices that peaked early, in {month}."
+    rates:"Prices peaked early, in {month}, then stayed calm: the Fed raised rates in 1959 against a boom and gold leaving the country, and the 1960 recession kept inflation low."
   },
   {
     from:1963, to:1966,
@@ -432,7 +432,7 @@ export var marketCycles: Cycle[] = [
     name:"Go-Stop Cycle",
     story:"Go-go fund managers traded growth stocks at speed, and conglomerates grew by buying everything in sight, their earnings flattered by the deals themselves. Mrs. Market was in Euphoria about them, and in Denial as inflation and the credit crunch of 1969 took them apart.",
     blurb:"The go-go funds and the conglomerates peak in 1968, with speculation running alongside. It ends in 1969 as inflation and rising rates catch up.",
-    rates:"Easy money after the 1966 crunch, then hard tightening as inflation built. Prices peaked at the close, in {month}."
+    rates:"Vietnam spending on top of the Great Society, and easy money after the 1966 crunch, let inflation build until the Fed tightened hard in 1968 and 1969. Prices peaked at the close, in {month}."
   },
   {
     from:1970, to:1974,
@@ -446,7 +446,7 @@ export var marketCycles: Cycle[] = [
     name:"Bicentennial Cycle",
     story:"Out of the 1974 collapse came one of the sharpest rebounds in the record, +37% in 1975, and the rally ran into the Bicentennial year before topping out late in 1976. Mrs. Market moved from Despair back to Hope and Optimism, but inflation never left, and by 1977 she was Anxious again.",
     blurb:"A sharp recovery out of the 1973–74 collapse that tops out in the Bicentennial year, with inflation never far behind. It ends in 1977 as prices start to run again.",
-    rates:"The Fed cut through the 1975 recession, but inflation never settled and climbed again, peaking in {month}."
+    rates:"The Fed cut through the 1975 recession, and with Arthur Burns slow to tighten and food prices jumping, inflation climbed again, peaking in {month}."
   },
   {
     from:1978, to:1981,
@@ -467,7 +467,7 @@ export var marketCycles: Cycle[] = [
     name:"Dot-Com Cycle",
     story:"The internet promised a new economy, and the market believed it for nine straight years. Mrs. Market climbed from Hope to full Euphoria in 1999, then spent three years in Denial, Fear and finally Despair as the bubble burst.",
     blurb:"Nine years of uninterrupted growth out of the 1990–91 recession — confidence building all decade and cresting into the internet mania that gives the cycle its name — then three straight losing years to unwind it, a run of consecutive declines the market had not seen since the 1930s. The mania and its undoing are one story, and the cycle holds both.",
-    rates:"Prices stayed calm, peaking modestly in {month}; the Fed hiked into the bubble in 1999–2000, then cut hard when it burst."
+    rates:"Cheap imports, a strong dollar and a productivity boom kept prices calm, peaking modestly in {month}; the Fed hiked into the stock bubble in 1999–2000, then cut hard when it burst."
   },
   {
     from:2003, to:2008,
@@ -481,7 +481,7 @@ export var marketCycles: Cycle[] = [
     name:"Big Tech Cycle",
     story:"Out of the crisis, near-zero rates and a handful of technology giants carried one of the longest bull markets on record. Mrs. Market crept from Despair to Hope and stayed Optimistic for a decade, until the trade war and rising rates left her Anxious at the end of 2018.",
     blurb:"One of the longest, steadiest bull markets on record — a decade of rebuilding led by a handful of technology giants that ended it carrying more of the index than any five companies before them. It closes on the trade-war scare of late 2018, the mildest ending of any cycle here: a stumble rather than a bust.",
-    rates:"Seven years near zero, and prices barely stirred, peaking modestly in {month}."
+    rates:"A slow recovery and weak wages kept prices calm through seven years of rates near zero; they peaked modestly in {month}, when the Arab Spring lifted oil."
   },
   {
     from:2019, to:2022,
