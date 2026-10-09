@@ -33,9 +33,7 @@
     --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
     --critical: #d0383b;
     --m2-deep: #4a0f0a;
-    --ff-blue: #4f6fb0;
-    --plot-wash: #f8ebe2; --skin-tan: #f1dccd; --ease-lilac: #e2cbf6;
-    --soft-panel: color-mix(in srgb, var(--seg-track) 55%, var(--surface));
+    --ff-blue: #4f6fb0; --peak-lilac: #e4c3e5;
     --ff-deep: #0b2340;
     --critical-ink: #a8292f;
     --critical-wash: color-mix(in srgb, var(--critical) 12%, var(--surface));
@@ -49,7 +47,7 @@
     --tm-coin-wash: color-mix(in srgb, var(--ylm-5y) 34%, var(--surface));
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
-    --seg-track: #efecec; --seg-on: #ffffff;
+    --seg-track: #f6f5f5; --seg-on: #ffffff;
     --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
     --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
     --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
@@ -85,8 +83,7 @@
       --phase-down-ink: var(--cold-ink);
       --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
       --critical: #f05a55; --m2-deep: #ffd2c8;
-      --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
-      --plot-wash: #3a2a27; --skin-tan: #45322d; --ease-lilac: #9b7bc0;
+      --ff-blue: #86a3e0; --ff-deep: #d7e8fb; --peak-lilac: #9d7aa3;
       --critical-ink: #f6897f;
       --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
       --bleed-mid: #f05a55;
@@ -99,7 +96,7 @@
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
-      --seg-track: #2b1d25; --seg-on: #4a3540;
+      --seg-track: #271921; --seg-on: #4a3540;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
@@ -149,13 +146,12 @@
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
-      --seg-track: #2b1d25; --seg-on: #4a3540;
+      --seg-track: #271921; --seg-on: #4a3540;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
       --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
-      --ff-blue: #86a3e0;
-      --plot-wash: #3a2a27; --skin-tan: #45322d; --ease-lilac: #9b7bc0;
+      --ff-blue: #86a3e0; --peak-lilac: #9d7aa3;
   }
 
   *{box-sizing:border-box;}
@@ -554,13 +550,10 @@
   .fp-fig{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-figure); line-height:1; letter-spacing:-0.01em; color:var(--text-primary); }
   .fp-fig small{ font-size:0.65em; margin-left:2px; }
   .fp .rangebar{ margin:22px 0 4px; }
-  .fp-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; background:var(--plot-wash); }
+  .fp-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; background:var(--surface-2); }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 12px); }
   .fp-clip{ position:absolute; inset:0; overflow:hidden; border-radius:12px; }
-  .fp-band{ position:absolute; top:0; bottom:0; overflow:hidden; background:var(--wash); }
   .fp-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:color-mix(in srgb, var(--grid) 70%, transparent); }
-  .fp-ease{ --wash:transparent; --key:var(--plot-wash); }
-  .fp-tight{ --wash:var(--skin-tan); --key:var(--skin-tan); }
   .fp-years{ position:relative; height:16px; margin-top:4px; }
   .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:var(--text-muted); }
   .fp-year.fp-end{ right:0; left:auto; margin:0; color:var(--text-primary); }
@@ -568,18 +561,16 @@
   .fp-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .fp-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
   .fp-line{ fill:none; stroke:var(--line); stroke-linecap:round; stroke-linejoin:round; }
   .fp-line.fp-rate{ stroke-width:1.6; opacity:0.85; } .fp-line.fp-prices{ stroke-width:2.4; }
-  .fp-strip{ position:absolute; top:0; bottom:0; width:14px; margin-left:-7px; border-radius:7px; background:linear-gradient(180deg, color-mix(in srgb, var(--ease-lilac) 95%, transparent), color-mix(in srgb, var(--ease-lilac) 45%, transparent)); }
-  .fp-peak-dot{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
-  .fp-peak-dot.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
+  .fp-turn{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed color-mix(in srgb, var(--text-muted) 35%, transparent); }
+  .fp-strip{ position:absolute; top:0; bottom:0; width:10px; margin-left:-5px; border-radius:2px; background:linear-gradient(180deg, var(--peak-lilac), color-mix(in srgb, var(--peak-lilac) 15%, transparent)); }
   .fp-tag{ position:absolute; height:22px; font-size:var(--type-meta); line-height:22px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
   .fp-level-tag{ line-height:28px; text-align:left; font-size:var(--type-label); opacity:0.6; }
-  .fp-peak-tag{ border-radius:var(--round); background:var(--surface); box-shadow:0 2px 8px rgba(124,40,68,0.14); color:var(--text-primary); }
   .fp-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin:10px 0 0; padding:7px 0; list-style:none; font-size:var(--type-meta); color:var(--text-muted); }
   .fp-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
   .fp-legend li::before{ content:""; flex:none; }
-  .fp-key-band::before{ width:9px; height:9px; border-radius:50%; background:var(--key); box-shadow:inset 0 0 0 1px var(--skin-tan); }
+  .fp-key-peak::before{ width:9px; height:9px; border-radius:50%; background:var(--peak-lilac); }
   .fp-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
-  .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--soft-panel); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
+  .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
@@ -705,7 +696,7 @@
   .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--round); padding:8px 10px; cursor:pointer; white-space:nowrap;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:500; color:var(--text-primary); }
   .range-seg.on{ background:var(--seg-on); color:var(--text-primary); font-weight:600; box-shadow:0 1px 3px rgba(124,40,68,0.10); }
-  .rangebar.thin{ min-height:0; justify-content:space-around; padding:5px 6px; background:var(--soft-panel); }
+  .rangebar.thin{ min-height:0; justify-content:space-around; padding:5px 6px; }
   .rangebar.thin .range-seg{ flex:0 0 24%; padding:3px 10px; font-weight:400; }
   .rangebar.thin .range-seg.on{ font-weight:500; box-shadow:none; }
   .range-seg:hover:not(.on){ color:var(--text-primary); }
@@ -905,7 +896,7 @@
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:color-mix(in srgb, var(--border) 40%, transparent); border-radius:var(--radius-inner); }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:var(--seg-track); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
   .lab-score b{ display:block; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-size:var(--type-section); font-weight:500; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
@@ -48272,64 +48263,12 @@
       }).join(" ");
     }).join("");
   }
-  function sample(segs) {
-    var out = [];
-    segs.forEach(function(g) {
-      for (var t = 0; t <= 1; t += .05) {
-        var u = 1 - t, w = [ u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t ];
-        out.push([ w[0] * g[0] + w[1] * g[2] + w[2] * g[4] + w[3] * g[6], w[0] * g[1] + w[1] * g[3] + w[2] * g[5] + w[3] * g[7] ]);
-      }
-    });
-    return out;
-  }
   var TAG = {
     h: 22,
-    gap: 6,
-    clear: 3,
-    plotW: 300,
     plotH: 150
   };
-  var TAG_SIDES = [ [ 1, 0 ], [ -1, 0 ], [ 0, -1 ], [ 0, 1 ], [ 1, -1 ], [ -1, -1 ], [ 1, 1 ], [ -1, 1 ] ];
-  function sideTag(ax, ay, w, side2) {
-    var g = side2[0] && side2[1] ? TAG.gap / 2 : TAG.gap;
-    return {
-      ax: ax,
-      ay: ay,
-      w: w,
-      dx: side2[0] > 0 ? g : side2[0] < 0 ? -g - w : -w / 2,
-      dy: side2[1] > 0 ? g : side2[1] < 0 ? -g - TAG.h : -TAG.h / 2
-    };
-  }
-  function tagHits(t, pts2) {
-    var x0 = t.ax * TAG.plotW + t.dx, y0 = t.ay * TAG.plotH + t.dy;
-    if (x0 < 0 || y0 < 0 || x0 + t.w > TAG.plotW || y0 + TAG.h > TAG.plotH) return Infinity;
-    return pts2.filter(function(q) {
-      return q[0] > x0 - TAG.clear && q[0] < x0 + t.w + TAG.clear && q[1] > y0 - TAG.clear && q[1] < y0 + TAG.h + TAG.clear;
-    }).length;
-  }
-  function curvePts(segs) {
-    return [].concat.apply([], segs.map(sample)).map(function(q) {
-      return [ q[0] / VIEW_W * TAG.plotW, q[1] / VIEW_H * TAG.plotH ];
-    });
-  }
-  function tagHtml(cls, text, tags, segs) {
-    var pts2 = curvePts(segs);
-    return tagSpan(cls, text, tags.map(function(c) {
-      return {
-        t: c,
-        n: tagHits(c, pts2)
-      };
-    }).reduce(function(a, c) {
-      return c.n < a.n ? c : a;
-    }).t);
-  }
   function tagSpan(cls, text, t) {
     return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ";top:" + pct(t.ay) + ";width:" + t.w + "px;margin:" + t.dy + "px 0 0 " + t.dx + 'px">' + text + "</span>";
-  }
-  function peakTag(segs, px, py) {
-    return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side2) {
-      return sideTag(px / VIEW_W, py / VIEW_H, 48, side2);
-    }), segs);
   }
   function levelTags(sc) {
     return ruleLevels(sc).filter(function(v) {
@@ -48377,26 +48316,6 @@
       return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
     }).join("");
   }
-  function bandSpans(phases, from, to) {
-    var span = to - from + 1, out = [];
-    phases.forEach(function(p, k) {
-      var a = Math.max(monthIdx(p.m), from), b = k + 1 < phases.length ? monthIdx(phases[k + 1].m) : to + 1;
-      if (b > from && a <= to) out.push({
-        l: (a - from) / span,
-        w: (Math.min(b, to + 1) - a) / span,
-        cls: stanceClass(p)
-      });
-    });
-    return out;
-  }
-  function bandsHtml(bands, rules) {
-    return '<span class="fp-clip">' + bands.map(function(b) {
-      return '<span class="fp-band ' + b.cls + '" style="left:' + pct(b.l) + ";width:" + pct(b.w) + '">' + rules + "</span>";
-    }).join("") + "</span>";
-  }
-  function stanceClass(p) {
-    return p.s > 0 ? "fp-tight" : "fp-ease";
-  }
   function axisMark(left, text) {
     return '<span class="fp-year' + (left == null ? ' fp-end"' : '" style="left:' + pct(left) + '"') + ">" + text + "</span>";
   }
@@ -48420,7 +48339,7 @@
   function lineSvg(segs, cls) {
     return '<path class="fp-line ' + cls + '" d="' + curve(segs) + '" vector-effect="non-scaling-stroke"/>';
   }
-  function plotSvg(lines, from, to, peak, open) {
+  function plotSvg(lines, from, to) {
     var sc = levelScale(lines), y = sc.y;
     var x = function(i) {
       return (i - from) / Math.max(to - from, 1) * VIEW_W;
@@ -48429,7 +48348,19 @@
       return segments(l, x, y);
     });
     var paths = fillDefs() + areaPath(segs[1], "fp-rate") + areaPath(segs[0], "fp-prices") + lineSvg(segs[1], "fp-rate") + lineSvg(segs[0], "fp-prices");
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(sc) + (peak ? '<span class="fp-strip" style="left:' + pct(x(peak.i) / VIEW_W) + '"></span><span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(sc);
+  }
+  function turnsHtml(from, to) {
+    return fedPhases().map(function(p) {
+      return monthIdx(p.m);
+    }).filter(function(i) {
+      return i > from && i < to;
+    }).map(function(i) {
+      return '<i class="fp-turn" style="left:' + pct((i - from) / (to - from)) + '"></i>';
+    }).join("");
+  }
+  function stripHtml(peak, from, to) {
+    return peak ? '<span class="fp-strip" style="left:' + pct((peak.i - from) / Math.max(to - from, 1)) + '"></span>' : "";
   }
   function rateSeries(toM) {
     return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
@@ -48437,8 +48368,8 @@
   function key(cls, name) {
     return '<li class="' + cls + '">' + name + "</li>";
   }
-  function legendHtml() {
-    return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") + key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + "</ul>";
+  function legendHtml(toM) {
+    return '<ul class="fp-legend">' + key("fp-key-line fp-rate", rateSeries(toM) === discountHistory ? "Discount rates" : "Interest rates") + key("fp-key-line fp-prices", "Prices") + key("fp-key-peak", "Inflation") + "</ul>";
   }
   var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
   function footnoteHtml(m) {
@@ -48492,18 +48423,18 @@
     });
     return k;
   }
-  function fedPhasesCard(m, host, range) {
-    var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to), bands = bandSpans(fedPhases(), from, to);
+  function ratesCard(m, host, range) {
+    var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
     var peak = cyclePeak(m.era.from + "-01", toM), at = peak ? monthIdx(peak.m) : -1, shown2 = peak && at >= from ? peak : null;
     var raw = [ monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to) ], k = shown2 ? pinPeak(raw[0], at, shown2.v) : -1;
     var lines = soften(raw, from, to), top = k < 0 ? null : lines[0][k];
-    return heroHtml(m, toM) + tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, top, m, bands) + legendHtml() + footnoteHtml(m);
+    return heroHtml(m, toM) + tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, top, m) + legendHtml(toM) + footnoteHtml(m);
   }
-  function plotHtml(lines, from, to, top, m, bands) {
-    return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + "</div>";
+  function plotHtml(lines, from, to, top, m) {
+    return '<div class="fp-plot"><span class="fp-clip">' + rulesHtml(levelScale(lines)) + turnsHtml(from, to) + stripHtml(top, from, to) + "</span>" + plotSvg(lines, from, to) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + "</div>";
   }
   function fedEnvironment(m, host, range) {
-    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + fedPhasesCard(m, host, range));
+    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m, host, range));
   }
   function insightCirculation() {
     var vel = m2vHistory, n = vel.length;

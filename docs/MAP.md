@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,965 lines** in 41 files, about 614 KB, roughly **174 thousand tokens**. No session can
+The source is **8,918 lines** in 41 files, about 611 KB, roughly **173 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `5068ea4` on 2026-10-09.
+Generated from commit `7845f6c` on 2026-10-09.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `5068ea4` on 2026-10-09.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,209 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,200 | the whole stylesheet, every token and rule |
 | `page-body.html` | 247 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 37 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **37** modules, **794** top-level functions, **125** top-level vars, **371** exported names, **20** boots.
+Counts: **37** modules, **787** top-level functions, **124** top-level vars, **371** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -53,7 +53,7 @@ Counts: **37** modules, **794** top-level functions, **125** top-level vars, **3
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 494 | 136 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `live`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/era.ts` | 16 | 2 | `reading` |
-| `js/fed-phases.ts` | 218 | 51 | `data`, `format`, `history`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/fed-phases.ts` | 180 | 43 | `data`, `format`, `history`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
 | `js/history-charts.ts` | 316 | 11 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 31 | 14 | — |
@@ -1114,47 +1114,39 @@ falls in. **export** marks a name other modules import.
 | 54 | `slopes` | `function slopes(` |
 | 60 | `segments` | `function segments(` |
 | 68 | `curve` | `function curve(` |
-| 72 | `sample` | `function sample(` |
-| 82 | `TAG` | `var TAG =` |
-| 83 | `TAG_SIDES` | `var TAG_SIDES =` |
-| 85 | `sideTag` | `function sideTag(` |
-| 89 | `tagHits` | `function tagHits(` |
-| 94 | `curvePts` | `function curvePts(` |
-| 97 | `tagHtml` | `function tagHtml(` |
-| 101 | `tagSpan` | `function tagSpan(` |
-| 104 | `peakTag` | `function peakTag(` |
-| 107 | `levelTags` | `function levelTags(` |
-| 113 | `pct` | `function pct(` |
-| 114 | `GRID_STEPS` | `var GRID_STEPS =` |
-| 116 | `levelScale` | `function levelScale(` |
-| 122 | `ruleLevels` | `function ruleLevels(` |
-| 127 | `rulesHtml` | `function rulesHtml(` |
-| 132 | `bandSpans` | `function bandSpans(` |
-| 140 | `bandsHtml` | `function bandsHtml(` |
-| 143 | `stanceClass` | `function stanceClass(` |
-| 144 | `axisMark` | `function axisMark(` |
-| 145 | `axisTicks` | `function axisTicks(` |
-| 151 | `yearsHtml` | `function yearsHtml(` |
-| 154 | `fillDefs` | `function fillDefs(` |
-| 157 | `areaPath` | `function areaPath(` |
-| 161 | `lineSvg` | `function lineSvg(` |
-| 162 | `plotSvg` | `function plotSvg(` |
-| 169 | `rateSeries` | `function rateSeries(` |
-| 170 | `key` | `function key(` |
-| 171 | `legendHtml` | `function legendHtml(` |
-| 175 | `PHASES` | `var PHASES =` |
-| 176 | `footnoteHtml` | `function footnoteHtml(` |
-| 180 | `ratesStory` · export | `function ratesStory(` |
-| 184 | `endMonthOf` | `function endMonthOf(` |
-| 189 | `RANGES` | `var RANGES =` |
-| 190 | `windowFrom` | `function windowFrom(` |
-| 191 | `closingRate` | `function closingRate(` |
-| 196 | `heroHtml` | `function heroHtml(` |
-| 197 | `soften` | `function soften(` |
-| 200 | `pinPeak` | `function pinPeak(` |
-| 205 | `fedPhasesCard` | `function fedPhasesCard(` |
-| 212 | `plotHtml` | `function plotHtml(` |
-| 215 | `fedEnvironment` · export | `function fedEnvironment(` |
+| 72 | `TAG` | `var TAG =` |
+| 74 | `tagSpan` | `function tagSpan(` |
+| 77 | `levelTags` | `function levelTags(` |
+| 83 | `pct` | `function pct(` |
+| 84 | `GRID_STEPS` | `var GRID_STEPS =` |
+| 86 | `levelScale` | `function levelScale(` |
+| 92 | `ruleLevels` | `function ruleLevels(` |
+| 97 | `rulesHtml` | `function rulesHtml(` |
+| 101 | `axisMark` | `function axisMark(` |
+| 102 | `axisTicks` | `function axisTicks(` |
+| 108 | `yearsHtml` | `function yearsHtml(` |
+| 111 | `fillDefs` | `function fillDefs(` |
+| 114 | `areaPath` | `function areaPath(` |
+| 118 | `lineSvg` | `function lineSvg(` |
+| 119 | `plotSvg` | `function plotSvg(` |
+| 126 | `turnsHtml` | `function turnsHtml(` |
+| 129 | `stripHtml` | `function stripHtml(` |
+| 132 | `rateSeries` | `function rateSeries(` |
+| 133 | `key` | `function key(` |
+| 134 | `legendHtml` | `function legendHtml(` |
+| 137 | `PHASES` | `var PHASES =` |
+| 138 | `footnoteHtml` | `function footnoteHtml(` |
+| 142 | `ratesStory` · export | `function ratesStory(` |
+| 146 | `endMonthOf` | `function endMonthOf(` |
+| 151 | `RANGES` | `var RANGES =` |
+| 152 | `windowFrom` | `function windowFrom(` |
+| 153 | `closingRate` | `function closingRate(` |
+| 158 | `heroHtml` | `function heroHtml(` |
+| 159 | `soften` | `function soften(` |
+| 162 | `pinPeak` | `function pinPeak(` |
+| 167 | `ratesCard` | `function ratesCard(` |
+| 174 | `plotHtml` | `function plotHtml(` |
+| 177 | `fedEnvironment` · export | `function fedEnvironment(` |
 
 ### `js/format.ts`
 
@@ -1472,26 +1464,26 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 
 | Line | Section |
 |---|---|
-| 183 | top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu |
-| 293 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
-| 324 | season strip |
-| 351 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
-| 414 | tab bar (app-style segmented navigation) |
-| 438 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
-| 526 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 675 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 700 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 751 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 893 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 905 | The symptoms: a cycle's years against today |
-| 1,050 | yield curve charts |
-| 1,074 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,093 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,106 | un-inversion-to-recession historical lag panel |
-| 1,115 | the reading's tag |
-| 1,123 | info icon + popover (progressive disclosure for longer notes) |
-| 1,137 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,200 | footer |
+| 179 | top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu |
+| 289 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
+| 320 | season strip |
+| 347 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
+| 410 | tab bar (app-style segmented navigation) |
+| 434 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
+| 522 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
+| 666 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 691 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 742 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 884 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 896 | The symptoms: a cycle's years against today |
+| 1,041 | yield curve charts |
+| 1,065 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,084 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,097 | un-inversion-to-recession historical lag panel |
+| 1,106 | the reading's tag |
+| 1,114 | info icon + popover (progressive disclosure for longer notes) |
+| 1,128 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,191 | footer |
 
 ## Markup landmarks
 

@@ -1457,11 +1457,12 @@ settles it; none is open after V668.
 - **A segmented control is a light grey track (`--seg-track`) with no border, and its chosen segment is a white
   pill (`--seg-on`); track and pill are fully round, the choices spread evenly in dark text, the chosen one a
   touch bolder on a softly lifted pill.** Taken from Clair's grey-and-white selection bar and a hormone-app
-  reference Keren found prettier. It is the one grey in the app; containers stay white, as grey read too grey.
-  The Interest Rates card's range bar is the thin form (`rangebar thin`), closer to Clair's proportions: the soft grey
-  of the card's text panel (`--soft-panel`), a shorter, narrower white pill with no shadow, lighter labels. The
-  history rows keep the 40px bar, since they sit at one height beside the cycle picker. (V579, 0.6.2, 0.8.5,
-  Oct 9, 2026)
+  reference Keren found prettier. It is the one grey in the app, and every grey ground uses it: the selection
+  bars, the Cycle Statistics rows and the Interest Rates explanation panel are one shade, since more greys were more
+  colours to manage. Containers stay white, as grey read too grey. The Interest Rates card's range bar is the thin
+  form (`rangebar thin`), closer to Clair's proportions: a shorter, narrower white pill with no shadow, lighter
+  labels. The history rows keep the 40px bar, since they sit at one height beside the cycle picker. (V579, 0.6.2,
+  0.8.5, Oct 9, 2026)
 - **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a
   white page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer
   salmon-orange, Spring marigold, Winter periwinkle and Autumn its light tint.** The dark purple, the light
@@ -1596,27 +1597,29 @@ settles it; none is open after V668.
   the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates card is a feel, not a measure, dressed as her Clair hormone chart: the Fed's rate as a
-  soft yellow area behind and prices as an orange line with a translucent fill in front, over a plot in two nudes,
-  like a pale and a tan skin: easing the pale, tightening one shade deeper, seen only at the border between them, so
-  the only purple is the Peak's strip; above it, today's
+  soft yellow area behind and prices as an orange line with a translucent fill in front, on one light ground
+  (`--surface-2`), a faint dashed line wherever the Fed changes direction, and a narrow lilac strip at the inflation
+  peak; above it, today's
   target range (or the rate at a closed cycle's close) as one large serif figure, and a thin 1Y · 5Y · Cycle bar.
   The curves are drawn freely: about twelve averaged points per window, lightly smoothed, joined by curves that
   rest flat at every turn, edge to edge of the plot; the scale runs from one point below the lowest reading to one
   above the highest; faint guide rules at a round step (1%, else 2%, 5% or 10%, at most six), each with its figure
-  at the plot's left edge. The type matches Cycle Statistics: the story at reading size, the legend, axis and Peak
-  at meta size.** It shows the environment at a glance, the way Clair shows hormones: the rates are the backdrop the
+  at the plot's left edge. The type matches Cycle Statistics: the story at reading size, the legend and axis at
+  meta size.** It shows the environment at a glance, the way Clair shows hormones: the rates are the backdrop the
   market lives in and prices act in front of them, so the trend and the two lines' relation matter more than exact
-  values (Keren, Oct 9, 2026). Easing is the default of recent decades, so the plot is pale and darkens only while
-  the Fed tightens. The one figure is the rate itself; no phase line sits under it, since "easing since" misread a
+  values (Keren, Oct 9, 2026). The phases were shaded as two grounds at first and gave way to the turn lines: the
+  rate's own slope already shows tightening and easing, so a second layer only crowded the chart, while a line at
+  each turn helps the reading and keeps the look of the hormone charts women know. The one figure is the rate itself; no phase line sits under it, since "easing since" misread a
   cycle the Fed reversed more than once. Growth is the other half of the season and the dial already shows it; the
-  cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. The peak is an
-  orange dot on the prices curve (hollow on the open cycle), the curve passing through its true reading, labelled
-  Peak in a white bubble beside it on whichever side keeps clear of both curves; it shows only when the window holds
-  it. A narrow lilac strip runs the plot's height through the Peak, like the LH strip in Clair: the cycle's turning
-  point. A phase is the direction of the Fed's last move, so a pause stays in the phase it followed and no month is
-  grey; an "on hold" state would need a cut-off nobody has published (Keren asked, Oct 9, 2026). The axis ends in Today, or the close's month, so no Current pill or end dot is needed. Under the axis, one
-  centred grey legend: Tightening, Easing, Rates, Prices. Under it, one explanation of the phases on a soft grey
-  panel, the same on every cycle. Each cycle's rates story, one or two short lines on what the
+  cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. The inflation
+  peak is only a strip, like Clair's LH strip: narrow, near-square, in Clair's own lilac (`--peak-lilac`, sampled
+  from her chart, since the palette had no match), fading downward, with no dot or label; the prices curve passes
+  through its true reading, and it shows only when the window holds it. A turn is a change in the direction of the
+  Fed's last move, so a pause stays in the phase it followed; an "on hold" state would need a cut-off nobody has
+  published (Keren asked, Oct 9, 2026). The axis ends in Today, or the close's month, so no Current pill or end dot
+  is needed. Under the axis, one centred grey legend on one line: Interest rates (Discount rates before the federal
+  funds rate), Prices, Inflation. Under it, one explanation of the phases on the app's one grey, the same on every
+  cycle. Each cycle's rates story, one or two short lines on what the
   rates did (`rates` in `marketCycles`), is the Interest Rates container in that cycle's AI Insights, after its
   narrative: the card teaches the pattern and AI Insights tells the cycle, beside the rest of the cycle's reading,
   while the Federal funds rate page reads the rate across every cycle (0.9.44, Cycle Insights); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,

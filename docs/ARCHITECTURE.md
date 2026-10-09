@@ -614,7 +614,7 @@ of the open cycle's Herstory row, a width only the page knows, so they sit exact
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
-- **The Fed's phases** (0.6.7, `fed-phases`): the first card, for today and any closed cycle. `fedPhases` turns
+- **The Fed's phases** (0.6.7, `fed-phases`): the Interest Rates card, for today and any closed cycle. `fedPhases` turns
   `fedMoves` (the Backfill's months with a Fed move, netted: the New York Fed's discount rate `M13009USM156NNBR`
   before 1950, the discount rate `INTDSRUSM193N` to 1982-09-27, `DFEDTAR` to 2008-12-15, `DFEDTARU` since, each
   join a fresh walk so no move is made up at a seam) into alternating phases, and today's live move
@@ -624,17 +624,14 @@ emotion at the closing month, its years, and what followed a year later. Every l
   ±0.02) and gives each month that is not falling the top of its run; the cycle's opening months are skipped while
   they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak.
   The walk is over the whole record because a run crosses cycle edges.
-  Bands and the peak's dot are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and
-  non-scaling strokes, so the card is fluid; the bands sit in one rounded clip (`fp-clip`) so the plot's four
-  corners stay round. `monthPoints` averages the window into about `POINTS` buckets, `pinPeak` inserts the peak's
+  The rules, the turn lines (`turnsHtml`, one dashed line at each phase start inside the window) and the peak's strip
+  are HTML in one rounded clip (`fp-clip`) under an SVG drawn with `preserveAspectRatio="none"` and non-scaling
+  strokes, so the card is fluid and the plot's four corners stay round. `monthPoints` averages the window into about `POINTS` buckets, `pinPeak` inserts the peak's
   true reading at its month, and `soften` pins both ends to the window's edges and smooths once ([1,2,1]/4), so the
   curves run edge to edge and still pass through the Peak; `segments` joins the points with a monotone cubic whose
-  slope is zero at every turn, so no curve overshoots a reading. The Peak's strip, dot and bubble are HTML: the bubble
-  is placed by sampling both drawn curves and taking the first side whose box they miss; the test assumes the
-  narrowest plot (300px), because a box in px is a smaller share of a wider plot and so stays clear there too. The level
-  figures all sit at the plot's left edge, and one that would cross the top is left out. The 1Y · 5Y · Cycle bar is
+  slope is zero at every turn, so no curve overshoots a reading. The level figures all sit at the plot's left edge, and one that would cross the top is left out. The 1Y · 5Y · Cycle bar is
   the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`; the
-  figure is `fedFundsRange()` on the open cycle and the rate's last reading at a closed cycle's end. `rateSeries` is
+  figure is `fedFundsRange()` on the open cycle and the rate's last reading at a closed cycle's end, and the legend names the rate for the series it draws. `rateSeries` is
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
   1914 to 1954-06) before. The note under the legend is one explanation of the phases, the same on every cycle; the cycle's `rates`
   story, with `{peak}` and `{month}` filled from `cyclePeak`, is read in its AI Insights.

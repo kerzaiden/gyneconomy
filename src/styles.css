@@ -28,9 +28,7 @@
     --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
     --critical: #d0383b;
     --m2-deep: #4a0f0a;
-    --ff-blue: #4f6fb0;
-    --plot-wash: #f8ebe2; --skin-tan: #f1dccd; --ease-lilac: #e2cbf6;
-    --soft-panel: color-mix(in srgb, var(--seg-track) 55%, var(--surface));
+    --ff-blue: #4f6fb0; --peak-lilac: #e4c3e5;
     --ff-deep: #0b2340;
     --critical-ink: #a8292f;
     --critical-wash: color-mix(in srgb, var(--critical) 12%, var(--surface));
@@ -44,7 +42,7 @@
     --tm-coin-wash: color-mix(in srgb, var(--ylm-5y) 34%, var(--surface));
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
-    --seg-track: #efecec; --seg-on: #ffffff;
+    --seg-track: #f6f5f5; --seg-on: #ffffff;
     --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
     --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
     --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
@@ -80,8 +78,7 @@
       --phase-down-ink: var(--cold-ink);
       --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
       --critical: #f05a55; --m2-deep: #ffd2c8;
-      --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
-      --plot-wash: #3a2a27; --skin-tan: #45322d; --ease-lilac: #9b7bc0;
+      --ff-blue: #86a3e0; --ff-deep: #d7e8fb; --peak-lilac: #9d7aa3;
       --critical-ink: #f6897f;
       --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
       --bleed-mid: #f05a55;
@@ -94,7 +91,7 @@
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
-      --seg-track: #2b1d25; --seg-on: #4a3540;
+      --seg-track: #271921; --seg-on: #4a3540;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
@@ -144,13 +141,12 @@
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
-      --seg-track: #2b1d25; --seg-on: #4a3540;
+      --seg-track: #271921; --seg-on: #4a3540;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
       --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
-      --ff-blue: #86a3e0;
-      --plot-wash: #3a2a27; --skin-tan: #45322d; --ease-lilac: #9b7bc0;
+      --ff-blue: #86a3e0; --peak-lilac: #9d7aa3;
   }
 
   *{box-sizing:border-box;}
@@ -557,13 +553,10 @@
   .fp-fig{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-figure); line-height:1; letter-spacing:-0.01em; color:var(--text-primary); }
   .fp-fig small{ font-size:0.65em; margin-left:2px; }
   .fp .rangebar{ margin:22px 0 4px; }
-  .fp-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; background:var(--plot-wash); }
+  .fp-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; background:var(--surface-2); }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 12px); }
   .fp-clip{ position:absolute; inset:0; overflow:hidden; border-radius:12px; }
-  .fp-band{ position:absolute; top:0; bottom:0; overflow:hidden; background:var(--wash); }
   .fp-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:color-mix(in srgb, var(--grid) 70%, transparent); }
-  .fp-ease{ --wash:transparent; --key:var(--plot-wash); }
-  .fp-tight{ --wash:var(--skin-tan); --key:var(--skin-tan); }
   .fp-years{ position:relative; height:16px; margin-top:4px; }
   .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:var(--text-muted); }
   .fp-year.fp-end{ right:0; left:auto; margin:0; color:var(--text-primary); }
@@ -571,18 +564,16 @@
   .fp-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .fp-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
   .fp-line{ fill:none; stroke:var(--line); stroke-linecap:round; stroke-linejoin:round; }
   .fp-line.fp-rate{ stroke-width:1.6; opacity:0.85; } .fp-line.fp-prices{ stroke-width:2.4; }
-  .fp-strip{ position:absolute; top:0; bottom:0; width:14px; margin-left:-7px; border-radius:7px; background:linear-gradient(180deg, color-mix(in srgb, var(--ease-lilac) 95%, transparent), color-mix(in srgb, var(--ease-lilac) 45%, transparent)); }
-  .fp-peak-dot{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
-  .fp-peak-dot.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
+  .fp-turn{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed color-mix(in srgb, var(--text-muted) 35%, transparent); }
+  .fp-strip{ position:absolute; top:0; bottom:0; width:10px; margin-left:-5px; border-radius:2px; background:linear-gradient(180deg, var(--peak-lilac), color-mix(in srgb, var(--peak-lilac) 15%, transparent)); }
   .fp-tag{ position:absolute; height:22px; font-size:var(--type-meta); line-height:22px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
   .fp-level-tag{ line-height:28px; text-align:left; font-size:var(--type-label); opacity:0.6; }
-  .fp-peak-tag{ border-radius:var(--round); background:var(--surface); box-shadow:0 2px 8px rgba(124,40,68,0.14); color:var(--text-primary); }
   .fp-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin:10px 0 0; padding:7px 0; list-style:none; font-size:var(--type-meta); color:var(--text-muted); }
   .fp-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
   .fp-legend li::before{ content:""; flex:none; }
-  .fp-key-band::before{ width:9px; height:9px; border-radius:50%; background:var(--key); box-shadow:inset 0 0 0 1px var(--skin-tan); }
+  .fp-key-peak::before{ width:9px; height:9px; border-radius:50%; background:var(--peak-lilac); }
   .fp-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
-  .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--soft-panel); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
+  .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
@@ -711,7 +702,7 @@
   .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--round); padding:8px 10px; cursor:pointer; white-space:nowrap;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:500; color:var(--text-primary); }
   .range-seg.on{ background:var(--seg-on); color:var(--text-primary); font-weight:600; box-shadow:0 1px 3px rgba(124,40,68,0.10); }
-  .rangebar.thin{ min-height:0; justify-content:space-around; padding:5px 6px; background:var(--soft-panel); }
+  .rangebar.thin{ min-height:0; justify-content:space-around; padding:5px 6px; }
   .rangebar.thin .range-seg{ flex:0 0 24%; padding:3px 10px; font-weight:400; }
   .rangebar.thin .range-seg.on{ font-weight:500; box-shadow:none; }
   .range-seg:hover:not(.on){ color:var(--text-primary); }
@@ -914,7 +905,7 @@
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:color-mix(in srgb, var(--border) 40%, transparent); border-radius:var(--radius-inner); }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:var(--seg-track); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
   .lab-score b{ display:block; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-size:var(--type-section); font-weight:500; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }

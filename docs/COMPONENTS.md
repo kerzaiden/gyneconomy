@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `5068ea4` on 2026-10-09. **111 components**, **18 shared patterns**.
+Generated from commit `7845f6c` on 2026-10-09. **111 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -105,16 +105,16 @@ Generated from commit `5068ea4` on 2026-10-09. **111 components**, **18 shared p
 |---|---|---|
 | **`areaPath`** | `.fp-area` | `fed-phases.ts:plotSvg` |
 | **`axisMark`** | `.fp-end` | `fed-phases.ts:axisTicks`, `fed-phases.ts:yearsHtml` |
-| **`bandsHtml`** | `.fp-band` `.fp-clip` | `fed-phases.ts:plotHtml` |
 | **`fillDefs`** | `.fp-fill-low` `.fp-fill-top` | `fed-phases.ts:plotSvg` |
-| **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:fedPhasesCard` |
-| **`heroHtml`** | `.fp-fig` `.fp-hero` | `fed-phases.ts:fedPhasesCard` |
-| **`legendHtml`** | `.fp-legend` | `fed-phases.ts:fedPhasesCard` |
+| **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:ratesCard` |
+| **`heroHtml`** | `.fp-fig` `.fp-hero` | `fed-phases.ts:ratesCard` |
+| **`legendHtml`** | `.fp-legend` | `fed-phases.ts:ratesCard` |
 | **`lineSvg`** | `.fp-line` | `fed-phases.ts:plotSvg` |
-| **`plotHtml`** | `.fp-plot` `.fp-years` | `fed-phases.ts:fedPhasesCard` |
-| **`plotSvg`** | `.fp-strip` | `fed-phases.ts:plotHtml` |
+| **`plotHtml`** | `.fp-clip` `.fp-plot` `.fp-years` | `fed-phases.ts:ratesCard` |
 | **`rulesHtml`** | `.fp-rule` | `fed-phases.ts:plotHtml` |
-| **`tagSpan`** | `.fp-tag` | `fed-phases.ts:levelTags`, `fed-phases.ts:tagHtml` |
+| **`stripHtml`** | `.fp-strip` | `fed-phases.ts:plotHtml` |
+| **`tagSpan`** | `.fp-tag` | `fed-phases.ts:levelTags` |
+| **`turnsHtml`** | `.fp-turn` | `fed-phases.ts:plotHtml` |
 
 ## format.ts
 
@@ -312,6 +312,7 @@ renderer speaks. Listed most-used first.
 | **`potentialGap`** | model.ts | 3 places |
 | **`quartile`** | format.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
+| **`rateSeries`** | fed-phases.ts | 3 places |
 | **`readingFor`** | reading.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
