@@ -32,7 +32,7 @@ function yearByYear(m: CycleModel){
 }
 var PREVIEW_YEARS = 3;
 function yearsMore(more: boolean){
-  return '<button type="button" class="cyc-more dx-years-more" aria-expanded="false"' + (more ? "" : " hidden") + '><span>View more</span>' + CHEV + '</button>';
+  return '<button type="button" class="dx-years-more" aria-expanded="false"' + (more ? "" : " hidden") + '><span>View more</span></button>';
 }
 function wireYearsMore(host: HTMLElement){
   var btn = host.querySelector<HTMLElement>(".dx-years-more");

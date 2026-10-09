@@ -589,9 +589,6 @@
   .dx-year-foot{ grid-column:2 / 4; margin-top:6px; }
   .dx-year-lead .strip{ margin:0; }
   .dx-year[hidden]{ display:none; }
-  .dx-years-more{ padding:13px 0 0; }
-  .dx-years-more:hover{ background:transparent; }
-  .dx-years-more[hidden]{ display:none; }
   .trend-card{ display:block; width:100%; box-sizing:border-box; margin:0; padding:14px 16px 12px; text-align:left; cursor:pointer;
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); font-family:"Public Sans",sans-serif;
     -webkit-tap-highlight-color:transparent; }
@@ -854,17 +851,19 @@
   .mood-arrow{ fill:none; stroke:#a7a8ab; stroke-width:3; }
 
   @media (max-width:400px){ .rangebar{ flex-wrap:wrap; } .rangebar .range-seg{ flex:1 1 auto; } }
-  .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
+  .more-row, .dx-years-more{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
     border:1px solid var(--border); background:var(--surface); border-radius:var(--round);
     padding:12px 22px; min-height:var(--btn-h); box-sizing:border-box; margin-top:var(--gap);
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:700;
     color:var(--accent-ink); }
   .hi-card + .more-row, .aux-stat + .more-row{ margin-top:12px; }
   .metric-sheet .highlights .more-row{ margin-bottom:7px; }
-  .more-row:hover{ border-color:var(--border-strong); }
-  .more-row:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--round); }
+  .more-row:hover, .dx-years-more:hover{ border-color:var(--border-strong); }
+  .more-row:focus-visible, .dx-years-more:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--round); }
   .more-row .peek-chev{ color:inherit; opacity:0.9; }
   .more-row .peek-chev svg{ width:8px; height:13px; stroke-width:1.9; }
+  .dx-years-more{ display:inline-flex; width:auto; margin-top:6px; }
+  .dx-years-more[hidden]{ display:none; }
 
 
   #metric-page{ max-width:880px; margin:0 auto; width:100%;
