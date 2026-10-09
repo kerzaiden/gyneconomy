@@ -1580,13 +1580,13 @@ settles it; none is open after V668.
   the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates Environment card is a feel, not a measure: two curves, the Fed's rate (blue) and prices
-  (orange), over the Tightening and Easing bands, with no figures and no growth; the one guide is a dotted zero line labelled 0%, so the eye can tell how far above
+  (orange), over the Tightening and Easing bands, with no figures and no growth; the one guide is a dotted zero line with a small, faint 0%, so the eye can tell how far above
   or below zero each curve sits.** It shows the
   environment at a glance, the way her tracker shows hormones; growth is the other half of the season and the dial
   already shows it. The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason
   here. The peak is an orange dot on the prices curve (hollow on the open cycle), labelled Peak beside it in the
   legend's type, on whichever side keeps clear of both curves; the label left the legend so the legend fits one line
-  on most phones. Under the years, one legend at the years' size, framed in a rounded border and set left with
+  on most phones. Under the years, one legend at the years' size, on a light gray panel and set left with
   tight gaps: Tightening, Easing, Rates, Prices. Under it, each cycle's rates story in a sentence or two (`rates` in `marketCycles`), so readers know what
   went on; its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's

@@ -94,7 +94,7 @@ function peakTag(segs: number[][][], px: number, py: number){
   return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side){ return sideTag(px / VIEW_W, py / VIEW_H, 30, side); }), segs);
 }
 function zeroTag(segs: number[][][], zy: number){
-  var ay = zy / VIEW_H, w = 22;
+  var ay = zy / VIEW_H, w = 18;
   return tagHtml("fp-zero-tag", "0%", [[0, 1, -1], [1, -1, -1], [0, 1, 1], [1, -1, 1]].map(function(c){ return sideTag(c[0], ay, w, [c[1], c[2]]); }), segs);
 }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
