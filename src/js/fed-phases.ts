@@ -2,7 +2,7 @@ import { discountHistory, fedFundsHistory, fedMoves } from "./history-fred.ts";
 import { now } from "./data.ts";
 import { inflationHistory } from "./refresh-season.ts";
 import { cpiDirectionAt } from "./model.ts";
-import { isoDay, monthLabel } from "./format.ts";
+import { CHEV, isoDay, monthLabel } from "./format.ts";
 import { orbitSvg } from "./marks.ts";
 import { dxHead, dxSys } from "./render-core.ts";
 import { ROSTER_BY } from "./roster.ts";
@@ -88,12 +88,13 @@ function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFun
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }
 function legendHtml(m: CycleModel, toM: string, peak: boolean){
   return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") +
-    key("fp-key-line fp-rate", "Rate") + key("fp-key-line fp-prices", "Prices") +
-    (peak ? key("fp-key-peak" + (m.ongoing ? " fp-open" : ""), "Peak") : "") + '</ul>';
+    key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") +
+    (peak ? key("fp-key-peak" + (m.ongoing ? " fp-open" : ""), m.ongoing ? "Peak (so far)" : "Peak") : "") + '</ul>';
 }
 function footnoteHtml(m: CycleModel, peak: MonthPoint | null){
   var text = m.era.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", "\u00a0") : "");
-  return '<p class="fp-note">' + text + '</p>';
+  var rate = ROSTER_BY["sheet-sign-hormones"];
+  return '<p class="fp-note">' + text + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '">Learn more' + CHEV + '</button></p>';
 }
 function endMonthOf(m: CycleModel){
   if (!m.ongoing) return m.endMonth;
@@ -108,6 +109,5 @@ function fedPhasesCard(m: CycleModel){
   return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml(m, toM, !!top) + footnoteHtml(m, peak);
 }
 export function fedEnvironment(m: CycleModel){
-  var rate = ROSTER_BY["sheet-sign-hormones"];
-  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment", ' data-open="' + rate.id + '" data-title="' + rate.name + '"') + fedPhasesCard(m));
+  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
 }

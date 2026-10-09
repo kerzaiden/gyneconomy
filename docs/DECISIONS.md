@@ -303,8 +303,10 @@ settles it; none is open after V668.
   indicator, Federal debt and Federal budget each have their own; the two Treasury spreads
   (10Y − 3M, 10Y − 2Y) stay one page, which Keren saw no need to split, and the US 10-year Treasury stays one card
   with its maturity picker. (V254, V658)
-- **The Interest Rates Environment head is a door to the Federal funds rate page, with a chevron, wherever it stands:**
-  Current Cycle, every past cycle and Analysis. (0.9.1)
+- **The door from Interest Rates Environment to the Federal funds rate page is "Learn more" with a chevron, at the end
+  of the cycle's rates story, wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading the
+  story is what makes one want to learn more, so the door sits where the reading ends, not on the head. (0.9.1, Two
+  Hormones)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -1582,8 +1584,8 @@ settles it; none is open after V668.
   environment at a glance, the way her tracker shows hormones; growth is the other half of the season and the dial
   already shows it. The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason
   here. The peak is an orange dot on the prices curve (hollow on the open cycle), with no label or line, since the
-  legend names it. Under the years, one legend on one line at the years' size: Tightening, Easing, Rate, Prices,
-  Peak. Under it, each cycle's rates story in a sentence or two (`rates` in `marketCycles`), so readers know what
+  legend names it. Under the years, one legend at the years' size, set left with even gaps: Tightening, Easing,
+  Rates, Prices, Peak ("Peak (so far)" on the open cycle). Under it, each cycle's rates story in a sentence or two (`rates` in `marketCycles`), so readers know what
   went on; its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
   discount rate; the phases follow the rate alone, so a tightening made another way (the doubling of reserve

@@ -558,7 +558,7 @@
   .fp-line{ fill:none; stroke:var(--line); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.9; }
   .fp-peak-dot{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
   .fp-peak-dot.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
-  .fp-legend{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px 8px; margin:12px 0 0; padding:10px 0 0; list-style:none; border-top:1px solid var(--border); font-size:var(--type-label); color:var(--text-secondary); }
+  .fp-legend{ display:flex; flex-wrap:wrap; gap:6px 12px; margin:12px 0 0; padding:10px 0 0; list-style:none; border-top:1px solid var(--border); font-size:var(--type-label); color:var(--text-secondary); }
   .fp-legend li{ display:flex; align-items:center; gap:5px; white-space:nowrap; }
   .fp-legend li::before{ content:""; flex:none; }
   .fp-key-band::before{ width:11px; height:11px; border-radius:3px; background:var(--wash); }
@@ -566,6 +566,7 @@
   .fp-key-peak::before{ width:8px; height:8px; border-radius:50%; background:var(--season-summer); }
   .fp-key-peak.fp-open::before{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer); }
   .fp-note{ margin:12px 0 0; font-size:var(--type-meta); line-height:1.5; color:var(--text-secondary); }
+  .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
