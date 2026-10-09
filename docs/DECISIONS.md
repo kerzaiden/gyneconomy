@@ -1602,7 +1602,8 @@ settles it; none is open after V668.
   Go-Stop Cycle's is Nov 1969 (5.9%), at its close. The inherited decline is skipped because a cycle's opening
   months are often the tail of the last one's peak (the AI Cycle's highest month is Jan 2023, 6.3%, still
   falling from June 2022); "inherited" uses the season model's own price trend: months falling, or in a rise that
-  topped before the cycle began. This is Claude's reading of her rule. The open cycle's is its peak so far,
+  began before the cycle did, wherever it tops (the Baby Boom Cycle's is the Korean War's Apr 1951, not the
+  post-war surge it opened in, Mar 1947; Keren, Rates Type). This is Claude's reading of her rule. The open cycle's is its peak so far,
   hollow; every cycle names its peak on its own level line. It replaced the turning-point rule of 0.6.7, under
   which a peak counted only once prices turned down. (0.6.17)
 - **The Diagnosis reads the patient from all of the app's readings (weather, mood, circulation, energy) and

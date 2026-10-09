@@ -42456,7 +42456,7 @@
     name: "Baby Boom Cycle",
     story: "Soldiers came home and started families in record numbers, while Marshall Plan exports and then the Korean War kept the factories busy. Mrs. Market climbed out of the postwar slump into a steady Optimism that held for six years, until the war’s end and the 1953 recession brought her first Anxiety.",
     blurb: "The baby boom begins: new households, years of pent-up demand, Marshall Plan exports and then the Korean War. It ends in 1953, the year the war ended and military spending was cut.",
-    rates: "Inflation hit {peak} in {month} while the Fed still held rates down for the Treasury, until the 1951 Accord set it free."
+    rates: "The Fed held rates down for the Treasury while the post-war surge burned out; then Korean War buying sent inflation to {peak} in {month}, just as the 1951 Accord set the Fed free."
   }, {
     from: 1954,
     to: 1957,
@@ -47849,27 +47849,22 @@
     if (day && move && day.slice(0, 7) > last) add(day.slice(0, 7), move);
     return out;
   }
-  function topOf(run) {
-    return run.reduce(function(a, b) {
-      return b.v > a.v ? b : a;
-    }).m;
-  }
   var runsCache = null;
-  function runTops() {
+  function runStarts() {
     var last = inflationHistory[inflationHistory.length - 1], key2 = inflationHistory.length + ":" + (last ? last.m + last.v : "");
     if (!runsCache || runsCache.key !== key2) runsCache = {
       key: key2,
-      tops: findRuns()
+      starts: findRuns()
     };
-    return runsCache.tops;
+    return runsCache.starts;
   }
   function findRuns() {
-    var run = [], tops = {};
+    var run = [], starts = {};
     function close() {
       if (run.length) {
-        var top = topOf(run);
+        var first = run[0].m;
         run.forEach(function(c) {
-          tops[c.m] = top;
+          starts[c.m] = first;
         });
       }
       run = [];
@@ -47878,13 +47873,13 @@
       if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c);
     });
     close();
-    return tops;
+    return starts;
   }
   function cyclePeak(from, to) {
-    var tops = runTops(), months = inflationHistory.filter(function(c) {
+    var starts = runStarts(), months = inflationHistory.filter(function(c) {
       return c.m >= from && c.m <= to;
     }), k = 0;
-    while (k < months.length - 1 && !(tops[months[k].m] >= from)) k++;
+    while (k < months.length - 1 && !(starts[months[k].m] >= from)) k++;
     return months.slice(k).reduce(function(a, b) {
       return !a || b.v > a.v ? b : a;
     }, null);

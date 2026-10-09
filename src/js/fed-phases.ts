@@ -22,23 +22,22 @@ export function fedPhases(){
   if (day && move && day.slice(0, 7) > last) add(day.slice(0, 7), move);
   return out;
 }
-function topOf(run: MonthPoint[]){ return run.reduce(function(a, b){ return b.v > a.v ? b : a; }).m; }
-var runsCache: { key: string; tops: Record<string, string> } | null = null;
-function runTops(){
+var runsCache: { key: string; starts: Record<string, string> } | null = null;
+function runStarts(){
   var last = inflationHistory[inflationHistory.length - 1], key = inflationHistory.length + ":" + (last ? last.m + last.v : "");
-  if (!runsCache || runsCache.key !== key) runsCache = { key: key, tops: findRuns() };
-  return runsCache.tops;
+  if (!runsCache || runsCache.key !== key) runsCache = { key: key, starts: findRuns() };
+  return runsCache.starts;
 }
 function findRuns(){
-  var run: MonthPoint[] = [], tops: Record<string, string> = {};
-  function close(){ if (run.length){ var top = topOf(run); run.forEach(function(c){ tops[c.m] = top; }); } run = []; }
+  var run: MonthPoint[] = [], starts: Record<string, string> = {};
+  function close(){ if (run.length){ var first = run[0].m; run.forEach(function(c){ starts[c.m] = first; }); } run = []; }
   inflationHistory.forEach(function(c){ if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c); });
   close();
-  return tops;
+  return starts;
 }
 export function cyclePeak(from: string, to: string){
-  var tops = runTops(), months = inflationHistory.filter(function(c){ return c.m >= from && c.m <= to; }), k = 0;
-  while (k < months.length - 1 && !(tops[months[k].m] >= from)) k++;
+  var starts = runStarts(), months = inflationHistory.filter(function(c){ return c.m >= from && c.m <= to; }), k = 0;
+  while (k < months.length - 1 && !(starts[months[k].m] >= from)) k++;
   return months.slice(k).reduce(function(a: MonthPoint | null, b){ return !a || b.v > a.v ? b : a; }, null);
 }
 

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,881 lines** in 41 files, about 607 KB, roughly **172 thousand tokens**. No session can
+The source is **8,880 lines** in 41 files, about 607 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `98547c8` on 2026-10-09.
+Generated from commit `2e4dc06` on 2026-10-09.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `98547c8` on 2026-10-09.
 | `js/main.ts` | 37 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **37** modules, **774** top-level functions, **122** top-level vars, **371** exported names, **20** boots.
+Counts: **37** modules, **773** top-level functions, **122** top-level vars, **371** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -53,7 +53,7 @@ Counts: **37** modules, **774** top-level functions, **122** top-level vars, **3
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 490 | 136 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `live`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/era.ts` | 16 | 2 | `reading` |
-| `js/fed-phases.ts` | 184 | 38 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/fed-phases.ts` | 183 | 37 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
 | `js/history-charts.ts` | 316 | 11 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 30 | 14 | — |
@@ -1091,47 +1091,46 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 15 | `monthIdx` | `function monthIdx(` |
 | 16 | `fedPhases` · export | `function fedPhases(` |
-| 25 | `topOf` | `function topOf(` |
-| 27 | `runTops` | `function runTops(` |
-| 32 | `findRuns` | `function findRuns(` |
-| 39 | `cyclePeak` · export | `function cyclePeak(` |
+| 26 | `runStarts` | `function runStarts(` |
+| 31 | `findRuns` | `function findRuns(` |
+| 38 | `cyclePeak` · export | `function cyclePeak(` |
 
 #### The phases chart
 
 | Line | Name | Anchor |
 |---|---|---|
-| 46 | `VIEW_W` | `var VIEW_W =` |
-| 47 | `monthPoints` | `function monthPoints(` |
-| 54 | `segments` | `function segments(` |
-| 62 | `curve` | `function curve(` |
-| 66 | `sample` | `function sample(` |
-| 76 | `TAG` | `var TAG =` |
-| 77 | `TAG_SIDES` | `var TAG_SIDES =` |
-| 79 | `sideTag` | `function sideTag(` |
-| 83 | `tagHits` | `function tagHits(` |
-| 88 | `curvePts` | `function curvePts(` |
-| 91 | `tagHtml` | `function tagHtml(` |
-| 95 | `tagSpan` | `function tagSpan(` |
-| 98 | `peakTag` | `function peakTag(` |
-| 101 | `peakZone` | `function peakZone(` |
-| 106 | `levelTags` | `function levelTags(` |
-| 115 | `pct` | `function pct(` |
-| 116 | `GRID_STEPS` | `var GRID_STEPS =` |
-| 118 | `levelScale` | `function levelScale(` |
-| 124 | `ruleLevels` | `function ruleLevels(` |
-| 129 | `rulesHtml` | `function rulesHtml(` |
-| 134 | `bandSpans` | `function bandSpans(` |
-| 142 | `bandsHtml` | `function bandsHtml(` |
-| 145 | `stanceClass` | `function stanceClass(` |
-| 146 | `yearsHtml` | `function yearsHtml(` |
-| 151 | `plotSvg` | `function plotSvg(` |
-| 158 | `rateSeries` | `function rateSeries(` |
-| 159 | `key` | `function key(` |
-| 160 | `legendHtml` | `function legendHtml(` |
-| 164 | `footnoteHtml` | `function footnoteHtml(` |
-| 169 | `endMonthOf` | `function endMonthOf(` |
-| 174 | `fedPhasesCard` | `function fedPhasesCard(` |
-| 181 | `fedEnvironment` · export | `function fedEnvironment(` |
+| 45 | `VIEW_W` | `var VIEW_W =` |
+| 46 | `monthPoints` | `function monthPoints(` |
+| 53 | `segments` | `function segments(` |
+| 61 | `curve` | `function curve(` |
+| 65 | `sample` | `function sample(` |
+| 75 | `TAG` | `var TAG =` |
+| 76 | `TAG_SIDES` | `var TAG_SIDES =` |
+| 78 | `sideTag` | `function sideTag(` |
+| 82 | `tagHits` | `function tagHits(` |
+| 87 | `curvePts` | `function curvePts(` |
+| 90 | `tagHtml` | `function tagHtml(` |
+| 94 | `tagSpan` | `function tagSpan(` |
+| 97 | `peakTag` | `function peakTag(` |
+| 100 | `peakZone` | `function peakZone(` |
+| 105 | `levelTags` | `function levelTags(` |
+| 114 | `pct` | `function pct(` |
+| 115 | `GRID_STEPS` | `var GRID_STEPS =` |
+| 117 | `levelScale` | `function levelScale(` |
+| 123 | `ruleLevels` | `function ruleLevels(` |
+| 128 | `rulesHtml` | `function rulesHtml(` |
+| 133 | `bandSpans` | `function bandSpans(` |
+| 141 | `bandsHtml` | `function bandsHtml(` |
+| 144 | `stanceClass` | `function stanceClass(` |
+| 145 | `yearsHtml` | `function yearsHtml(` |
+| 150 | `plotSvg` | `function plotSvg(` |
+| 157 | `rateSeries` | `function rateSeries(` |
+| 158 | `key` | `function key(` |
+| 159 | `legendHtml` | `function legendHtml(` |
+| 163 | `footnoteHtml` | `function footnoteHtml(` |
+| 168 | `endMonthOf` | `function endMonthOf(` |
+| 173 | `fedPhasesCard` | `function fedPhasesCard(` |
+| 180 | `fedEnvironment` · export | `function fedEnvironment(` |
 
 ### `js/format.ts`
 
