@@ -545,7 +545,7 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp-prices{ --line:var(--season-summer); --fill:0.32; } .fp-rate{ --line:var(--gold); --fill:0.45; } .fp-pivot, .fp-strip{ --line:var(--accent-ink); }
+  .fp-prices{ --line:var(--season-summer); --fill:0.32; } .fp-rate{ --line:var(--gold); --fill:0.45; } .fp-turn, .fp-key-turn{ --turn:color-mix(in srgb, var(--text-muted) 55%, transparent); }
   .fp .rangebar{ margin:14px 0 4px; }
   .fp-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; background:var(--surface-2); }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 12px); }
@@ -558,12 +558,13 @@
   .fp-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .fp-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
   .fp-line{ fill:none; stroke:var(--line); stroke-linecap:round; stroke-linejoin:round; }
   .fp-line.fp-rate{ stroke-width:1.6; opacity:0.85; } .fp-line.fp-prices{ stroke-width:2.4; }
-  .fp-strip{ position:absolute; top:0; bottom:0; width:10px; margin-left:-5px; border-radius:2px; background:linear-gradient(180deg, var(--line), color-mix(in srgb, var(--line) 40%, transparent) 50%, transparent); }
+  .fp-turn{ position:absolute; top:0; bottom:0; width:1px; margin-left:-0.5px; background:repeating-linear-gradient(180deg, var(--turn) 0 3px, transparent 3px 9px); }
   .fp-tag{ position:absolute; height:22px; font-size:var(--type-meta); line-height:22px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
   .fp-level-tag{ line-height:28px; text-align:left; font-size:var(--type-label); opacity:0.6; }
   .fp-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin:10px 0 0; padding:7px 0; list-style:none; font-size:var(--type-meta); color:var(--text-muted); }
   .fp-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
   .fp-legend li::before{ content:""; flex:none; }
+  .fp-key-turn::before{ width:14px; height:2px; background:repeating-linear-gradient(90deg, var(--turn) 0 3px, transparent 3px 6px); }
   .fp-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
   .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
@@ -48169,13 +48170,16 @@
     });
     return moves;
   }
-  function fedPivot(from, to) {
-    var moves = movesToDate(), pivot = "";
-    moves.forEach(function(d, k) {
-      var next = moves[k + 1];
-      if (d.v > 0 && next && next.v < 0 && d.m >= from && d.m <= to) pivot = d.m;
+  function fedPhases() {
+    var out = [];
+    movesToDate().forEach(function(d) {
+      var s = d.v > 0 ? 1 : -1;
+      if (!out.length || out[out.length - 1].s !== s) out.push({
+        m: d.m,
+        s: s
+      });
     });
-    return pivot;
+    return out;
   }
   var runsCache = null;
   function runStarts() {
@@ -48349,8 +48353,14 @@
     var paths = fillDefs() + areaPath(segs[1], "fp-rate") + areaPath(segs[0], "fp-prices") + lineSvg(segs[1], "fp-rate") + lineSvg(segs[0], "fp-prices");
     return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(sc);
   }
-  function stripHtml(at, from, to) {
-    return at < 0 ? "" : '<span class="fp-strip" style="left:' + pct((at - from) / Math.max(to - from, 1)) + '"></span>';
+  function turnsHtml(from, to) {
+    return fedPhases().map(function(p) {
+      return monthIdx(p.m);
+    }).filter(function(i) {
+      return i > from && i < to;
+    }).map(function(i) {
+      return '<i class="fp-turn" style="left:' + pct((i - from) / (to - from)) + '"></i>';
+    }).join("");
   }
   function rateSeries(toM) {
     return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
@@ -48359,7 +48369,7 @@
     return '<li class="' + cls + '">' + name + "</li>";
   }
   function legendHtml(toM) {
-    return '<ul class="fp-legend">' + key("fp-key-line fp-rate", rateSeries(toM) === discountHistory ? "Discount rates" : "Interest rates") + key("fp-key-line fp-prices", "Prices") + key("fp-key-line fp-pivot", "Fed pivot") + "</ul>";
+    return '<ul class="fp-legend">' + key("fp-key-line fp-rate", rateSeries(toM) === discountHistory ? "Discount rates" : "Interest rates") + key("fp-key-line fp-prices", "Prices") + key("fp-key-turn", "Fed shift") + "</ul>";
   }
   var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
   function footnoteHtml(m) {
@@ -48381,12 +48391,11 @@
   }
   function ratesCard(m, host, range) {
     var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
-    var pivot = fedPivot(m.era.from + "-01", toM), at = pivot ? monthIdx(pivot) : -1, top = pivot && at >= from ? at : -1;
     var lines = [ monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to) ];
-    return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, top, m) + legendHtml(toM) + footnoteHtml(m);
+    return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, m) + legendHtml(toM) + footnoteHtml(m);
   }
-  function plotHtml(lines, from, to, top, m) {
-    return '<div class="fp-plot"><span class="fp-clip">' + rulesHtml(levelScale(lines)) + stripHtml(top, from, to) + "</span>" + plotSvg(lines, from, to) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + "</div>";
+  function plotHtml(lines, from, to, m) {
+    return '<div class="fp-plot"><span class="fp-clip">' + rulesHtml(levelScale(lines)) + turnsHtml(from, to) + "</span>" + plotSvg(lines, from, to) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + "</div>";
   }
   function fedEnvironment(m, host, range) {
     return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m, host, range));

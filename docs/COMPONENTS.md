@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `72eb3f6` on 2026-10-09. **109 components**, **18 shared patterns**.
+Generated from commit `acec2a8` on 2026-10-09. **109 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -111,8 +111,8 @@ Generated from commit `72eb3f6` on 2026-10-09. **109 components**, **18 shared p
 | **`lineSvg`** | `.fp-line` | `fed-phases.ts:plotSvg` |
 | **`plotHtml`** | `.fp-clip` `.fp-plot` `.fp-years` | `fed-phases.ts:ratesCard` |
 | **`rulesHtml`** | `.fp-rule` | `fed-phases.ts:plotHtml` |
-| **`stripHtml`** | `.fp-strip` | `fed-phases.ts:plotHtml` |
 | **`tagSpan`** | `.fp-tag` | `fed-phases.ts:levelTags` |
+| **`turnsHtml`** | `.fp-turn` | `fed-phases.ts:plotHtml` |
 
 ## format.ts
 
@@ -303,6 +303,7 @@ renderer speaks. Listed most-used first.
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
+| **`monthIdx`** | fed-phases.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |

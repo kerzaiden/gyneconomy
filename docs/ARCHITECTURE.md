@@ -614,17 +614,18 @@ of the open cycle's Herstory row, a width only the page knows, so they sit exact
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
-- **Interest Rates** (0.6.7, `fed-phases`): the card, for today and any closed cycle. `fedPivot` is the strip: the
-  last month in the cycle whose Fed move is a hike and whose next move is a cut, read from `fedMoves` (the Backfill's
+- **Interest Rates** (0.6.7, `fed-phases`): the card, for today and any closed cycle. `fedPhases` turns
+  `fedMoves` (the Backfill's
   months with a Fed move, netted: the New York Fed's discount rate `M13009USM156NNBR` before 1950, the discount rate
   `INTDSRUSM193N` to 1982-09-27, `DFEDTAR` to 2008-12-15, `DFEDTARU` since, each join a fresh walk so no move is
-  made up at a seam) plus today's live move (`now.fedFunds.lastMove` on `asOf`) when it is newer. `cyclePeak` marks every cycle's peak, its highest CPI
+  made up at a seam), with today's live move (`now.fedFunds.lastMove` on `asOf`) when it is newer, into alternating
+  phases; `turnsHtml` draws a dashed line at each phase start inside the window. `cyclePeak` marks every cycle's peak, its highest CPI
   reading once the decline it inherited from the cycle before has passed. `findRuns` walks the whole record once
   (cached on the history's length and last value) with `cpiDirectionAt` (the season model's own 12-month trend,
   ±0.02) and gives each month that is not falling the top of its run; the cycle's opening months are skipped while
   they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak.
   The walk is over the whole record because a run crosses cycle edges.
-  The rules and the pivot's strip
+  The rules and the turn lines
   are HTML in one rounded clip (`fp-clip`) under an SVG drawn with `preserveAspectRatio="none"` and non-scaling
   strokes, so the card is fluid and the plot's four corners stay round. `monthPoints` samples the window at `POINTS` + 1 even steps from its first month to its last,
   each a Gaussian-weighted mean of the months around it (σ = the window over `WAVE`, at least a month), reading

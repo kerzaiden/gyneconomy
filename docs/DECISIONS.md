@@ -1592,7 +1592,7 @@ settles it; none is open after V668.
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates card is a feel, not a measure, dressed as her Clair hormone chart: the Fed's rate as a
   soft yellow area behind and prices as an orange line with a translucent fill in front, on one light ground
-  (`--surface-2`), and a narrow plum strip at the Fed pivot; above it, only a thin 1Y · 5Y · Cycle bar, with the same space above it as below. The large figure of today's
+  (`--surface-2`), and a faint, airy dashed line at each Fed shift; above it, only a thin 1Y · 5Y · Cycle bar, with the same space above it as below. The large figure of today's
   target range that once sat above the bar was removed: it did not say what it was (Keren, Oct 9, 2026).
   The curves are drawn as waves: each month and its neighbours smoothed together (a Gaussian a tenth of the
   window wide, never reading past the window's end), sampled at sixty-one even steps and joined edge to edge of the
@@ -1603,21 +1603,21 @@ settles it; none is open after V668.
   at the plot's left edge. The type matches Cycle Statistics: the story at reading size, the legend and axis at
   meta size.** It shows the environment at a glance, the way Clair shows hormones: the rates are the backdrop the
   market lives in and prices act in front of them, so the trend and the two lines' relation matter more than exact
-  values (Keren, Oct 9, 2026). The phases were shaded as two grounds at first, then marked by a dashed line at each
-  turn, and both gave way: the rate's own slope already shows tightening and easing, and the lines added little. No phase line sits under the chart, since "easing since" misread a cycle the Fed reversed
+  values (Keren, Oct 9, 2026). The phases were shaded as two grounds at first and gave way to the dashed lines: the
+  rate's own slope already shows tightening and easing, so a second layer only crowded the chart. The lines left
+  once and came back: a single strip at the cycle's last hike before cuts told Keren nothing she could see in the
+  chart, while a line at every turn lets her read the Fed's moves against prices herself (Oct 9, 2026). No phase line sits under the chart, since "easing since" misread a cycle the Fed reversed
   more than once. Growth is the other half of the season and the dial already shows it; the
-  cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. The strip
-  marks the cycle's tipping point, the Fed pivot: the Fed's last hike before it began cutting, the latest such turn
-  in the cycle (Keren chose it over the price peak and the season model's turn, Oct 9, 2026; "pivot" is the
-  market's own word). The moves are the New York Fed's discount rate before 1950 (NBER Macrohistory, the Fed's main
+  cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. A Fed
+  shift is a change in the direction of the Fed's last move (Jensen, Mercer & Johnson, 1996), so a pause stays on
+  its side; an "on hold" state would need a cut-off nobody has published. The legend says Fed shift (Keren's word;
+  Pivot read as unclear, and Shift alone would too). The moves are the New York Fed's discount rate before 1950 (NBER Macrohistory, the Fed's main
   lever in the 1920s and 1930s), the discount rate to September 1982 and the target since, with today's live move
-  after the last Backfill. A cycle in which the Fed never turned from hiking to cutting (the late 1930s, the war,
-  1975–77, 2019–22) shows no strip rather than a made-up one. The strip is like Clair's LH strip: narrow,
-  near-square, in the plum of the app's titles (`--accent-ink`; the lavender was outside the app's language and
-  Keren wanted no new colour), fading to clear by its foot so the gradient reads on so dark a colour, with no dot or label, and it shows only when the window holds it.
-  It marked the inflation peak before; the peak stays in the cycle's rates story. The axis ends in Today, or the close's month, so no Current pill or end dot
+  after the last Backfill. The chart marks no peak: a strip stood at
+  the inflation peak and then at the Fed's last hike before cuts, and both gave way to the lines; the peak stays in the cycle's rates
+  story. The axis ends in Today, or the close's month, so no Current pill or end dot
   is needed. Under the axis, one centred grey legend on one line: Interest rates (Discount rates before the federal
-  funds rate), Prices, Fed pivot (not Pivot alone, which did not read on its own), each key a short coloured line. Under it, one explanation of tightening and easing on the app's one grey, the same on every
+  funds rate), Prices, Fed shift, each key a short line in its own colour and the shift's dashed like the lines it names. Under it, one explanation of tightening and easing on the app's one grey, the same on every
   cycle. Each cycle's rates story, one or two short lines on what the
   rates did (`rates` in `marketCycles`), is the Interest Rates container in that cycle's AI Insights, after its
   narrative: the card teaches the pattern and AI Insights tells the cycle, beside the rest of the cycle's reading,

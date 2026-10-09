@@ -6,7 +6,7 @@ import { potentialYoYHistory } from '../../src/js/history-fred.ts';
 import { marketCycles } from '../../src/js/data.ts';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
 import { seasonStripHtml } from '../../src/js/dial-cycle.ts';
-import { cyclePeak, fedPivot } from '../../src/js/fed-phases.ts';
+import { cyclePeak, fedPhases } from '../../src/js/fed-phases.ts';
 
 const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 'winter'];
 const STAGES = ['Despair', 'Depression', 'Hope', 'Optimism', 'Excitement', 'Thrill', 'Euphoria', 'Panic', 'Desperation', 'Fear', 'Denial', 'Anxiety'];
@@ -107,8 +107,10 @@ test('every cycle has a peak: its highest price reading once the decline it inhe
   assert.deepEqual(cyclePeak('1991-01', '2002-12'), { m: '1996-12', v: 3.38 });
 });
 
-test('a cycle\'s pivot is the Fed\'s last hike before it began cutting, and a cycle that never turned has none', () => {
-  assert.deepEqual([fedPivot('2023-01', '2026-12'), fedPivot('1991-01', '2002-12'), fedPivot('2003-01', '2008-12'), fedPivot('2019-01', '2022-12')], ['2023-07', '2000-05', '2006-06', '']);
+test('the Fed\'s phases alternate, and today\'s move sets the open phase', () => {
+  const p = fedPhases();
+  p.slice(1).forEach((x, i) => assert.notEqual(x.s, p[i].s, x.m));
+  assert.deepEqual(p[p.length - 1], { m: '2026-09', s: 1 });
 });
 
 test('potential is the 1929–48 peak trend before CBO and CBO\'s last quarter after it, as the decisions say', () => {
@@ -129,7 +131,7 @@ test('a reading past the band never prints as the band\'s edge', () => {
   assert.deepEqual([3.04, 2.96, 3.4, 0.96, 1.04, -0.04, -1.26].map(inflationFigure), ['3.04', '3.0', '3.4', '0.96', '1.0', '0.0', '\u22121.3']);
 });
 
-test('every cycle explains the phases under the chart and tells its rates story with its peak month read from the record, the pivot a strip where the cycle has one, the levels labelled and the rate named for its series', async () => {
+test('every cycle explains the phases under the chart and tells its rates story with its peak month read from the record, a dashed line at each Fed turn, no strip, the levels labelled and the rate named for its series', async () => {
   const { fedEnvironment, ratesStory } = await import('../../src/js/fed-phases.ts');
   const host = document.createElement('div');
   const notes = new Set();
@@ -141,11 +143,12 @@ test('every cycle explains the phases under the chart and tells its rates story 
     notes.add(note.textContent);
     const story = ratesStory(c);
     assert.ok(story.length > 40 && !/[{}]/.test(story), c.name + ' story');
-    assert.equal(host.querySelectorAll('.fp-plot .fp-strip').length, fedPivot(c.from + '-01', (c.to || 2026) + '-12') ? 1 : 0, c.name + ' pivot strip');
+    assert.equal(host.querySelectorAll('.fp-plot .fp-strip').length, 0, c.name + ' no strip');
+    assert.equal(host.querySelectorAll('.fp-plot .fp-turn').length, fedPhases().filter(p => p.m > c.from + '-01' && p.m < (c.to ? c.to + '-12' : '2026-09')).length, c.name + ' turns');
     const levels = [...host.querySelectorAll('.fp-plot .fp-level-tag')].map(t => t.textContent);
     assert.ok(levels.length && levels.every(t => /^\u2212?\d+%$/.test(t)), c.name + ' level labels ' + levels);
     const legend = [...host.querySelectorAll('.fp-legend li')].map(li => li.textContent).join('|');
-    assert.equal(legend, (c.to && c.to < 1954 ? 'Discount rates' : 'Interest rates') + '|Prices|Fed pivot', c.name + ' legend');
+    assert.equal(legend, (c.to && c.to < 1954 ? 'Discount rates' : 'Interest rates') + '|Prices|Fed shift', c.name + ' legend');
   }
   assert.equal(notes.size, 1);
 });
