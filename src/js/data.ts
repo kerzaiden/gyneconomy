@@ -404,7 +404,7 @@ export var marketCycles: Cycle[] = [
     name:"Baby Boom Cycle",
     story:"Soldiers came home and started families in record numbers, while Marshall Plan exports and then the Korean War kept the factories busy. Mrs. Market climbed out of the postwar slump into a steady Optimism that held for six years, until the war’s end and the 1953 recession brought her first Anxiety.",
     blurb:"The baby boom begins: new households, years of pent-up demand, Marshall Plan exports and then the Korean War. It ends in 1953, the year the war ended and military spending was cut.",
-    rates:"Inflation hit {peak} in {month} while the Fed still held rates down for the Treasury, until the 1951 Accord set it free."
+    rates:"The Fed held rates down for the Treasury while the post-war surge burned out; then Korean War buying sent inflation to {peak} in {month}, just as the 1951 Accord set the Fed free."
   },
   {
     from:1954, to:1957,

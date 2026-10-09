@@ -303,10 +303,9 @@ settles it; none is open after V668.
   indicator, Federal debt and Federal budget each have their own; the two Treasury spreads
   (10Y − 3M, 10Y − 2Y) stay one page, which Keren saw no need to split, and the US 10-year Treasury stays one card
   with its maturity picker. (V254, V658)
-- **The door from Interest Rates Environment to the Federal funds rate page is "Learn more" with a chevron, at the end
-  of the cycle's rates story, wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading the
-  story is what makes one want to learn more, so the door sits where the reading ends, not on the head. (0.9.1, Two
-  Hormones)
+- **The door from Interest Rates Environment to the Federal funds rate page is a lone chevron after the last word of
+  the cycle's rates story (no "Learn more"), wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading the
+  story is what makes one want to learn more, so the door sits where the reading ends, not on the head. (0.9.1, 0.9.40, 0.9.43)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -1581,10 +1580,12 @@ settles it; none is open after V668.
   the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates Environment card is a feel, not a measure: two curves, the Fed's rate (blue) and prices
-  (orange), over the Tightening and Easing bands, with no figures and no growth; the scale starts at the round step just below the lowest point, not at zero, so
-  the curves fill the plot; the guides are dashed rules at that step (1% where the range allows, else 2%, 5% or
-  10%, at most six), each with a small, faint figure on its left only where no curve covers it, so
-  the eye can gauge the level; they are drawn inside the bands, and the curves keep a margin from every band edge.** It shows the
+  (orange), over the Tightening and Easing bands, with no figures and no growth; the scale runs from one point below the lowest reading to one point above the
+  highest, not from zero, so the curves fill the plot without touching its edges; the guides are dashed rules at a
+  round step (1% where the range allows, else 2%, 5% or 10%, at most six), each with a small, faint figure at the left
+  edge of one band, the same band for every figure (the one that leaves the most figures clear), skipped where a
+  curve covers it, so the eye can gauge the level; they are drawn inside the
+  bands. The card's type matches Cycle Statistics: the story at reading size, the legend, years and Peak at meta size.** It shows the
   environment at a glance, the way her tracker shows hormones; growth is the other half of the season and the dial
   already shows it. The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason
   here. The peak is an orange dot on the prices curve (hollow on the open cycle), labelled Peak beside it in the
@@ -1601,7 +1602,8 @@ settles it; none is open after V668.
   Go-Stop Cycle's is Nov 1969 (5.9%), at its close. The inherited decline is skipped because a cycle's opening
   months are often the tail of the last one's peak (the AI Cycle's highest month is Jan 2023, 6.3%, still
   falling from June 2022); "inherited" uses the season model's own price trend: months falling, or in a rise that
-  topped before the cycle began. This is Claude's reading of her rule. The open cycle's is its peak so far,
+  began before the cycle did, wherever it tops (the Baby Boom Cycle's is the Korean War's Apr 1951, not the
+  post-war surge it opened in, Mar 1947; Keren, 0.9.43). This is Claude's reading of her rule. The open cycle's is its peak so far,
   hollow; every cycle names its peak on its own level line. It replaced the turning-point rule of 0.6.7, under
   which a peak counted only once prices turned down. (0.6.17)
 - **The Diagnosis reads the patient from all of the app's readings (weather, mood, circulation, energy) and

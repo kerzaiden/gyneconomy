@@ -102,6 +102,7 @@ test('every cycle has a peak: its highest price reading once the decline it inhe
   assert.deepEqual(cyclePeak('2019-01', '2022-12'), { m: '2022-06', v: 7.22 });
   assert.deepEqual(cyclePeak('2023-01', '2026-09'), { m: '2026-05', v: 3.82 });
   assert.deepEqual(cyclePeak('1970-01', '1974-12'), { m: '1974-11', v: 12.2 });
+  assert.deepEqual(cyclePeak('1947-01', '1953-12'), { m: '1951-04', v: 9.6 });
   assert.deepEqual(cyclePeak('1967-01', '1969-12'), { m: '1969-11', v: 5.93 });
   assert.deepEqual(cyclePeak('1991-01', '2002-12'), { m: '1996-12', v: 3.38 });
 });
