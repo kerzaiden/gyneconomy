@@ -1,7 +1,7 @@
 import { fmtSigned, qLabel, yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
 import { confidenceHistory, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
-import { calendarTodayY, inflationHistory, gdpQuarterlyYoY, seasonOverride, yearDone } from "./refresh-season.ts";
+import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
 export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; heading: string; cpiHot: boolean; cpiCold: boolean; potential: number; gdpLatest: QuarterPoint; annual: boolean };
 type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
@@ -319,9 +319,6 @@ export function eraGrowth(cyc: Cycle){
   var trend = slope > 0.1 ? "rising" : slope < -0.1 ? "falling" : "flat";
   return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
 }
-export function realReturn(market: number | null, prices: number | null){
-  return market == null || prices == null ? null : ((1 + market / 100) / (1 + prices / 100) - 1) * 100;
-}
 export function eraMarketTotal(cyc: Cycle){
   var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to!).cumByYear, years = Object.keys(cum);
   return years.length ? cum[years[years.length - 1]] : null;
@@ -373,7 +370,7 @@ export function bootModel(){
     return out;
   })();
   // ---- One cycle, as the cycle view reads it ----
-  cycleYtdFraction = yearDone();
+  cycleYtdFraction = (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
   nowModel = cycleModel(currentEra);
   readingNow = nowModel.reading;
   cpiNow = readingNow.cpiNow;

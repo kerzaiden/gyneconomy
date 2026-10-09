@@ -8,7 +8,6 @@ import { page } from "./history.ts";
 import { CONSUMER_LINE, debtPaymentPoints, DELINQUENCY_MEAN, MARGIN_LINE, savingPoints } from "./credit.ts";
 import { GAP_LINE, growthGapHistory, PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
 import { CONCENTRATION_MEAN, topTenHistory } from "./concentration.ts";
-import { realYears } from "./readings.ts";
 
 // ---- The roster: every reading, declared once ----
 type Category = { key: string; title: string; shown: number; onDial?: boolean };
@@ -80,8 +79,6 @@ function declareRoster(): RosterRow[] {
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, cardUnit:"Fed funds target", live:["fedFunds"] },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, cardUnit:"total return" },
-    { id:"sheet-sign-real-return", name:"Real return", cat:"weather", sub:"Market", good:"up", timing:"leading", term:"Real return",
-      head:"S&P 500, Real Total Return by Year", hist:{ s:realYears, k:"y" }, mid:0, cardUnit:"after inflation" },
     { id:"sheet-sign-activity", name:"Unemployment rate", cat:"activity", sub:"Labor", good:"down", timing:"lagging",
       term:"Activity", head:"Unemployment Rate", hist:{ s:unempHistory, k:"m" } },
     { id:"sheet-sign-payrolls", name:"Nonfarm payrolls", cat:"activity", sub:"Labor", good:"up", timing:"coincident",

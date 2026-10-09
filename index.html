@@ -1259,7 +1259,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.29 (800)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.30 (801)</span></p>
     </div>
   </div>
 
@@ -41922,9 +41922,6 @@
       return d.m >= PCE_FROM;
     }));
   }
-  function yearDone() {
-    return (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
-  }
   function bootRefreshSeason() {
     DATA_COMPILED = new Date(2026, 8, 25);
     dataCompiledLabel = MONTHS_SHORT[DATA_COMPILED.getMonth()] + " " + DATA_COMPILED.getDate() + ", " + DATA_COMPILED.getFullYear();
@@ -44375,9 +44372,6 @@
       avg: my
     };
   }
-  function realReturn(market, prices) {
-    return market == null || prices == null ? null : ((1 + market / 100) / (1 + prices / 100) - 1) * 100;
-  }
   function eraMarketTotal(cyc) {
     var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to).cumByYear, years = Object.keys(cum);
     return years.length ? cum[years[years.length - 1]] : null;
@@ -44465,7 +44459,7 @@
       });
       return out;
     }();
-    cycleYtdFraction = yearDone();
+    cycleYtdFraction = (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
     nowModel = cycleModel(currentEra);
     readingNow = nowModel.reading;
     cpiNow = readingNow.cpiNow;
@@ -45580,33 +45574,17 @@
       says: "a negative total return, which the dial draws as a bear year"
     };
   }
-  function realWord(v) {
-    if (v >= 0) return {
-      state: "good",
-      text: "Beat inflation",
-      says: "so money in the market gained buying power"
-    };
-    return {
-      state: "serious",
-      text: "Lost to inflation",
-      says: "so money in the market lost buying power"
-    };
-  }
   function marketCol(v) {
     return "dv-bar " + (v >= 0 ? "over" : "under");
   }
   function yearLead(f) {
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + " in " + f.now.y + (f.open ? " so far" : "") + ", " + f.wordSays + ". The record, year by year, runs " + f.span + ".</p>";
   }
-  function realInfoHtml(f) {
-    var last = inflationHistory[inflationHistory.length - 1];
-    return yearLead(f) + '<p class="caption follow"><b>The S&amp;P 500’s total return with inflation taken out</b>: one plus the year’s return, divided by one plus the year’s inflation, less one. Inflation is the gauge Temperature reads, CPI before 2000 and PCE since, each December on a year earlier.' + (f.open ? " " + f.now.y + " is still open, so its inflation is the latest twelve-month rate, " + fmtSigned(last.v, 1) + "%, taken for the share of the year gone." : "") + " <b>The zero line is the definition, not a band</b>: above it the market beat inflation, below it money in the market lost buying power.</p>" + srcBlock(sp500AnnualReturnSource.concat([ PCE_SRC, PCE_SWITCH_SRC ]));
-  }
   function marketInfoHtml(f) {
     return yearLead(f) + '<p class="caption follow"><b>The zero line is the definition, not a band</b>: a year the index ends higher, dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial’s inner band colours, so the card, this chart and the cycle read one number.' + (f.open ? " " + f.now.y + " is still open, so its bar is the year so far." : "") + "</p>" + srcBlock(sp500AnnualReturnSource);
   }
   function rowReadings() {
-    return [].concat(coincident, lagging, [ productivityReading, desireReading, premiumReading, confidenceReading, marketReading, realReading ], Object.keys(creditReadings).map(function(k) {
+    return [].concat(coincident, lagging, [ productivityReading, desireReading, premiumReading, confidenceReading, marketReading ], Object.keys(creditReadings).map(function(k) {
       return creditReadings[k];
     }));
   }
@@ -45652,8 +45630,6 @@
   var horizonRead;
   var pressureTendency;
   var marketReading;
-  var realYears;
-  var realReading;
   var productivityRecord;
   var gdpNowQ;
   var HZN_METERS;
@@ -45884,38 +45860,10 @@
         max: hznRecord(t10y2yHistory).max
       }
     };
-    marketReading = yearReading(sp500Years, {
-      term: "S&P 500",
-      sub: "total return",
-      with: "with dividends",
-      low: "Bear year",
-      word: marketWord,
-      info: function() {
-        return marketInfoHtml(marketReading);
-      }
-    });
-    var last = inflationHistory[inflationHistory.length - 1];
-    realYears = sp500Years.map(function(d) {
-      return {
-        y: d.y,
-        v: realReturn(d.v, d.y === calendarTodayY ? last.v * yearDone() : yearInflation(d.y))
-      };
-    }).filter(function(d) {
-      return d.v != null;
-    });
-    realReading = yearReading(realYears, {
-      term: "Real return",
-      sub: "after inflation",
-      with: "after inflation",
-      low: "Lost to inflation",
-      word: realWord,
-      info: function() {
-        return realInfoHtml(realReading);
-      }
-    });
+    marketReading = yearReading(sp500Years);
   }
-  function yearReading(h, o) {
-    var now2 = h[h.length - 1], word2 = o.word(now2.v), open = now2.y === calendarTodayY;
+  function yearReading(h) {
+    var now2 = h[h.length - 1], word2 = marketWord(now2.v), open = now2.y === calendarTodayY;
     var lo = h.reduce(function(a, d) {
       return d.v < a.v ? d : a;
     }), hi = h.reduce(function(a, d) {
@@ -45923,10 +45871,12 @@
     });
     var span = fmtSigned(lo.v, 1) + "% (" + lo.y + ") to " + fmtSigned(hi.v, 1) + "% (" + hi.y + ")";
     return {
-      bodyTerm: o.term,
-      info: o.info,
-      econTerm: o.term,
-      metricSub: o.sub,
+      bodyTerm: "S&P 500",
+      info: function() {
+        return marketInfoHtml(marketReading);
+      },
+      econTerm: "S&P 500",
+      metricSub: "total return",
       now: now2,
       lo: lo,
       hi: hi,
@@ -45946,7 +45896,7 @@
           label: "≥ 0%"
         },
         ends: {
-          low: o.low
+          low: "Bear year"
         }
       },
       span: span,
@@ -45956,7 +45906,7 @@
         }), marketCol, 0, true);
       },
       lead: "",
-      caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% " + o.with + ", " + word2.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
+      caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% with dividends, " + word2.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
     };
   }
   function isNum(x) {
@@ -46417,21 +46367,6 @@
       },
       mid: 0,
       cardUnit: "total return"
-    }, {
-      id: "sheet-sign-real-return",
-      name: "Real return",
-      cat: "weather",
-      sub: "Market",
-      good: "up",
-      timing: "leading",
-      term: "Real return",
-      head: "S&P 500, Real Total Return by Year",
-      hist: {
-        s: realYears,
-        k: "y"
-      },
-      mid: 0,
-      cardUnit: "after inflation"
     }, {
       id: "sheet-sign-activity",
       name: "Unemployment rate",
@@ -51381,8 +51316,7 @@
       "sheet-sign-desire": desirePage(),
       "sheet-sign-premium": premiumPage(),
       "sheet-sign-confidence": confidencePage(),
-      "sheet-sign-market": marketPage(),
-      "sheet-sign-real-return": realPage()
+      "sheet-sign-market": marketPage()
     });
   }
   var signedPct = function(v) {
@@ -51448,18 +51382,6 @@
       },
       src: sp500AnnualReturnSource,
       insight: marketInsight
-    });
-  }
-  function realPage() {
-    return readingPage(realReading, {
-      line: "No change",
-      fmt: signedPct,
-      tick: wholePct,
-      at: function(d) {
-        return String(d.y);
-      },
-      src: sp500AnnualReturnSource,
-      insight: realInsight
     });
   }
   function withCredit(o) {
@@ -51632,12 +51554,6 @@
     }), lastBear = bear[bear.length - 1], run = 0;
     for (var i = h.length - 1; i >= 0 && h[i].v >= 0; i--) run++;
     return highlightsHtml([ lede("What the whole stock market returned each year, dividends included. A year above the line is a bull year and one below it a bear year, the same years the dial’s inner band colours."), hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "%, " + (last.v >= 0 ? "a bull year" : "a bear year") + (run > 1 ? ", the " + (ORDINAL[run] || run + "th") + " bull year in a row." : ".") + (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")), hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " + bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.") ]);
-  }
-  function realInsight(s) {
-    var h = s.series, last = h[h.length - 1], r = realReading, ahead = h.filter(function(d) {
-      return d.v >= 0;
-    }).length;
-    return highlightsHtml([ lede("What the stock market returned each year after inflation, dividends included: the buying power money in it gained or lost."), hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "% after inflation, against " + fmtSigned(marketReading.now.v, 1) + "% before it" + (last.v >= 0 ? "." : ": the market lost buying power.")), hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + ahead + " beat inflation and " + (h.length - ahead) + " lost to it. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.") ]);
   }
   function interestInsight(s) {
     var hist = interestQuarterly, last = hist[hist.length - 1], paid = interestDollarsQuarterly[interestDollarsQuarterly.length - 1];

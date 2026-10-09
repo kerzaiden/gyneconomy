@@ -2,9 +2,9 @@ import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLa
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
-import { calendarTodayY, inflationHistory, gdpQuarterlyYoY, yearDone } from "./refresh-season.ts";
+import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf } from "./data.ts";
-import { cpiNow, growthWord, inflationFigure, nowModel, potentialGap, realReturn, yearInflation } from "./model.ts";
+import { cpiNow, growthWord, inflationFigure, nowModel, potentialGap } from "./model.ts";
 import type { ModelReading } from "./model.ts";
 import { creditReadings } from "./credit.ts";
 
@@ -432,24 +432,11 @@ function marketWord(v: number): WordOf {
   if (v >= 0) return { state:"good", text:"Bull year", says:"a positive total return, which the dial draws as a bull year" };
   return { state:"serious", text:"Bear year", says:"a negative total return, which the dial draws as a bear year" };
 }
-function realWord(v: number): WordOf {
-  if (v >= 0) return { state:"good", text:"Beat inflation", says:"so money in the market gained buying power" };
-  return { state:"serious", text:"Lost to inflation", says:"so money in the market lost buying power" };
-}
 function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
 function yearLead(f: MarketReading){
   return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +
       'The record, year by year, runs ' + f.span + '.</p>';
-}
-function realInfoHtml(f: MarketReading){
-  var last = inflationHistory[inflationHistory.length - 1];
-  return yearLead(f) +
-    '<p class="caption follow"><b>The S&amp;P 500\u2019s total return with inflation taken out</b>: one plus the year\u2019s return, divided by ' +
-      'one plus the year\u2019s inflation, less one. Inflation is the gauge Temperature reads, CPI before 2000 and PCE since, each December on a year earlier.' +
-      (f.open ? ' ' + f.now.y + ' is still open, so its inflation is the latest twelve-month rate, ' + fmtSigned(last.v, 1) + '%, taken for the share of the year gone.' : '') + ' <b>The zero line is the definition, not a band</b>: above it the market beat inflation, below it money in the market ' +
-      'lost buying power.</p>' +
-    srcBlock(sp500AnnualReturnSource.concat([PCE_SRC, PCE_SWITCH_SRC]));
 }
 function marketInfoHtml(f: MarketReading){
   return yearLead(f) +
@@ -458,7 +445,7 @@ function marketInfoHtml(f: MarketReading){
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
 }
-export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading, realReading], Object.keys(creditReadings).map(function(k){ return creditReadings[k]; })); }
+export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading], Object.keys(creditReadings).map(function(k){ return creditReadings[k]; })); }
 export function indOf(R: { term?: string }): Indicator | undefined { return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
 function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },
@@ -473,7 +460,7 @@ export function policyFactRows(){
 export function gdpWord(r: ModelReading){ return r.gdpLatest.v < 0 ? "Shrinking" : "Growing"; }
 export function phaseClass(regime: string){ return regime === "contraction" ? "phase-down" : "phase-up"; }
 
-export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, pressureTendency: Tendency, marketReading: MarketReading, realYears: YearPoint[], realReading: MarketReading;
+export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, pressureTendency: Tendency, marketReading: MarketReading;
 var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;
 
 function deriveFeelingReadings(){
@@ -592,31 +579,23 @@ export function bootReadings(){
     "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max },
     "2y": { min:hznRecord(t10y2yHistory).min, max:hznRecord(t10y2yHistory).max }
   };
-  marketReading = yearReading(sp500Years, { term:"S&P 500", sub:"total return", with:"with dividends", low:"Bear year",
-    word:marketWord, info:function(){ return marketInfoHtml(marketReading); } });
-  var last = inflationHistory[inflationHistory.length - 1];
-  realYears = sp500Years.map(function(d){
-    return { y:d.y, v:realReturn(d.v, d.y === calendarTodayY ? last.v * yearDone() : yearInflation(d.y)) };
-  }).filter(function(d): d is YearPoint { return d.v != null; });
-  realReading = yearReading(realYears, { term:"Real return", sub:"after inflation", with:"after inflation", low:"Lost to inflation",
-    word:realWord, info:function(){ return realInfoHtml(realReading); } });
+  marketReading = yearReading(sp500Years);
 }
-type YearOpts = { term: string; sub: string; with: string; low: string; word: (v: number) => WordOf; info: () => string };
-function yearReading(h: YearPoint[], o: YearOpts): MarketReading {
-  var now = h[h.length - 1], word = o.word(now.v), open = now.y === calendarTodayY;
+function yearReading(h: YearPoint[]): MarketReading {
+  var now = h[h.length - 1], word = marketWord(now.v), open = now.y === calendarTodayY;
   var lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; }), hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; });
   var span = fmtSigned(lo.v, 1) + "% (" + lo.y + ") to " + fmtSigned(hi.v, 1) + "% (" + hi.y + ")";
   return {
-    bodyTerm:o.term, info:o.info,
-    econTerm:o.term, metricSub:o.sub, now:now, lo:lo, hi:hi, open:open,
+    bodyTerm:"S&P 500", info:function(){ return marketInfoHtml(marketReading); },
+    econTerm:"S&P 500", metricSub:"total return", now:now, lo:lo, hi:hi, open:open,
     metric:fmtSigned(now.v, 1) + "%", tag:{ state:word.state, text:word.text }, wordSays:word.says,
-    meter:{ min:lo.v, max:hi.v, value:now.v, optimal:{ gte:0, label:"\u2265 0%" }, ends:{ low:o.low } },
+    meter:{ min:lo.v, max:hi.v, value:now.v, optimal:{ gte:0, label:"\u2265 0%" }, ends:{ low:"Bear year" } },
     span:span,
     get peek(){
       return colPeek(h.map(function(d){ return d.v; }), marketCol, 0, true);
     },
     lead:"",
-    caption:now.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now.v, 1) + "% " + o.with + ", " + word.says +
+    caption:now.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now.v, 1) + "% with dividends, " + word.says +
       ". The track runs over every year since " + h[0].y + ": " + span + "."
   };
 }
