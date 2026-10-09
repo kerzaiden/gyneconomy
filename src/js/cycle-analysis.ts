@@ -302,7 +302,7 @@ function chartDetail(){
 export function cycleScore(m: CycleModel){ var i = marketCycles.indexOf(m.era); return i < 0 ? "" : scoreBox(i); }
 export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
-  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(m.era.story, "ai-clamp") + scoreBox(i));
+  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(m.era.story, "ai-clamp") + scoreBox(i));
 }
 var HOME_ID = "chart-home";
 function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string, text?: string){
@@ -476,6 +476,10 @@ function crossToChart(){
   need("tab-chart").click();
   if (era) setTopbar("Analysis", (ui.chartBack = function(){ GYN.fire("eraReturn", (era as Cycle).from, y); }));
 }
+function rateCycle(e: Event){
+  var b = (e.target as Element).closest && (e.target as Element).closest("[data-rate-cycle]"), k = b && ROSTER_BY[b.getAttribute("data-open") || ""].hk;
+  if (b && k){ page.mode[k] = "cycles"; page.cycles[k] = b.getAttribute("data-rate-cycle"); }
+}
 export function buildCycleChart(){
   wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
   document.addEventListener("click", function(e){
@@ -485,5 +489,6 @@ export function buildCycleChart(){
     drawChart(HOME_ID);
   });
   need("tab-chart").addEventListener("click", function(){ page.cycles[HOME_ID] = null; drawChart(HOME_ID); });
+  document.addEventListener("click", rateCycle, true);
   drawChart(HOME_ID);
 }

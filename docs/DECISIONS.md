@@ -95,9 +95,8 @@ settles it; none is open after V668.
   (V689, V690, V691, 0.4.1, 0.6.17)
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   In the box's colour the rest of the ring could not be seen. (0.6.5)
-- **The health chart's card is called Cycle Statistics, in Title Case wherever it is named; its tab stays
-  Analysis.** "Cycle analysis" sat too close to AI Insights, so the card became statistics, while the tab and the
-  page title stay Analysis. (0.6.6, 0.6.8)
+- **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
+  inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
 - **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
   is told inside the AI Insights page's first container.** The narrative belongs to AI Insights. A closed cycle,
   which has no AI Insights, keeps its story above Cycle analysis. Keren wanted a sophisticated analysis of the
@@ -304,9 +303,9 @@ settles it; none is open after V668.
   (10Y − 3M, 10Y − 2Y) stay one page, which Keren saw no need to split, and the US 10-year Treasury stays one card
   with its maturity picker. (V254, V658)
 - **The door from Interest Rates Environment to the Federal funds rate page is an inline "Learn more ›" after the
-  card's text, wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading is what makes one want
+  card's text, on Analysis, where it lands on the cycle Analysis shows.** Reading is what makes one want
   to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished. (0.9.1,
-  0.9.40, 0.9.43, 0.9.44)
+  0.9.40, 0.9.43, 0.9.44, 0.9.46)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -584,7 +583,7 @@ settles it; none is open after V668.
 ### Analysis
 
 - **Analysis opens on the current cycle and names the cycle it shows; a period picked on Elements stays on
-  Elements.** A past cycle reaches Analysis only from its own cycle page (Cycle Statistics), which opens with that
+  Elements.** A past cycle reaches Analysis only from its own cycle page (Cycle Analysis), which opens with that
   cycle's name and years, and Interest Rates Environment follows the cycle shown. Keren chose current by default
   because a cycle picked on Elements had left Analysis showing it, unnamed, after Back. (0.9.31)
 - **Each cycle in Analysis shows its growth and its prices, totalled the same way over the same closed years,
@@ -664,7 +663,7 @@ settles it; none is open after V668.
   show every time. The cycle pages show the same tile, ring, score and tier, inside their AI Insights and Cycle
   Statistics cards, so it looks as it does on Analysis; it opens nothing of its own there, since the card it sits in
   is the door. (0.8.12, 0.9.4, Oct 7, 2026)
-- **The interest-rate container is titled Interest Rates Environment, on the cycle pages and on Analysis,** because
+- **The interest-rate container is titled Interest Rates Environment, on Analysis,** because
   most people recognize "interest rates". (0.8.12, Oct 7, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
   adds that the verdict is relative to the market's own past cycles.** Typical is within Tukey's fences of her closed
@@ -1466,17 +1465,17 @@ settles it; none is open after V668.
   background should be organic, delicate and feminine, flowing like hormones or a flower, prominent without
   competing with the foreground. With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3, 0.6.13, 0.6.14)
-- **The Current Cycle page has no Cycle Statistics card; its health score sits in the AI Insights card and at the
-  top of the AI Insights page, with one short line saying what it is.** Keren's call. (0.6.13)
-- **A past cycle's page is laid out like the current one: Interest Rates Environment, one card, Year by Year. Its
-  card is Cycle Statistics, the cycle's story (three lines) and its health score, a shortcut to the Analysis tab
-  set to that cycle; the separate story card is gone.** Past cycles had fallen behind recent changes, and since
-  the Analysis tab shows the current cycle, the card is the gateway to a historic cycle's statistics. (0.6.17)
+- **A cycle page is AI Insights, Cycle Analysis, Year by Year; Interest Rates Environment stands on Analysis
+  only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis. Cycle Analysis
+  is the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that cycle, and
+  its Learn more opens the Federal funds rate on that same cycle. Past cycles have no AI Insights yet, so theirs
+  is the one card missing until they do. The Health Score shows once, in Cycle Analysis, since the analysis is
+  what explains it; the AI Insights card carries only its story. (0.6.17, 0.9.46)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   A change once reached only today's page, because the Diagnosis branched on whether the cycle was open and the
-  browser suite expected the past cycle's old layout. The page is one sequence (Interest Rates Environment, the
-  cycle's card, Year by Year) with a single slot, `cycleCard`, that differs only in what its card opens, and a
-  unit test fails if any closed cycle's page differs in shape from today's. (0.6.13, 0.6.17)
+  browser suite expected the past cycle's old layout. The page is one sequence (AI Insights, Cycle Analysis, Year by
+  Year), and a unit test fails if any closed cycle's page differs in shape from today's, AI Insights aside until
+  past cycles have it. (0.6.13, 0.6.17, 0.9.46)
 - **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Titles were a mix of dark
   purple and black, and should be consistent; Interest Environment and Year by Year lost their small black
   capitals. (0.6.13)

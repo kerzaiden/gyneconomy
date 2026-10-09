@@ -287,7 +287,7 @@ test('a past cycle shows its own record on the Diagnosis, and Back restores toda
   const head = document.querySelector('#diagnosis .trend-head').textContent;
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'Cycle Statistics');
+  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'Cycle Analysis');
   ui.eraPageBack();
   assert.equal(ui.eraOpen, null);
   assert.equal(document.querySelector('#diagnosis .trend-head').textContent, head);

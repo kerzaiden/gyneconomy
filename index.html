@@ -1262,7 +1262,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.45 (816)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.46 (817)</span></p>
     </div>
   </div>
 
@@ -47253,9 +47253,9 @@
     return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") + key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + "</ul>";
   }
   var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
-  function footnoteHtml() {
+  function footnoteHtml(m) {
     var rate = ROSTER_BY["sheet-sign-hormones"];
-    return '<p class="fp-note">' + PHASES + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '">Learn more' + CHEV + "</button></p>";
+    return '<p class="fp-note">' + PHASES + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '">Learn more' + CHEV + "</button></p>";
   }
   function ratesStory(c) {
     var m = c.ongoing ? nowModel : cycleModel(c), peak = cyclePeak(c.from + "-01", endMonthOf(m));
@@ -47273,7 +47273,7 @@
     var top = peak ? lines[0].filter(function(p) {
       return Math.floor(p.i / 3) === Math.floor(monthIdx(peak.m) / 3);
     })[0] || null : null;
-    return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + legendHtml() + footnoteHtml();
+    return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + legendHtml() + footnoteHtml(m);
   }
   function fedEnvironment(m) {
     return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
@@ -49214,7 +49214,7 @@
   }
   function chartDoor(m) {
     var i = marketCycles.indexOf(m.era);
-    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(m.era.story, "ai-clamp") + scoreBox(i));
+    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(m.era.story, "ai-clamp") + scoreBox(i));
   }
   var HOME_ID = "chart-home";
   function statRow(name, v, of, side2, page2, cls, text) {
@@ -49482,6 +49482,13 @@
       GYN.fire("eraReturn", era.from, y);
     });
   }
+  function rateCycle(e) {
+    var b = e.target.closest && e.target.closest("[data-rate-cycle]"), k = b && ROSTER_BY[b.getAttribute("data-open") || ""].hk;
+    if (b && k) {
+      page.mode[k] = "cycles";
+      page.cycles[k] = b.getAttribute("data-rate-cycle");
+    }
+  }
   function buildCycleChart() {
     wireFinder(need(HOME_ID), HOME_ID);
     buildFind();
@@ -49498,6 +49505,7 @@
       page.cycles[HOME_ID] = null;
       drawChart(HOME_ID);
     });
+    document.addEventListener("click", rateCycle, true);
     drawChart(HOME_ID);
   }
   var ai_insights_default = {
@@ -49821,7 +49829,7 @@
     };
   }
   function aiInsights() {
-    return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(ai_insights_default.lede), "ai-clamp") + cycleScore(nowModel));
+    return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(ai_insights_default.lede), "ai-clamp"));
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -49838,10 +49846,7 @@
   } ];
   function diagnosisHtml(m) {
     if (m.ongoing && !diagnoseToday()) return "";
-    return fedEnvironment(m) + cycleCard(m) + yearByYear(m);
-  }
-  function cycleCard(m) {
-    return m.ongoing ? aiInsights() : chartDoor(m);
+    return (m.ongoing ? aiInsights() : "") + chartDoor(m) + yearByYear(m);
   }
   function yearByYear(m) {
     var _a;

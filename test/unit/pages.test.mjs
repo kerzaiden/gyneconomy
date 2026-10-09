@@ -167,11 +167,11 @@ test('every cycle page, open or closed, is built in one shape', async () => {
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   const { cycleModel, nowModel } = await import('../../src/js/model.ts');
   const { marketCycles } = await import('../../src/js/data.ts');
-  const shape = () => [...document.getElementById('diagnosis').children].map(c => c.tagName + '.' + c.className + '>' +
+  const shape = () => [...document.getElementById('diagnosis').children].filter(c => !c.matches('[data-open="sheet-ai-insights"]')).map(c => c.tagName + '.' + c.className + '>' +
     [...c.children].filter(k => !k.matches('.dx-year, .fp-marks')).map(k => k.tagName + '.' + k.className).join(','));
   const today = shape();
   const off = marketCycles.filter(c => !c.ongoing).filter(c => { renderDiagnosis(cycleModel(c)); return shape().join('|') !== today.join('|'); });
   renderDiagnosis(nowModel);
-  assert.equal(today.length, 3);
+  assert.equal(today.length, 2);
   assert.deepEqual(off.map(c => c.name), []);
 });
