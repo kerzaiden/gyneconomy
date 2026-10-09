@@ -1581,8 +1581,9 @@ settles it; none is open after V668.
   the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates Environment card is a feel, not a measure: two curves, the Fed's rate (blue) and prices
-  (orange), over the Tightening and Easing bands, with no figures and no growth; the guides are dashed rules at round steps from 0% (1% where the range allows,
-  else 2%, 5% or 10%, at most six), each with a small, faint figure on its left only where no curve covers it, so
+  (orange), over the Tightening and Easing bands, with no figures and no growth; the scale starts at the round step just below the lowest point, not at zero, so
+  the curves fill the plot; the guides are dashed rules at that step (1% where the range allows, else 2%, 5% or
+  10%, at most six), each with a small, faint figure on its left only where no curve covers it, so
   the eye can gauge the level; they are drawn inside the bands.** It shows the
   environment at a glance, the way her tracker shows hormones; growth is the other half of the season and the dial
   already shows it. The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason
@@ -1594,7 +1595,7 @@ settles it; none is open after V668.
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
   discount rate; the phases follow the rate alone, so a tightening made another way (the doubling of reserve
   requirements in 1936–37) does not show. A low peak is still a peak: where prices topped in a calm cycle tells
-  something about the cycle too. (Two Hormones)
+  something about the cycle too. (0.9.40)
 - **Every cycle has a peak: its highest price reading within the cycle, once the decline it inherited from the
   cycle before has passed.** A cycle's range is its own length, so by definition it has a peak and a trough. The
   Go-Stop Cycle's is Nov 1969 (5.9%), at its close. The inherited decline is skipped because a cycle's opening

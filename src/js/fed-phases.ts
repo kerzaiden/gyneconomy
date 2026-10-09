@@ -98,28 +98,30 @@ function tagSpan(cls: string, text: string, t: Tag){
 function peakTag(segs: number[][][], px: number, py: number){
   return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side){ return sideTag(px / VIEW_W, py / VIEW_H, 30, side); }), segs);
 }
-function levelTags(segs: number[][][], y: (v: number) => number){
-  var pts = curvePts(segs);
-  return ruleLevels(y).map(function(v){
+function levelTags(segs: number[][][], sc: Scale){
+  var pts = curvePts(segs), y = sc.y;
+  return ruleLevels(sc).map(function(v){
     var text = (v < 0 ? "\u2212" : "") + Math.abs(v) + "%", t = { ax: 0, ay: y(v) / VIEW_H, w: 6 + 5 * text.length, dx: 5, dy: -TAG.h };
     return tagHits(t, pts) ? "" : tagSpan("fp-level-tag", text, t);
   }).join("");
 }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
 var GRID_STEPS = [1, 2, 5, 10];
-function levelY(lines: Pt[][]){
+type Scale = { y: (v: number) => number; lo: number; hi: number; step: number };
+function levelScale(lines: Pt[][]): Scale {
   var all = ([] as Pt[]).concat.apply([], lines).map(function(p){ return p.v; });
-  var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all);
-  return function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
+  var min = Math.min.apply(null, all), hi = Math.max.apply(null, all);
+  var step = GRID_STEPS.filter(function(s){ return (hi - min) / s <= 5; })[0] || 20, lo = Math.floor(min / step) * step;
+  return { lo: lo, hi: hi, step: step, y: function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); } };
 }
-function ruleLevels(y: (v: number) => number){
-  var unit = y(0) - y(1), lo = (y(0) - VIEW_H + INSET) / unit, hi = (y(0) - INSET) / unit, out: number[] = [];
-  var step = GRID_STEPS.filter(function(s){ return (hi - lo) / s <= 6; })[0] || 20;
-  for (var v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9; v += step) out.push(v);
+function ruleLevels(sc: Scale){
+  var out: number[] = [], top = sc.hi + (sc.hi - sc.lo) * INSET / (VIEW_H - 2 * INSET);
+  for (var v = sc.lo; v <= top + 1e-9; v += sc.step) out.push(v);
   return out;
 }
-function rulesHtml(y: (v: number) => number){
-  return ruleLevels(y).map(function(v){ return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>'; }).join("");
+function rulesHtml(sc: Scale){
+  var y = sc.y;
+  return ruleLevels(sc).map(function(v){ return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>'; }).join("");
 }
 function bandsHtml(phases: Phase[], from: number, to: number, rules: string){
   var span = to - from + 1, bands = "";
@@ -137,11 +139,11 @@ function yearsHtml(from: number, to: number){
   return out;
 }
 function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open: boolean){
-  var span = to - from + 1, y = levelY(lines);
+  var span = to - from + 1, sc = levelScale(lines), y = sc.y;
   var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; };
   var segs = lines.map(function(l){ return segments(l, x, y); });
   var paths = ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
-  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + levelTags(segs, y) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
+  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + levelTags(segs, sc) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }
@@ -164,7 +166,7 @@ function fedPhasesCard(m: CycleModel){
   var peak = cyclePeak(fromM, toM);
   var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
   var top = peak ? lines[0].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  return '<div class="fp-plot">' + bandsHtml(phases, from, to, rulesHtml(levelY(lines))) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml(m, peak);
+  return '<div class="fp-plot">' + bandsHtml(phases, from, to, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml(m, peak);
 }
 export function fedEnvironment(m: CycleModel){
   return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
