@@ -65,7 +65,7 @@ function stripPaper(L: number, R: number, T: number, B: number, h: number){
 export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   from = from || 0;
   var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-  var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) / 10;
+  var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) * 3 / 20;
   var F = histFrame(Wpx, Math.ceil(rows * h) - AXIS.LEG), L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = T + rows * h;
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [];
   out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));

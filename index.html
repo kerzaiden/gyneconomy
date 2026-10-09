@@ -50681,7 +50681,7 @@
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
     var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-    var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) / 10;
+    var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) * 3 / 20;
     var F = histFrame(Wpx, Math.ceil(rows * h) - AXIS.LEG), L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = T + rows * h;
     var X = function(q) {
       return L + (R - L) * q / 4;
