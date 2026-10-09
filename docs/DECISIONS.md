@@ -1105,8 +1105,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   stroke volume", after M × V = nominal GDP was set beside rate × stroke volume = cardiac output): full height at
   Volume's Flooding edge (13.5%, the pre-2020 record) and capped there, upside down when the stock shrank (2023 Q1 to
   2024 Q1, the record's only such quarters, which Keren noted a healthy heart never shows). Since 0.9.26 (Keren):
-  the newest year is on top; each year's average velocity sits under the year, in the left column (no ×, which
-  does not fit the column; the plate and the (i) carry it); a strip has a fixed height (44), so the chart grows longer with more years instead of squeezing them ("the entire history
+  the newest year is on top; each year's average velocity sits under the year with its × ("I think it's
+  important"), in a date column widened to fit it, and each strip's dividing line runs through that column ("so I can
+  see each line and it's divided"); a strip is two squares of the paper tall, three lines ("each chart would be three
+  lines instead of four"), so the chart grows longer with more years instead of squeezing them ("the entire history
   component would just need to be longer"); and the windows are the usual 5Y, 10Y, 25Y and Max. Max starts at
   1959 Q1, the first quarter of the Fed's M2 (FRED M2V); the cycle picker starts at 1963 because the 1958–1962
   cycle opens before the data. The earlier EKG histories (scrolling strip, Holter report, Apple

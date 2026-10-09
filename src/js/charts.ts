@@ -4,7 +4,7 @@ type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
 type YScale = (v: number) => number | string;
 type FitOpts = { fit?: Fit; fmt: (v: number) => string };
 type XLabelOpts = { xLabel?: ((d: never, i: number) => string) | null; _years?: number[] };
-type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; noGridAt?: number | null; base?: number | string | null };
+type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; noGridAt?: number | null; base?: number | string | null; gutter?: number };
 type DivergeDatum = { v: number | null; y?: number; [k: string]: unknown };
 type DivergeOpts = XLabelOpts & FitOpts & { vals: DivergeDatum[]; mid: number; midLabel?: string; tickFmt?: (v: number) => string; step?: number; goodAbove?: boolean; at?: ChartGeom["at"]; alt?: string };
 export type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: number; T: number; B: number };
@@ -91,7 +91,7 @@ export var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };
 export function histFrame(Wpx?: number | null, plot?: number): HistFrame {
   var W = Math.max(270, Math.round(Wpx || 360));
   var narrow = W < 430;
-  var H = Math.max(narrow ? 335 : 375, plot ? AXIS.T + AXIS.LEG + AXIS.READ + plot + 17 + AXIS.FOOT : 0);
+  var H = plot ? AXIS.T + AXIS.LEG + AXIS.READ + plot + 17 + AXIS.FOOT : narrow ? 335 : 375;
   return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
            T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
 }
@@ -130,7 +130,7 @@ export function chartAxes(o: AxesOpts){
   var out: string[] = [], ticks = o.ticks || autoTicks(o);
   while (ticks.length > 2 && ticks.some(function(t, i){ return i > 0 && o.fmt(t) === o.fmt(ticks[i - 1]); }))
     ticks = ticks.filter(function(t, i){ return i % 2 === 0; });
-  var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
+  var fx0 = o.x0 - (o.gutter || AXIS.L), fx1 = o.x1 + AXIS.R;
   if (o.top != null && o.bot != null){
     out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' +
              (fx1 - fx0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');

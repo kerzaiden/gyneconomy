@@ -3,7 +3,7 @@ import { AXIS, beatPath, chartAxes, histFrame, publishGeom, vGrid, vhOpen, xLabe
 import { M2_FLOOD, M2V_FROM_YEAR, m2vHistory, m2Yoy } from "./data.ts";
 import { fmtSigned, qAtIndex, quartile } from "./format.ts";
 
-export var PULSE_BEATS = 5, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_ROW = 44;
+export var PULSE_BEATS = 5, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10;
 var fences: number[] | null = null;
 function pulseMove(i: number){ return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100; }
 export function pulseFences(){
@@ -46,28 +46,29 @@ function stripRow(r: StripRow){
   }
   var id = "psclip" + r.y, w = r.X(last + 1) - r.X(0);
   out = ['<clipPath id="' + id + '"><rect x="' + f1(r.X(0)) + '" y="' + f1(r.top - r.h) + '" width="' + f1(w) + '" height="' + f1(r.h * 3) + '"/></clipPath><g clip-path="url(#' + id + ')">' + out.join("") + '</g>'];
-  var lx = r.X(0) - (AXIS.L + AXIS.RAIL) / 2, mid = r.top + r.h / 2;
+  var lx = r.X(0) - (AXIS.L + PULSE_GUTTER + AXIS.RAIL) / 2, mid = r.top + r.h / 2;
   out.push(yLabel(lx, mid - 2, r.y, "middle"));
-  out.push(yLabel(lx, mid + 11, (sum / n).toFixed(2), "middle"));
+  out.push(yLabel(lx, mid + 10, (sum / n).toFixed(2) + "\u00d7", "middle"));
   return out.join("");
 }
 function stripPaper(L: number, R: number, T: number, B: number, h: number){
-  var m = (R - L) / 20, minor: string[] = [], major: string[] = [];
+  var m = (R - L) / 20, fx = L - AXIS.L - PULSE_GUTTER, minor: string[] = [], major: string[] = [];
   var rules: string[] = [];
   for (var k = 0; k <= 20; k++) if (k % 5) minor.push("M" + f1(L + k * m) + "," + f1(T) + "V" + f1(B)); else rules.push(vGrid(L + k * m, T, B));
   for (var top = T; top < B - 0.5; top += h){
-    major.push("M" + f1(L) + "," + f1(top) + "H" + f1(R));
+    major.push("M" + f1(fx) + "," + f1(top) + "H" + f1(R));
     for (var y = top + m; y < top + h - 1; y += m) minor.push("M" + f1(L) + "," + f1(y) + "H" + f1(R));
   }
-  major.push("M" + f1(L) + "," + f1(B) + "H" + f1(R));
+  major.push("M" + f1(fx) + "," + f1(B) + "H" + f1(R));
   return '<path class="ekg-minor" d="' + minor.join("") + '"/><path class="ekg-major" d="' + major.join("") + '"/>' + rules.join("");
 }
 export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   from = from || 0;
   var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-  var F = histFrame(Wpx, rows * PULSE_ROW - AXIS.LEG), L = F.L, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = (B - T) / rows;
+  var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) / 10;
+  var F = histFrame(Wpx, Math.ceil(rows * h) - AXIS.LEG), L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = T + rows * h;
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [];
-  out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String }));
+  out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));
   out.push(stripPaper(L, R, T, B, h));
   ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17)); });
   for (var y = y0; y <= y1; y++) out.push(stripRow({ y:y, top:T + h * (y1 - y), h:h, from:from, end:end, X:X }));
