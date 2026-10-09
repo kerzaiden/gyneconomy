@@ -736,8 +736,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and the more details is not equal", and "it needs to be economic season". Keren: "titles … with white background and the indicators have an apricot background … it reminds
   me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
   stay readable. Keren: "the category titles are too big. They need to blend in with the data that they present." Weather: Economic Season (Temperature, Growth gap, Federal funds rate, 0.9.16) and Market (S&P 500);
-  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium, Concentration risk, Default risk); Circulation: Pressure (US 10-year
-  Treasury, Treasury spreads), Money (Pulse, Volume, Consumer credit; the Credit subcategory went in 0.9.22); Stress: Households (Saving rate, Debt-to-income ratio, Margin debt) and Government (Federal debt, Federal interest payments, Federal budget). There is no Activity category (Keren, 0.9.0). The
+  Weather also holds Activity (Unemployment rate, Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand (Discretionary spending, Retail sales, Consumer credit, 0.9.25) and Risk (Equity risk premium, Concentration risk, Default risk); Circulation: Pressure (US 10-year
+  Treasury, Treasury spreads), Money (Pulse, Volume; the Credit subcategory went in 0.9.22); Stress: Households (Saving rate, Debt-to-income ratio, Margin debt) and Government (Federal debt, Federal interest payments, Federal budget). There is no Activity category (Keren, 0.9.0). The
   names beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". Keren renamed
@@ -883,8 +883,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   S&P 500's; the words are "Beat inflation" and "Lost to inflation". A cycle's real years are read on its page through
   the Cycles window. (0.9.19)
 
-- **Credit is new money being borrowed and lives in Circulation, under Money (Consumer credit, 0.9.22); Stress holds what is owed,
-  by Households and by Government.** Keren, 0.9.22: "I think credit belongs under the subcategory of money", then "Move it"; there is no
+- **Credit is households borrowing to spend and lives in Desire, under Demand (Consumer credit, 0.9.25); Stress holds what is owed,
+  by Households and by Government.** Keren, 0.9.25: "I think consumer credit should belong under desire, demand". Before that it sat in
+  Circulation under Money (0.9.22 to 0.9.24). Keren, 0.9.22: "I think credit belongs under the subcategory of money", then "Move it"; there is no
   Credit subcategory. Keren, 0.9.21: "subcategory credit itself should go to circulation". Before that
   (0.9.4 to 0.9.20) Credit sat in Stress as the appetite beside Debt, the burden. Keren then: "I think
   credit is more of an appetite … to take risk", then "Under stress category, put credit and debt. And under credit, I will

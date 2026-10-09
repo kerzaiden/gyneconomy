@@ -46544,20 +46544,6 @@
       cardUnit: "M2, YoY",
       live: [ "coincident" ]
     }, {
-      id: "sheet-sign-consumer-credit",
-      name: "Consumer credit",
-      cat: "circulation",
-      sub: "Money",
-      timing: "lagging",
-      term: "Consumer credit",
-      head: "Consumer Credit, YoY",
-      hist: {
-        s: consumerCreditHistory,
-        k: "m"
-      },
-      mid: CONSUMER_LINE,
-      cardUnit: "YoY"
-    }, {
       id: "sheet-sign-saving",
       name: "Saving rate",
       cat: "stress",
@@ -46730,6 +46716,21 @@
         k: "m"
       },
       mid: RETAIL_LINE,
+      cardUnit: "YoY"
+    }, {
+      id: "sheet-sign-consumer-credit",
+      name: "Consumer credit",
+      cat: "desire",
+      sub: "Demand",
+      group: "Demand",
+      timing: "lagging",
+      term: "Consumer credit",
+      head: "Consumer Credit, YoY",
+      hist: {
+        s: consumerCreditHistory,
+        k: "m"
+      },
+      mid: CONSUMER_LINE,
       cardUnit: "YoY"
     }, {
       id: "sheet-sign-concentration",
