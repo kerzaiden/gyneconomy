@@ -1,17 +1,18 @@
 import AI from "../data/ai-insights.json" with { type: "json" };
 import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
 import { metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
-import { clockSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
+import { clockSvg, orbitSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
 import { cycleModel, cycleOfYear, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
-import type { TrackSeg } from "./model.ts";
+import type { CycleModel, TrackSeg } from "./model.ts";
 import { colPeek } from "./charts.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { keyed, ROSTER_BY } from "./roster.ts";
-import { cycleScore, fmt, labs, listWords, riskLabs, yearsWord } from "./cycle-analysis.ts";
+import { fmt, labs, listWords, riskLabs, yearsWord } from "./cycle-analysis.ts";
+import { ratesStory } from "./fed-phases.ts";
 import type { Lab } from "./cycle-analysis.ts";
 
-// ---- AI Insights: Claude's dated reading of the open cycle, with today's closest past moments ----
+// ---- AI Insights: every cycle's story, rates and risks; on the open cycle, Claude's dated reading and today's closest past moments ----
 var ECHO_WINDOW = 8;
 function echoWindowWord(){ return ["four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][ECHO_WINDOW - 4] || String(ECHO_WINDOW); }
 type Echo = { q: string; i: number; cycle: Cycle; gap: number; per: number[]; then: number[] };
@@ -124,17 +125,19 @@ function aiDetail(){
 }
 var AI_PAGE = "sheet-ai-insights";
 var CHAPTER_MARKS = [weatherSvg, marketSvg];
-function rankNow(R: RosterRow){
-  var h = keyed(R.hist).filter(function(d){ return d.v != null; }).map(function(d){ return d.v as number; });
-  return { R:R, pct:rankToDate(h.slice(0, -1), h[h.length - 1]) };
+function rankAt(R: RosterRow, i: number){
+  var c = marketCycles[i], end = c.ongoing ? Infinity : c.to;
+  var h = keyed(R.hist).filter(function(d){ return d.v != null && +d.k.slice(0, 4) <= end; }).map(function(d){ return d.v as number; });
+  return { R:R, pct:c.ongoing ? rankToDate(h.slice(0, -1), h[h.length - 1]) : rankToDate(h, labOf(R.id).per[i]) };
 }
 function pic(inner: string, cap: string){ return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap + '</small></div>'; }
-function risksPic(){
-  var risks = riskLabs(marketCycles.indexOf(nowModel.era)).map(function(l){ return ROSTER_BY[l.id]; }).filter(Boolean);
-  var rows = risks.map(rankNow).filter(function(x): x is { R: RosterRow; pct: number } { return x.pct != null; }).sort(function(a, b){ return b.pct - a.pct; });
-  return !rows.length ? pic("", "Nothing in Cycle Statistics reads as Risk today.") : pic(rows.map(function(x){
+function risksPic(m: CycleModel){
+  var i = marketCycles.indexOf(m.era), when = m.ongoing ? "today" : "in this cycle";
+  var risks = riskLabs(i).map(function(l){ return ROSTER_BY[l.id]; }).filter(Boolean);
+  var rows = risks.map(function(R){ return rankAt(R, i); }).filter(function(x): x is { R: RosterRow; pct: number } { return x.pct != null; }).sort(function(a, b){ return b.pct - a.pct; });
+  return !rows.length ? pic("", "Nothing in Cycle Statistics reads as Risk " + when + ".") : pic(rows.map(function(x){
     return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + '%</b></div>';
-  }).join(""), "Every result Cycle Statistics reads as Risk today, past a fence of her closed cycles, placed against its own whole record: the share of past readings below it.");
+  }).join(""), "Every result Cycle Statistics reads as Risk " + when + ", past a fence of her closed cycles, placed against " + (m.ongoing ? "its own whole record: the share of past readings below it." : "its record to the cycle’s end: the share of readings below it."));
 }
 function tilesPic(ids: string[]){
   var p = panel();
@@ -161,20 +164,27 @@ function pathStrip(label: string, end: number){
 }
 var CHAPTER_PICS = [function(){ return tilesPic(AI.tiles.economy); }, function(){ return tilesPic(AI.tiles.market); }];
 function para(html: string){ return '<p class="ai-p">' + html + '</p>'; }
-function leadBoxes(){
-  return trendBox(sparkleSvg(), nowModel.era.name, para(fill(AI.lede)) + pic(cycleScore(nowModel), "The share of her readings in their normal range, out of 100, judged against the scores of her closed cycles."));
+var shownModel: CycleModel | null = null;
+function aiModel(){ return shownModel || nowModel; }
+function storyOf(m: CycleModel){ return m.ongoing ? fill(AI.lede) : m.era.blurb; }
+function leadBoxes(m: CycleModel){
+  return trendBox(sparkleSvg(), m.era.name, para(storyOf(m))) +
+    trendBox(orbitSvg(), "Interest Rates", para(ratesStory(m.era)));
 }
-function aiPage(){
-  return '<div class="ai-page">' + leadBoxes() +
-    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join("") + trendBox(umbrellaSvg(), "Risk Factors", risksPic()) +
-    trendBox(clockSvg(), "Closest Moments", para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
-    '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail()) + '</div>';
+function chapters(){ return AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join(""); }
+function todayBoxes(){
+  return trendBox(clockSvg(), "Closest Moments", para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
+    '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail());
+}
+function aiPage(m: CycleModel){
+  return '<div class="ai-page">' + leadBoxes(m) + (m.ongoing ? chapters() : "") + trendBox(umbrellaSvg(), "Risk Factors", risksPic(m)) + (m.ongoing ? todayBoxes() : "") + '</div>';
 }
 export function buildAiPage(home: HTMLElement){
   var sheet = metricSheet(AI_PAGE);
   home.appendChild(sheet);
-  sheetRenderers[AI_PAGE] = function(){ sheet.innerHTML = aiPage(); };
+  sheetRenderers[AI_PAGE] = function(){ sheet.innerHTML = aiPage(aiModel()); };
 }
-export function aiInsights(){
-  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(AI.lede), "ai-clamp"));
+export function aiInsights(m: CycleModel){
+  shownModel = m;
+  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp"));
 }

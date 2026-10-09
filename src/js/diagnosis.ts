@@ -18,7 +18,7 @@ var DIAG_SRC = [
 ];
 function diagnosisHtml(m: CycleModel){
   if (m.ongoing && !diagnoseToday()) return "";
-  return (m.ongoing ? aiInsights() : "") + chartDoor(m) + yearByYear(m);
+  return aiInsights(m) + chartDoor(m) + yearByYear(m);
 }
 function yearByYear(m: CycleModel){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];

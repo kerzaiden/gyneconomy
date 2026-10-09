@@ -304,7 +304,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'trend,sys' && past.doors === 1 && !past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'ai,trend,sys' && past.doors === 2 && !past.after &&
      yearRun(past.years) && past.opens === past.years.length)
       ? ok('the cycle reads year by year, newest first, each year opening Elements, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening Elements, today and at a close', JSON.stringify([today, past]));
@@ -328,7 +328,7 @@ async function openPage(p, url, sheet) {
     await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
-    (past && past.visible && past.title === 'Cycle Analysis' && past.lead === 1 && past.story && past.kicker === 'Big Tech Cycle')
+    (past && past.visible && past.title === 'AI Insights' && past.lead === 1 && past.story && past.kicker === 'Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -429,15 +429,13 @@ async function openPage(p, url, sheet) {
         if (!head || !head.querySelector('.peek-chev') || head.textContent.trim() !== 'Learn more') return 'no Learn more';
         head.click(); await frame();
         const sh = document.getElementById('sheet-sign-hormones');
-        if (!sh || !sh.offsetParent) return 'no page';
-        const want = past ? /Dot-Com/ : /AI/, story = [...sh.querySelectorAll('.hi-card .hi-name')].find(n => want.test(n.textContent));
-        return story && story.parentNode.querySelector('p').textContent.length > 40 ? document.getElementById('topbar-title').textContent : 'no story';
+        return sh && sh.offsetParent ? document.getElementById('topbar-title').textContent : 'no page';
       }, past);
     };
     const got = [await rateFrom(false), await rateFrom(true)];
     got.every(t => t === 'Federal funds rate')
-      ? ok('the rates card stands on Analysis alone, and Learn more opens the Federal funds rate with that cycle\'s rates story, today and for a past cycle')
-      : bad('the rates card stands on Analysis alone, and Learn more opens the Federal funds rate with that cycle\'s rates story', JSON.stringify(got));
+      ? ok('the rates card stands on Analysis alone, and Learn more opens the Federal funds rate, today and for a past cycle')
+      : bad('the rates card stands on Analysis alone, and Learn more opens the Federal funds rate, today and for a past cycle', JSON.stringify(got));
   }
 
   {

@@ -284,13 +284,16 @@ test('a boot failure with no stored documents is not swallowed', () => {
 });
 
 test('a past cycle shows its own record on the Diagnosis, and Back restores today', () => {
-  const head = document.querySelector('#diagnosis .trend-head').textContent;
+  const heads = () => [...document.querySelectorAll('#diagnosis .trend-head')].map(h => h.textContent).join();
+  const lede = () => document.querySelector('#diagnosis [data-open="sheet-ai-insights"] .ai-clamp').textContent;
+  const head = lede();
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'Cycle Analysis');
+  assert.equal(heads(), 'AI Insights,Cycle Analysis');
+  assert.equal(lede(), ui.eraOpen.blurb);
   ui.eraPageBack();
   assert.equal(ui.eraOpen, null);
-  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, head);
+  assert.equal(lede(), head);
   assert.deepEqual(errors, []);
 });
 
