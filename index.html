@@ -565,7 +565,8 @@
   .fp-key-band::before{ width:11px; height:11px; border-radius:3px; background:var(--wash); }
   .fp-key-line::before{ width:12px; height:3px; border-radius:2px; background:var(--line); }
   .fp-note{ margin:7px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
-  .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
+  .fp-end{ white-space:nowrap; }
+  .fp-more{ display:inline-flex; align-items:center; margin:-6px -6px -6px 0; padding:6px; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
@@ -47989,23 +47990,34 @@
   }
   function levelTags(segs, sc, bands, keep) {
     var pts2 = curvePts(segs).concat(keep), y = sc.y;
-    return ruleLevels(sc).map(function(v) {
-      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%", w = 6 + 6 * text.length;
-      var t = bands.filter(function(b) {
-        return b.w * TAG.plotW >= w + 10;
-      }).map(function(b) {
-        return {
+    var marks = ruleLevels(sc).map(function(v) {
+      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%";
+      return {
+        v: v,
+        text: text,
+        w: 6 + 6 * text.length
+      };
+    });
+    var wide = Math.max.apply(null, marks.map(function(k) {
+      return k.w;
+    }).concat(0));
+    var tries = bands.filter(function(b) {
+      return b.w * TAG.plotW >= wide + 10;
+    }).map(function(b) {
+      return marks.map(function(k) {
+        var t = {
           ax: b.l,
-          ay: y(v) / VIEW_H,
-          w: w,
+          ay: y(k.v) / VIEW_H,
+          w: k.w,
           dx: 5,
           dy: -TAG.h
         };
-      }).filter(function(c) {
-        return !tagHits(c, pts2);
-      })[0];
-      return t ? tagSpan("fp-level-tag", text, t) : "";
-    }).join("");
+        return tagHits(t, pts2) ? "" : tagSpan("fp-level-tag", k.text, t);
+      });
+    });
+    return tries.reduce(function(a, c) {
+      return c.filter(Boolean).length > a.filter(Boolean).length ? c : a;
+    }, []).join("");
   }
   function pct(n) {
     return (n * 100).toFixed(2) + "%";
@@ -48088,8 +48100,8 @@
   }
   function footnoteHtml(m, peak) {
     var text = m.era.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", " ") : "");
-    var rate = ROSTER_BY["sheet-sign-hormones"];
-    return '<p class="fp-note">' + text + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '">Learn more' + CHEV + "</button></p>";
+    var rate = ROSTER_BY["sheet-sign-hormones"], cut = text.lastIndexOf(" ") + 1;
+    return '<p class="fp-note">' + text.slice(0, cut) + '<span class="fp-end">' + text.slice(cut) + '<button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '" aria-label="' + rate.name + '">' + CHEV + "</button></span></p>";
   }
   function endMonthOf(m) {
     if (!m.ongoing) return m.endMonth;

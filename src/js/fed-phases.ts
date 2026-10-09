@@ -104,12 +104,12 @@ function peakZone(px: number, py: number){
 }
 function levelTags(segs: number[][][], sc: Scale, bands: Band[], keep: number[][]){
   var pts = curvePts(segs).concat(keep), y = sc.y;
-  return ruleLevels(sc).map(function(v){
-    var text = (v < 0 ? "\u2212" : "") + Math.abs(v) + "%", w = 6 + 6 * text.length;
-    var t = bands.filter(function(b){ return b.w * TAG.plotW >= w + 10; }).map(function(b){ return { ax: b.l, ay: y(v) / VIEW_H, w: w, dx: 5, dy: -TAG.h }; })
-      .filter(function(c){ return !tagHits(c, pts); })[0];
-    return t ? tagSpan("fp-level-tag", text, t) : "";
-  }).join("");
+  var marks = ruleLevels(sc).map(function(v){ var text = (v < 0 ? "\u2212" : "") + Math.abs(v) + "%"; return { v: v, text: text, w: 6 + 6 * text.length }; });
+  var wide = Math.max.apply(null, marks.map(function(k){ return k.w; }).concat(0));
+  var tries = bands.filter(function(b){ return b.w * TAG.plotW >= wide + 10; }).map(function(b){
+    return marks.map(function(k){ var t = { ax: b.l, ay: y(k.v) / VIEW_H, w: k.w, dx: 5, dy: -TAG.h }; return tagHits(t, pts) ? "" : tagSpan("fp-level-tag", k.text, t); });
+  });
+  return tries.reduce(function(a, c){ return c.filter(Boolean).length > a.filter(Boolean).length ? c : a; }, [] as string[]).join("");
 }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
 var GRID_STEPS = [1, 2, 5, 10];
@@ -162,8 +162,8 @@ function legendHtml(){
 }
 function footnoteHtml(m: CycleModel, peak: MonthPoint | null){
   var text = m.era.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", "\u00a0") : "");
-  var rate = ROSTER_BY["sheet-sign-hormones"];
-  return '<p class="fp-note">' + text + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '">Learn more' + CHEV + '</button></p>';
+  var rate = ROSTER_BY["sheet-sign-hormones"], cut = text.lastIndexOf(" ") + 1;
+  return '<p class="fp-note">' + text.slice(0, cut) + '<span class="fp-end">' + text.slice(cut) + '<button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '" aria-label="' + rate.name + '">' + CHEV + '</button></span></p>';
 }
 function endMonthOf(m: CycleModel){
   if (!m.ongoing) return m.endMonth;

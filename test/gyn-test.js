@@ -412,7 +412,7 @@ async function openPage(p, url, sheet) {
         document.querySelector('.tab-btn[data-tab="' + tab + '"]').click(); await frame();
         if (past){ [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click(); await frame(); }
         const head = [...document.querySelectorAll('.fp-note .fp-more[data-open="sheet-sign-hormones"]')].find(e => e.offsetParent);
-        if (!head || !head.querySelector('.peek-chev') || !/Learn more/.test(head.textContent)) return 'no Learn more';
+        if (!head || !head.querySelector('.peek-chev') || head.textContent.trim() || !head.getAttribute('aria-label') || !head.closest('.fp-end')) return 'no chevron';
         head.click(); await frame();
         const sh = document.getElementById('sheet-sign-hormones');
         return sh && sh.offsetParent ? document.getElementById('topbar-title').textContent : 'no page';
@@ -420,8 +420,8 @@ async function openPage(p, url, sheet) {
     };
     const got = [await rateFrom('cycle'), await rateFrom('chart'), await rateFrom('analysis', true)];
     got.every(t => t === 'Federal funds rate')
-      ? ok('Learn more under the rates story opens the Federal funds rate on Current Cycle, Analysis and a past cycle')
-      : bad('Learn more under the rates story opens the Federal funds rate on Current Cycle, Analysis and a past cycle', JSON.stringify(got));
+      ? ok('the chevron after the rates story opens the Federal funds rate on Current Cycle, Analysis and a past cycle')
+      : bad('the chevron after the rates story opens the Federal funds rate on Current Cycle, Analysis and a past cycle', JSON.stringify(got));
   }
 
   {
