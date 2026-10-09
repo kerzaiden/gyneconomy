@@ -1087,8 +1087,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   connected to EKG". Rhythm is the standard deviation of the last eight quarterly changes in M2 velocity; it reads
   Irregular past the 90th percentile of every two-year window from 1959 to 2007 (1.31 points). No convention sets it, so it is
   derived and the (i) says so; the window and the percentile are Claude's. The Now trace beats at each quarter's own
-  velocity across its five years, so its spacing shows the rhythm. The pulse container, the Now and pre-2008 traces, is a card in
-  Insights beside Rhythm (Keren: "take the money velocity container with the pulse and put it in the insights"). Familiar metrics are a guideline, not a rule: Keren,
+  velocity across its five years, so its spacing shows the rhythm. The Money velocity card in Insights, beside Rhythm, is words only:
+  today's turnover against the 1959–2007 average (0.9.25; Keren: "I don't think I need to see the graph … use simple
+  words and remove duplicates"). Its traces are gone, and so is the COVID-era low line, which the strips and the (i)
+  already show. Familiar metrics are a guideline, not a rule: Keren,
   "If you think that some KPI would shed light on our Gyneconomy model, then let's think about it." Told Keren, not printed:
   Irregular quarters fall in Spring 4 of 96 times, against Summer 14 of 61, Autumn 15 of 96 and Winter 5 of 9. (0.9.24)
 - **The Pulse history is an EKG strip per year, in the history frame, instead of the velocity columns.** Keren: "Inside

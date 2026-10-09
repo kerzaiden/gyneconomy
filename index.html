@@ -646,10 +646,6 @@
   .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.42; }
   .peek-chart.heat .now{ opacity:1; }
   .peek-chart svg{ display:block; width:100%; height:var(--mini-h); overflow:visible; }
-  .pt-svg{ display:block; width:100%; height:52px; overflow:visible; }
-  .pt-svg path{ fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
-  .pt-now{ stroke:var(--accent); }
-  .pt-ref{ stroke:var(--text-muted); opacity:0.8; }
   .vh-host{ margin:10px 0 2px; }
 
   .vh-svg{ display:block; width:100%; height:auto; margin:10px 0 2px; overflow:visible; }
@@ -676,17 +672,6 @@
   .page-foot > .timing-row{ margin:0; flex:none; }
   .page-foot > .more-row{ margin:0; flex:1 1 auto; }
   .detail-modal .timing-row{ margin:18px 0 0; padding-top:16px; border-top:1px solid var(--border); }
-  .pulsetrace{ margin:12px 0 0; }
-  .pulsetrace .pt-svg.solo{ height:42px; }
-  .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
-  .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
-  .pt-head:first-child{ margin-top:0; }
-  .pt-k{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em;
-    font-weight:600; color:var(--text-primary); }
-  .pt-head.past .pt-k{ color:var(--text-muted); }
-  .pt-v{ font-size:var(--type-meta); color:var(--text-secondary); }
-  .pt-head.past .pt-v{ color:var(--text-muted); }
-  .pt-note{ font-size:var(--type-meta); color:var(--text-muted); line-height:1.55; margin:12px 0 0; }
 
   .yl-col{ fill:none; stroke-linecap:round; }
   .yl-col.inverted{ stroke:var(--critical); }
@@ -43301,8 +43286,6 @@
     var w = String(t || "Reference").split(",")[0].trim();
     return w.charAt(0).toUpperCase() + w.slice(1);
   }
-  var PULSE_WINDOW = 5;
-  var pulseClipN = 0;
   function beatPath(x0, x1, y, period, amp) {
     var f = function(n) {
       return n.toFixed(1);
@@ -43325,37 +43308,6 @@
       x += p;
     }
     return d.join("");
-  }
-  function lanePeriod(even, W, span, pace) {
-    if (!pace || !pace.length) return even;
-    return function(x) {
-      return W / (span * pace[Math.max(0, Math.min(pace.length - 1, Math.floor(x / W * pace.length)))]);
-    };
-  }
-  function pulseLane(k, v, rate, cls, years, pace, head) {
-    return '<div class="pt-head' + (head ? " " + head : "") + '"><span class="pt-k">' + k + '</span><span class="pt-v mono">' + v + "</span></div>" + pulseTraceSvg(rate, null, 520, 34, 11, cls, years, pace);
-  }
-  function pulseTraceSvg(rate, ref, W, H, amp, cls, years, pace) {
-    var id = "pulseclip" + ++pulseClipN;
-    var span = years || PULSE_WINDOW;
-    var lanes = ref == null ? [ {
-      r: rate,
-      y: H * .52,
-      c: "pt-now"
-    } ] : [ {
-      r: ref,
-      y: H * .76,
-      c: "pt-ref"
-    }, {
-      r: rate,
-      y: H * .3,
-      c: "pt-now"
-    } ];
-    var paths = lanes.map(function(L) {
-      var beats = Math.max(.5, (L.r == null ? 0 : L.r) * span);
-      return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, lanePeriod(W / beats, W, span, L.c === "pt-now" ? pace : void 0), amp) + '"/>';
-    }).join("");
-    return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs><g clip-path="url(#' + id + ')">' + paths + "</g></svg>";
   }
   var PAYROLLS_LINE = 0;
   var RETAIL_LINE = 0;
@@ -45199,10 +45151,6 @@
     },
     shortCaption: "Recovering off an all-time low, but still circulating well under her pre-2008 pace.",
     caption: "Her literal pulse — not a mood, a tempo: how many times the same dollar changes hands in a year (nominal GDP ÷ M2), independent of how anxious or calm she feels. The parallel is arithmetic rather than poetic. A heart's output is its rate times the volume it moves per beat; an economy's nominal output is its velocity times the money it holds. Those are the same equation wearing two sets of names — M2 is the stroke volume, velocity is the pulse rate, and nominal GDP is what the two of them together deliver. Which is also why the spectrum runs the way it does: money sitting still is a body at rest or stalled, money changing hands quickly is a body working hard, and past a point, running hot. One honest caveat — unlike a pulse, this is not measured directly. It is computed, nominal GDP divided by M2, so it can never tell you anything those two have not already said; that is why the post-2008 collapse in velocity surprised a monetary tradition that had assumed it was stable. Steadily recovering off the all-time low set during 2020's stimulus (1.13×), but still running well under the 1.7–2.2× pace that held from the 1960s through the mid-2000s — a slower circulation than her long-run norm, consistent with a system still holding more cash and credit per transaction than it used to.",
-    aux: {
-      label: "COVID-era low (2020)",
-      value: "1.13×"
-    },
     src: [ {
       t: "Federal Reserve via FRED — Velocity of M2 Money Stock, quarterly since 1959 (M2V; record low 1.126 in Q2 2020, high 2.192 in Q3 1997)",
       u: "https://fred.stlouisfed.org/series/M2V"
@@ -45614,7 +45562,7 @@
   }
   function pulseCard(rate, ref, ind) {
     var slower = Math.round((1 - rate / ref) * 100);
-    return hiCard(ind.econTerm, tagFor(ind).state || "", tagFor(ind).text + ": she turns her money over about " + slower + "% less often than she did across 1959–2007.", '<div class="pulsetrace">' + pulseLane("Now", rate.toFixed(2) + "× a year", rate, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) + pulseLane("Her pre-2008 pace", ref.toFixed(2) + "× a year", ref, "solo past", void 0, void 0, "past") + '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW + " years, so the gap you can see is the gap in the number. The top trace beats at each quarter’s own pace, so its spacing is her rhythm: even when steady, uneven when not.</p></div>");
+    return hiCard(ind.econTerm, tagFor(ind).state || "", tagFor(ind).text + ": the same dollar changes hands " + rate.toFixed(2) + "× a year, about " + slower + "% less often than the " + ref.toFixed(2) + "× she averaged across 1959–2007.");
   }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
@@ -50863,7 +50811,7 @@
     var steadier = h.filter(function(d) {
       return d.v < last.v;
     }).length;
-    return hiCard("Rhythm", odd ? "warning" : "good", (odd ? "Irregular" : "Steady") + ": in the two years to " + pointLabel(last) + " velocity’s quarterly changes spread by " + pts(last.v) + ", " + (steadier ? "steadier than all but " + steadier + " of the " + h.length + " two-year windows since " + pointLabel(h[0]) : "the steadiest of the " + h.length + " two-year windows since " + pointLabel(h[0])) + ". Past " + pts(r.edge) + " the rhythm is irregular; it ran irregular for a year or more in " + listed(stretches(r)) + ".");
+    return hiCard("Rhythm", odd ? "warning" : "good", (odd ? "Irregular" : "Steady") + ": " + (steadier ? "steadier than all but " + steadier + " of the " + h.length + " two-year stretches on record" : "the steadiest two years on record") + ". It last ran irregular in " + listed(stretches(r).slice(-3)) + ".");
   }
   function rhythmInfo() {
     var r = rhythmRecord();

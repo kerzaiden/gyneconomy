@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d85328e` on 2026-10-09. **105 components**, **18 shared patterns**.
+Generated from commit `492c690` on 2026-10-09. **102 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -41,8 +41,6 @@ Generated from commit `d85328e` on 2026-10-09. **105 components**, **18 shared p
 | **`histBar`** | `.hist-bar` | `reading.ts:drawReading` |
 | **`histTip`** | `.gdp-tooltip` `.hist-tip` | `reading.ts:historyHtml` |
 | **`meanRule`** | `.vh-mean` | `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart` |
-| **`pulseLane`** | `.pt-k` `.pt-v` | `readings.ts:pulseCard` |
-| **`pulseTraceSvg`** | `.pt-svg` | `charts.ts:pulseLane` |
 | **`trendOf`** | `.tp-arrow` | `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:definePressure`, `pressure.ts:ylmFitLine`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
 | **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:definePressure`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
 | **`vGrid`** | `.bt-vgrid` | `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:yearTicks`, `pulse-strips.ts:stripPaper`, `render-pages.ts:paintSpreads` |
@@ -175,12 +173,6 @@ Generated from commit `d85328e` on 2026-10-09. **105 components**, **18 shared p
 | **`chartShell`** | `.chart-shell` | `pressure.ts:definePressure`, `render-pages.ts:defineSpreads` |
 | **`historyHtml`** | `.page-chart` | `reading.ts:drawReading` |
 
-## readings.ts
-
-| Component | Owns | Used by |
-|---|---|---|
-| **`pulseCard`** | `.pt-note` `.pulsetrace` | `pressure.ts:defineFlow` |
-
 ## render-core.ts
 
 | Component | Owns | Used by |
@@ -308,9 +300,7 @@ renderer speaks. Listed most-used first.
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
-| **`pointLabel`** | format.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
-| **`pts`** | rhythm.ts | 3 places |
 | **`quartile`** | format.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
 | **`readingFor`** | reading.ts | 3 places |
@@ -344,10 +334,10 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.caption` | 21 | `credit.ts:readingOf`, `dial-cycle.ts:renderCycleKicker`, `pressure.ts:pressureMaturities`, `pulse-strips.ts:stripsInfo`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `readings.ts:yearLead`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
 | `.follow` | 17 | `credit.ts:readingOf`, `pulse-strips.ts:stripsInfo`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:realInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
 | `.hcol` | 5 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart` |
-| `.mono` | 3 | `charts.ts:fitGroup`, `charts.ts:histTip`, `charts.ts:pulseLane` |
 | `.cycsel-nm` | 3 | `history.ts:headMenuHtml`, `history.ts:headPickRow`, `history.ts:nameAside` |
 | `.marker-sub` | 3 | `indicators.ts:splitInfo`, `inner-pages.ts:valuationInfo`, `readings.ts:volatilityDetailHtml` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
+| `.mono` | 2 | `charts.ts:fitGroup`, `charts.ts:histTip` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
 | `.dx` | 2 | `diagnosis.ts:diagnosisHost`, `portfolio.ts:buildPortfolio` |
 | `.season-sw` | 2 | `dial-cycle.ts:renderCycleKicker`, `portfolio.ts:drawWeather` |

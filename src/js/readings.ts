@@ -1,9 +1,9 @@
 import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLabel, MONTHS_SHORT, qPretty, quartile, srcBlock, tagFor, titleCase } from "./format.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
-import { colPeek, PULSE_WINDOW, pulseLane } from "./charts.ts";
+import { colPeek } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY, yearDone } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, m2vHistory, SAHM_TRIGGER, unempSahm, sahmOf } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf } from "./data.ts";
 import { cpiNow, growthWord, inflationFigure, nowModel, potentialGap, realReturn, yearInflation } from "./model.ts";
 import type { ModelReading } from "./model.ts";
 import { creditReadings } from "./credit.ts";
@@ -83,7 +83,6 @@ export var coincident: Indicator[] = [
            ends:{ low:"Slow · hoarding", zone:"Pre-2008", high:"Fast · spending" }},
     shortCaption:"Recovering off an all-time low, but still circulating well under her pre-2008 pace.",
     caption:"Her literal pulse — not a mood, a tempo: how many times the same dollar changes hands in a year (nominal GDP ÷ M2), independent of how anxious or calm she feels. The parallel is arithmetic rather than poetic. A heart's output is its rate times the volume it moves per beat; an economy's nominal output is its velocity times the money it holds. Those are the same equation wearing two sets of names — M2 is the stroke volume, velocity is the pulse rate, and nominal GDP is what the two of them together deliver. Which is also why the spectrum runs the way it does: money sitting still is a body at rest or stalled, money changing hands quickly is a body working hard, and past a point, running hot. One honest caveat — unlike a pulse, this is not measured directly. It is computed, nominal GDP divided by M2, so it can never tell you anything those two have not already said; that is why the post-2008 collapse in velocity surprised a monetary tradition that had assumed it was stable. Steadily recovering off the all-time low set during 2020's stimulus (1.13×), but still running well under the 1.7–2.2× pace that held from the 1960s through the mid-2000s — a slower circulation than her long-run norm, consistent with a system still holding more cash and credit per transaction than it used to.",
-    aux:{label:"COVID-era low (2020)", value:"1.13×"},
     src:[{t:"Federal Reserve via FRED — Velocity of M2 Money Stock, quarterly since 1959 (M2V; record low 1.126 in Q2 2020, high 2.192 in Q3 1997)", u:"https://fred.stlouisfed.org/series/M2V"}]
   },
   {
@@ -412,12 +411,8 @@ export function horizonInfoHtml(pick: string, detail: string){
 }
 export function pulseCard(rate: number, ref: number, ind: Indicator){
   var slower = Math.round((1 - rate / ref) * 100);
-  return hiCard(ind.econTerm, tagFor(ind).state || "", tagFor(ind).text + ": she turns her money over about " + slower + "% less often than she did across 1959\u20132007.",
-    '<div class="pulsetrace">' +
-    pulseLane("Now", rate.toFixed(2) + "\u00d7 a year", rate, "solo", PULSE_WINDOW, m2vHistory.slice(-PULSE_WINDOW * 4)) +
-    pulseLane("Her pre-2008 pace", ref.toFixed(2) + "\u00d7 a year", ref, "solo past", undefined, undefined, "past") +
-    '<p class="pt-note">One beat is one turnover of the same dollar, and both traces run the same ' + PULSE_WINDOW +
-    ' years, so the gap you can see is the gap in the number. The top trace beats at each quarter\u2019s own pace, so its spacing is her rhythm: even when steady, uneven when not.</p></div>');
+  return hiCard(ind.econTerm, tagFor(ind).state || "", tagFor(ind).text + ": the same dollar changes hands " + rate.toFixed(2) + "\u00d7 a year, about " + slower +
+    "% less often than the " + ref.toFixed(2) + "\u00d7 she averaged across 1959\u20132007.");
 }
 export function volatilityDetailHtml(){
   var m = now.vixRow.meter;
