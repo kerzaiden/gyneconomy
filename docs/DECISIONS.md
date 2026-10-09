@@ -529,9 +529,10 @@ settles it; none is open after V668.
   Deal, and the three named below; Claude's draft names), and the Baby Boom Cycle opens at 1947, its first bull year
   under the cycle rule. Before 1957 the returns are the S&P's 90-stock predecessor's, as Damodaran's table carries
   them. (V511, V689, V690)
-- **The 1935–37 cycle is the Second New Deal, 1938–41 the Keynesian, and 1942–46 the WWII Cycle, the war
+- **The 1935–37 cycle is the New Deal II Cycle, 1938–41 the Keynesian, and 1942–46 the WWII Cycle, the war
   written in Roman numerals wherever that cycle names it.** All three are Keren's names; the war cycle dropped
-  "Victory" to be plainly the WWII Cycle. (V690, V708, 0.9.31)
+  "Victory" to be plainly the WWII Cycle, and "Second New Deal" became New Deal II to read the same way. (V690,
+  V708, 0.9.31, New Deal II)
 - **A cycle that closed before her mood can be read keeps its Diagnosis: the Mood door says when the mood begins,
   and Circulation, Energy and what followed read as for any closed cycle.** (V689)
 - **To close an era, set its `to` to its last bear year, drop `ongoing`, and open the next era on the
