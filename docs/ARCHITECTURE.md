@@ -626,9 +626,9 @@ emotion at the closing month, its years, and what followed a year later. Every l
   The walk is over the whole record because a run crosses cycle edges.
   The rules, the turn lines (`turnsHtml`, one dashed line at each phase start inside the window) and the peak's strip
   are HTML in one rounded clip (`fp-clip`) under an SVG drawn with `preserveAspectRatio="none"` and non-scaling
-  strokes, so the card is fluid and the plot's four corners stay round. `monthPoints` averages the window into about `POINTS` buckets, `pinPeak` inserts the peak's
-  true reading at its month, and `soften` pins both ends to the window's edges and smooths once ([1,2,1]/4), so the
-  curves run edge to edge and still pass through the Peak; `segments` joins the points with a monotone cubic whose
+  strokes, so the card is fluid and the plot's four corners stay round. `monthPoints` samples the window at `POINTS` + 1 even steps from its first month to its last,
+  each a Gaussian-weighted mean of the months around it (σ = the window over `WAVE`, at least a month), reading
+  months before the window but none after its end, so the curves run edge to edge without a forecast; `segments` joins the points with a monotone cubic whose
   slope is zero at every turn, so no curve overshoots a reading. The level figures all sit at the plot's left edge, and one that would cross the top is left out. The 1Y · 5Y · Cycle bar is
   the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`; the
   figure is `fedFundsRange()` on the open cycle and the rate's last reading at a closed cycle's end, and the legend names the rate for the series it draws. `rateSeries` is

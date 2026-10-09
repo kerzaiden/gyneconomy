@@ -1601,8 +1601,10 @@ settles it; none is open after V668.
   (`--surface-2`), a faint dashed line wherever the Fed changes direction, and a narrow lilac strip at the inflation
   peak; above it, today's
   target range (or the rate at a closed cycle's close) as one large serif figure, and a thin 1Y · 5Y · Cycle bar.
-  The curves are drawn freely: about twelve averaged points per window, lightly smoothed, joined by curves that
-  rest flat at every turn, edge to edge of the plot; the scale runs from one point below the lowest reading to one
+  The curves are drawn as waves: each month and its neighbours smoothed together (a Gaussian about a fourteenth
+  of the window wide, never reading past the window's end), sampled at thirteen even steps and joined by curves
+  that rest flat at every turn, edge to edge of the plot; smoother settings were tried and lost real turns such as
+  the 1980 dip in rates; the scale runs from one point below the lowest reading to one
   above the highest; faint guide rules at a round step (1%, else 2%, 5% or 10%, at most six), each with its figure
   at the plot's left edge. The type matches Cycle Statistics: the story at reading size, the legend and axis at
   meta size.** It shows the environment at a glance, the way Clair shows hormones: the rates are the backdrop the
@@ -1612,8 +1614,8 @@ settles it; none is open after V668.
   each turn helps the reading and keeps the look of the hormone charts women know. The one figure is the rate itself; no phase line sits under it, since "easing since" misread a
   cycle the Fed reversed more than once. Growth is the other half of the season and the dial already shows it; the
   cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. The inflation
-  peak is only a strip, like Clair's LH strip: narrow, near-square, in Clair's own lilac (`--peak-lilac`, sampled
-  from her chart, since the palette had no match), fading downward, with no dot or label; the prices curve passes
+  peak is only a strip, like Clair's LH strip: narrow, near-square, in the palette's lavender (`--ylm-3m`, the closest
+  purple the app has to Clair's; Keren preferred no new colour), fading downward, with no dot or label; the prices curve passes
   through its true reading, and it shows only when the window holds it. A turn is a change in the direction of the
   Fed's last move, so a pause stays in the phase it followed; an "on hold" state would need a cut-off nobody has
   published (Keren asked, Oct 9, 2026). The axis ends in Today, or the close's month, so no Current pill or end dot

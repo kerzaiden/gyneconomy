@@ -43,13 +43,16 @@ export function cyclePeak(from: string, to: string){
 }
 
 // ---- The phases chart ----
-var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 12, CURL = 0.4;
+var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 12, CURL = 0.4, WAVE = 14;
 function monthPoints(list: MonthPoint[], from: number, to: number){
-  var size = Math.max(1, Math.round((to - from + 1) / POINTS)), sums: Record<number, number[]> = {};
-  list.forEach(function(d){ var i = monthIdx(d.m), b = Math.floor((i - from) / size); if (i >= from && i <= to) (sums[b] = sums[b] || []).push(d.v); });
-  return Object.keys(sums).map(Number).sort(function(a, b){ return a - b; }).map(function(b){
-    return { i: Math.min(from + b * size + (size - 1) / 2, to), v: sums[b].reduce(function(a, c){ return a + c; }, 0) / sums[b].length };
-  });
+  var at: Record<number, number> = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out: Pt[] = [];
+  list.forEach(function(d){ var i = monthIdx(d.m); if (i <= to) at[i] = d.v; });
+  for (var k = 0; k <= POINTS; k++){
+    var c = from + (to - from) * k / POINTS, w = 0, sum = 0;
+    for (var i = Math.floor(c - 3 * sigma); i <= Math.ceil(c + 3 * sigma); i++) if (at[i] != null){ var g = Math.exp(-(i - c) * (i - c) / (2 * sigma * sigma)); w += g; sum += g * at[i]; }
+    if (w) out.push({ i: c, v: sum / w });
+  }
+  return out;
 }
 function slopes(p: number[][]){
   return p.map(function(b, k){
@@ -126,8 +129,8 @@ function plotSvg(lines: Pt[][], from: number, to: number){
 function turnsHtml(from: number, to: number){
   return fedPhases().map(function(p){ return monthIdx(p.m); }).filter(function(i){ return i > from && i < to; }).map(function(i){ return '<i class="fp-turn" style="left:' + pct((i - from) / (to - from)) + '"></i>'; }).join("");
 }
-function stripHtml(peak: Pt | null, from: number, to: number){
-  return peak ? '<span class="fp-strip" style="left:' + pct((peak.i - from) / Math.max(to - from, 1)) + '"></span>' : "";
+function stripHtml(at: number, from: number, to: number){
+  return at < 0 ? "" : '<span class="fp-strip" style="left:' + pct((at - from) / Math.max(to - from, 1)) + '"></span>';
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }
@@ -156,22 +159,13 @@ function closingRate(m: CycleModel, toM: string){
   return d ? d.v.toFixed(2) : "";
 }
 function heroHtml(m: CycleModel, toM: string){ return '<div class="fp-hero"><b class="fp-fig">' + closingRate(m, toM) + '<small>%</small></b></div>'; }
-function soften(lines: Pt[][], from: number, to: number){
-  return lines.map(function(l){ return l.map(function(p, k){ var a = l[Math.max(k - 1, 0)], b = l[Math.min(k + 1, l.length - 1)]; return { i: k === 0 ? from : k === l.length - 1 ? to : p.i, v: (a.v + 2 * p.v + b.v) / 4 }; }); });
-}
-function pinPeak(line: Pt[], at: number, v: number){
-  var k = line.filter(function(p){ return p.i < at; }).length, near = k > 0 && k < line.length && Math.abs(line[k].i - at) < 1 ? k : -1;
-  if (near >= 0) line[near] = { i: at, v: v }; else line.splice(k, 0, { i: at, v: v });
-  return k;
-}
 function ratesCard(m: CycleModel, host: string, range: string){
   var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
-  var peak = cyclePeak(m.era.from + "-01", toM), at = peak ? monthIdx(peak.m) : -1, shown = peak && at >= from ? peak : null;
-  var raw = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)], k = shown ? pinPeak(raw[0], at, (shown as MonthPoint).v) : -1;
-  var lines = soften(raw, from, to), top = k < 0 ? null : lines[0][k];
+  var peak = cyclePeak(m.era.from + "-01", toM), at = peak ? monthIdx(peak.m) : -1, top = peak && at >= from ? at : -1;
+  var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
   return heroHtml(m, toM) + tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, top, m) + legendHtml(toM) + footnoteHtml(m);
 }
-function plotHtml(lines: Pt[][], from: number, to: number, top: Pt | null, m: CycleModel){
+function plotHtml(lines: Pt[][], from: number, to: number, top: number, m: CycleModel){
   return '<div class="fp-plot"><span class="fp-clip">' + rulesHtml(levelScale(lines)) + turnsHtml(from, to) + stripHtml(top, from, to) + '</span>' + plotSvg(lines, from, to) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + '</div>';
 }
 export function fedEnvironment(m: CycleModel, host: string, range: string){
