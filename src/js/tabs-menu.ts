@@ -113,7 +113,7 @@ function renderTopbar(){
       GYN.fire("metricPageReset");
       GYN.fire("calendarReset");
       topTitle.textContent = tabTitles[tab as keyof typeof tabTitles] || "Gyneconomy";
-      ui.topbarBack = null;
+      ui.topbarBack = ui.chartBack = null;
       need("topbar-back").hidden = true;
       if (tab === "cycle" && target){ target.insertBefore(cycleView(), byId("today-analysis")); showCycle(currentEra); }
       settleAll();

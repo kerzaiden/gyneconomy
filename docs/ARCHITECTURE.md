@@ -792,6 +792,9 @@ with no reading, by Keren's decision.**
   `bar()` that returns the title and back action for its tab as it stands now: inside a past cycle the
   Analysis home is the cycle (its name and `eraPageBack`, the way back to the list), so backing out of a
   reading's page keeps the arrow. It used to restore the bare "Analysis" title, which dropped the arrow.
+  The Analysis home works the same way: Cycle Statistics on a past cycle switches tabs (`crossToChart`) and
+  leaves `ui.chartBack`, which the home's `bar()` returns until a tab switch clears it; Back fires `eraReturn`,
+  which reopens the cycle in Herstory at the scroll it left.
 - **The readout is a fixed block above the chart, never a tooltip on it.** No register under the chart.
 - **A panel built by a renderer is built once and placed, never rebuilt.** `detailTexts` is
   content-addressed (V532), so a note following a control is never frozen and never leaks.
