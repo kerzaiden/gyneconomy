@@ -381,6 +381,30 @@ async function openPage(p, url, sheet) {
   }
 
   {
+    await p.goto('file://' + url); await ready(p);
+    const bar = () => p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent, back: !document.getElementById('topbar-back').hidden,
+      tabs: getComputedStyle(document.querySelector('.tabnav')).display === 'none', chart: !document.getElementById('panel-chart').hidden,
+      era: !document.getElementById('calendar-cycle').hidden, y: Math.round(window.scrollY) }));
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
+    await p.evaluate(() => [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click()); await settle(p);
+    await p.evaluate(() => { const d = document.querySelector('#calendar-cycle [data-chart-cycle]'); window.scrollTo(0, d.getBoundingClientRect().top + window.scrollY - 200); });
+    await p.waitForTimeout(400); const from = await bar();
+    await p.evaluate(() => document.querySelector('#calendar-cycle [data-chart-cycle]').click()); await settle(p);
+    const crossed = await bar();
+    await p.evaluate(() => document.querySelector('#chart-home .fp [data-open]').click()); await settle(p);
+    const rates = await bar();
+    await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p);
+    const home = await bar();
+    await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); await p.waitForTimeout(400);
+    const back = await bar();
+    const inner = b => b.back && b.tabs;
+    (inner(crossed) && crossed.chart && inner(rates) && rates.title !== 'Analysis' && inner(home) && home.title === 'Analysis' &&
+     inner(back) && !back.chart && back.era && back.title === 'Dot-Com Cycle' && Math.abs(back.y - from.y) < 4)
+      ? ok('a crossover from a past cycle stays an inner page, and Back retraces each step to the cycle', 'returned at ' + back.y + 'px')
+      : bad('a crossover from a past cycle stays an inner page, and Back retraces each step to the cycle', JSON.stringify({ from, crossed, rates, home, back }));
+  }
+
+  {
     const rateFrom = async (tab, past) => {
       await p.goto('file://' + url); await ready(p);
       return p.evaluate(async ([tab, past]) => {

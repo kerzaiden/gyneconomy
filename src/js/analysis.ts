@@ -37,7 +37,7 @@ function renderCycleList(){
   })();
 
   var listWrap = need("calendar-list"), detail = need("calendar-cycle");
-  function open(from: number){
+  function open(from: number, y?: number){
     var era = marketCycles.filter(function(c){ return c.from === from; })[0];
     if (!era) return;
     if (era.ongoing){
@@ -47,7 +47,7 @@ function renderCycleList(){
     enterEra(era, detail);
     listWrap.hidden = true; detail.hidden = false;
     setTopbar(era.name, (ui.eraPageBack = back));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: y || 0, behavior: y ? "auto" : "smooth" });
   }
   function back(){
     leaveEra(); detail.hidden = true; listWrap.hidden = false;
@@ -56,6 +56,7 @@ function renderCycleList(){
   }
   list.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest(".era-row"); if (row) open(parseInt(row.getAttribute("data-era") || "", 10)); });
   list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && (e.target as Element).classList.contains("era-row")){ e.preventDefault(); open(parseInt((e.target as Element).getAttribute("data-era") || "", 10)); } });
+  GYN.on("eraReturn", function(from, y){ need("tab-analysis").click(); open(from as number, y as number); });
   GYN.on("calendarReset", function(){ leaveEra(); detail.hidden = true; listWrap.hidden = false; ui.topbarBack = null; need("topbar-back").hidden = true; });
   addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
 }
