@@ -88,10 +88,10 @@ export function colWidth(slot: number){
   return Math.min(20, slot * COL_FILL);
 }
 export var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };
-export function histFrame(Wpx?: number | null, plot?: number): HistFrame {
+export function histFrame(Wpx?: number | null): HistFrame {
   var W = Math.max(270, Math.round(Wpx || 360));
   var narrow = W < 430;
-  var H = plot ? AXIS.T + AXIS.LEG + AXIS.READ + plot + 17 + AXIS.FOOT : narrow ? 335 : 375;
+  var H = narrow ? 335 : 375;
   return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
            T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
 }

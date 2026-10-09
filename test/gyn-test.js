@@ -23,7 +23,6 @@ if (!CHROME || !fs.existsSync(CHROME)) {
 const NO_HISTORY = [];
 const CARD_ON_PAGE = ['sheet-metric-debt', 'sheet-sign-productivity-growth'];
 const TREND_WORD_ONLY = ['Pulse'];
-const GROWS_WITH_YEARS = ['Pulse'];
 
 
 const results = [];
@@ -203,8 +202,8 @@ async function openPage(p, url, sheet) {
     (gs.length === 1 && gs[0] > 0)
       ? ok('every page opens with its bar at one distance under the top bar', gs[0] + 'px on ' + Object.keys(gaps).length + ' pages (Keren, V674)')
       : bad('every page opens with its bar at one distance under the top bar', JSON.stringify(gaps));
-    const hs = Object.keys(tall).filter(k => !GROWS_WITH_YEARS.includes(k)).map(k => tall[k]);
-    (hs.length === READINGS_ON_SCREEN.length - NO_HISTORY.length - GROWS_WITH_YEARS.length && Math.min(...hs) >= 330 && Math.max(...hs) - Math.min(...hs) <= 5 && GROWS_WITH_YEARS.every(k => tall[k] > 0))
+    const hs = Object.values(tall);
+    (hs.length === READINGS_ON_SCREEN.length - NO_HISTORY.length && Math.min(...hs) >= 330 && Math.max(...hs) - Math.min(...hs) <= 5)
       ? ok('every history draws at one height', hs.length + ' pages, ' + Math.min(...hs) + '\u2013' + Math.max(...hs) + 'px')
       : bad('every history draws at one height', JSON.stringify(tall));
     const relabelled = Object.keys(notes).flatMap(k => [...notes[k].matchAll(/(.{0,16})\bnormal range/gi)]

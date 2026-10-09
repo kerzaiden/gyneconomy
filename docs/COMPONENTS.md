@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `79755c9` on 2026-10-09. **101 components**, **18 shared patterns**.
+Generated from commit `db491c2` on 2026-10-09. **102 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -41,8 +41,8 @@ Generated from commit `79755c9` on 2026-10-09. **101 components**, **18 shared p
 | **`histBar`** | `.hist-bar` | `reading.ts:drawReading` |
 | **`histTip`** | `.gdp-tooltip` `.hist-tip` | `reading.ts:historyHtml` |
 | **`meanRule`** | `.vh-mean` | `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart` |
-| **`trendOf`** | `.tp-arrow` | `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:definePressure`, `pressure.ts:ylmFitLine`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
-| **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:definePressure`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
+| **`trendOf`** | `.tp-arrow` | `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:definePressure`, `pressure.ts:pulseHistory`, `pressure.ts:ylmFitLine`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
+| **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:definePressure`, `pressure.ts:pulseHistory`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
 | **`vGrid`** | `.bt-vgrid` | `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:yearTicks`, `pulse-strips.ts:stripPaper`, `render-pages.ts:paintSpreads` |
 | **`vhOpen`** | `.vh-svg` | `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `pulse-strips.ts:pulseStripsChart` |
 | **`xLabel`** | `.bt-xl` | `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:yearTicks`, `pulse-strips.ts:pulseStripsChart`, `render-pages.ts:paintSpreads` |
@@ -164,6 +164,7 @@ Generated from commit `79755c9` on 2026-10-09. **101 components**, **18 shared p
 |---|---|---|
 | **`stripPaper`** | `.ekg-major` `.ekg-minor` | `pulse-strips.ts:pulseStripsChart` |
 | **`stripQuarter`** | `.ps-beat` | `pulse-strips.ts:stripRow` |
+| **`stripScroller`** | `.ps-fade` `.ps-scroll` | `pressure.ts:pulseHistory` |
 
 ## reading.ts
 
@@ -212,7 +213,7 @@ renderer speaks. Listed most-used first.
 | **`need`** | dom.ts | 23 places |
 | **`titleCase`** | format.ts | 17 places |
 | **`byId`** | dom.ts | 14 places |
-| **`pageCycle`** | history.ts | 13 places |
+| **`pageCycle`** | history.ts | 14 places |
 | **`defineReading`** | reading.ts | 11 places |
 | **`histControls`** | history.ts | 11 places |
 | **`histFrame`** | charts.ts | 11 places |
@@ -225,6 +226,7 @@ renderer speaks. Listed most-used first.
 | **`colPath`** | charts.ts | 8 places |
 | **`colWidth`** | charts.ts | 8 places |
 | **`cycleSlice`** | model.ts | 8 places |
+| **`f1`** | pulse-strips.ts | 8 places |
 | **`monthLabel`** | format.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`closedCount`** | cycle-analysis.ts | 7 places |
@@ -232,7 +234,6 @@ renderer speaks. Listed most-used first.
 | **`put`** | dom.ts | 7 places |
 | **`qAtIndex`** | format.ts | 7 places |
 | **`cycLabel`** | model.ts | 6 places |
-| **`f1`** | pulse-strips.ts | 6 places |
 | **`fileRow`** | data.ts | 6 places |
 | **`fitLine`** | charts.ts | 6 places |
 | **`labRow`** | data.ts | 6 places |
@@ -256,6 +257,7 @@ renderer speaks. Listed most-used first.
 | **`openCycle`** | model.ts | 5 places |
 | **`pctl`** | format.ts | 5 places |
 | **`qPretty`** | format.ts | 5 places |
+| **`qWindowFrom`** | history.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`windowScale`** | history.ts | 5 places |
 | **`atMonth`** | format.ts | 4 places |
@@ -274,7 +276,6 @@ renderer speaks. Listed most-used first.
 | **`moodTrack`** | model.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`panel`** | ai-insights.ts | 4 places |
-| **`qWindowFrom`** | history.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
 | **`visits`** | cycle-analysis.ts | 4 places |
@@ -284,6 +285,7 @@ renderer speaks. Listed most-used first.
 | **`cap`** | cycle-analysis.ts | 3 places |
 | **`categoriesShown`** | roster.ts | 3 places |
 | **`curveAt`** | data.ts | 3 places |
+| **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |

@@ -26,8 +26,8 @@ export function pulseStroke(i: number){
 type StripRow = { y: number; top: number; h: number; from: number; end: number; X: (q: number) => number };
 function stripQuarter(r: StripRow, q: number, x: number, limit: number){
   var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * 0.58) * (stroke == null ? 0.5 : stroke);
-  var cy = r.top + r.h * 0.64, d: string[] = [];
+  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * 0.5) * (stroke == null ? 0.5 : stroke);
+  var cy = r.top + r.h / 2, d: string[] = [];
   if (stroke == null) kind = kind || "blank";
   x = Math.max(x, xa);
   if (kind === "flat"){ d.push("M" + f1(xa) + "," + f1(cy) + "H" + f1(xb)); x = xb; }
@@ -62,29 +62,60 @@ function stripPaper(L: number, R: number, T: number, B: number, h: number){
   major.push("M" + f1(fx) + "," + f1(B) + "H" + f1(R));
   return '<path class="ekg-minor" d="' + minor.join("") + '"/><path class="ekg-major" d="' + major.join("") + '"/>' + rules.join("");
 }
+export var strips = { off:0 };
 export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   from = from || 0;
   var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-  var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) * 3 / 20;
-  var F = histFrame(Wpx, Math.ceil(rows * h) - AXIS.LEG), L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = T + rows * h;
-  var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [];
+  var F = histFrame(Wpx), h = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, full = rows * h;
+  var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [], body: string[] = [stripPaper(L, R, T, T + full, h)];
+  strips.off = 0;
   out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));
-  out.push(stripPaper(L, R, T, B, h));
   ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17)); });
-  for (var y = y0; y <= y1; y++) out.push(stripRow({ y:y, top:T + h * (y1 - y), h:h, from:from, end:end, X:X }));
+  for (var y = y0; y <= y1; y++) body.push(stripRow({ y:y, top:T + h * (y1 - y), h:h, from:from, end:end, X:X }));
+  out.push('<clipPath id="psview"><rect x="0" y="' + f1(T) + '" width="' + F.W + '" height="' + f1(B - T) + '"/></clipPath><g clip-path="url(#psview)"><g class="ps-rows">' + body.join("") + '</g></g>');
   var cell = function(i: number){ return { q:(from + i) % 4 }; };
   publishGeom("pulseStripsChart", { L:L, R:R, T:T, B:B, W:F.W, n:end - from,
     at:function(d: unknown, i: number){ var g = m2Yoy[from + i]; return qAtIndex(M2V_FROM_YEAR, from + i) + (g == null ? "" : " \u00b7 M2 " + fmtSigned(g, 1) + "%"); },
     fmt:function(v: number){ return v.toFixed(3) + "\u00d7"; },
     xOf:function(i: number){ return (X(cell(i).q) + X(cell(i).q + 1)) / 2; },
     pick:function(x: number, yy: number){
-      var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y1 - row - M2V_FROM_YEAR) * 4 + q - from;
-      return row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
+      var row = Math.floor((yy + strips.off - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y1 - row - M2V_FROM_YEAR) * 4 + q - from;
+      return yy < T || yy > B || row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
     },
     vals:m2vHistory.slice(from, end).map(function(v: number){ return { v:v }; }) });
-  return vhOpen(F.W, F.H) + 'aria-label="Money velocity\u2019s heartbeat, one strip per year from ' + y0 + ' to ' + y1 +
+  return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + ' ' + f1(B - T) + ' ' + f1(full) + ' ' + f1(h) + '" aria-label="Money velocity\u2019s heartbeat, one strip per year from ' + y0 + ' to ' + y1 +
     ', ' + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; ' +
     'a quarter whose fall was far out of the record flatlines">' + out.join("") + '</svg>';
+}
+function stripView(svg: SVGSVGElement){
+  var v = (svg.getAttribute("data-view") || "").split(" ").map(Number), k = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+  return { top:v[0], view:v[1], full:v[2], h:v[3], k:k };
+}
+function stripScrolled(el: HTMLElement, rows: Element, V: ReturnType<typeof stripView>){
+  strips.off = el.scrollTop / V.k;
+  rows.setAttribute("transform", "translate(0 " + f1(-strips.off) + ")");
+  el.classList.toggle("at-end", el.scrollTop + el.clientHeight >= el.scrollHeight - 1);
+}
+function stripFollow(el: HTMLElement, svg: SVGSVGElement, V: ReturnType<typeof stripView>){
+  var on = svg.querySelector(".hcol.on") as SVGGraphicsElement | null;
+  if (!on) return;
+  var b = on.getBBox(), top = V.top + Math.floor((b.y + b.height / 2 - V.top) / V.h) * V.h - V.top;
+  if (top < strips.off) el.scrollTop = top * V.k; else if (top + V.h > strips.off + V.view) el.scrollTop = (top + V.h - V.view) * V.k;
+}
+export function stripScroller(box: HTMLElement){
+  var svg = box.querySelector("svg.vh-svg") as SVGSVGElement | null, rows = svg && svg.querySelector(".ps-rows"), old = box.querySelector(".ps-scroll");
+  if (old) old.remove();
+  strips.off = 0;
+  if (!svg || !rows) return;
+  var V = stripView(svg), el = document.createElement("div"), host = svg.parentElement as HTMLElement;
+  if (!(V.full > V.view + 1) || !V.k) return;
+  el.className = "ps-scroll";
+  el.style.top = f1(svg.getBoundingClientRect().top - host.getBoundingClientRect().top - host.clientTop + V.top * V.k) + "px";
+  el.style.height = f1(V.view * V.k) + "px";
+  el.innerHTML = '<div style="height:' + f1(V.full * V.k) + 'px"></div><div class="ps-fade"></div>';
+  host.appendChild(el);
+  el.addEventListener("scroll", function(){ stripScrolled(el, rows as Element, V); });
+  box.addEventListener("keydown", function(){ setTimeout(function(){ if (el.isConnected) stripFollow(el, svg as SVGSVGElement, V); }, 0); });
 }
 export function stripsInfo(){
   var f = pulseFences(), pct = function(v: number){ return (v > 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + "%"; };
