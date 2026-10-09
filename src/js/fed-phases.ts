@@ -98,12 +98,24 @@ function zeroTag(segs: number[][][], zy: number){
   return tagHtml("fp-zero-tag", "0%", [[0, 1, -1], [1, -1, -1], [0, 1, 1], [1, -1, 1]].map(function(c){ return sideTag(c[0], ay, w, [c[1], c[2]]); }), segs);
 }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
-function bandsHtml(phases: Phase[], from: number, to: number){
+var GRID_STEPS = [1, 2, 5, 10];
+function levelY(lines: Pt[][]){
+  var all = ([] as Pt[]).concat.apply([], lines).map(function(p){ return p.v; });
+  var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all);
+  return function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
+}
+function rulesHtml(y: (v: number) => number){
+  var unit = y(0) - y(1), lo = (y(0) - VIEW_H + INSET) / unit, hi = (y(0) - INSET) / unit, out = "";
+  var step = GRID_STEPS.filter(function(s){ return (hi - lo) / s <= 6; })[0] || 20;
+  for (var v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9; v += step) out += '<i class="fp-rule' + (v === 0 ? " fp-zero" : "") + '" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
+  return out;
+}
+function bandsHtml(phases: Phase[], from: number, to: number, rules: string){
   var span = to - from + 1, bands = "";
   phases.forEach(function(p, k){
     var a = Math.max(monthIdx(p.m), from), b = k + 1 < phases.length ? monthIdx(phases[k + 1].m) : to + 1;
     if (b <= from || a > to) return;
-    bands += '<span class="fp-band ' + stanceClass(p) + '" style="left:' + pct((a - from) / span) + ';width:' + pct((Math.min(b, to + 1) - a) / span) + '"></span>';
+    bands += '<span class="fp-band ' + stanceClass(p) + '" style="left:' + pct((a - from) / span) + ';width:' + pct((Math.min(b, to + 1) - a) / span) + '">' + rules + '</span>';
   });
   return bands;
 }
@@ -114,12 +126,10 @@ function yearsHtml(from: number, to: number){
   return out;
 }
 function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open: boolean){
-  var all = ([] as Pt[]).concat.apply([], lines).map(function(p){ return p.v; });
-  var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
-  var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; }, y = function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
-  var zero = '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0) + '" y2="' + y(0) + '" vector-effect="non-scaling-stroke"/>';
+  var span = to - from + 1, y = levelY(lines);
+  var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; };
   var segs = lines.map(function(l){ return segments(l, x, y); });
-  var paths = zero + ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
+  var paths = ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
   return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + zeroTag(segs, y(0)) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
@@ -143,7 +153,7 @@ function fedPhasesCard(m: CycleModel){
   var peak = cyclePeak(fromM, toM);
   var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
   var top = peak ? lines[0].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml(m, peak);
+  return '<div class="fp-plot">' + bandsHtml(phases, from, to, rulesHtml(levelY(lines))) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml(m, peak);
 }
 export function fedEnvironment(m: CycleModel){
   return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));

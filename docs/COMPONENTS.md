@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `dec9f9d` on 2026-10-09. **104 components**, **18 shared patterns**.
+Generated from commit `dd27b86` on 2026-10-09. **104 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -105,7 +105,7 @@ Generated from commit `dec9f9d` on 2026-10-09. **104 components**, **18 shared p
 | **`fedPhasesCard`** | `.fp-plot` `.fp-years` | `fed-phases.ts:fedEnvironment` |
 | **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:fedPhasesCard` |
 | **`legendHtml`** | `.fp-legend` | `fed-phases.ts:fedPhasesCard` |
-| **`plotSvg`** | `.fp-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
+| **`plotSvg`** | `.fp-line` | `fed-phases.ts:fedPhasesCard` |
 | **`tagHtml`** | `.fp-tag` | `fed-phases.ts:peakTag`, `fed-phases.ts:zeroTag` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
 
@@ -234,13 +234,13 @@ renderer speaks. Listed most-used first.
 | **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`keyed`** | roster.ts | 7 places |
 | **`normOf`** | cycle-analysis.ts | 7 places |
+| **`pct`** | fed-phases.ts | 7 places |
 | **`put`** | dom.ts | 7 places |
 | **`qAtIndex`** | format.ts | 7 places |
 | **`cycLabel`** | model.ts | 6 places |
 | **`fileRow`** | data.ts | 6 places |
 | **`fitLine`** | charts.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
-| **`pct`** | fed-phases.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
 | **`windowYears`** | charts.ts | 6 places |

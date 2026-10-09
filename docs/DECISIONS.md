@@ -1580,8 +1580,9 @@ settles it; none is open after V668.
   the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates Environment card is a feel, not a measure: two curves, the Fed's rate (blue) and prices
-  (orange), over the Tightening and Easing bands, with no figures and no growth; the one guide is a dotted zero line with a small, faint 0%, so the eye can tell how far above
-  or below zero each curve sits.** It shows the
+  (orange), over the Tightening and Easing bands, with no figures and no growth; the guides are a dotted zero line with a small, faint 0% and unlabelled
+  solid rules at round steps (1% where the range allows, else 2%, 5% or 10%, at most six), so the eye can gauge the
+  level without a number, all drawn inside the bands.** It shows the
   environment at a glance, the way her tracker shows hormones; growth is the other half of the season and the dial
   already shows it. The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason
   here. The peak is an orange dot on the prices curve (hollow on the open cycle), labelled Peak beside it in the
