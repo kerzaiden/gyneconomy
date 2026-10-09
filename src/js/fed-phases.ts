@@ -128,13 +128,18 @@ function plotSvg(lines: Pt[][], from: number, to: number){
   var paths = fillDefs() + areaPath(segs[1], "fp-rate") + areaPath(segs[0], "fp-prices") + lineSvg(segs[1], "fp-rate") + lineSvg(segs[0], "fp-prices");
   return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + levelTags(sc);
 }
-function turnsHtml(from: number, to: number){
-  return fedPhases().map(function(p){ return monthIdx(p.m); }).filter(function(i){ return i > from && i < to; }).map(function(i){ return '<i class="fp-turn" style="left:' + pct((i - from) / (to - from)) + '"></i>'; }).join("");
+function bandsHtml(from: number, to: number){
+  var ph = fedPhases(), out = "";
+  ph.forEach(function(p, k){
+    var a = Math.max(monthIdx(p.m), from), z = Math.min(k + 1 < ph.length ? monthIdx(ph[k + 1].m) : to, to);
+    if (p.s > 0 && z > a) out += '<i class="fp-band" style="left:' + pct((a - from) / (to - from)) + ';width:' + pct((z - a) / (to - from)) + '"></i>';
+  });
+  return out;
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }
-function legendHtml(toM: string){
-  return '<ul class="fp-legend">' + key("fp-key-line fp-rate", rateSeries(toM) === discountHistory ? "Discount rates" : "Interest rates") + key("fp-key-line fp-prices", "Prices") + key("fp-key-turn", "Fed shift") + '</ul>';
+function legendHtml(){
+  return '<ul class="fp-legend">' + key("fp-key-ease", "Easing") + key("fp-key-tight", "Tightening") + key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + '</ul>';
 }
 var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
 function footnoteHtml(m: CycleModel){
@@ -155,10 +160,10 @@ function windowFrom(range: string, cycleFrom: number, to: number){ return range 
 function ratesCard(m: CycleModel, host: string, range: string){
   var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
   var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
-  return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, m) + legendHtml(toM) + footnoteHtml(m);
+  return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, m) + legendHtml() + footnoteHtml(m);
 }
 function plotHtml(lines: Pt[][], from: number, to: number, m: CycleModel){
-  return '<div class="fp-plot"><span class="fp-clip">' + rulesHtml(levelScale(lines)) + turnsHtml(from, to) + '</span>' + plotSvg(lines, from, to) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + '</div>';
+  return '<div class="fp-plot"><span class="fp-clip">' + bandsHtml(from, to) + rulesHtml(levelScale(lines)) + '</span>' + plotSvg(lines, from, to) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + '</div>';
 }
 export function fedEnvironment(m: CycleModel, host: string, range: string){
   return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m, host, range));

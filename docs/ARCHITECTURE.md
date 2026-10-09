@@ -619,19 +619,19 @@ emotion at the closing month, its years, and what followed a year later. Every l
   months with a Fed move, netted: the New York Fed's discount rate `M13009USM156NNBR` before 1950, the discount rate
   `INTDSRUSM193N` to 1982-09-27, `DFEDTAR` to 2008-12-15, `DFEDTARU` since, each join a fresh walk so no move is
   made up at a seam), with today's live move (`now.fedFunds.lastMove` on `asOf`) when it is newer, into alternating
-  phases; `turnsHtml` draws a dashed line at each phase start inside the window. `cyclePeak` marks every cycle's peak, its highest CPI
+  phases; `bandsHtml` shades each tightening phase's span inside the window, under the rules. `cyclePeak` marks every cycle's peak, its highest CPI
   reading once the decline it inherited from the cycle before has passed. `findRuns` walks the whole record once
   (cached on the history's length and last value) with `cpiDirectionAt` (the season model's own 12-month trend,
   ±0.02) and gives each month that is not falling the top of its run; the cycle's opening months are skipped while
   they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak.
   The walk is over the whole record because a run crosses cycle edges.
-  The rules and the turn lines
+  The bands and the rules
   are HTML in one rounded clip (`fp-clip`) under an SVG drawn with `preserveAspectRatio="none"` and non-scaling
   strokes, so the card is fluid and the plot's four corners stay round. `monthPoints` samples the window at `POINTS` + 1 even steps from its first month to its last,
   each a Gaussian-weighted mean of the months around it (σ = the window over `WAVE`, at least a month), reading
   months before the window but none after its end, so the curves run edge to edge without a forecast; `segments` joins the points with a monotone cubic whose
   slope is zero at every turn, so no curve overshoots a reading. The level figures all sit at the plot's left edge, and one that would cross the top is left out. The 1Y · 5Y · Cycle bar is
-  the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`, and the legend names the rate for the series it draws. `rateSeries` is
+  the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`, and the legend reads Easing, Tightening, Rates, Prices for every series. `rateSeries` is
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
   1914 to 1954-06) before. The note under the legend is one explanation of tightening and easing, the same on every cycle; the cycle's `rates`
   story, with `{peak}` and `{month}` filled from `cyclePeak`, is read in its AI Insights.

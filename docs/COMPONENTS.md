@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `acec2a8` on 2026-10-09. **109 components**, **18 shared patterns**.
+Generated from commit `b3e0253` on 2026-10-09. **109 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -105,6 +105,7 @@ Generated from commit `acec2a8` on 2026-10-09. **109 components**, **18 shared p
 |---|---|---|
 | **`areaPath`** | `.fp-area` | `fed-phases.ts:plotSvg` |
 | **`axisMark`** | `.fp-end` | `fed-phases.ts:axisTicks`, `fed-phases.ts:yearsHtml` |
+| **`bandsHtml`** | `.fp-band` | `fed-phases.ts:plotHtml` |
 | **`fillDefs`** | `.fp-fill-low` `.fp-fill-top` | `fed-phases.ts:plotSvg` |
 | **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:ratesCard` |
 | **`legendHtml`** | `.fp-legend` | `fed-phases.ts:ratesCard` |
@@ -112,7 +113,6 @@ Generated from commit `acec2a8` on 2026-10-09. **109 components**, **18 shared p
 | **`plotHtml`** | `.fp-clip` `.fp-plot` `.fp-years` | `fed-phases.ts:ratesCard` |
 | **`rulesHtml`** | `.fp-rule` | `fed-phases.ts:plotHtml` |
 | **`tagSpan`** | `.fp-tag` | `fed-phases.ts:levelTags` |
-| **`turnsHtml`** | `.fp-turn` | `fed-phases.ts:plotHtml` |
 
 ## format.ts
 
