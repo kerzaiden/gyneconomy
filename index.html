@@ -1259,7 +1259,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.30 (801)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.31 (802)</span></p>
     </div>
   </div>
 
@@ -42744,7 +42744,7 @@
   }, {
     from: 1942,
     to: 1946,
-    name: "WWII Victory Cycle",
+    name: "WWII Cycle",
     story: "After Midway the tide of WWII turned, and war production with price controls carried four rising years to victory in 1945. Mrs. Market went from Hope to Euphoria, until controls ended in 1946, prices jumped and she fell back into Anxiety.",
     blurb: "The WWII economy at full stretch, from the turn of 1942 to victory in 1945. It ends in 1946, when price controls lift and inflation surges."
   }, {
@@ -49168,7 +49168,7 @@
     var x = visits()[i], open = !!marketCycles[i].ongoing, closed = visits().slice(0, closedCount()), top = function(f) {
       return Math.max.apply(null, visits().map(f));
     };
-    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on ' + closedCount() + " closed market cycles since " + marketCycles[0].from + ".</p>" + healthRow(i) + statRow("Cycle length", meanOf(closed.map(len)), top(len), mark(typical(x.years, open) ? " ok" : " odd", yearsWord(x.years) + " yrs"), lengthPage(i), tone(typical(x.years, open))) + statRow("Cycle variation", sdOf(lengths()), meanOf(lengths()), mark(typical(x.years, open) ? " ok" : " odd", driftWord(i)), variationPage(i), tone(typical(x.years, open)), "±" + yearsWord(sdOf(lengths())) + " years") + statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
+    return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note"><b>' + marketCycles[i].name + "</b>, " + cycLabel(marketCycles[i]).years + ". Averages are based on " + closedCount() + " closed market cycles since " + marketCycles[0].from + ".</p>" + healthRow(i) + statRow("Cycle length", meanOf(closed.map(len)), top(len), mark(typical(x.years, open) ? " ok" : " odd", yearsWord(x.years) + " yrs"), lengthPage(i), tone(typical(x.years, open))) + statRow("Cycle variation", sdOf(lengths()), meanOf(lengths()), mark(typical(x.years, open) ? " ok" : " odd", driftWord(i)), variationPage(i), tone(typical(x.years, open)), "±" + yearsWord(sdOf(lengths())) + " years") + statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
   }
   function insightSec(k, ls) {
     return scoreTile("button", " stat-row insight-row cat-" + k, ' type="button" data-open="' + IND + '" data-title="Elements" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + "</span>", "<b>" + catTitle(k) + "</b>", countTag(ls.length)));
@@ -49192,7 +49192,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return statsHome(i) + fedEnvironment(nowModel) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
+    return statsHome(i) + fedEnvironment(marketCycles[i].ongoing ? nowModel : cycleModel(marketCycles[i])) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -49228,7 +49228,11 @@
     var b = t.closest && t.closest("[data-ind-cat]");
     if (!b) return false;
     findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
-    if (id === IND) drawChart(IND); else if (id === HOME_ID) page.mode[IND] = "cycles";
+    if (id === IND) drawChart(IND); else if (id === HOME_ID) {
+      page.mode[IND] = "cycles";
+      page.cycles[IND] = page.cycles[HOME_ID];
+      page.when[IND] = void 0;
+    }
     return true;
   }
   function buildFind() {
@@ -49263,12 +49267,12 @@
   function setPeriod(id, k) {
     page.mode[id] = cycleByName(k) ? "cycles" : k.length > 4 ? "quarters" : "calendar";
     if (page.mode[id] === "cycles") {
-      page.cycles[id] = page.cycles[HOME_ID] = k;
+      page.cycles[id] = k;
       page.when[id] = void 0;
       return;
     }
     page.when[id] = k;
-    page.cycles[id] = page.cycles[HOME_ID] = cycleOfYear(+k.slice(0, 4)).name;
+    page.cycles[id] = cycleOfYear(+k.slice(0, 4)).name;
   }
   function pick(id, b) {
     var cat = b.getAttribute("data-pick-cat"), tr = b.getAttribute("data-pick-tier"), f = findOf(id);
@@ -49334,6 +49338,7 @@
       drawChart(HOME_ID);
     });
     need("tab-chart").addEventListener("click", function() {
+      page.cycles[HOME_ID] = null;
       drawChart(HOME_ID);
     });
     drawChart(HOME_ID);

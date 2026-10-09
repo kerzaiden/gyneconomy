@@ -416,7 +416,7 @@ export var marketCycles: Cycle[] = [
   },
   {
     from:1942, to:1946,
-    name:"WWII Victory Cycle",
+    name:"WWII Cycle",
     story:"After Midway the tide of WWII turned, and war production with price controls carried four rising years to victory in 1945. Mrs. Market went from Hope to Euphoria, until controls ended in 1946, prices jumped and she fell back into Anxiety.",
     blurb:"The WWII economy at full stretch, from the turn of 1942 to victory in 1945. It ends in 1946, when price controls lift and inflation surges."
   },
