@@ -229,7 +229,7 @@ settles it; none is open after V668.
   each step to the cycle, where the reader left it.** Cycle Statistics on a past cycle opens Analysis on that cycle
   with the back button and no tab bar; a page opened from there comes back to it, and Back from Analysis returns to
   the cycle's page in Herstory at the same place. Keren found the crossover landing on a tab home broke the path she
-  was following through the cycle; the inner page is its own world until the reader goes back.
+  was following through the cycle; the inner page is its own world until the reader goes back. (0.9.38)
 - **The top bar sets the page name in Cormorant, in the plum ink, and its buttons are the plum mark alone; the
   menu's screens keep a hairline under their bar.** Keren wanted the title in "feminine letters" and the buttons as
   a plum stroke with no round border; the reference she chose sets its page title in plum (0.6.2). The page's own
