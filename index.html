@@ -574,7 +574,7 @@
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
     font-family:"Public Sans",sans-serif; -webkit-tap-highlight-color:transparent; }
   .dx-sys-head + .dx-year{ border-top:0; padding-top:4px; }
-  .dx-year:last-child{ padding-bottom:0; }
+  .dx-year:last-child, .dx-year:has(+ .dx-years-more[hidden]){ padding-bottom:0; }
   button.dx-year{ cursor:pointer; }
   button.dx-year:hover .dx-year-n, button.dx-year:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
   button.dx-year:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
@@ -585,6 +585,10 @@
   .dx-year-lead{ font-size:var(--type-reading); font-weight:600; line-height:1.3; }
   .dx-year-foot{ grid-column:2 / 4; margin-top:6px; }
   .dx-year-lead .strip{ margin:0; }
+  .dx-year[hidden]{ display:none; }
+  .dx-years-more{ padding:13px 0 0; }
+  .dx-years-more:hover{ background:transparent; }
+  .dx-years-more[hidden]{ display:none; }
   .trend-card{ display:block; width:100%; box-sizing:border-box; margin:0; padding:14px 16px 12px; text-align:left; cursor:pointer;
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); font-family:"Public Sans",sans-serif;
     -webkit-tap-highlight-color:transparent; }
@@ -47730,7 +47734,15 @@
       }), ytd = m.ongoing && y === calendarTodayY, now2 = yearSoFar(y);
       rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
     }
-    return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
+    return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join("") + yearsMore(rows.length > PREVIEW_YEARS));
+  }
+  var PREVIEW_YEARS = 3;
+  function yearsMore(more) {
+    return '<button type="button" class="cyc-more dx-years-more" aria-expanded="false"' + (more ? "" : " hidden") + "><span>View more</span>" + CHEV + "</button>";
+  }
+  function wireYearsMore(host) {
+    var btn = host.querySelector(".dx-years-more");
+    if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
   }
   function yearRow(year, lead, foot) {
     return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Elements" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
@@ -47756,6 +47768,7 @@
     var host = document.getElementById("diagnosis");
     if (host && m) {
       host.innerHTML = diagnosisHtml(m);
+      wireYearsMore(host);
       fitYearDots();
     }
   }

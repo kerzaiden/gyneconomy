@@ -1,5 +1,5 @@
 import { CHEV } from "./format.ts";
-import { addSources, byId } from "./dom.ts";
+import { addSources, byId, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
@@ -28,7 +28,15 @@ function yearByYear(m: CycleModel){
     rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd),
       econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
   }
-  return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
+  return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join("") + yearsMore(rows.length > PREVIEW_YEARS));
+}
+var PREVIEW_YEARS = 3;
+function yearsMore(more: boolean){
+  return '<button type="button" class="cyc-more dx-years-more" aria-expanded="false"' + (more ? "" : " hidden") + '><span>View more</span>' + CHEV + '</button>';
+}
+function wireYearsMore(host: HTMLElement){
+  var btn = host.querySelector<HTMLElement>(".dx-years-more");
+  if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
 }
 function yearRow(year: string, lead: string, foot: string){
   return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Elements" data-ind-when="' + year + '">' +
@@ -49,7 +57,7 @@ function yearMarket(y: number, ytd: boolean, q: number){
 }
 export function renderDiagnosis(m: CycleModel){
   var host = document.getElementById("diagnosis");
-  if (host && m){ host.innerHTML = diagnosisHtml(m); fitYearDots(); }
+  if (host && m){ host.innerHTML = diagnosisHtml(m); wireYearsMore(host); fitYearDots(); }
 }
 export function fitYearDots(){
   var host = document.getElementById("diagnosis"), span = Math.max(typicalCycleYears * 4, Math.ceil(nowModel.elapsedYears * 4));

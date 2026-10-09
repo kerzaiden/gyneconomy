@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f78cc3a` on 2026-10-09. **102 components**, **18 shared patterns**.
+Generated from commit `f08fcce` on 2026-10-09. **103 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -79,6 +79,7 @@ Generated from commit `f78cc3a` on 2026-10-09. **102 components**, **18 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`yearRow`** | `.dx-year` `.dx-year-lead` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:yearByYear` |
+| **`yearsMore`** | `.cyc-more` `.dx-years-more` | `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
 
@@ -322,6 +323,7 @@ renderer speaks. Listed most-used first.
 | **`trendText`** | dom.ts | 3 places |
 | **`typical`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
+| **`viewMore`** | dom.ts | 3 places |
 | **`word`** | cycle-analysis.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
 
