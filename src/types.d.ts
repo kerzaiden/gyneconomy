@@ -63,6 +63,8 @@ type ChartGeom = {
   at: (d: any, i: number) => string;
   fmt?: (v: number) => string;
   refs?: ChartRef[];
+  xOf?: (i: number) => number;
+  pick?: (x: number, y: number) => number | null;
   [k: string]: unknown;
 };
 type AuxFact = { label: string; value: string; wordy?: boolean };

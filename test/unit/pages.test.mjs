@@ -6,7 +6,9 @@ import { ROSTER } from '../../src/js/roster.ts';
 import { page, pickerOpen } from '../../src/js/history.ts';
 import { cycleByName } from '../../src/js/model.ts';
 import { histFrame } from '../../src/js/charts.ts';
-import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, m2GrowthChart, deficitChart, velocityHistoryChart } from '../../src/js/history-charts.ts';
+import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, m2GrowthChart, deficitChart } from '../../src/js/history-charts.ts';
+import { pulseStripsChart, pulseBeat } from '../../src/js/pulse-strips.ts';
+import { M2V_FROM_YEAR } from '../../src/js/data.ts';
 
 const BROKEN = ['NaN', 'undefined', 'Infinity', '[object Object]'];
 const broken = html => BROKEN.filter(b => html.includes(b));
@@ -47,7 +49,7 @@ test('every history chart on a page sits in the one frame', () => {
 });
 
 const CHARTS = { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, m2GrowthChart,
-  deficitChart, velocityHistoryChart };
+  deficitChart, pulseStripsChart };
 for (const [name, chart] of Object.entries(CHARTS)) {
   test(name + ' is drawn to the frame it is given, with every value readable', () => {
     for (const W of WIDTHS) {
@@ -60,6 +62,17 @@ for (const [name, chart] of Object.entries(CHARTS)) {
     }
   });
 }
+
+test('the Pulse strips flatline only the quarters whose fall was far out of the record', () => {
+  const q = (y, n) => (y - M2V_FROM_YEAR) * 4 + n - 1;
+  assert.equal(pulseBeat(q(2020, 2)), 'flat');
+  assert.equal(pulseBeat(q(2008, 4)), 'flat');
+  assert.equal(pulseBeat(q(2023, 1)), 'odd');
+  assert.equal(pulseBeat(q(2025, 1)), '');
+  const svg = pulseStripsChart(390, q(2019, 1), q(2021, 4) + 1);
+  assert.equal((svg.match(/class="ps-beat hcol flat"/g) || []).length, 1);
+  assert.equal((svg.match(/class="ps-beat hcol/g) || []).length, 12);
+});
 
 test('every history chart is reachable by keyboard and keeps its live region when redrawn', () => {
   for (let k = 0; k < 2; k++) Object.values(sheetRenderers).forEach(draw => draw(390));

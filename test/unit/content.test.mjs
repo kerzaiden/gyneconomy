@@ -393,6 +393,7 @@ test('the Pulse page reads its rhythm: two years of quarterly changes, cut at th
   sheetRenderers['sheet-sign-pulse'](360);
   const page = document.getElementById('sheet-sign-pulse').textContent;
   assert.match(page, /Rhythm/);
-  assert.match(page, /Steady: in the two years to Q2 2026 velocity’s quarterly changes spread by 0\.30 points, the steadiest of the 262/);
+  assert.match(page, /Steady: the steadiest two years on record\. It last ran irregular in 1981–1984, 2008–2010 and 2020–2022\./);
+  assert.doesNotMatch(page, /COVID-era low/);
   assert.match(page, /1981–1984, 2008–2010 and 2020–2022/);
 });

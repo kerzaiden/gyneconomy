@@ -1,4 +1,4 @@
-import { hiCard, pctl, pointLabel, qAtIndex } from "./format.ts";
+import { hiCard, pctl, qAtIndex } from "./format.ts";
 import { M2V_FROM_YEAR, m2vHistory } from "./data.ts";
 
 // ---- Rhythm: how evenly the pulse of money changes pace ----
@@ -34,9 +34,9 @@ function listed(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ")
 export function rhythmCard(){
   var r = rhythmRecord(), h = r.history, last = h[h.length - 1], odd = last.v > r.edge;
   var steadier = h.filter(function(d){ return d.v < last.v; }).length;
-  return hiCard("Rhythm", odd ? "warning" : "good", (odd ? "Irregular" : "Steady") + ": in the two years to " + pointLabel(last) + " velocity\u2019s quarterly changes spread by " + pts(last.v) +
-    ", " + (steadier ? "steadier than all but " + steadier + " of the " + h.length + " two-year windows since " + pointLabel(h[0]) : "the steadiest of the " + h.length + " two-year windows since " + pointLabel(h[0])) +
-    ". Past " + pts(r.edge) + " the rhythm is irregular; it ran irregular for a year or more in " + listed(stretches(r)) + ".");
+  return hiCard("Rhythm", odd ? "warning" : "good", (odd ? "Irregular" : "Steady") + ": " +
+    (steadier ? "steadier than all but " + steadier + " of the " + h.length + " two-year stretches on record" : "the steadiest two years on record") +
+    ". It last ran irregular in " + listed(stretches(r).slice(-3)) + ".");
 }
 export function rhythmInfo(){
   var r = rhythmRecord();

@@ -637,8 +637,11 @@
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
-  .pv-col.over{ stroke:var(--good); }
+  .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
+  .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
+  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
+  .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
+  .ps-beat.blank{ stroke:var(--text-muted); }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -646,10 +649,6 @@
   .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.42; }
   .peek-chart.heat .now{ opacity:1; }
   .peek-chart svg{ display:block; width:100%; height:var(--mini-h); overflow:visible; }
-  .pt-svg{ display:block; width:100%; height:52px; overflow:visible; }
-  .pt-svg path{ fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
-  .pt-now{ stroke:var(--accent); }
-  .pt-ref{ stroke:var(--text-muted); opacity:0.8; }
   .vh-host{ margin:10px 0 2px; }
 
   .vh-svg{ display:block; width:100%; height:auto; margin:10px 0 2px; overflow:visible; }
@@ -677,17 +676,6 @@
   .page-foot > .timing-row{ margin:0; flex:none; }
   .page-foot > .more-row{ margin:0; flex:1 1 auto; }
   .detail-modal .timing-row{ margin:18px 0 0; padding-top:16px; border-top:1px solid var(--border); }
-  .pulsetrace{ margin:12px 0 0; }
-  .pulsetrace .pt-svg.solo{ height:42px; }
-  .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
-  .pt-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:16px 0 2px; }
-  .pt-head:first-child{ margin-top:0; }
-  .pt-k{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em;
-    font-weight:600; color:var(--text-primary); }
-  .pt-head.past .pt-k{ color:var(--text-muted); }
-  .pt-v{ font-size:var(--type-meta); color:var(--text-secondary); }
-  .pt-head.past .pt-v{ color:var(--text-muted); }
-  .pt-note{ font-size:var(--type-meta); color:var(--text-muted); line-height:1.55; margin:12px 0 0; }
 
   /* ---- the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the ---- */
   .yl-col{ fill:none; stroke-linecap:round; }
@@ -711,8 +699,7 @@
   .trend-on .dv-bar,
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
-  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
-  .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
+  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
   .trend-on .temp-avg{ opacity:0.16; }
   .trend-on .dv-mid{ opacity:0.4; }
 

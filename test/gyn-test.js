@@ -22,6 +22,7 @@ if (!CHROME || !fs.existsSync(CHROME)) {
 
 const NO_HISTORY = [];
 const CARD_ON_PAGE = ['sheet-metric-debt', 'sheet-sign-productivity-growth'];
+const TREND_WORD_ONLY = ['Pulse'];
 
 
 const results = [];
@@ -158,7 +159,7 @@ async function openPage(p, url, sheet) {
     tall[label] = r.tall; gaps[label] = r.gap;
     pills[label] = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle');
-      if (!b) return document.querySelector('#metric-page .trendpill.none') ? 'unavailable' : 'no button';
+      if (!b) return document.querySelector('#metric-page .trendpill.none') ? 'unavailable' : document.querySelector('#metric-page .trendpill') ? 'word' : 'no button';
       b.click();
       const box = b.closest('.page-chart'), fit = box && box.querySelector('.fit');
       const on = b.getAttribute('aria-pressed') === 'true' && box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none';
@@ -193,7 +194,7 @@ async function openPage(p, url, sheet) {
     }
   }
   {
-    const lines = Object.keys(pills).filter(k => pills[k] === 'line'), dead = Object.keys(pills).filter(k => !/^(line|unavailable)$/.test(pills[k]));
+    const lines = Object.keys(pills).filter(k => pills[k] === 'line'), dead = Object.keys(pills).filter(k => !/^(line|unavailable)$/.test(pills[k]) && !(pills[k] === 'word' && TREND_WORD_ONLY.includes(k)));
     (lines.length >= 12 && !dead.length)
       ? ok('every trend button draws its line', lines.length + ' lines · unavailable under eight points: ' + Object.keys(pills).filter(k => pills[k] === 'unavailable').join(', '))
       : bad('every trend button draws its line', JSON.stringify(pills));
