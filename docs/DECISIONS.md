@@ -524,15 +524,16 @@ settles it; none is open after V668.
 - **A cycle runs from its first bull year to its last bear year, so it ends with its bleed.** What built a
   cycle is what broke it (dot-com mania and crash, the housing boom and subprime); the YEAR badge and
   `cycleNowNote` count from the same year. (V511)
-- **The record opens at 1928, the first year of Damodaran's S&P return table; before 1949 the seasons are read
-  from annual growth.** Keren chose to go all the way back with annual seasons over Claude's recommendation (cycles
+- **The record opens at 1928, the first year of Damodaran's S&P return table; before 1948 the seasons are read
+  from Balke and Gordon's quarterly GNP.** Keren chose to go all the way back with annual seasons over Claude's recommendation (cycles
   from 1928, no seasons before 1947). Five cycles open the record (1928–32 the Great Depression, 1933–34 the New
   Deal, and the three named below; Claude's draft names), and the Baby Boom Cycle opens at 1947, its first bull year
   under the cycle rule. Before 1957 the returns are the S&P's 90-stock predecessor's, as Damodaran's table carries
   them. (V511, V689, V690)
-- **The 1935–37 cycle is the Second New Deal, 1938–41 the Keynesian, and 1942–46 the WWII Cycle, the war
+- **The 1935–37 cycle is the New Deal II Cycle, 1938–41 the Keynesian, and 1942–46 the WWII Cycle, the war
   written in Roman numerals wherever that cycle names it.** All three are Keren's names; the war cycle dropped
-  "Victory" to be plainly the WWII Cycle. (V690, V708, 0.9.31)
+  "Victory" to be plainly the WWII Cycle, and "Second New Deal" became New Deal II to read the same way. (V690,
+  V708, 0.9.31, New Deal II)
 - **A cycle that closed before her mood can be read keeps its Diagnosis: the Mood door says when the mood begins,
   and Circulation, Energy and what followed read as for any closed cycle.** (V689)
 - **To close an era, set its `to` to its last bear year, drop `ongoing`, and open the next era on the
@@ -782,10 +783,17 @@ settles it; none is open after V668.
   inflation; no season page points to an asset class.** Keren dropped the tilt from the season pages (Sep 17,
   2026) and brought the clock back as a portfolio method (0.5.0, Oct 4, 2026). Steady prices keep the prior
   direction, as in the Season Model (Keren, 0.9.2), not Claude's earlier "count with rising".
-- **Before quarterly GDP (1948), a season is read a year at a time: that year's real GDP growth against the
-  1929–48 peak trend, with prices read monthly as always (CPIAUCNS before 1948), the December reading standing for
-  the year.** Keren chose annual seasons for the older cycles. From 1948 Q1 every quarter is read, against the peak
-  trend until 1950 and CBO's potential after. (V690; 0.8.0)
+- **Before BEA's quarterly GDP (1948), a season is read every quarter from Balke and Gordon's real GNP (1989, the
+  NBER's American Business Cycle data), year over year, against that series' own trend between the same NBER
+  peaks, 1929 and 1948 (2.3% a year), with prices read monthly as always (CPIAUCNS before 1948).** The yearly
+  reading it replaces could not see a turn inside a year: 1937 read Spring all year, though the recession began
+  in May. Keren chose quarterly GNP over reading prices by quarter with yearly growth (which still left 1937 Q4
+  Spring). The trend is the series' own because Balke and Gordon's 1972 dollars grow more slowly than BEA's
+  chained dollars over the war; against BEA's 3.46%, a boom quarter (1935 Q2, +2.2%) read as contraction.
+  Measured first: 17 quarters of 1928–47 change season, 1937 reads Summer, Summer, Summer, then
+  Late Autumn and Winter through 1938 Q3, 19 of the 21 NBER recession quarters fall in contraction. Prices are
+  read from January 1927 so that 1928 Q1 has its twelve months (Keren). From 1948 Q1 every quarter is BEA's, against the
+  peak trend until 1950 and CBO's potential after. (V690; 0.8.0; New Deal II)
 - **Before BEA's annual growth (1930), growth is MeasuringWorth's real GDP (Johnston and Williamson), joined to
   BEA at 1930, so the Great Depression Cycle has a season in every year from 1928.** Keren chose "Extend GDP"
   over reading the 1920s–40s from industrial production or leaving 1928–30 blank as V690 did. Claude chose

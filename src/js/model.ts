@@ -1,8 +1,8 @@
 import { fmtSigned, qLabel, yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
-import { confidenceHistory, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, gnpQuarterlyBefore, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
-export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; heading: string; cpiHot: boolean; cpiCold: boolean; potential: number; gdpLatest: QuarterPoint; annual: boolean };
+export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; heading: string; cpiHot: boolean; cpiCold: boolean; potential: number; gdpLatest: QuarterPoint };
 type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
 type MoodPoint = { k: string; v: number | null };
@@ -27,12 +27,12 @@ export function cpiDirectionAt(endMonth: string){
   return c12.length < 11 ? null : cpiDirectionOf(cpiTrend(c12));
 }
 export var PEAK_YEARS = [1929, 1948];
-export var PEAK_TREND: number;
+export var PEAK_TREND: number, GNP_TREND: number;
 var potentialByQ: Record<string, number>;
 function regimeOf(g: number, p: number, prevRegime?: string | null){
   return g > p + HOLD_BAND ? "expansion" : g < p - HOLD_BAND ? "contraction" : (prevRegime || (g >= p ? "expansion" : "contraction"));
 }
-function readSeason(cpi12: MonthPoint[], gdp: QuarterPoint, potential: number, prevRegime?: string | null, annual?: boolean, prevHeading?: string | null): ModelReading {
+function readSeason(cpi12: MonthPoint[], gdp: QuarterPoint, potential: number, prevRegime?: string | null, prevHeading?: string | null): ModelReading {
   var cpiNow = cpi12[cpi12.length - 1].v;
   var cpiSlope = cpiTrend(cpi12);
   var cpiDirection = cpiDirectionOf(cpiSlope), heading = cpiDirection === "steady" ? (prevHeading || cpiDirection) : cpiDirection;
@@ -41,7 +41,7 @@ function readSeason(cpi12: MonthPoint[], gdp: QuarterPoint, potential: number, p
   if (regime === "expansion") season = cpiHot ? "summer" : heading === "falling" ? "springdeflation" : "spring";
   else season = cpiCold ? "winter" : heading === "rising" ? "lateautumn" : "autumn";
   return { season:season, regime:regime, cpiNow:cpiNow, cpiSlope:cpiSlope, cpiDirection:cpiDirection, heading:heading, cpiHot:cpiHot, cpiCold:cpiCold,
-           potential:potential, gdpLatest:gdp, annual:!!annual };
+           potential:potential, gdpLatest:gdp };
 }
 export function potentialOf(q: string){
   if (potentialByQ[q] != null) return potentialByQ[q];
@@ -52,6 +52,20 @@ function peakTrend(){
   var level = 1, n = PEAK_YEARS[1] - PEAK_YEARS[0];
   for (var y = PEAK_YEARS[0] + 1; y <= PEAK_YEARS[1]; y++) level *= 1 + usRealGdpGrowth[y] / 100;
   return (Math.pow(level, 1 / n) - 1) * 100;
+}
+function gnpYear(y: number){
+  return gnpQuarterlyBefore.filter(function(d: QuarterPoint){ return parseInt(d.q, 10) === y; }).reduce(function(a: number, d: QuarterPoint){ return a + d.v; }, 0);
+}
+function gnpTrend(){
+  return (Math.pow(gnpYear(PEAK_YEARS[1]) / gnpYear(PEAK_YEARS[0]), 1 / (PEAK_YEARS[1] - PEAK_YEARS[0])) - 1) * 100;
+}
+function gnpYoY(){
+  var level: Record<string, number> = {};
+  gnpQuarterlyBefore.forEach(function(d: QuarterPoint){ level[d.q] = d.v; });
+  return gnpQuarterlyBefore.map(function(d: QuarterPoint){
+    var before = level[(parseInt(d.q, 10) - 1) + d.q.slice(4)];
+    return before == null || d.q >= gdpQuarterlyYoY[0].q ? null : { q:d.q, v:Math.round((d.v / before - 1) * 10000) / 100 };
+  }).filter(Boolean) as QuarterPoint[];
 }
 export var QUARTER_END_MONTH: Record<string, string> = {Q1:"03", Q2:"06", Q3:"09", Q4:"12"};
 function closingReading(endYear: number){
@@ -110,7 +124,7 @@ export function cycleModel(era: Cycle){
   gdpQuarterlyYoY.forEach(function(d, i){ if (parseInt(d.q.slice(0, 4), 10) <= endYear) gdpEnd = i; });
   var prevEntry = seasonTrackAll[gdpEnd - 1], gq = gdpQuarterlyYoY[gdpEnd];
   var reading = ongoing
-    ? readSeason(cpi12, gq, potentialOf(gq.q), prevEntry && prevEntry.reading.regime, false, prevEntry && prevEntry.reading.heading)
+    ? readSeason(cpi12, gq, potentialOf(gq.q), prevEntry && prevEntry.reading.regime, prevEntry && prevEntry.reading.heading)
     : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : closingReading(endYear));
   var season = (ongoing && seasonOverride) || reading.season;
   var track: TrackSeg[] = [];
@@ -330,14 +344,15 @@ export type CycleModel = ReturnType<typeof cycleModel>;
 export var cycleYtdFraction: number, nowModel: CycleModel, cpiNow: number, currentSeason: Season, seasonWhy: string, currentEra: Cycle;
 var seasonTrackAll: TrackEntry[], seasonTrackYears: TrackEntry[], seasonTrack: TrackEntry[], regimeByQ: Record<string, string>, seasonByQ: Record<string, string>, readingNow: ModelReading;
 
-function seasonYears(){
-  var firstY = parseInt(gdpQuarterlyYoY[0].q, 10), out: TrackEntry[] = [], prevRegime: string | undefined, prevHeading: string | undefined;
-  Object.keys(usRealGdpGrowth).map(Number).sort(function(a, b){ return a - b; }).forEach(function(y){
-    var c12 = cpiYear(y + "-12");
-    if (y >= firstY || c12.length < 11 || c12[c12.length - 1].m !== y + "-12") return;
-    var r = readSeason(c12, { q:String(y), v:usRealGdpGrowth[y] }, PEAK_TREND, prevRegime, true, prevHeading);
+function seasonEarly(){
+  var out: TrackEntry[] = [], prevRegime: string | undefined, prevHeading: string | undefined;
+  GNP_TREND = gnpTrend();
+  gnpYoY().forEach(function(d){
+    var y = parseInt(d.q, 10), qn = d.q.slice(5), c12 = cpiYear(y + "-" + QUARTER_END_MONTH[qn]);
+    if (c12.length < 11) return;
+    var r = readSeason(c12, d, GNP_TREND, prevRegime, prevHeading);
     prevRegime = r.regime; prevHeading = r.heading;
-    ["Q1", "Q2", "Q3", "Q4"].forEach(function(qn){ out.push({ q:y + " " + qn, y:y, qn:qn, reading:r }); });
+    out.push({ q:d.q, y:y, qn:qn, reading:r });
   });
   return out;
 }
@@ -347,7 +362,7 @@ function seasonQuarters(prevRegime?: string, prevHeading?: string){
     var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
     var c12 = cpiYear(y + "-" + QUARTER_END_MONTH[qn]);
     if (c12.length < 11) return;
-    var r = readSeason(c12, d, potentialOf(d.q), prevRegime, false, prevHeading);
+    var r = readSeason(c12, d, potentialOf(d.q), prevRegime, prevHeading);
     prevRegime = r.regime; prevHeading = r.heading;
     out[i] = { i:i, q:d.q, y:y, qn:qn, reading:r };
   });
@@ -358,7 +373,7 @@ export function bootModel(){
   potentialByQ = {};
   potentialYoYHistory.forEach(function(d: QuarterPoint){ potentialByQ[d.q] = d.v; });
   PEAK_TREND = peakTrend();
-  seasonTrackYears = seasonYears();
+  seasonTrackYears = seasonEarly();
   var lastYear = seasonTrackYears[seasonTrackYears.length - 1];
   seasonTrackAll = seasonQuarters(lastYear && lastYear.reading.regime, lastYear && lastYear.reading.heading);
   seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
