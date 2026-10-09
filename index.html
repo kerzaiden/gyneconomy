@@ -565,8 +565,7 @@
   .fp-key-band::before{ width:11px; height:11px; border-radius:3px; background:var(--wash); }
   .fp-key-line::before{ width:12px; height:3px; border-radius:2px; background:var(--line); }
   .fp-note{ margin:7px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
-  .fp-end{ white-space:nowrap; }
-  .fp-more{ display:inline-flex; align-items:center; margin:-6px -6px -6px 0; padding:6px; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
+  .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
@@ -1263,7 +1262,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.43 (814)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.44 (815)</span></p>
     </div>
   </div>
 
@@ -46985,6 +46984,300 @@
     wireDetailModal();
     need("asof-text").textContent = "Data compiled " + dataCompiledLabel;
   }
+  function monthIdx(k) {
+    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
+  }
+  function fedPhases() {
+    var out = [];
+    function add(m, v) {
+      var s = v > 0 ? 1 : -1;
+      if (!out.length || out[out.length - 1].s !== s) out.push({
+        m: m,
+        s: s
+      });
+    }
+    fedMoves.forEach(function(d) {
+      add(d.m, d.v);
+    });
+    var day = isoDay(now.fedFunds.asOf), move = Number(String(now.fedFunds.lastMove).replace("−", "-"));
+    var last = fedMoves.length ? fedMoves[fedMoves.length - 1].m : "";
+    if (day && move && day.slice(0, 7) > last) add(day.slice(0, 7), move);
+    return out;
+  }
+  var runsCache = null;
+  function runStarts() {
+    var last = inflationHistory[inflationHistory.length - 1], key2 = inflationHistory.length + ":" + (last ? last.m + last.v : "");
+    if (!runsCache || runsCache.key !== key2) runsCache = {
+      key: key2,
+      starts: findRuns()
+    };
+    return runsCache.starts;
+  }
+  function findRuns() {
+    var run = [], starts = {};
+    function close() {
+      if (run.length) {
+        var first = run[0].m;
+        run.forEach(function(c) {
+          starts[c.m] = first;
+        });
+      }
+      run = [];
+    }
+    inflationHistory.forEach(function(c) {
+      if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c);
+    });
+    close();
+    return starts;
+  }
+  function cyclePeak(from, to) {
+    var starts = runStarts(), months = inflationHistory.filter(function(c) {
+      return c.m >= from && c.m <= to;
+    }), k = 0;
+    while (k < months.length - 1 && !(starts[months[k].m] >= from)) k++;
+    return months.slice(k).reduce(function(a, b) {
+      return !a || b.v > a.v ? b : a;
+    }, null);
+  }
+  var VIEW_W = 1e3;
+  var VIEW_H = 300;
+  var ROOM = 1;
+  var SIDE = 24;
+  function monthPoints(list, from, to) {
+    var sums = {};
+    list.forEach(function(d) {
+      var i = monthIdx(d.m);
+      if (i >= from && i <= to) (sums[Math.floor(i / 3)] = sums[Math.floor(i / 3)] || []).push(d.v);
+    });
+    return Object.keys(sums).map(Number).sort(function(a, b) {
+      return a - b;
+    }).map(function(q) {
+      return {
+        i: Math.min(Math.max(q * 3 + 1, from), to),
+        v: sums[q].reduce(function(a, b) {
+          return a + b;
+        }, 0) / sums[q].length
+      };
+    });
+  }
+  function segments(pts2, x, y) {
+    var p = pts2.map(function(d) {
+      return [ x(d.i), y(d.v) ];
+    }), out = [];
+    for (var k = 0; k < p.length - 1; k++) {
+      var a = p[Math.max(k - 1, 0)], b = p[k], c = p[k + 1], e = p[Math.min(k + 2, p.length - 1)];
+      out.push([ b[0], b[1], b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1] ]);
+    }
+    return out;
+  }
+  function curve(segs) {
+    if (!segs.length) return "";
+    return "M" + segs[0][0].toFixed(1) + " " + segs[0][1].toFixed(1) + segs.map(function(g) {
+      return " C" + g.slice(2).map(function(n) {
+        return n.toFixed(1);
+      }).join(" ");
+    }).join("");
+  }
+  function sample(segs) {
+    var out = [];
+    segs.forEach(function(g) {
+      for (var t = 0; t <= 1; t += .05) {
+        var u = 1 - t, w = [ u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t ];
+        out.push([ w[0] * g[0] + w[1] * g[2] + w[2] * g[4] + w[3] * g[6], w[0] * g[1] + w[1] * g[3] + w[2] * g[5] + w[3] * g[7] ]);
+      }
+    });
+    return out;
+  }
+  var TAG = {
+    h: 16,
+    gap: 8,
+    clear: 3,
+    plotW: 300,
+    plotH: 150
+  };
+  var TAG_SIDES = [ [ 1, 0 ], [ -1, 0 ], [ 0, -1 ], [ 0, 1 ], [ 1, -1 ], [ -1, -1 ], [ 1, 1 ], [ -1, 1 ] ];
+  function sideTag(ax, ay, w, side2) {
+    var g = side2[0] && side2[1] ? TAG.gap / 2 : TAG.gap;
+    return {
+      ax: ax,
+      ay: ay,
+      w: w,
+      dx: side2[0] > 0 ? g : side2[0] < 0 ? -g - w : -w / 2,
+      dy: side2[1] > 0 ? g : side2[1] < 0 ? -g - TAG.h : -TAG.h / 2
+    };
+  }
+  function tagHits(t, pts2) {
+    var x0 = t.ax * TAG.plotW + t.dx, y0 = t.ay * TAG.plotH + t.dy;
+    if (x0 < 0 || y0 < 0 || x0 + t.w > TAG.plotW || y0 + TAG.h > TAG.plotH) return Infinity;
+    return pts2.filter(function(q) {
+      return q[0] > x0 - TAG.clear && q[0] < x0 + t.w + TAG.clear && q[1] > y0 - TAG.clear && q[1] < y0 + TAG.h + TAG.clear;
+    }).length;
+  }
+  function curvePts(segs) {
+    return [].concat.apply([], segs.map(sample)).map(function(q) {
+      return [ q[0] / VIEW_W * TAG.plotW, q[1] / VIEW_H * TAG.plotH ];
+    });
+  }
+  function tagHtml(cls, text, tags, segs) {
+    var pts2 = curvePts(segs);
+    return tagSpan(cls, text, tags.map(function(c) {
+      return {
+        t: c,
+        n: tagHits(c, pts2)
+      };
+    }).reduce(function(a, c) {
+      return c.n < a.n ? c : a;
+    }).t);
+  }
+  function tagSpan(cls, text, t) {
+    return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ";top:" + pct(t.ay) + ";width:" + t.w + "px;margin:" + t.dy + "px 0 0 " + t.dx + 'px">' + text + "</span>";
+  }
+  function peakTag(segs, px, py) {
+    return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side2) {
+      return sideTag(px / VIEW_W, py / VIEW_H, 36, side2);
+    }), segs);
+  }
+  function peakZone(px, py) {
+    var out = [], cx = px / VIEW_W * TAG.plotW, cy = py / VIEW_H * TAG.plotH;
+    for (var dx = -44; dx <= 44; dx += 4) for (var dy = -24; dy <= 24; dy += 4) out.push([ cx + dx, cy + dy ]);
+    return out;
+  }
+  function levelTags(segs, sc, bands, keep) {
+    var pts2 = curvePts(segs).concat(keep), y = sc.y;
+    var marks = ruleLevels(sc).map(function(v) {
+      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%";
+      return {
+        v: v,
+        text: text,
+        w: 6 + 6 * text.length
+      };
+    });
+    var wide = Math.max.apply(null, marks.map(function(k) {
+      return k.w;
+    }).concat(0));
+    var tries = bands.filter(function(b) {
+      return b.w * TAG.plotW >= wide + 10;
+    }).map(function(b) {
+      return marks.map(function(k) {
+        var t = {
+          ax: b.l,
+          ay: y(k.v) / VIEW_H,
+          w: k.w,
+          dx: 5,
+          dy: -TAG.h
+        };
+        return tagHits(t, pts2) ? "" : tagSpan("fp-level-tag", k.text, t);
+      });
+    });
+    return tries.reduce(function(a, c) {
+      return c.filter(Boolean).length > a.filter(Boolean).length ? c : a;
+    }, []).join("");
+  }
+  function pct(n) {
+    return (n * 100).toFixed(2) + "%";
+  }
+  var GRID_STEPS = [ 1, 2, 5, 10 ];
+  function levelScale(lines) {
+    var all = [].concat.apply([], lines).map(function(p) {
+      return p.v;
+    });
+    var lo = Math.min.apply(null, all) - ROOM, hi = Math.max.apply(null, all) + ROOM;
+    var step = GRID_STEPS.filter(function(s) {
+      return (hi - lo) / s <= 6;
+    })[0] || 20;
+    return {
+      lo: lo,
+      hi: hi,
+      step: step,
+      y: function(v) {
+        return VIEW_H * (1 - (v - lo) / (hi - lo));
+      }
+    };
+  }
+  function ruleLevels(sc) {
+    var out = [];
+    for (var v = Math.ceil(sc.lo / sc.step) * sc.step; v <= sc.hi; v += sc.step) out.push(v);
+    return out;
+  }
+  function rulesHtml(sc) {
+    var y = sc.y;
+    return ruleLevels(sc).map(function(v) {
+      return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
+    }).join("");
+  }
+  function bandSpans(phases, from, to) {
+    var span = to - from + 1, out = [];
+    phases.forEach(function(p, k) {
+      var a = Math.max(monthIdx(p.m), from), b = k + 1 < phases.length ? monthIdx(phases[k + 1].m) : to + 1;
+      if (b > from && a <= to) out.push({
+        l: (a - from) / span,
+        w: (Math.min(b, to + 1) - a) / span,
+        cls: stanceClass(p)
+      });
+    });
+    return out;
+  }
+  function bandsHtml(bands, rules) {
+    return bands.map(function(b) {
+      return '<span class="fp-band ' + b.cls + '" style="left:' + pct(b.l) + ";width:" + pct(b.w) + '">' + rules + "</span>";
+    }).join("");
+  }
+  function stanceClass(p) {
+    return p.s > 0 ? "fp-tight" : "fp-ease";
+  }
+  function yearsHtml(from, to) {
+    var span = to - from + 1, y0 = Math.floor(from / 12), y1 = Math.floor(to / 12), step = Math.ceil((y1 - y0 + 1) / 6), out = "";
+    for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + "</span>";
+    return out;
+  }
+  function plotSvg(lines, from, to, peak, open, bands) {
+    var span = to - from + 1, sc = levelScale(lines), y = sc.y;
+    var x = function(i) {
+      return SIDE + (i - from + .5) / span * (VIEW_W - 2 * SIDE);
+    };
+    var segs = lines.map(function(l) {
+      return segments(l, x, y);
+    });
+    var paths = [ "fp-prices", "fp-rate" ].map(function(cls, k) {
+      return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>';
+    }).join("");
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(segs, sc, bands, peak ? peakZone(x(peak.i), y(peak.v)) : []) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
+  }
+  function rateSeries(toM) {
+    return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
+  }
+  function key(cls, name) {
+    return '<li class="' + cls + '">' + name + "</li>";
+  }
+  function legendHtml() {
+    return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") + key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + "</ul>";
+  }
+  var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
+  function footnoteHtml() {
+    var rate = ROSTER_BY["sheet-sign-hormones"];
+    return '<p class="fp-note">' + PHASES + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '">Learn more' + CHEV + "</button></p>";
+  }
+  function ratesStory(c) {
+    var m = c.ongoing ? nowModel : cycleModel(c), peak = cyclePeak(c.from + "-01", endMonthOf(m));
+    return c.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", " ") : "");
+  }
+  function endMonthOf(m) {
+    if (!m.ongoing) return m.endMonth;
+    var ff = fedFundsHistory[fedFundsHistory.length - 1];
+    return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
+  }
+  function fedPhasesCard(m) {
+    var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), bands = bandSpans(fedPhases(), from, to);
+    var peak = cyclePeak(fromM, toM);
+    var lines = [ monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to) ];
+    var top = peak ? lines[0].filter(function(p) {
+      return Math.floor(p.i / 3) === Math.floor(monthIdx(peak.m) / 3);
+    })[0] || null : null;
+    return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + legendHtml() + footnoteHtml();
+  }
+  function fedEnvironment(m) {
+    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
+  }
   function deficitChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -47987,6 +48280,17 @@
     });
     return out;
   }
+  function lowerRun(pk, top) {
+    var run = 0;
+    for (var i = pk.indexOf(top) + 1; i < pk.length; i++) {
+      if (pk[i].v < pk[i - 1].v) run++; else break;
+    }
+    return run;
+  }
+  function cycleRatesCard() {
+    var cyc = pageCycle("hormones-range") || openCycle();
+    return hiCard(cyc.name, "", ratesStory(cyc));
+  }
   function hormonesInsight() {
     var pk = ffPeaks(), yOf = function(d) {
       return d.m.slice(0, 4);
@@ -47995,13 +48299,9 @@
     var last = pk[pk.length - 1], prev = pk[pk.length - 2];
     var top = pk.reduce(function(a, d) {
       return d.v > a.v ? d : a;
-    });
-    var run = 0;
-    for (var i = pk.indexOf(top) + 1; i < pk.length; i++) {
-      if (pk[i].v < pk[i - 1].v) run++; else break;
-    }
-    var cards = [];
+    }), run = lowerRun(pk, top), cards = [];
     cards.push(lede("The Federal funds rate is the hormone: one signal, secreted on purpose, that the whole body then runs at the tempo of. Nothing on this page is measured off the economy — this is the instruction it was given."));
+    cards.push(cycleRatesCard());
     cards.push(hiCard("Two Clocks", "", "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " + pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock — from the " + top.v.toFixed(2) + "% of " + yOf(top) + ", " + run + " peaks in a row came in lower than the one before, until " + yOf(last) + " broke the run at " + last.v.toFixed(2) + "% against " + prev.v.toFixed(2) + "%."));
     cards.push(hiCard("Rise, Peak, Withdraw", "", "That shape is progesterone’s: it rises through the second half of a cycle, peaks, and then falls — and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal rather than the level, because the cuts come after the top, never before it."));
     return highlightsHtml(cards, '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div>");
@@ -48152,296 +48452,6 @@
     if (!m) throw new Error("the reading " + R.id + " shows no figure");
     var v = +m[0].replace("−", "-").replace(/,/g, "");
     return R.flip ? /surplus/.test(R.cardUnit || "") ? Math.abs(v) : -Math.abs(v) : v;
-  }
-  function monthIdx(k) {
-    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
-  }
-  function fedPhases() {
-    var out = [];
-    function add(m, v) {
-      var s = v > 0 ? 1 : -1;
-      if (!out.length || out[out.length - 1].s !== s) out.push({
-        m: m,
-        s: s
-      });
-    }
-    fedMoves.forEach(function(d) {
-      add(d.m, d.v);
-    });
-    var day = isoDay(now.fedFunds.asOf), move = Number(String(now.fedFunds.lastMove).replace("−", "-"));
-    var last = fedMoves.length ? fedMoves[fedMoves.length - 1].m : "";
-    if (day && move && day.slice(0, 7) > last) add(day.slice(0, 7), move);
-    return out;
-  }
-  var runsCache = null;
-  function runStarts() {
-    var last = inflationHistory[inflationHistory.length - 1], key2 = inflationHistory.length + ":" + (last ? last.m + last.v : "");
-    if (!runsCache || runsCache.key !== key2) runsCache = {
-      key: key2,
-      starts: findRuns()
-    };
-    return runsCache.starts;
-  }
-  function findRuns() {
-    var run = [], starts = {};
-    function close() {
-      if (run.length) {
-        var first = run[0].m;
-        run.forEach(function(c) {
-          starts[c.m] = first;
-        });
-      }
-      run = [];
-    }
-    inflationHistory.forEach(function(c) {
-      if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c);
-    });
-    close();
-    return starts;
-  }
-  function cyclePeak(from, to) {
-    var starts = runStarts(), months = inflationHistory.filter(function(c) {
-      return c.m >= from && c.m <= to;
-    }), k = 0;
-    while (k < months.length - 1 && !(starts[months[k].m] >= from)) k++;
-    return months.slice(k).reduce(function(a, b) {
-      return !a || b.v > a.v ? b : a;
-    }, null);
-  }
-  var VIEW_W = 1e3;
-  var VIEW_H = 300;
-  var ROOM = 1;
-  var SIDE = 24;
-  function monthPoints(list, from, to) {
-    var sums = {};
-    list.forEach(function(d) {
-      var i = monthIdx(d.m);
-      if (i >= from && i <= to) (sums[Math.floor(i / 3)] = sums[Math.floor(i / 3)] || []).push(d.v);
-    });
-    return Object.keys(sums).map(Number).sort(function(a, b) {
-      return a - b;
-    }).map(function(q) {
-      return {
-        i: Math.min(Math.max(q * 3 + 1, from), to),
-        v: sums[q].reduce(function(a, b) {
-          return a + b;
-        }, 0) / sums[q].length
-      };
-    });
-  }
-  function segments(pts2, x, y) {
-    var p = pts2.map(function(d) {
-      return [ x(d.i), y(d.v) ];
-    }), out = [];
-    for (var k = 0; k < p.length - 1; k++) {
-      var a = p[Math.max(k - 1, 0)], b = p[k], c = p[k + 1], e = p[Math.min(k + 2, p.length - 1)];
-      out.push([ b[0], b[1], b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1] ]);
-    }
-    return out;
-  }
-  function curve(segs) {
-    if (!segs.length) return "";
-    return "M" + segs[0][0].toFixed(1) + " " + segs[0][1].toFixed(1) + segs.map(function(g) {
-      return " C" + g.slice(2).map(function(n) {
-        return n.toFixed(1);
-      }).join(" ");
-    }).join("");
-  }
-  function sample(segs) {
-    var out = [];
-    segs.forEach(function(g) {
-      for (var t = 0; t <= 1; t += .05) {
-        var u = 1 - t, w = [ u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t ];
-        out.push([ w[0] * g[0] + w[1] * g[2] + w[2] * g[4] + w[3] * g[6], w[0] * g[1] + w[1] * g[3] + w[2] * g[5] + w[3] * g[7] ]);
-      }
-    });
-    return out;
-  }
-  var TAG = {
-    h: 16,
-    gap: 8,
-    clear: 3,
-    plotW: 300,
-    plotH: 150
-  };
-  var TAG_SIDES = [ [ 1, 0 ], [ -1, 0 ], [ 0, -1 ], [ 0, 1 ], [ 1, -1 ], [ -1, -1 ], [ 1, 1 ], [ -1, 1 ] ];
-  function sideTag(ax, ay, w, side2) {
-    var g = side2[0] && side2[1] ? TAG.gap / 2 : TAG.gap;
-    return {
-      ax: ax,
-      ay: ay,
-      w: w,
-      dx: side2[0] > 0 ? g : side2[0] < 0 ? -g - w : -w / 2,
-      dy: side2[1] > 0 ? g : side2[1] < 0 ? -g - TAG.h : -TAG.h / 2
-    };
-  }
-  function tagHits(t, pts2) {
-    var x0 = t.ax * TAG.plotW + t.dx, y0 = t.ay * TAG.plotH + t.dy;
-    if (x0 < 0 || y0 < 0 || x0 + t.w > TAG.plotW || y0 + TAG.h > TAG.plotH) return Infinity;
-    return pts2.filter(function(q) {
-      return q[0] > x0 - TAG.clear && q[0] < x0 + t.w + TAG.clear && q[1] > y0 - TAG.clear && q[1] < y0 + TAG.h + TAG.clear;
-    }).length;
-  }
-  function curvePts(segs) {
-    return [].concat.apply([], segs.map(sample)).map(function(q) {
-      return [ q[0] / VIEW_W * TAG.plotW, q[1] / VIEW_H * TAG.plotH ];
-    });
-  }
-  function tagHtml(cls, text, tags, segs) {
-    var pts2 = curvePts(segs);
-    return tagSpan(cls, text, tags.map(function(c) {
-      return {
-        t: c,
-        n: tagHits(c, pts2)
-      };
-    }).reduce(function(a, c) {
-      return c.n < a.n ? c : a;
-    }).t);
-  }
-  function tagSpan(cls, text, t) {
-    return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ";top:" + pct(t.ay) + ";width:" + t.w + "px;margin:" + t.dy + "px 0 0 " + t.dx + 'px">' + text + "</span>";
-  }
-  function peakTag(segs, px, py) {
-    return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side2) {
-      return sideTag(px / VIEW_W, py / VIEW_H, 36, side2);
-    }), segs);
-  }
-  function peakZone(px, py) {
-    var out = [], cx = px / VIEW_W * TAG.plotW, cy = py / VIEW_H * TAG.plotH;
-    for (var dx = -44; dx <= 44; dx += 4) for (var dy = -24; dy <= 24; dy += 4) out.push([ cx + dx, cy + dy ]);
-    return out;
-  }
-  function levelTags(segs, sc, bands, keep) {
-    var pts2 = curvePts(segs).concat(keep), y = sc.y;
-    var marks = ruleLevels(sc).map(function(v) {
-      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%";
-      return {
-        v: v,
-        text: text,
-        w: 6 + 6 * text.length
-      };
-    });
-    var wide = Math.max.apply(null, marks.map(function(k) {
-      return k.w;
-    }).concat(0));
-    var tries = bands.filter(function(b) {
-      return b.w * TAG.plotW >= wide + 10;
-    }).map(function(b) {
-      return marks.map(function(k) {
-        var t = {
-          ax: b.l,
-          ay: y(k.v) / VIEW_H,
-          w: k.w,
-          dx: 5,
-          dy: -TAG.h
-        };
-        return tagHits(t, pts2) ? "" : tagSpan("fp-level-tag", k.text, t);
-      });
-    });
-    return tries.reduce(function(a, c) {
-      return c.filter(Boolean).length > a.filter(Boolean).length ? c : a;
-    }, []).join("");
-  }
-  function pct(n) {
-    return (n * 100).toFixed(2) + "%";
-  }
-  var GRID_STEPS = [ 1, 2, 5, 10 ];
-  function levelScale(lines) {
-    var all = [].concat.apply([], lines).map(function(p) {
-      return p.v;
-    });
-    var lo = Math.min.apply(null, all) - ROOM, hi = Math.max.apply(null, all) + ROOM;
-    var step = GRID_STEPS.filter(function(s) {
-      return (hi - lo) / s <= 6;
-    })[0] || 20;
-    return {
-      lo: lo,
-      hi: hi,
-      step: step,
-      y: function(v) {
-        return VIEW_H * (1 - (v - lo) / (hi - lo));
-      }
-    };
-  }
-  function ruleLevels(sc) {
-    var out = [];
-    for (var v = Math.ceil(sc.lo / sc.step) * sc.step; v <= sc.hi; v += sc.step) out.push(v);
-    return out;
-  }
-  function rulesHtml(sc) {
-    var y = sc.y;
-    return ruleLevels(sc).map(function(v) {
-      return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
-    }).join("");
-  }
-  function bandSpans(phases, from, to) {
-    var span = to - from + 1, out = [];
-    phases.forEach(function(p, k) {
-      var a = Math.max(monthIdx(p.m), from), b = k + 1 < phases.length ? monthIdx(phases[k + 1].m) : to + 1;
-      if (b > from && a <= to) out.push({
-        l: (a - from) / span,
-        w: (Math.min(b, to + 1) - a) / span,
-        cls: stanceClass(p)
-      });
-    });
-    return out;
-  }
-  function bandsHtml(bands, rules) {
-    return bands.map(function(b) {
-      return '<span class="fp-band ' + b.cls + '" style="left:' + pct(b.l) + ";width:" + pct(b.w) + '">' + rules + "</span>";
-    }).join("");
-  }
-  function stanceClass(p) {
-    return p.s > 0 ? "fp-tight" : "fp-ease";
-  }
-  function yearsHtml(from, to) {
-    var span = to - from + 1, y0 = Math.floor(from / 12), y1 = Math.floor(to / 12), step = Math.ceil((y1 - y0 + 1) / 6), out = "";
-    for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + "</span>";
-    return out;
-  }
-  function plotSvg(lines, from, to, peak, open, bands) {
-    var span = to - from + 1, sc = levelScale(lines), y = sc.y;
-    var x = function(i) {
-      return SIDE + (i - from + .5) / span * (VIEW_W - 2 * SIDE);
-    };
-    var segs = lines.map(function(l) {
-      return segments(l, x, y);
-    });
-    var paths = [ "fp-prices", "fp-rate" ].map(function(cls, k) {
-      return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>';
-    }).join("");
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(segs, sc, bands, peak ? peakZone(x(peak.i), y(peak.v)) : []) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
-  }
-  function rateSeries(toM) {
-    return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
-  }
-  function key(cls, name) {
-    return '<li class="' + cls + '">' + name + "</li>";
-  }
-  function legendHtml() {
-    return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") + key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + "</ul>";
-  }
-  function footnoteHtml(m, peak) {
-    var text = m.era.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", " ") : "");
-    var rate = ROSTER_BY["sheet-sign-hormones"], cut = text.lastIndexOf(" ") + 1;
-    return '<p class="fp-note">' + text.slice(0, cut) + '<span class="fp-end">' + text.slice(cut) + '<button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '" aria-label="' + rate.name + '">' + CHEV + "</button></span></p>";
-  }
-  function endMonthOf(m) {
-    if (!m.ongoing) return m.endMonth;
-    var ff = fedFundsHistory[fedFundsHistory.length - 1];
-    return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
-  }
-  function fedPhasesCard(m) {
-    var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), bands = bandSpans(fedPhases(), from, to);
-    var peak = cyclePeak(fromM, toM);
-    var lines = [ monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to) ];
-    var top = peak ? lines[0].filter(function(p) {
-      return Math.floor(p.i / 3) === Math.floor(monthIdx(peak.m) / 3);
-    })[0] || null : null;
-    return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + legendHtml() + footnoteHtml(m, peak);
-  }
-  function fedEnvironment(m) {
-    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
   }
   function insightCirculation() {
     var vel = m2vHistory, n = vel.length;
@@ -50573,7 +50583,7 @@
       return r.heading === "falling";
     }
   } ];
-  var PHASES = [ {
+  var PHASES2 = [ {
     key: "reflation",
     name: "Reflation",
     growth: "slowing",
@@ -50637,7 +50647,7 @@
   }
   function phaseOf(r) {
     var up = r.regime === "expansion", cooling = r.heading === "falling";
-    return PHASES[up ? cooling ? 1 : 2 : cooling ? 0 : 3];
+    return PHASES2[up ? cooling ? 1 : 2 : cooling ? 0 : 3];
   }
   function arc(a0, a1) {
     var p = function(a) {
@@ -50646,7 +50656,7 @@
     return "M150,130L" + p(a1) + "A96,96 0 0 1 " + p(a0) + "Z";
   }
   function clockFace(now2) {
-    var parts = PHASES.map(function(p) {
+    var parts = PHASES2.map(function(p) {
       var m = (p.at[0] + p.at[1]) / 2 * Math.PI, x = 150 + 56 * Math.cos(m), y = 130 - 56 * Math.sin(m), cur = p === now2 ? " now" : "";
       return '<path class="clock-q' + cur + '" d="' + arc(p.at[0], p.at[1]) + '"/><text class="clock-name' + cur + '" x="' + x.toFixed(1) + '" y="' + (y - 3).toFixed(1) + '" text-anchor="middle">' + p.name + '</text><text class="clock-asset' + cur + '" x="' + x.toFixed(1) + '" y="' + (y + 13).toFixed(1) + '" text-anchor="middle">' + p.holds + "</text>";
     });
@@ -50658,7 +50668,7 @@
   }
   function drawClock() {
     var now2 = phaseOf(nowModel.reading);
-    var rows = PHASES.map(function(p) {
+    var rows = PHASES2.map(function(p) {
       return auxStat({
         label: p.name + (p === now2 ? " · today" : "") + "<small>Growth " + p.growth + ", prices " + p.prices + "</small>",
         value: p.holds,

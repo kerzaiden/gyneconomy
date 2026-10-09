@@ -5,7 +5,8 @@ import { AXIS, chartAxes, colPath, colWidth, divergeChart, fitLine, histFrame, p
 import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { curveNoteFull, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
-import { cycleQtrIdx, cycleSlice } from "./model.ts";
+import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
+import { ratesStory } from "./fed-phases.ts";
 import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, timelineWindow } from "./history.ts";
 import { curveVerdict, fearCurve, horizonInfoHtml, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
 import { fedFundsHistoryChart } from "./history-charts.ts";
@@ -258,17 +259,21 @@ function ffPeaks(){
   });
   return out;
 }
+function lowerRun(pk: typeof fedFundsHistory, top: (typeof fedFundsHistory)[number]){
+  var run = 0;
+  for (var i = pk.indexOf(top) + 1; i < pk.length; i++){ if (pk[i].v < pk[i - 1].v) run++; else break; }
+  return run;
+}
+function cycleRatesCard(){ var cyc = pageCycle("hormones-range") || openCycle(); return hiCard(cyc.name, "", ratesStory(cyc)); }
 function hormonesInsight(){
   var pk = ffPeaks(), yOf = function(d: { m: string }){ return d.m.slice(0, 4); };
   if (pk.length <= 2) return "";
   var last = pk[pk.length - 1], prev = pk[pk.length - 2];
-  var top = pk.reduce(function(a, d){ return d.v > a.v ? d : a; });
-  var run = 0;
-  for (var i = pk.indexOf(top) + 1; i < pk.length; i++){ if (pk[i].v < pk[i - 1].v) run++; else break; }
-  var cards = [];
+  var top = pk.reduce(function(a, d){ return d.v > a.v ? d : a; }), run = lowerRun(pk, top), cards = [];
   cards.push(lede('The Federal funds rate is the hormone: one signal, secreted on purpose, that the ' +
     'whole body then runs at the tempo of. Nothing on this page is measured off the economy \u2014 this is the ' +
     'instruction it was given.'));
+  cards.push(cycleRatesCard());
   cards.push(hiCard("Two Clocks", "",
     "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " +
     pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock \u2014 from the " +

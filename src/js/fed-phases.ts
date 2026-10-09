@@ -1,7 +1,7 @@
 import { discountHistory, fedFundsHistory, fedMoves } from "./history-fred.ts";
 import { now } from "./data.ts";
 import { inflationHistory } from "./refresh-season.ts";
-import { cpiDirectionAt } from "./model.ts";
+import { cpiDirectionAt, cycleModel, nowModel } from "./model.ts";
 import { CHEV, isoDay, monthLabel } from "./format.ts";
 import { orbitSvg } from "./marks.ts";
 import { dxHead, dxSys } from "./render-core.ts";
@@ -160,10 +160,14 @@ function legendHtml(){
   return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") +
     key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + '</ul>';
 }
-function footnoteHtml(m: CycleModel, peak: MonthPoint | null){
-  var text = m.era.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", "\u00a0") : "");
-  var rate = ROSTER_BY["sheet-sign-hormones"], cut = text.lastIndexOf(" ") + 1;
-  return '<p class="fp-note">' + text.slice(0, cut) + '<span class="fp-end">' + text.slice(cut) + '<button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '" aria-label="' + rate.name + '">' + CHEV + '</button></span></p>';
+var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
+function footnoteHtml(){
+  var rate = ROSTER_BY["sheet-sign-hormones"];
+  return '<p class="fp-note">' + PHASES + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '">Learn more' + CHEV + '</button></p>';
+}
+export function ratesStory(c: Cycle){
+  var m = c.ongoing ? nowModel : cycleModel(c), peak = cyclePeak(c.from + "-01", endMonthOf(m));
+  return c.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", "\u00a0") : "");
 }
 function endMonthOf(m: CycleModel){
   if (!m.ongoing) return m.endMonth;
@@ -175,7 +179,7 @@ function fedPhasesCard(m: CycleModel){
   var peak = cyclePeak(fromM, toM);
   var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
   var top = peak ? lines[0].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml(m, peak);
+  return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml();
 }
 export function fedEnvironment(m: CycleModel){
   return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
