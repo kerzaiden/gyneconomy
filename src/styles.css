@@ -39,7 +39,7 @@
     --tm-coin-wash: color-mix(in srgb, var(--ylm-5y) 34%, var(--surface));
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
-    --seg-track: #f6f5f5; --seg-on: #ffffff;
+    --seg-track: #f6f5f5; --seg-on: #ffffff; --shade: var(--seg-track);
     --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
     --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
     --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
@@ -85,7 +85,7 @@
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
-      --seg-track: #271921; --seg-on: #4a3540;
+      --seg-track: #271921; --seg-on: #4a3540; --shade: #3f3038;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
@@ -130,7 +130,7 @@
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
-      --seg-track: #271921; --seg-on: #4a3540;
+      --seg-track: #271921; --seg-on: #4a3540; --shade: #3f3038;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
@@ -537,6 +537,7 @@
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
   .fp .rangebar{ margin:14px 0 4px; }
+  .wave-plot, .wave-legend{ --band:var(--shade); }
   .wave-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); }
   .wave-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 11px); }
   .wave-clip{ position:absolute; inset:0; overflow:hidden; border-radius:11px; }

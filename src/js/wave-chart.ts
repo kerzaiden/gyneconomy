@@ -13,6 +13,7 @@ var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 60, CURL = 0.45, WAVE = 10, 
 export function monthIdx(k: string){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1; }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
 function lineTone(color: string){ return "--line:var(--" + color + ")"; }
+function bandTone(band?: string){ return band ? ' style="--band:var(--' + band + ')"' : ""; }
 function monthPoints(list: MonthPoint[], from: number, to: number){
   var at: Record<number, number> = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out: Pt[] = [];
   list.forEach(function(d){ var i = monthIdx(d.m); if (i <= to) at[i] = d.v; });
@@ -93,8 +94,8 @@ function bandsHtml(bands: WaveBand[], from: number, to: number){
 }
 export function waveChart(o: WaveChart){
   var lines = o.series.map(function(s){ return monthPoints(s.list, o.from, o.to); }), sc = levelScale(lines);
-  return '<div class="wave-plot" style="--band:var(--' + (o.band || "seg-track") + ')"><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + '</span>' + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + '</div>' + axisHtml(o.from, o.to, o.open);
+  return '<div class="wave-plot"' + bandTone(o.band) + '><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + '</span>' + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + '</div>' + axisHtml(o.from, o.to, o.open);
 }
 export function waveLegend(keys: WaveKey[], band?: string){
-  return '<ul class="wave-legend" style="--band:var(--' + (band || "seg-track") + ')">' + keys.map(function(k){ return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + '>' + k.name + '</li>'; }).join("") + '</ul>';
+  return '<ul class="wave-legend"' + bandTone(band) + '>' + keys.map(function(k){ return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + '>' + k.name + '</li>'; }).join("") + '</ul>';
 }

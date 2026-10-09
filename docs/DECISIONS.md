@@ -1594,8 +1594,9 @@ settles it; none is open after V668.
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates card is a feel, not a measure, dressed as her Clair hormone chart: the Fed's rate as a
   soft yellow area behind and prices as an orange line with a translucent fill in front, on a white ground
-  inside a light grey border (`--border`) that contains the colours, tightening shaded in zebra bands of the app's one grey
-  (`--seg-track`, as light as still reads against white, fading downward) and easing left white, the bands behind the
+  inside a light grey border (`--border`) that contains the colours, tightening shaded in zebra bands of grey
+  (`--shade`: the app's one grey in light, as light as still reads against white; a lighter grey in dark, where the one
+  grey sat too close to the card to tell tightening from easing; fading downward) and easing left white, the bands behind the
   guide rules and the curves so they never cover a line; above it, only a thin 1Y · 5Y · Cycle bar, with the same space above it as below. The large figure of today's
   target range that once sat above the bar was removed: it did not say what it was (Keren, Oct 9, 2026).
   The chart is the app's one wave chart, a component any later chart of month series over bands reuses (Keren,

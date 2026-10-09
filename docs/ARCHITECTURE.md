@@ -628,7 +628,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   The card draws with the **wave chart** (`wave-chart`, `waveChart` and `waveLegend`), the one component for a smoothed
   chart of month series over shaded bands, so a later chart reuses it instead of copying it: it takes series (a month
   list, a colour token, a fill strength, bold or not, drawn back to front), bands (month spans, clipped to the window),
-  the band's colour token (default `seg-track`), the window and whether it is open; the legend takes keys of three
+  the band's colour token (default `shade`), the window and whether it is open; the legend takes keys of three
   kinds (a line in a colour, the band, a blank square). The bands and the rules
   are HTML in one rounded clip (`wave-clip`) under an SVG drawn with `preserveAspectRatio="none"` and non-scaling
   strokes, so the chart is fluid and the plot's four corners stay round. `monthPoints` samples the window at `POINTS` + 1 even steps from its first month to its last,
