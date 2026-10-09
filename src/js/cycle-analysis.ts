@@ -186,9 +186,8 @@ function bySub(k: string, ls: Lab[], at: At){
   }).join("");
 }
 function bySystem(at: At, j: Lab[], cat: string){
-  var rank = TIERS.map(function(t){ return t.key; });
   return categoriesShown().map(function(c){ return c.key; }).map(function(k){
-    var ls = j.filter(function(l){ return l.cat === k; }).sort(function(a, b){ return rank.indexOf(tier(a, at)) - rank.indexOf(tier(b, at)); });
+    var ls = j.filter(function(l){ return l.cat === k; });
     return !ls.length ? "" : k === cat ? bySub(k, ls, at) : labSec(k, ls, at);
   }).join("");
 }
@@ -364,9 +363,9 @@ function catName(k: string){ return markName(CAT_MARK[k], catTitle(k)); }
 function markName(mark: () => string, name: string){ return '<span class="lab-mark">' + mark() + '</span>' + name; }
 function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' readings">' + n + '</small>'; }
 function insightsHome(i: number){
-  var at = atCycle(i), j = judged(at), rank = TIERS.map(function(t){ return t.key; });
+  var j = judged(atCycle(i));
   return categoriesShown().map(function(c){
-    var ls = j.filter(function(l){ return l.cat === c.key; }).sort(function(a, b){ return rank.indexOf(tier(a, at)) - rank.indexOf(tier(b, at)); });
+    var ls = j.filter(function(l){ return l.cat === c.key; });
     return ls.length ? insightSec(c.key, ls) : "";
   }).join("");
 }

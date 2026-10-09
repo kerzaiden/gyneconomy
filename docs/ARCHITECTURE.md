@@ -707,9 +707,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   Balance. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names
-  calendar years through the page option `at`. Real return is built by the same `yearReading` from `realYears`: each year of
-  `sp500Years` deflated by `yearInflation` through `realReturn` (model.ts), the open year by the latest twelve-month
-  rate times `yearDone()`, the share of the year gone that the cycle view's `cycleYtdFraction` also reads.
+  calendar years through the page option `at`.
 
 ## The season model
 
