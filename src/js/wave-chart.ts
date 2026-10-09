@@ -93,8 +93,8 @@ function bandsHtml(bands: WaveBand[], from: number, to: number){
 }
 export function waveChart(o: WaveChart){
   var lines = o.series.map(function(s){ return monthPoints(s.list, o.from, o.to); }), sc = levelScale(lines);
-  return '<div class="wave-plot" style="--band:var(--' + (o.band || "normal") + ')"><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + '</span>' + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + '</div>' + axisHtml(o.from, o.to, o.open);
+  return '<div class="wave-plot" style="--band:var(--' + (o.band || "seg-track") + ')"><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + '</span>' + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + '</div>' + axisHtml(o.from, o.to, o.open);
 }
 export function waveLegend(keys: WaveKey[], band?: string){
-  return '<ul class="wave-legend" style="--band:var(--' + (band || "normal") + ')">' + keys.map(function(k){ return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + '>' + k.name + '</li>'; }).join("") + '</ul>';
+  return '<ul class="wave-legend" style="--band:var(--' + (band || "seg-track") + ')">' + keys.map(function(k){ return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + '>' + k.name + '</li>'; }).join("") + '</ul>';
 }

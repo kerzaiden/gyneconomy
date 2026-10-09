@@ -541,7 +541,7 @@
   .wave-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 11px); }
   .wave-clip{ position:absolute; inset:0; overflow:hidden; border-radius:11px; }
   .wave-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:color-mix(in srgb, var(--grid) 70%, transparent); }
-  .wave-band{ position:absolute; top:0; bottom:0; background:linear-gradient(180deg, color-mix(in srgb, var(--band) 20%, transparent), color-mix(in srgb, var(--band) 6%, transparent)); }
+  .wave-band{ position:absolute; top:0; bottom:0; background:linear-gradient(180deg, var(--band), color-mix(in srgb, var(--band) 50%, transparent)); }
   .wave-area{ stroke:none; }
   .wave-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .wave-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
   .wave-line{ fill:none; stroke:var(--line); stroke-width:1.6; opacity:0.85; stroke-linecap:round; stroke-linejoin:round; }
@@ -555,7 +555,7 @@
   .wave-legend li::before{ content:""; flex:none; }
   .wave-key-blank::before, .wave-key-band::before{ width:9px; height:9px; border-radius:3px; box-sizing:border-box; }
   .wave-key-blank::before{ border:1px solid var(--border-strong); background:var(--surface); }
-  .wave-key-band::before{ background:color-mix(in srgb, var(--band) 20%, transparent); }
+  .wave-key-band::before{ border:1px solid var(--border-strong); background:var(--band); }
   .wave-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
   .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
