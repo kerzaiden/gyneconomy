@@ -1259,7 +1259,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.28 (799)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.30 (801)</span></p>
     </div>
   </div>
 
@@ -46266,8 +46266,18 @@
       };
     });
   }
+  function runsOf(R) {
+    return [ R.cat, R.cat + "/" + R.sub, R.group ];
+  }
+  function splitRun(R, prev, runs, bad) {
+    runsOf(R).forEach(function(k, d) {
+      if (!k || prev && runsOf(prev)[d] === k) return;
+      if (runs.indexOf(k) !== -1) bad.push(R.id + ": " + k + " is split");
+      runs.push(k);
+    });
+  }
   function checkRoster() {
-    var bad = [], seen = {}, live = {}, groups = [];
+    var bad = [], seen = {}, live = {}, runs = [];
     ROSTER.forEach(function(R, i) {
       var prev = ROSTER[i - 1];
       if (seen[R.id]) bad.push(R.id + ": declared twice");
@@ -46277,10 +46287,7 @@
       })) bad.push(R.id + ": no category " + R.cat);
       if (!TIMING[R.timing]) bad.push(R.id + ": no timing " + R.timing);
       if (typeof SUB_MARK[R.sub] !== "function") bad.push(R.id + ": no mark for " + R.sub);
-      if (R.group && !(prev && prev.group === R.group)) {
-        if (groups.indexOf(R.group) !== -1) bad.push(R.id + ": " + R.group + " is split");
-        groups.push(R.group);
-      }
+      splitRun(R, prev, runs, bad);
       (R.live || []).forEach(function(n) {
         live[n] = 1;
         if (LIVE_NAMES.indexOf(n) === -1) bad.push(R.id + ": no live reading " + n);
@@ -46621,6 +46628,21 @@
       cardUnit: "VIX",
       live: [ "sentiment", "vixClose", "vix3mClose" ]
     }, {
+      id: "sheet-sign-confidence",
+      name: "Confidence",
+      cat: "mood",
+      sub: "Sentiment",
+      good: "up",
+      timing: "leading",
+      term: "Confidence",
+      head: "OECD Consumer Confidence",
+      hist: {
+        s: confidenceHistory,
+        k: "m"
+      },
+      mid: CONFIDENCE_LINE,
+      cardUnit: "OECD index"
+    }, {
       id: "sheet-sign-desire",
       name: "Discretionary spending",
       cat: "desire",
@@ -46715,21 +46737,6 @@
       },
       mid: DELINQUENCY_MEAN,
       cardUnit: "of bank loans"
-    }, {
-      id: "sheet-sign-confidence",
-      name: "Confidence",
-      cat: "mood",
-      sub: "Sentiment",
-      good: "up",
-      timing: "leading",
-      term: "Confidence",
-      head: "OECD Consumer Confidence",
-      hist: {
-        s: confidenceHistory,
-        k: "m"
-      },
-      mid: CONFIDENCE_LINE,
-      cardUnit: "OECD index"
     } ];
   }
   function bootRoster() {
@@ -48889,16 +48896,11 @@
     }).join("");
   }
   function bySystem(at, j, cat) {
-    var rank = TIERS.map(function(t) {
-      return t.key;
-    });
     return categoriesShown().map(function(c) {
       return c.key;
     }).map(function(k) {
       var ls = j.filter(function(l) {
         return l.cat === k;
-      }).sort(function(a, b) {
-        return rank.indexOf(tier(a, at)) - rank.indexOf(tier(b, at));
       });
       return !ls.length ? "" : k === cat ? bySub(k, ls, at) : labSec(k, ls, at);
     }).join("");
@@ -49181,14 +49183,10 @@
     return '<small class="lab-n" aria-label="' + n + ' readings">' + n + "</small>";
   }
   function insightsHome(i) {
-    var at = atCycle(i), j = judged(at), rank = TIERS.map(function(t) {
-      return t.key;
-    });
+    var j = judged(atCycle(i));
     return categoriesShown().map(function(c) {
       var ls = j.filter(function(l) {
         return l.cat === c.key;
-      }).sort(function(a, b) {
-        return rank.indexOf(tier(a, at)) - rank.indexOf(tier(b, at));
       });
       return ls.length ? insightSec(c.key, ls) : "";
     }).join("");

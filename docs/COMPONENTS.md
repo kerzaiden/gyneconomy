@@ -278,7 +278,6 @@ renderer speaks. Listed most-used first.
 | **`qWindowFrom`** | history.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
-| **`tier`** | cycle-analysis.ts | 4 places |
 | **`visits`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |

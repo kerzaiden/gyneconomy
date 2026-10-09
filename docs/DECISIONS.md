@@ -16,7 +16,7 @@ git show v648-treasury-quarters:src/js/07-forms.js
 ```
 
 To add a decision, state it under its topic in the same form: the rule in bold, then why, then the version. The
-why matters more than the rule (Keren, 0.9.28): give the essence of her reasoning, not her words verbatim, and quote
+why matters more than the rule (Keren, 0.9.30): give the essence of her reasoning, not her words verbatim, and quote
 her only where a phrase carries the reason better than a paraphrase. When a new decision overturns a rule here,
 rewrite that rule rather than adding a contradiction: keep only what now holds and why the change was made, not the
 back-and-forth, and keep its older versions in the citation. Her full words go in the commit message. A rule whose scope, or the
@@ -877,8 +877,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
+- **Readings appear in one order everywhere, the roster's: by category, by subcategory, then by row, on every cycle page,
+  current and past, whatever their results.** Keren, 0.9.29: "the order in which the indicators appear is different in some cycles.
+  And I want the order to be identical"; Economic Season reads Temperature, Growth gap, Federal funds rate, then S&P 500;
+  Activity reads Unemployment, Payrolls, GDP growth, Productivity growth; Mood reads Shiller CAPE, Buffett indicator, Fear,
+  Confidence. Elements had sorted each category by tier (Risk first), so a cycle's results reshuffled it. A category or
+  subcategory split in the roster is refused at boot, so the file reads in the order the pages show. (0.9.29)
+
 - **Market holds the S&P 500 alone; there is no separate real-return reading.** The real return is simply the S&P 500
-  less inflation, which any reader can work out, so a reading of its own added little and distracted (Keren, 0.9.28;
+  less inflation, which any reader can work out, so a reading of its own added little and distracted (Keren, 0.9.30;
   it was a reading from 0.9.19). Don't re-propose it.
 
 - **Credit is households borrowing to spend and lives in Desire, under Demand (Consumer credit, 0.9.25); Stress holds what is owed,
