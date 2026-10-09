@@ -1033,11 +1033,12 @@ settles it; none is open after V668.
   date column widened to fit it, the year a type step larger and darker so the velocity does not compete with it
   (the label size is already the scale's smallest); each strip's dividing line runs through that column so every
   year reads as its own row; a strip is three squares of the paper tall, since two left no air; each strip's baseline sits exactly in the middle of its three squares, and its tallest beat reaches the strip's edge without crossing it; the chart is never taller than
-  every history's height (Keren: Max ran too long to see the reading when a year was tapped), so about five years show at a
-  time and the strips scroll under the pinned reading and quarter axis, a fade at the bottom showing more below; a window of
-  fewer years (the current cycle's four) keeps the full height and stretches its strips to fill it, each beat
-  centred on its strip and grown in proportion to it, since a chart cut short to its years looked too short and the
-  extra room should make the beats more visible (Keren, reversing 0.9.36, where the chart shrank to its years). The windows are 5Y, 10Y, 25Y and Max; Max starts at 1959 Q1,
+  every history's height (Keren: Max ran too long to see the reading when a year was tapped), so four years and a sliver of the fifth show at a
+  time (the sliver says there is more, Keren) and the strips scroll under the pinned reading and quarter axis, a fade at the bottom showing more below; every
+  window spaces its strips as the current cycle's four fill the frame, each beat centred on its strip and grown in
+  proportion to it, and a window of fewer years stretches them further to fill the height, since a chart cut short to
+  its years looked too short and the room makes the beats more visible (Keren, reversing 0.9.36, where the chart
+  shrank to its years; the spacing extended to every window after she saw it on the current cycle). The windows are 5Y, 10Y, 25Y and Max; Max starts at 1959 Q1,
   the first quarter of the Fed's M2 (FRED M2V), and the cycle picker starts at 1963 because the 1958–1962 cycle
   opens before the data. The earlier EKG histories (scrolling strip, Holter report, Apple Health-style
   ECG) stay dropped. (0.9.25)

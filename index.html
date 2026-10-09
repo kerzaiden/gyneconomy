@@ -50703,6 +50703,8 @@
     buildPortfolio();
   }
   var PULSE_BEATS = 5;
+  var PULSE_VIEW = 4;
+  var PULSE_PEEK = .4;
   var PULSE_FENCE = 1.5;
   var PULSE_FAR = 3;
   var PULSE_GUTTER = 10;
@@ -50791,7 +50793,7 @@
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
     var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-    var F = histFrame(Wpx), sq = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / rows), full = rows * h;
+    var F = histFrame(Wpx), sq = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / (rows > PULSE_VIEW ? PULSE_VIEW + PULSE_PEEK : rows)), full = rows * h;
     var X = function(q) {
       return L + (R - L) * q / 4;
     }, out = [], body = [ stripPaper(L, R, T, T + full, h) ];
