@@ -284,7 +284,7 @@ async function openPage(p, url, sheet) {
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-open="sheet-find"][data-ind-when]').length : 0,
-                   score: !!d.querySelector('[data-open="sheet-ai-insights"] .lab-score'),
+                   score: !d.querySelector('[data-open="sheet-ai-insights"] .lab-score') && d.querySelectorAll('[data-chart-cycle] .lab-score').length === 1,
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
                    boxes: [...d.children].map(c => c.matches('[data-open="sheet-ai-insights"]') ? 'ai' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-band') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
@@ -292,8 +292,8 @@ async function openPage(p, url, sheet) {
     await sweep(p);
     (today && today.visible && today.title === 'AI Insights' && today.lead === 1 && today.story && today.cards === 0 &&
      today.boxes === 'ai,trend,sys' && today.doors === 2 && today.score && today.kicker === 'AI Cycle')
-      ? ok('the dial reads its cycle, and under it AI Insights with the health score, Cycle Analysis, then the cycle year by year', today.title)
-      : bad('the dial reads its cycle, and under it AI Insights with the health score, Cycle Analysis, then the cycle year by year', JSON.stringify(today));
+      ? ok('the dial reads its cycle, and under it AI Insights, Cycle Analysis with the health score, then the cycle year by year', today.title)
+      : bad('the dial reads its cycle, and under it AI Insights, Cycle Analysis with the health score, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));

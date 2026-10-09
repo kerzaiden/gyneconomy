@@ -633,8 +633,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   1914 to 1954-06) before. The note under the legend is the cycle's `rates` story with `{peak}` and `{month}` filled
   from `cyclePeak`, so the words are written once and the figures are the record's.
 - **AI Insights** (0.6.5, Cycle Insights, `ai-insights`): every cycle page's first door (`aiInsights(m)`), its lede
-  clamped to three lines (Claude's on the open cycle, the cycle's `blurb` on a closed one) with the health score
-  under it (`cycleScore`), opening the page `sheet-ai-insights` (built by `buildAiPage`, drawn on open). Rendering
+  clamped to three lines (Claude's on the open cycle, the cycle's `blurb` on a closed one), with no health score
+  (Cycle Analysis carries it, 0.9.46), opening the page `sheet-ai-insights` (built by `buildAiPage`, drawn on open). Rendering
   the door records its cycle (`shownModel`) and the page draws that cycle: one `trendBox` per chapter (the cycle's
   name, holding the summary, then Interest Rates with the cycle's `ratesStory`, then on the open cycle only The
   economy and The market, then Risk factors, then on the open cycle only Closest moments, the byline and More
@@ -741,14 +741,13 @@ regardless of direction** — it flips the Q4 2023 example (CPI 3.32%, hot and f
 Autumn–Disinflation). Steady prices keep the prior reading's direction (`heading`, carried down the track like `prevRegime`), and read Reflation or Disinflation only when nothing precedes them (0.9.2).
 Shrinking needs no rule of its own: below zero is always further than the band below potential. **Inside the
 band the regime continues**: `prevRegime` comes from the track, computed once over the full history, never per
-cycle; the annual track runs first and seeds the quarterly one.
+cycle; the early track runs first and seeds BEA's.
 
-**Two tracks, one reading.** `seasonTrackYears` (`seasonYears`) reads each year before quarterly GDP (1948) from
-that year's annual growth against `PEAK_TREND`, with December's prices, and spreads the reading over its four
-quarters (`annual: true`). `seasonTrackAll` (`seasonQuarters`) is quarterly from 1948 Q1 and indexed like
+**Two tracks, one reading.** `seasonTrackYears` (`seasonEarly`) reads each quarter before BEA's quarterly GDP (1948)
+from Balke and Gordon's real GNP, year over year, against `GNP_TREND`, that series' own 1929–48 peak trend: a trend
+taken from BEA's annual GDP would hold the slower-growing 1972-dollar series below potential. `seasonTrackAll` (`seasonQuarters`) is quarterly from 1948 Q1 and indexed like
 `gdpQuarterlyYoY` (cycleModel finds a close by that index). `seasonTrack` joins them; the cycle strip, the dial and
-`regimeByQ` read it. A closed cycle with no quarterly close takes `closingReading`, and its (i) says the reading is
-annual. (V690; 0.8.0)
+`regimeByQ` read it. A closed cycle with no BEA close takes `closingReading`. (V690; 0.8.0; New Deal II)
 
 **One direction, one source.** Every expansion/contraction on screen comes from `r.regime`/`regimeByQ`.
 Growth's chart is coloured by regime, **never by the sign of growth**.

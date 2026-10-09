@@ -299,7 +299,6 @@ function chartDetail(){
     "<b>Health Score</b> is the share of results that are Normal, out of 100."
   ].concat(methodFacts(), ["<b>History, not forecast:</b> it describes her past, not what comes next."])) + srcBlock([FENCE_SRC, SD_SRC]);
 }
-export function cycleScore(m: CycleModel){ var i = marketCycles.indexOf(m.era); return i < 0 ? "" : scoreBox(i); }
 export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
   return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(m.era.story, "ai-clamp") + scoreBox(i));

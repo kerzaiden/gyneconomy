@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `dfd47a5` on 2026-10-09. **107 components**, **18 shared patterns**.
+Generated from commit `e2727be` on 2026-10-09. **107 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -18,7 +18,7 @@ Generated from commit `dfd47a5` on 2026-10-09. **107 components**, **18 shared p
 | **`echoLine`** | `.ai-echo` `.ai-echo-when` | — |
 | **`para`** | `.ai-p` | `ai-insights.ts:leadBoxes`, `ai-insights.ts:todayBoxes` |
 | **`pathStrip`** | `.ai-path` | `ai-insights.ts:echoLine` |
-| **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:leadBoxes`, `ai-insights.ts:risksPic`, `ai-insights.ts:tilesPic` |
+| **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:risksPic`, `ai-insights.ts:tilesPic` |
 | **`risksPic`** | `.ai-rank` `.ai-track` | `ai-insights.ts:aiPage` |
 | **`tilesPic`** | `.ai-tile` `.ai-tiles` | `ai-insights.ts:pathStrip` |
 | **`todayBoxes`** | `.ai-by` `.ai-echoes` | `ai-insights.ts:aiPage` |

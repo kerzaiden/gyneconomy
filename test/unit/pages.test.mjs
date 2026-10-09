@@ -168,7 +168,7 @@ test('AI Insights opens on every cycle with its story, rates and risks; the open
     sheetRenderers['sheet-ai-insights']();
     assert.deepEqual(heads(), [c.name, 'Interest Rates', 'Risk Factors'], c.name);
     assert.equal(rates(), ratesStory(c), c.name);
-    assert.ok(page.querySelector('.lab-score'), c.name + ' score');
+    assert.equal(page.querySelector('.lab-score'), null, c.name + ' score');
     const named = riskLabs(marketCycles.indexOf(c)).map(l => l.name).filter(n => page.textContent.includes(n));
     assert.equal(page.querySelectorAll('.ai-rank').length, named.length, c.name + ' risks');
     assert.deepEqual(broken(page.innerHTML), [], c.name);
@@ -176,6 +176,7 @@ test('AI Insights opens on every cycle with its story, rates and risks; the open
   renderDiagnosis(nowModel);
   sheetRenderers['sheet-ai-insights']();
   assert.equal(heads()[0], nowModel.era.name);
+  assert.equal(page.querySelector('.lab-score'), null);
 });
 
 test('every cycle page, open or closed, is built in one shape', async () => {

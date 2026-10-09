@@ -96,8 +96,7 @@ settles it; none is open after V668.
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   In the box's colour the rest of the ring could not be seen. (0.6.5)
 - **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
-  inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, Lighter
-  Cycle Pages)
+  inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
 - **Every cycle page carries AI Insights above Cycle Analysis, the open cycle and every closed one, and the cycle's
   story is told inside the AI Insights page's first container.** The narrative belongs to AI Insights. A closed
   cycle once had none, which left what the app knows about a past cycle (its narrative, its rates, its risks) with
@@ -309,7 +308,7 @@ settles it; none is open after V668.
 - **The door from Interest Rates Environment to the Federal funds rate page is an inline "Learn more ›" after the
   card's text, on Analysis, where it lands on the cycle Analysis shows.** Reading is what makes one want
   to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished. (0.9.1,
-  0.9.40, 0.9.43, 0.9.44, Lighter Cycle Pages)
+  0.9.40, 0.9.43, 0.9.44, 0.9.46)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -527,15 +526,16 @@ settles it; none is open after V668.
 - **A cycle runs from its first bull year to its last bear year, so it ends with its bleed.** What built a
   cycle is what broke it (dot-com mania and crash, the housing boom and subprime); the YEAR badge and
   `cycleNowNote` count from the same year. (V511)
-- **The record opens at 1928, the first year of Damodaran's S&P return table; before 1949 the seasons are read
-  from annual growth.** Keren chose to go all the way back with annual seasons over Claude's recommendation (cycles
+- **The record opens at 1928, the first year of Damodaran's S&P return table; before 1948 the seasons are read
+  from Balke and Gordon's quarterly GNP.** Keren chose to go all the way back with annual seasons over Claude's recommendation (cycles
   from 1928, no seasons before 1947). Five cycles open the record (1928–32 the Great Depression, 1933–34 the New
   Deal, and the three named below; Claude's draft names), and the Baby Boom Cycle opens at 1947, its first bull year
   under the cycle rule. Before 1957 the returns are the S&P's 90-stock predecessor's, as Damodaran's table carries
   them. (V511, V689, V690)
-- **The 1935–37 cycle is the Second New Deal, 1938–41 the Keynesian, and 1942–46 the WWII Cycle, the war
+- **The 1935–37 cycle is the New Deal II Cycle, 1938–41 the Keynesian, and 1942–46 the WWII Cycle, the war
   written in Roman numerals wherever that cycle names it.** All three are Keren's names; the war cycle dropped
-  "Victory" to be plainly the WWII Cycle. (V690, V708, 0.9.31)
+  "Victory" to be plainly the WWII Cycle, and "Second New Deal" became New Deal II to read the same way. (V690,
+  V708, 0.9.31, New Deal II)
 - **A cycle that closed before her mood can be read keeps its Diagnosis: the Mood door says when the mood begins,
   and Circulation, Energy and what followed read as for any closed cycle.** (V689)
 - **To close an era, set its `to` to its last bear year, drop `ongoing`, and open the next era on the
@@ -663,9 +663,9 @@ settles it; none is open after V668.
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
   against.** Only its colour sets it apart, and the detail of what it is judged against (18 closed cycles) need not
-  show every time. The cycle pages show the same tile, ring, score and tier, inside their AI Insights and Cycle
-  Statistics cards, so it looks as it does on Analysis; it opens nothing of its own there, since the card it sits in
-  is the door. (0.8.12, 0.9.4, Oct 7, 2026)
+  show every time. The cycle pages show the same tile, ring, score and tier, inside their Cycle Analysis card
+  only, so it looks as it does on Analysis; it opens nothing of its own there, since the card it sits in is the
+  door. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
 - **The interest-rate container is titled Interest Rates Environment, on Analysis,** because
   most people recognize "interest rates". (0.8.12, Oct 7, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
@@ -785,10 +785,17 @@ settles it; none is open after V668.
   inflation; no season page points to an asset class.** Keren dropped the tilt from the season pages (Sep 17,
   2026) and brought the clock back as a portfolio method (0.5.0, Oct 4, 2026). Steady prices keep the prior
   direction, as in the Season Model (Keren, 0.9.2), not Claude's earlier "count with rising".
-- **Before quarterly GDP (1948), a season is read a year at a time: that year's real GDP growth against the
-  1929–48 peak trend, with prices read monthly as always (CPIAUCNS before 1948), the December reading standing for
-  the year.** Keren chose annual seasons for the older cycles. From 1948 Q1 every quarter is read, against the peak
-  trend until 1950 and CBO's potential after. (V690; 0.8.0)
+- **Before BEA's quarterly GDP (1948), a season is read every quarter from Balke and Gordon's real GNP (1989, the
+  NBER's American Business Cycle data), year over year, against that series' own trend between the same NBER
+  peaks, 1929 and 1948 (2.3% a year), with prices read monthly as always (CPIAUCNS before 1948).** The yearly
+  reading it replaces could not see a turn inside a year: 1937 read Spring all year, though the recession began
+  in May. Keren chose quarterly GNP over reading prices by quarter with yearly growth (which still left 1937 Q4
+  Spring). The trend is the series' own because Balke and Gordon's 1972 dollars grow more slowly than BEA's
+  chained dollars over the war; against BEA's 3.46%, a boom quarter (1935 Q2, +2.2%) read as contraction.
+  Measured first: 17 quarters of 1928–47 change season, 1937 reads Summer, Summer, Summer, then
+  Late Autumn and Winter through 1938 Q3, 19 of the 21 NBER recession quarters fall in contraction. Prices are
+  read from January 1927 so that 1928 Q1 has its twelve months (Keren). From 1948 Q1 every quarter is BEA's, against the
+  peak trend until 1950 and CBO's potential after. (V690; 0.8.0; New Deal II)
 - **Before BEA's annual growth (1930), growth is MeasuringWorth's real GDP (Johnston and Williamson), joined to
   BEA at 1930, so the Great Depression Cycle has a season in every year from 1928.** Keren chose "Extend GDP"
   over reading the 1920s–40s from industrial production or leaving 1928–30 blank as V690 did. Claude chose
@@ -1464,12 +1471,13 @@ settles it; none is open after V668.
 - **A cycle page is AI Insights, Cycle Analysis, Year by Year; Interest Rates Environment stands on Analysis
   only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis. Cycle Analysis
   is the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that cycle, and
-  its Learn more opens the Federal funds rate on that same cycle. (0.6.17, Lighter Cycle Pages, Cycle Insights)
+  its Learn more opens the Federal funds rate on that same cycle. The Health Score shows once, in Cycle Analysis, since the analysis is
+  what explains it; the AI Insights card and page carry none. (0.6.17, 0.9.46, Cycle Insights)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   A change once reached only today's page, because the Diagnosis branched on whether the cycle was open and the
   browser suite expected the past cycle's old layout. The page is one sequence (AI Insights, Cycle Analysis, Year by
-  Year), and a unit test fails if any closed cycle's page differs in shape from today's. (0.6.13, 0.6.17, Lighter
-  Cycle Pages, Cycle Insights)
+  Year), and a unit test fails if any closed cycle's page differs in shape from today's. (0.6.13, 0.6.17, 0.9.46,
+  Cycle Insights)
 - **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Titles were a mix of dark
   purple and black, and should be consistent; Interest Environment and Year by Year lost their small black
   capitals. (0.6.13)

@@ -8,7 +8,7 @@ import type { CycleModel, TrackSeg } from "./model.ts";
 import { colPeek } from "./charts.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { keyed, ROSTER_BY } from "./roster.ts";
-import { cycleScore, fmt, labs, listWords, riskLabs, yearsWord } from "./cycle-analysis.ts";
+import { fmt, labs, listWords, riskLabs, yearsWord } from "./cycle-analysis.ts";
 import { ratesStory } from "./fed-phases.ts";
 import type { Lab } from "./cycle-analysis.ts";
 
@@ -168,7 +168,7 @@ var shownModel: CycleModel | null = null;
 function aiModel(){ return shownModel || nowModel; }
 function storyOf(m: CycleModel){ return m.ongoing ? fill(AI.lede) : m.era.blurb; }
 function leadBoxes(m: CycleModel){
-  return trendBox(sparkleSvg(), m.era.name, para(storyOf(m)) + pic(cycleScore(m), "The share of her readings in their normal range, out of 100, judged against the scores of her closed cycles.")) +
+  return trendBox(sparkleSvg(), m.era.name, para(storyOf(m))) +
     trendBox(orbitSvg(), "Interest Rates", para(ratesStory(m.era)));
 }
 function chapters(){ return AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join(""); }
@@ -186,5 +186,5 @@ export function buildAiPage(home: HTMLElement){
 }
 export function aiInsights(m: CycleModel){
   shownModel = m;
-  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp") + cycleScore(m));
+  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp"));
 }
