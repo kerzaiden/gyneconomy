@@ -47,8 +47,8 @@ function stripRow(r: StripRow){
   var id = "psclip" + r.y, w = r.X(last + 1) - r.X(0);
   out = ['<clipPath id="' + id + '"><rect x="' + f1(r.X(0)) + '" y="' + f1(r.top - r.h) + '" width="' + f1(w) + '" height="' + f1(r.h * 3) + '"/></clipPath><g clip-path="url(#' + id + ')">' + out.join("") + '</g>'];
   var lx = r.X(0) - (AXIS.L + PULSE_GUTTER + AXIS.RAIL) / 2, mid = r.top + r.h / 2;
-  out.push(yLabel(lx, mid - 2, r.y, "middle"));
-  out.push(yLabel(lx, mid + 10, (sum / n).toFixed(2) + "\u00d7", "middle"));
+  out.push(yLabel(lx, mid - 2, r.y, "middle", "ps-year"));
+  out.push(yLabel(lx, mid + 11, (sum / n).toFixed(2) + "\u00d7", "middle"));
   return out.join("");
 }
 function stripPaper(L: number, R: number, T: number, B: number, h: number){

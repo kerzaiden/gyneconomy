@@ -98,8 +98,8 @@ export function histFrame(Wpx?: number | null, plot?: number): HistFrame {
 export function xLabel(x: number | string, text: string | number, y: number | string){
   return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + '</text>';
 }
-export function yLabel(x: number, y: number, text: string | number, anchor: string){
-  return '<text class="bt-yl" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + '</text>';
+export function yLabel(x: number, y: number, text: string | number, anchor: string, cls?: string){
+  return '<text class="bt-yl' + (cls ? " " + cls : "") + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + '</text>';
 }
 export function crossLine(top: number | string, bot: number | string){
   return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';

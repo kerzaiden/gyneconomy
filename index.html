@@ -639,6 +639,7 @@
   .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
   .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
   .ps-beat.blank{ stroke:var(--text-muted); }
+  .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -43107,8 +43108,8 @@
   function xLabel(x, text, y) {
     return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + "</text>";
   }
-  function yLabel(x, y, text, anchor) {
-    return '<text class="bt-yl" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + "</text>";
+  function yLabel(x, y, text, anchor, cls) {
+    return '<text class="bt-yl' + (cls ? " " + cls : "") + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + "</text>";
   }
   function crossLine(top, bot) {
     return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
@@ -50663,8 +50664,8 @@
     var id = "psclip" + r.y, w = r.X(last + 1) - r.X(0);
     out = [ '<clipPath id="' + id + '"><rect x="' + f1(r.X(0)) + '" y="' + f1(r.top - r.h) + '" width="' + f1(w) + '" height="' + f1(r.h * 3) + '"/></clipPath><g clip-path="url(#' + id + ')">' + out.join("") + "</g>" ];
     var lx = r.X(0) - (AXIS.L + PULSE_GUTTER + AXIS.RAIL) / 2, mid = r.top + r.h / 2;
-    out.push(yLabel(lx, mid - 2, r.y, "middle"));
-    out.push(yLabel(lx, mid + 10, (sum / n).toFixed(2) + "×", "middle"));
+    out.push(yLabel(lx, mid - 2, r.y, "middle", "ps-year"));
+    out.push(yLabel(lx, mid + 11, (sum / n).toFixed(2) + "×", "middle"));
     return out.join("");
   }
   function stripPaper(L, R, T, B, h) {
