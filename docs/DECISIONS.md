@@ -305,7 +305,7 @@ settles it; none is open after V668.
   with its maturity picker. (V254, V658)
 - **The door from Interest Rates Environment to the Federal funds rate page is a lone chevron after the last word of
   the cycle's rates story (no "Learn more"), wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading the
-  story is what makes one want to learn more, so the door sits where the reading ends, not on the head. (0.9.1, 0.9.40, Rates Type)
+  story is what makes one want to learn more, so the door sits where the reading ends, not on the head. (0.9.1, 0.9.40, 0.9.43)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -1603,7 +1603,7 @@ settles it; none is open after V668.
   months are often the tail of the last one's peak (the AI Cycle's highest month is Jan 2023, 6.3%, still
   falling from June 2022); "inherited" uses the season model's own price trend: months falling, or in a rise that
   began before the cycle did, wherever it tops (the Baby Boom Cycle's is the Korean War's Apr 1951, not the
-  post-war surge it opened in, Mar 1947; Keren, Rates Type). This is Claude's reading of her rule. The open cycle's is its peak so far,
+  post-war surge it opened in, Mar 1947; Keren, 0.9.43). This is Claude's reading of her rule. The open cycle's is its peak so far,
   hollow; every cycle names its peak on its own level line. It replaced the turning-point rule of 0.6.7, under
   which a peak counted only once prices turned down. (0.6.17)
 - **The Diagnosis reads the patient from all of the app's readings (weather, mood, circulation, energy) and
