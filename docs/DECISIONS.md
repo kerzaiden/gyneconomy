@@ -49,11 +49,11 @@ settles it; none is open after V668.
 - **The VIX reading is named Fear, after its market name, the fear gauge, so it pairs plainly with Confidence.**
   Fear is the opposite of confidence, so the pair reads plainly as "not confident and fearful". It replaces
   Volatility (V663). (V663, 0.8.5)
-- **Saving rate and Debt-to-income ratio are two readings of their own, never one paired reading.** The paired chart
+- **Saving rate and Debt payments are two readings of their own, never one paired reading.** The paired chart
   was neither clear nor intuitive; both are headline figures (BEA's personal saving rate, the Fed's debt service
   ratio). "Debt service" stays off the screen, because there is both government and household debt service. Saving's
-  band is the 10th–90th percentile since 1947 (4.5–12.2%); the debt-to-income ratio's line is the series' own mean
-  since 2005. (V463, V660, 0.9.21, 0.9.22)
+  band is the 10th–90th percentile since 1947 (4.5–12.2%); Debt payments' line is the series' own mean
+  since 2005. (V463, V660, 0.9.21, 0.9.22, 0.9.34)
 - **The fiscal markers are Federal debt (not "Debt burden") and Federal interest payments (not "Interest burden").**
   "Federal debt" because the card shows the debt itself (V660); "Federal interest payments" so it is not read as the
   Federal funds rate reading (0.9.0). Both are Keren's choices.
@@ -337,11 +337,14 @@ settles it; none is open after V668.
   discarded all the earlier designs. A closed cycle's figures are Cycle Statistics'. This replaced the group card
   (V688), the category page's ground (0.6.2), its cards and More details (1.5.0, 0.6.1), the equal-height cards
   (V688) and the past cycle's category cards (V660, V665). (0.8.6, Oct 6, 2026)
-- **The Fed's household debt service ratio (TDSP) is named Debt-to-income ratio, and delinquencies are read as
-  Default risk.** The name makes more sense than debt payments, and delinquencies are a default risk, so they belong
-  with risk. The series is unchanged: required payments as a share of disposable (after-tax) income, the ratio a
-  lender checks, across every household; the (i) says it is measured against take-home pay. Since 0.9.22 the
-  Backfill fetches it from FRED, so the record stays current. (0.9.22)
+- **The Fed's household debt service ratio (TDSP) is named Debt payments, and delinquencies are read as
+  Default risk.** "Keep it simple": Debt-to-income ratio (0.9.22) names a different measure, debt owed ÷ income,
+  which is leverage. One card, no household leverage card: payments already carry the debt and its rate, and leverage
+  would tell one story (2007) and otherwise sit quiet. The (i) says the bill is light partly because mortgages were
+  fixed at 2020–21's low rates, and that debt growing much faster than income deepens and lengthens downturns
+  (Jordà, Schularick and Taylor). Delinquencies are a default risk, so they belong with risk. The series is
+  unchanged: required payments as a share of disposable (after-tax) income, across every household. Since 0.9.22
+  the Backfill fetches it from FRED, so the record stays current. (0.9.22, 0.9.34)
 - **Stress holds what is owed, with households and government apart; the name Economic power is retired.**
   Households and government are different things, and margin debt belongs with households, not credit. The category
   is called Stress because debts are stress (V688), and everything related to debt belongs in it (0.9.0). (V688,

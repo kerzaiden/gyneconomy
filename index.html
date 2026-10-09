@@ -1265,7 +1265,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.33 (804)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.34 (805)</span></p>
     </div>
   </div>
 
@@ -43552,6 +43552,9 @@
   var DEBT_PAYMENTS_SRC = [ {
     t: "Federal Reserve via FRED — Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)",
     u: "https://fred.stlouisfed.org/series/TDSP"
+  }, {
+    t: "Jordà, Schularick and Taylor — When Credit Bites Back: Leverage, Business Cycles, and Crises (NBER Working Paper 17621, 2011)",
+    u: "https://www.nber.org/papers/w17621"
   } ];
   var DELINQUENCY_SRC = [ {
     t: "Federal Reserve — Charge-Off and Delinquency Rates on Loans and Leases at Commercial Banks, all loans, seasonally adjusted",
@@ -43665,8 +43668,8 @@
       lede: "What households keep of what they earn: the cushion against a bad month."
     }, {
       id: "sheet-metric-debt-payments",
-      term: "Debt-to-income ratio",
-      econ: "Debt-to-income ratio",
+      term: "Debt payments",
+      econ: "Debt payments",
       unit: "of income",
       series: debtPaymentPoints,
       mid: DSR_MEAN,
@@ -43681,7 +43684,7 @@
       fmt: pct2,
       word: debtPaymentsWord,
       src: DEBT_PAYMENTS_SRC,
-      about: "What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, as the Federal Reserve estimates it: the debt-to-income ratio a lender checks, taken across every household and measured against income after tax. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month.",
+      about: "What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, as the Federal Reserve estimates it: its household debt service ratio, taken across every household and measured against income after tax. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month. Much of today’s mortgage debt was fixed at the low rates of 2020–21, so the bill is light partly because that debt is cheap, not only because households owe less. When debt grows much faster than income, downturns run deeper and longer, as after 2007 (Jordà, Schularick and Taylor).",
       band: "<b>The line is the series’ own average since " + DSR_FROM_YEAR + "</b>. No convention sets a band, so the line is derived from the record and only above it is flagged: a light debt bill is not a condition.",
       lede: "The share of take-home pay that goes to paying debts: the load households carry each month."
     } ];
@@ -46508,13 +46511,13 @@
       cardUnit: "of income"
     }, {
       id: "sheet-metric-debt-payments",
-      name: "Debt-to-income ratio",
+      name: "Debt payments",
       cat: "stress",
       sub: "Households",
       good: "down",
       group: "Households",
       timing: "structural",
-      term: "Debt-to-income ratio",
+      term: "Debt payments",
       head: "Debt Payments ÷ Disposable Income",
       hist: {
         s: debtPaymentPoints,
@@ -52505,7 +52508,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|ycfaq|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|sec\.gov|ssga\.com|fortune\.com|berkshirehathaway/ ], [ "Households & credit", /finra\.org|releases\/chargeoff|DRALACBS|releases\/g19|TOTALSL|us-leading-indicators|PSAVERT|TDSP/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|ycfaq|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|sec\.gov|ssga\.com|fortune\.com|berkshirehathaway/ ], [ "Households & credit", /finra\.org|nber\.org\/papers|releases\/chargeoff|DRALACBS|releases\/g19|TOTALSL|us-leading-indicators|PSAVERT|TDSP/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|A091RC1Q027SBEA|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {

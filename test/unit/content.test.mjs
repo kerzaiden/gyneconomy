@@ -54,7 +54,7 @@ const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
   Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.6975, to: 2.1365 }, Volume: { from: 3.4, to: 10.3 }, Activity: { from: 3.5, to: 5 },
   Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
-  'Default risk': { lte: 3.14 }, 'Saving rate': { from: 4.5, to: 12.2 }, 'Debt-to-income ratio': { lte: 12.427139476744179 },
+  'Default risk': { lte: 3.14 }, 'Saving rate': { from: 4.5, to: 12.2 }, 'Debt payments': { lte: 12.427139476744179 },
   'Nonfarm payrolls': { gte: 0 }, 'Growth gap': { gte: 0 }, 'Retail sales': { gte: 0 }, 'Concentration risk': { lte: 22.8 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 3.5 }, 'sheet-marker-deficit': { lte: 3.8 }
 };
