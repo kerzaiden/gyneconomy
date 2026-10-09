@@ -47891,7 +47891,8 @@
   }
   var VIEW_W = 1e3;
   var VIEW_H = 300;
-  var INSET = 18;
+  var INSET = 36;
+  var SIDE = 24;
   function monthPoints(list, from, to) {
     var sums = {};
     list.forEach(function(d) {
@@ -48051,7 +48052,7 @@
   function plotSvg(lines, from, to, peak, open) {
     var span = to - from + 1, sc = levelScale(lines), y = sc.y;
     var x = function(i) {
-      return (i - from + .5) / span * VIEW_W;
+      return SIDE + (i - from + .5) / span * (VIEW_W - 2 * SIDE);
     };
     var segs = lines.map(function(l) {
       return segments(l, x, y);

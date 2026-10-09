@@ -43,7 +43,7 @@ export function cyclePeak(from: string, to: string){
 }
 
 // ---- The phases chart ----
-var VIEW_W = 1000, VIEW_H = 300, INSET = 18;
+var VIEW_W = 1000, VIEW_H = 300, INSET = 36, SIDE = 24;
 function monthPoints(list: MonthPoint[], from: number, to: number){
   var sums: Record<number, number[]> = {};
   list.forEach(function(d){ var i = monthIdx(d.m); if (i >= from && i <= to) (sums[Math.floor(i / 3)] = sums[Math.floor(i / 3)] || []).push(d.v); });
@@ -140,7 +140,7 @@ function yearsHtml(from: number, to: number){
 }
 function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open: boolean){
   var span = to - from + 1, sc = levelScale(lines), y = sc.y;
-  var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; };
+  var x = function(i: number){ return SIDE + (i - from + 0.5) / span * (VIEW_W - 2 * SIDE); };
   var segs = lines.map(function(l){ return segments(l, x, y); });
   var paths = ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
   return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + levelTags(segs, sc) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
