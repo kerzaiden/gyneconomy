@@ -1,6 +1,6 @@
 import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf, titleCase } from "./format.ts";
 import { divergeChart, trendOf, trendPill, windowYears } from "./charts.ts";
-import { debtDollarsQuarterly, debtToday, grossDebtQuarterly, interestDollarsQuarterly, interestQuarterly } from "./history-fred.ts";
+import { debtDollarsQuarterly, debtToday, grossDebtQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { buffettHistory, CONFIDENCE_SRC, DEBT_DOLLAR_SRC, DESIRE_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
 import { currentEra, cycleSlice } from "./model.ts";
@@ -37,8 +37,6 @@ function splitPages(): Record<string, SplitPage> {
       insight:buffettInsight },
     "sheet-metric-debt": { row:labRow("sheet-metric-debt"), word:function(){ return meterWord(labRow("sheet-metric-debt").meter); }, line:"50-year average",
       fmt:tenth, at:function(d){ var b = debtDollarsQuarterly.filter(function(x){ return x.q === d.q; })[0]; return qPretty(d.q) + (b ? " \u00b7 " + dollars(b.v) : ""); }, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3).concat(DEBT_DOLLAR_SRC), insight:debtInsight },
-    "sheet-metric-interest": { row:labRow("sheet-metric-interest"), word:function(){ return meterWord(labRow("sheet-metric-interest").meter); }, line:"50-year average",
-      fmt:tenth, at:function(d){ var b = interestDollarsQuarterly.filter(function(x){ return x.q === d.q; })[0]; return qPretty(d.q) + (b ? " \u00b7 " + dollars(b.v) + " a year" : ""); }, src:[longCycleSrc[4], longCycleSrc[10]], insight:interestInsight },
     "sheet-sign-productivity-growth": productivityPage(tenth),
     "sheet-sign-desire": desirePage(), "sheet-sign-premium": premiumPage(), "sheet-sign-confidence": confidencePage(),
     "sheet-sign-market": marketPage()
@@ -168,15 +166,4 @@ function marketInsight(s: SplitSpec){
       (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")),
     hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " +
       bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.")]);
-}
-function interestInsight(s: SplitSpec){
-  var hist = interestQuarterly, last = hist[hist.length - 1], paid = interestDollarsQuarterly[interestDollarsQuarterly.length - 1];
-  var rec = hist.reduce(function(a, d){ return d.v > a.v ? d : a; }), higher = hist.filter(function(d){ return d.v > last.v; }).length;
-  var above = hist.filter(function(d){ return d.v > s.mid; }).length, top = interestDollarsQuarterly.every(function(d){ return d.v <= paid.v; });
-  return highlightsHtml([lede('The yearly cost of carrying the debt. Money spent on interest is energy the body has ' +
-      'already used, paid again every year.'),
-    hiCard("In Dollars", "", qPretty(paid.q) + ", the federal government paid interest at " + dollars(paid.v) + " a year" + (top ? ", the most it has ever paid." : ".")),
-    hiCard("Against the Record", s.row.flagState || "", "As a share of GDP, " + last.v.toFixed(1) + "% " + (higher ? "sits below " + higher + " of the " + hist.length +
-      " quarters since " + qPretty(hist[0].q) + "; the record is " + rec.v.toFixed(1) + "% in " + qPretty(rec.q) + "." : "is the highest since " + qPretty(hist[0].q) + ".") +
-      " " + above + " quarters ran above the " + s.mid.toFixed(1) + "% line.")]);
 }

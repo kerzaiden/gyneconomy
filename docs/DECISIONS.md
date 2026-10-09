@@ -49,22 +49,19 @@ settles it; none is open after V668.
 - **The VIX reading is named Fear, after its market name, the fear gauge, so it pairs plainly with Confidence.**
   Fear is the opposite of confidence, so the pair reads plainly as "not confident and fearful". It replaces
   Volatility (V663). (V663, 0.8.5)
-- **Saving rate and Debt payments are two readings of their own, never one paired reading.** The paired chart
+- **Savings rate and Debt payments are two readings of their own, never one paired reading.** The paired chart
   was neither clear nor intuitive; both are headline figures (BEA's personal saving rate, the Fed's debt service
   ratio). "Debt service" stays off the screen, because there is both government and household debt service. Saving's
   band is the 10th–90th percentile since 1947 (4.5–12.2%); Debt payments' line is the series' own mean
   since 2005. (V463, V660, 0.9.21, 0.9.22, 0.9.34)
-- **The fiscal markers are Federal debt (not "Debt burden") and Federal interest payments (not "Interest burden").**
-  "Federal debt" because the card shows the debt itself (V660); "Federal interest payments" so it is not read as the
-  Federal funds rate reading (0.9.0). Both are Keren's choices.
+- **The fiscal markers are Federal debt (not "Debt burden" or "National debt") and Federal budget.** The card shows
+  the debt itself (V660). Interest payments was dropped: the budget already carries the interest, and a reader trying
+  to understand the state's strain is confused by a third figure that overlaps the other two. Keren's choices.
+  (V660, Oct 9, 2026)
+- **Savings rate, plural, the word readers use.** (Oct 9, 2026)
 - **Federal debt is shown in dollars as well as against GDP.** Percentages alone are hard to grasp, and analysts
-  quote the dollars, 40 trillion and 1.2 trillion. Its Insights lead with the Treasury's Debt to the Penny; the chart
+  quote the dollars, 40 trillion. Its Insights lead with the Treasury's Debt to the Penny; the chart
   stays a share of GDP and its readout adds each quarter's dollars (GFDEBTN, the same total public debt). (0.9.0)
-- **Federal interest payments is BEA's gross interest, as a share of GDP and in dollars.** Keren chose it over OMB's
-  net interest because it is the $1.28 trillion analysts quote, and kept it knowing it reads Attention rather than
-  Risk: at 3.9% of GDP it is below the 5.0% of 1991, because today's debt pays a far lower average rate. The line is
-  the series' own 1976–2025 average (3.5%), computed by CBO's 50-year rule since no convention sets one; the readout
-  adds each quarter's dollars a year. CBO's FY2026 projection no longer drives the card. (0.9.0)
 - **The fiscal reading is Federal budget, never "deficit rate", and its chart head says "deficit or surplus",
   never deficit alone.** It can go either way (the budget was in surplus four straight years), and a name that
   covers one sign is wrong in the other sign's years. (V359, V397)
@@ -298,7 +295,7 @@ settles it; none is open after V668.
   never for a page's content.** Inner pages share one format, and a long record "is not a footnote you glance at
   and dismiss". (V269, V303)
 - **One indicator gets one card and one page; a reading with a card has no second row.** The Buffett
-  indicator, Federal debt, Interest payments and Federal budget each have their own; the two Treasury spreads
+  indicator, Federal debt and Federal budget each have their own; the two Treasury spreads
   (10Y − 3M, 10Y − 2Y) stay one page, which Keren saw no need to split, and the US 10-year Treasury stays one card
   with its maturity picker. (V254, V658)
 - **The Interest Rates Environment head is a door to the Federal funds rate page, with a chevron, wherever it stands:**
@@ -570,8 +567,8 @@ settles it; none is open after V668.
   cycle chapter is gone, because the emotional reading of each cycle has not been worked out yet; its opening, "Born
   out of the 2022 correction", which Keren liked, now opens the summary. (0.6.6, 0.6.12, 0.6.13)
 - **After The market, a "Risk factors" container lists every result Cycle Statistics reads as Risk today,
-  each as a bar placing its latest value against its own record.** Keren liked the readings (the Buffett indicator,
-  interest payments and the rest) as bars, and wanted them gathered as the risk factors the analysis detected. It
+  each as a bar placing its latest value against its own record.** Keren liked the readings (the Buffett indicator
+  and the rest) as bars, and wanted them gathered as the risk factors the analysis detected. It
   replaces the summary's three highest and three lowest readings, and reads the Analysis judgement, never its own.
   (0.6.13)
 
@@ -613,8 +610,8 @@ settles it; none is open after V668.
   roster. Claude's calls, by economic convention, for Keren to overturn: higher is good for Growth, the S&P 500,
   Consumer demand, the Equity risk premium (stocks cheap against bonds), Confidence, the Federal budget (a smaller
   deficit), Productivity growth and Bull years; lower is good for Shiller CAPE and the Buffett indicator (Shiller's and
-  Buffett's own reading of a rich market), Volatility (the VIX is the market's fear gauge), Federal debt, Interest
-  payments, Households (debt service), the Unemployment rate and Period flow (the Bleed until 0.8.3). No side is good
+  Buffett's own reading of a rich market), Volatility (the VIX is the market's fear gauge), Federal debt,
+  Households (debt service), the Unemployment rate and Period flow (the Bleed until 0.8.3). No side is good
   on its own for Temperature (the Fed aims at 2%, and deflation is a strain too), Interest rates, Pressure, Pulse,
   Volume or a cycle's Length, so those are flagged either way. (0.6.1, 0.6.6)
 - **No generations: every cycle result is judged against all her closed cycles.** Claude proposed judging Length,
@@ -1065,8 +1062,8 @@ settles it; none is open after V668.
   round onto 1.0 or 3.0 (3.04% is "3.04%", not "Above range (3.0%)").** Written once, `inflationFigure` in
   model.ts, and read on every card, page and note that prints the reading. Keren asked for the fix after the
   6 Oct code review. (0.8.4, Oct 6, 2026)
-- **Federal debt, Interest payments and Federal budget ask three different questions (the stock owed, what
-  carrying it costs, what is added this year), so their different figures never contradict each other.**
+- **Federal debt and Federal budget ask two different questions (the stock owed, what is added this year), so
+  their different figures never contradict each other.**
   (V358)
 - **Federal debt is gross federal debt (the headline 122%), not debt held by the public (101%); every figure
   on its row and record comes from the gross series and is checked on load against the OMB history.** Keren

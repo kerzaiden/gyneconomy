@@ -1,9 +1,9 @@
 import { qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES } from "./live.ts";
 import { bagSvg, debtSvg, homeSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
-import { confidenceHistory, payrollsHistory, retailHistory, consumerCreditHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, interestQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, payrollsHistory, retailHistory, consumerCreditHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_MEAN, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_MID, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
+import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_MEAN, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_MID, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
 import { CONSUMER_LINE, debtPaymentPoints, DELINQUENCY_MEAN, MARGIN_LINE, savingPoints } from "./credit.ts";
 import { GAP_LINE, growthGapHistory, PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
@@ -97,17 +97,14 @@ function declareRoster(): RosterRow[] {
       cardUnit:"M2 velocity", live:["coincident"] },
     { id:"sheet-sign-volume", name:"Volume", cat:"circulation", sub:"Money", timing:"leading", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, cardUnit:"M2, YoY", live:["coincident"] },
-    { id:"sheet-sign-saving", name:"Saving rate", cat:"stress", sub:"Households", good:"up", group:"Households", timing:"structural",
-      term:"Saving rate", head:"Personal Saving Rate, Share of Income", hist:{ s:savingPoints, k:"q" }, mid:SAV_MID, cardUnit:"of income" },
+    { id:"sheet-sign-saving", name:"Savings rate", cat:"stress", sub:"Households", good:"up", group:"Households", timing:"structural",
+      term:"Savings rate", head:"Personal Savings Rate, Share of Income", hist:{ s:savingPoints, k:"q" }, mid:SAV_MID, cardUnit:"of income" },
     { id:"sheet-metric-debt-payments", name:"Debt payments", cat:"stress", sub:"Households", good:"down", group:"Households", timing:"structural",
       term:"Debt payments", head:"Debt Payments ÷ Disposable Income", hist:{ s:debtPaymentPoints, k:"q" }, mid:DSR_MEAN, cardUnit:"of income" },
     { id:"sheet-sign-margin", name:"Margin debt", cat:"stress", sub:"Households", group:"Households", timing:"leading",
       term:"Margin debt", head:"Margin Debt, YoY", hist:{ s:marginHistory, k:"m" }, mid:MARGIN_LINE, cardUnit:"YoY" },
     { id:"sheet-metric-debt", name:"Federal debt", cat:"stress", sub:"Government", good:"down", group:"Government", timing:"structural",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:DEBT_LINE, cardUnit:"of GDP" },
-    { id:"sheet-metric-interest", name:"Federal interest payments", cat:"stress", sub:"Government", good:"down", group:"Government", timing:"structural",
-      head:"Federal Interest Payments, Share of GDP", hist:{ s:interestQuarterly, k:"q" }, mid:INTEREST_LINE,
-      cardUnit:"of GDP" },
     { id:"sheet-marker-deficit", name:"Federal budget", cat:"stress", sub:"Government", good:"up", group:"Government", timing:"structural",
       hk:"deficit-range", head:"Federal Deficit or Surplus, Share of GDP", hist:{ s:deficitHistory, k:"yi", y0:DEF_FROM_YEAR },
       flip:true, mid:DEFICIT_LINE, cardUnit:"deficit, of GDP" },

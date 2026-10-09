@@ -420,8 +420,8 @@ Rules that shape the pages:
 - **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),
   read by the category sheets, the past cycles, the Diagnosis and Cycle analysis.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
-  card (Valuations: Shiller CAPE · Buffett indicator; Debt: Margin debt · Federal debt · Federal interest payments
-  · Federal budget · Saving rate · Debt payments · Default risk). The split pages are
+  card (Valuations: Shiller CAPE · Buffett indicator; Debt: Margin debt · Federal debt
+  · Federal budget · Savings rate · Debt payments · Default risk). The split pages are
   built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, declared by
   `defineSplits` as readings), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
@@ -511,7 +511,6 @@ Rules that shape the pages:
 | `volatilityHistory` | VXOCLS, then VIXCLS | Volatility's history (V663): the monthly average of daily closes, the VXO (Cboe's original VIX, on the S&P 100) for 1986–89 and the VIX from `VOL_JOIN`, January 1990, its first month; the running month is left out until it closes |
 | `fiscalHistory.gross` | GFDGDPA188S | gross federal debt, % of GDP, by fiscal year (OMB) |
 | `fiscalHistory.held` | FYPUGDA188S | debt held by the public, % of GDP (OMB) |
-| `fiscalHistory.interest` | FYOIGDA188S | federal interest outlays, % of GDP (OMB) |
 | `fiscalHistory.budget` | FYFSGDA188S | surplus (+) or deficit (−), % of GDP (OMB) |
 | `grossDebtQuarterly` | GFDEGDQ188S | total public debt, % of GDP, quarterly (Treasury and BEA) |
 | `treasuryQuarterly` | TB3MS, GS2, GS5, GS10, GS30 | calendar-quarter means of the monthly yields; `s3m` is GS10 − TB3MS and `s2y` GS10 − GS2, from unrounded means; `partial` marks the running quarter; `y30` is null for 2005: the Treasury suspended the 30-year bond in October 2001 and published no 30-year constant-maturity yield from February 2002 until the bond returned in February 2006 |
@@ -548,7 +547,6 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 | Marker | Range (primary series) | Band |
 |---|---|---|
 | Federal debt (gross debt ÷ GDP, V643) | 0% 1835 (Treasury Fiscal Data) – 125.9% FY2020 (OMB via FRED GFDGDPA188S); today GFDEGDQ188S, latest quarter | ≤ 70%, the series' own FY1976–2025 mean — CBO's 50-year rule applied to gross, since CBO states it only for held (51%); `checkGrossDebt` re-derives all of it |
-| Federal interest payments (BEA gross interest ÷ GDP, 0.9.0) | 1.8% 1952 Q4 – 5.0% 1991 Q1, quarterly from 1947 (FRED A091RC1Q027SBEA ÷ GDP); read from the record by `syncInterest` | ≤ 3.5%, the series' own 1976–2025 mean; `checkInterest` re-derives it |
 | Deficit rate (÷ GDP) | −2.3% FY2000 surplus – 26.9% FY1943 (FRED FYFSGDA188S); the low end departs the true-extreme rule (real max surplus FY1948 +4.3%), flagged, Keren's to settle | ≤ 3.8% |
 | Household debt service | 9.05% 2021 Q1 – 15.85% 2007 Q4; FRED TDSP, begins 2005 Q1, rebuilt 2024 on tradeline data — its 15.85% is not the retired series' 13.2%, never in one sentence | below its own mean, `DSR_MEAN` 12.4% |
 | Personal saving rate | 1.8% 2005 Q3 – 24.4% 2020 Q2; BEA via FRED A072RC1Q156SBEA | 4.5–12.2%, 10th–90th pct of 318 quarters |
@@ -786,7 +784,7 @@ with no reading, by Keren's decision.**
   was dead). Every chart behind a button draws its `<g class="fit">` through `fitLine` (`charts.js`),
   over the same window its pill measures; the suite presses every pill and fails on one that draws nothing.
   Under eight points the pill is not a button at all (Keren's "unavailable", V437): the annual series
-  (CAPE, Interest payments, Federal budget) reach it inside the current AI Cycle (at most four years, from
+  (CAPE, Federal budget) reach it inside the current AI Cycle (at most four years, from
   2023) and the Housing Cycle (six, 2003–2008).
 - **The top bar is restored from the page's home, not remembered** (V671). Each `PAGE_HOME` entry has a
   `bar()` that returns the title and back action for its tab as it stands now: inside a past cycle the
@@ -1042,7 +1040,7 @@ by its own picture, by cycle = the average never the total.
 
 Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
 or "Sentiment"; Debt payments, not "Debt service" or "Debt-to-income ratio"; Valuations, plural; Growth, not "GDP growth"; Stress is
-Households (Saving rate, Debt payments, Margin debt) and Government (Federal debt, Federal interest payments, Federal budget) (0.9.21), and Delinquencies are Default risk, under Desire › Risk (0.9.22); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
+Households (Savings rate, Debt payments, Margin debt) and Government (Federal debt, Federal budget) (0.9.21), and Delinquencies are Default risk, under Desire › Risk (0.9.22); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.
