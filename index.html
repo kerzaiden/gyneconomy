@@ -1259,7 +1259,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.25 (796)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.26 (797)</span></p>
     </div>
   </div>
 
@@ -43090,10 +43090,10 @@
     FOOT: 8,
     READ: 61
   };
-  function histFrame(Wpx) {
+  function histFrame(Wpx, plot) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow2 = W < 430;
-    var H = narrow2 ? 335 : 375;
+    var H = Math.max(narrow2 ? 335 : 375, plot ? AXIS.T + AXIS.LEG + AXIS.READ + plot + 17 + AXIS.FOOT : 0);
     return {
       W: W,
       narrow: narrow2,
@@ -46519,7 +46519,6 @@
       term: "Pulse",
       hk: "pulse-range",
       head: "Velocity of Money (M2)",
-      stops: [ "5y", "10y" ],
       hist: {
         s: m2vHistory,
         k: "qi",
@@ -50599,7 +50598,7 @@
   var PULSE_BEATS = 5;
   var PULSE_FENCE = 1.5;
   var PULSE_FAR = 3;
-  var PULSE_VEL = 34;
+  var PULSE_ROW = 64;
   var fences = null;
   function pulseMove(i) {
     return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100;
@@ -50625,8 +50624,8 @@
   }
   function stripQuarter(r, q, x, limit) {
     var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(34, r.h * .6) * (stroke == null ? .5 : stroke);
-    var cy = r.top + r.h * .64, d = [];
+    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(34, r.h * .7 - 17) * (stroke == null ? .5 : stroke);
+    var cy = r.top + r.h * .7, d = [];
     if (stroke == null) kind = kind || "blank";
     x = Math.max(x, xa);
     if (kind === "flat") {
@@ -50663,9 +50662,9 @@
     }
     var id = "psclip" + r.y, w = r.X(last + 1) - r.X(0);
     out = [ '<clipPath id="' + id + '"><rect x="' + f1(r.X(0)) + '" y="' + f1(r.top - r.h) + '" width="' + f1(w) + '" height="' + f1(r.h * 3) + '"/></clipPath><g clip-path="url(#' + id + ')">' + out.join("") + "</g>" ];
-    var mid = r.top + r.h / 2 + 3.5;
-    out.push(yLabel(r.X(0) - (AXIS.L + AXIS.RAIL) / 2, mid, r.y, "middle"));
-    out.push(yLabel(r.X(4) + PULSE_VEL, mid, (sum / n).toFixed(2) + "×", "end"));
+    var vel = (sum / n).toFixed(2) + "×";
+    out.push(yLabel(r.X(0) - (AXIS.L + AXIS.RAIL) / 2, r.top + r.h * .7 + 3.5, r.y, "middle"));
+    out.push(yLabel(r.X(0) + 5, r.top + 12, vel, "start"));
     return out.join("");
   }
   function stripPaper(L, R, T, B, h) {
@@ -50681,8 +50680,8 @@
   }
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
-    var F = histFrame(Wpx), L = F.L, R = F.R - PULSE_VEL, T = F.T - AXIS.LEG, B = F.B, end = to == null ? m2vHistory.length : to;
-    var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1, h = (B - T) / rows;
+    var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
+    var F = histFrame(Wpx, rows * PULSE_ROW - AXIS.LEG), L = F.L, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = (B - T) / rows;
     var X = function(q) {
       return L + (R - L) * q / 4;
     }, out = [];
@@ -50704,17 +50703,15 @@
     });
     for (var y = y0; y <= y1; y++) out.push(stripRow({
       y: y,
-      top: T + h * (y - y0),
+      top: T + h * (y1 - y),
       h: h,
       from: from,
       end: end,
       X: X
     }));
     var cell = function(i) {
-      var k = from + i;
       return {
-        row: Math.floor(k / 4) + M2V_FROM_YEAR - y0,
-        q: k % 4
+        q: (from + i) % 4
       };
     };
     publishGeom("pulseStripsChart", {
@@ -50735,7 +50732,7 @@
         return (X(cell(i).q) + X(cell(i).q + 1)) / 2;
       },
       pick: function(x, yy) {
-        var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y0 + row - M2V_FROM_YEAR) * 4 + q - from;
+        var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y1 - row - M2V_FROM_YEAR) * 4 + q - from;
         return row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
       },
       vals: m2vHistory.slice(from, end).map(function(v) {
@@ -50752,7 +50749,7 @@
     };
     var flats = [];
     for (var i = 1; i < m2vHistory.length; i++) if (pulseBeat(i) === "flat") flats.push(qAtIndex(M2V_FROM_YEAR, i));
-    return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, its quarters across. A beat is a fifth of one turnover of the money stock, so a year at 1.4× carries 7 beats and the gaps widen as money slows; the figure at the end of each strip is that year’s average velocity. Five beats a turnover is Claude’s choice, made for legibility (Keren found ten too crowded).</p><p class="caption follow"><b>A beat’s height is the money stock’s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, full height at ' + M2_FLOOD.toFixed(1) + "%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. " + M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.</p><p class="caption follow"><b>A red quarter moved past Tukey’s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' + M2V_FROM_YEAR + ", " + pct2(f[1]) + " or " + pct2(f[2]) + ". <b>A quarter flatlines</b> when its fall passed Tukey’s far-out fence (3 times the range), " + pct2(f[0]) + ": " + flats.join(" and ") + ".</p>";
+    return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, the newest on top and its quarters across. A beat is a fifth of one turnover of the money stock, so a year at 1.4× carries 7 beats and the gaps widen as money slows; the figure at the top of each strip is that year’s average velocity. Five beats a turnover is Claude’s choice, made for legibility (Keren found ten too crowded).</p><p class="caption follow"><b>A beat’s height is the money stock’s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, full height at ' + M2_FLOOD.toFixed(1) + "%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. " + M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.</p><p class="caption follow"><b>A red quarter moved past Tukey’s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' + M2V_FROM_YEAR + ", " + pct2(f[1]) + " or " + pct2(f[2]) + ". <b>A quarter flatlines</b> when its fall passed Tukey’s far-out fence (3 times the range), " + pct2(f[0]) + ": " + flats.join(" and ") + ".</p>";
   }
   var RHYTHM_WINDOW = 8;
   var RHYTHM_BEFORE = 2008;

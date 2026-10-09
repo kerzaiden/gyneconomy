@@ -43,20 +43,22 @@ test('every history chart on a page sits in the one frame', () => {
     assert.ok(svgs.length >= 6);
     svgs.forEach(s => {
       const [, , w, h] = s.getAttribute('viewBox').split(' ').map(Number);
-      assert.equal(h, histFrame(w).H, s.getAttribute('aria-label'));
+      if (/heartbeat, one strip per year/.test(s.getAttribute('aria-label'))) assert.ok(h >= histFrame(w).H, 'the Pulse strips grow from the frame');
+      else assert.equal(h, histFrame(w).H, s.getAttribute('aria-label'));
     });
   }
 });
 
 const CHARTS = { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, m2GrowthChart,
-  deficitChart, pulseStripsChart };
+  deficitChart, pulseStripsChart: W => pulseStripsChart(W, 250) };
 for (const [name, chart] of Object.entries(CHARTS)) {
   test(name + ' is drawn to the frame it is given, with every value readable', () => {
     for (const W of WIDTHS) {
       const svg = chart(W);
       const f = histFrame(W), vb = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
       assert.ok(vb, name + ' has a viewBox');
-      assert.deepEqual([+vb[1], +vb[2]], [f.W, f.H], name + ' at ' + W);
+      if (name === 'pulseStripsChart') assert.ok(+vb[1] === f.W && +vb[2] >= f.H, name + ' grows from the frame at ' + W);
+      else assert.deepEqual([+vb[1], +vb[2]], [f.W, f.H], name + ' at ' + W);
       assert.deepEqual(broken(svg), [], name + ' at ' + W);
       assert.match(svg, /aria-label="[^"]{12,}"/, name + ' names itself for a screen reader');
     }

@@ -1104,8 +1104,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   2020 Q2). A beat's height is M2's growth year on year, the stroke volume (Keren: "Let's do the Money stock as the
   stroke volume", after M × V = nominal GDP was set beside rate × stroke volume = cardiac output): full height at
   Volume's Flooding edge (13.5%, the pre-2020 record) and capped there, upside down when the stock shrank (2023 Q1 to
-  2024 Q1, the record's only such quarters, which Keren noted a healthy heart never shows). Its windows are
-  5Y, 10Y and the cycles, at most twelve strips. The earlier EKG histories (scrolling strip, Holter report, Apple
+  2024 Q1, the record's only such quarters, which Keren noted a healthy heart never shows). Since 0.9.26 (Keren):
+  the newest year is on top; each strip's velocity sits inside its strip, top left, beside the year; a strip has a
+  fixed height (64), so the chart grows longer with more years instead of squeezing them ("the entire history
+  component would just need to be longer"); and the windows are the usual 5Y, 10Y, 25Y and Max. Max starts at
+  1959 Q1, the first quarter of the Fed's M2 (FRED M2V); the cycle picker starts at 1963 because the 1958–1962
+  cycle opens before the data. The earlier EKG histories (scrolling strip, Holter report, Apple
   Health-style ECG) stay dropped. (0.9.25)
 - **Pulse's verdict is five bands against the 1959–2007 mean, both extremes flagged; the spectrum's ends say
   what velocity means (slow is hoarding, fast is spending).** Keren: "I would rather have an indicator that

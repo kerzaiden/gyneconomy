@@ -91,7 +91,7 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-sign-spreads", name:"Treasury spreads", cat:"circulation", sub:"Pressure", timing:"leading", hk:"spreads-range",
       head:"", hist:{ s:t10y3mHistory, k:"q" }, mid:0, cardUnit:"10Y \u2212 3M, points", live:["yieldCurve"] },
     { id:"sheet-sign-pulse", name:"Pulse", cat:"circulation", sub:"Money", timing:"coincident", term:"Pulse", hk:"pulse-range",
-      head:"Velocity of Money (M2)", stops:["5y", "10y"], hist:{ s:m2vHistory, k:"qi", y0:M2V_FROM_YEAR },
+      head:"Velocity of Money (M2)", hist:{ s:m2vHistory, k:"qi", y0:M2V_FROM_YEAR },
       cardUnit:"M2 velocity", live:["coincident"] },
     { id:"sheet-sign-volume", name:"Volume", cat:"circulation", sub:"Money", timing:"leading", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, cardUnit:"M2, YoY", live:["coincident"] },
