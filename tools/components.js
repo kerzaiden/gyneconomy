@@ -213,6 +213,17 @@ if (arg === '--check') {
     console.error('\nSplit it, or if it has to grow, run: npm run comp:bless');
     process.exit(1);
   }
+  const stale = shrank.slice();
+  for (const [fn, n] of Object.entries(caps)) {
+    if (now[fn] == null) stale.push(fn + ' is in the ledger and no longer exists');
+    else if (now[fn] < n) stale.push(fn + ' ' + n + ' -> ' + now[fn] + ' lines');
+  }
+  if (stale.length) {
+    console.error('LEDGER BEHIND \u2014 the code shrank and the ledger still records the old size:\n');
+    stale.forEach(l => console.error('  ' + l));
+    console.error('\nRecord the smaller code so it cannot grow back: npm run comp:bless');
+    process.exit(1);
+  }
 
   const w = wiring();
   if (w.dangling.length) {
@@ -221,9 +232,7 @@ if (arg === '--check') {
     console.error('\nEvery getElementById here is guarded, so this fails in silence. Delete the code, or add the element.');
     process.exit(1);
   }
-  console.log(shrank.length
-    ? `ledger ok — ${shrank.length} pattern(s) less duplicated than recorded:\n  ${shrank.join('\n  ')}\n  run: npm run comp:bless`
-    : `ledger ok — ${shared.length} shared classes, none worse`);
+  console.log(`ledger ok — ${shared.length} shared classes, none worse`);
   process.exit(0);
 }
 

@@ -28,8 +28,7 @@ described under "How the live layer works" below; the decisions are these:
   and a throw is a refusal.
 - **Today's figure is computed, never painted (0.8.6).** A reading's figure, unit and word come from
   `todayFace` (`era.ts`), read from the model whenever Indicators, Cycle Statistics or AI Insights draws, so a
-  live document needs no painter to reach them. Until 0.8.6 the figures lived on the category cards, and a
-  repaint walked every door (V619).
+  live document needs no painter to reach them and no repaint has to walk every door.
 - **A cached figure contradicting a load-time assertion warns**, and the suite turns the warning into a
   failing check. That is the design working. Since V698 the unit tests fail on a warning at boot too, so
   `npm run check` (all the Backfill runs before it commits) stops a bot commit that CI would reject.
@@ -45,8 +44,7 @@ Six of the nine rows have a writer today; see Open questions.
 
 ### How the live layer works
 
-Moved here from the code comments of `js/live.ts` at V650, when the source lost its comments. Keren's
-decisions are cited as she made them.
+Moved here from the code comments of `js/live.ts` at V650, when the source lost its comments.
 
 #### The cache
 
@@ -135,9 +133,9 @@ with no named painter declares `onOpen`, and `checkLiveCoverage` holds every liv
 
 #### The roster
 
-Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
-dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.ts`,
-one row per reading in card order), and everything that used to name it again reads the row: Indicators'
+**A reading is declared once, in `ROSTER`** (V670: no code is written twice, and components stay as lean as
+they can; `js/roster.ts`, one row per reading in card order), and everything that would otherwise name it again
+reads the row: Indicators'
 subcategories (`sub`) and groups, Cycle analysis's rows and each reading's good side, the timing chips, the split pages (`splitPages` holds only what a split page adds to its row), today's
 figure (`todayFace`), the history heads (`HIST_HEAD`), every page's window, mode and cycle state and its range stops
 (`pageState`), the past cycles' series (`hist`, read through `keyed`), and the marks on every door and head.
@@ -168,8 +166,8 @@ only names which of its rows feed each reading.
 #### The live registry
 
 ```text
-Keren, V629: "a component based app that will be 100% ready for server side integration with controllers
-and services."
+V629: the app is built from components so that it is ready for server-side integration with controllers and
+services.
 
 Nine readings arrive from outside this file. One row per reading, and the row is the whole contract —
 no second list names them, because lists kept in step by hand drift:
@@ -236,7 +234,7 @@ counted as a difference — `renderHorizonPage` legitimately redraws at 334 then
 #### One dispatch
 
 ```text
-Keren, V625: "one dispatch." No view hangs a callback on `window` for another view to reach: a handler
+V625, "one dispatch": no view hangs a callback on `window` for another view to reach: a handler
 on `window` is invisible — nothing can tell a name nobody answers from a name spelled wrong, so a broken
 control reads as a control that does nothing. An ACTION is named on `GYN` instead: the view that owns the
 answer registers it, the view that needs it fires it, and neither holds a reference to the other. A fire
@@ -322,16 +320,16 @@ cloud or scheduled session reads and cannot push.
 
 The Artifact and the service worker need one self-contained file, and a person cannot hold a
 fifteen-thousand-line one. **Since V695 the script is ES modules** (`src/js/*.ts` since V702, one concern each), bundled by
-esbuild (`tools/bundle.js`) into one IIFE in `main.ts`'s place in the manifest, then comment-stripped. Before V695
-it was seventeen parts joined into one closure, so any part could read or write any name and the only order was
-the manifest's; now each module says what it imports.
+esbuild (`tools/bundle.js`) into one IIFE in `main.ts`'s place in the manifest, then comment-stripped. Each module
+says what it imports, where parts joined into one closure could read or write any name and had no order but the
+manifest's.
 
 - **A module's top level is declarations and values that need nothing else.** Whatever runs at load and reads
   another module sits in that module's `boot…()`, and `main.ts` calls the boots in order. **The boot order is the
   semantics**: V696 moved statements between modules but kept the sequence they run in; `tools/load-order.js`
   follows every statement that runs at load, boots included, and fails on a value read before it is set.
-  It reads the boot list from `main.ts`'s syntax tree and fails if it finds none (V705: from V698 to V704 a
-  line pattern missed the boots inside `try` and the gate checked nothing).
+  It reads the boot list from `main.ts`'s syntax tree and fails if it finds none (V705), because a line pattern
+  missed the boots inside `try` and left the gate checking nothing.
 - **An import is read-only, so a value that other modules change lives in its owner's store** (V697): `now` in
   `data` (the live-fed figures: `now.fedFunds`, `now.yieldCurve`, `now.vixRow`…), `ui` in `dom` (what is open, and
   the hooks one page leaves for another), `page` in `history` (each history page's mode, window and head). A write
@@ -346,7 +344,7 @@ the manifest's; now each module says what it imports.
   from State Street's daily file as `topTenRecent` in `fred.json`, one figure per quarter. The run on the first day of each quarter
   reads that file as of the closed quarter's last trading day, so the history holds only quarter ends; the newest row is
   the open quarter, which the card shows and the history leaves out until a later quarter follows it.
-- **The modules are TypeScript, strict** (V702, Keren: "If that is typesetting, then do it"). `src/js/*.ts` uses
+- **The modules are TypeScript, strict** (V702). `src/js/*.ts` uses
   only erasable syntax (`erasableSyntaxOnly`): annotations, `!`, `as`, generics and type declarations, never an enum
   or a namespace. So esbuild bundles it by dropping the types, and Node runs it as it is (type stripping), which is
   how the unit tests import it. V702 was proved by the bundle: the shipped `index.html` was byte-identical before
@@ -391,16 +389,19 @@ The conversion was proved by the snapshot (every state identical) and the browse
 ## In one page
 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
-to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio (labels; the panels keep their keys `chart` and `analysis`. Cycle Statistics (Cycle analysis until 0.6.8) took Search's place in 0.6.1 and is labelled Analysis, and the cycle list is labelled Herstory; V657: the Content tab's models moved into
-About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
-Browse: Weather (Economic Season · Market) · Activity (Labor · Output) · Mood (Valuations · Sentiment) ·
-Desire (Demand · Risk) · Circulation (Pressure · Money) · Stress (Households · Government); Consumer credit joined Money in 0.9.22, when the Credit subcategory went; Credit moved to Circulation and Debt became Households and Government in 0.9.21; six since 0.9.11, when Activity (key `activity`) left Weather; four categories since 0.9.3, when Debt left Circulation for its own category, Stress (key `stress`), which Credit joined in 0.9.4; three in 0.9.0, when the Activity category (key `energy`) became Weather's subcategory Activity. Named Weather, never
-Season; Volatility, never Fear or Sentiment (V663); Debt-to-income ratio, never Debt service.
+to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio. These are labels, and the
+panels keep their keys `chart` and `analysis`: Analysis is Cycle Statistics, which took Search's place in 0.6.1,
+and Herstory is the cycle list. The Content tab's models live in About Gyneconomy, the menu's page formerly
+"About the book" (V657). Cycle = the dial, then Browse, six categories since 0.9.11: Weather (Economic Season ·
+Market) · Activity (Labor · Output; key `activity`) · Mood (Valuations · Sentiment) · Desire (Demand · Risk) ·
+Circulation (Pressure · Money) · Stress (Households · Government; key `stress`). Debt became Households and
+Government in 0.9.21, and Consumer credit sits in Desire › Demand since 0.9.25. Named Weather, never Season; Volatility,
+never Fear or Sentiment (V663); Debt-to-income ratio, never Debt service.
 
 Rules that shape the pages:
 
-- **Every reading is one component (0.9.20, Keren: "all categories should have the same behavior even though
-  they present different data").** `src/js/reading.ts` holds `READING`, one entry per roster row, declared by
+- **Every reading is one component (0.9.20)**, so every category behaves the same way whatever data it
+  presents. `src/js/reading.ts` holds `READING`, one entry per roster row, declared by
   `defineReading(id, {face, info, controls, history, insight, aside?, src?})`: today's figure and word, the (i)
   note, the bar above the chart, the chart (`history(W)` returns its svg or shell, its tooltip geometry, its trend
   pill and an optional `paint`), and the Insights box. `mountReadings` builds every sheet from the roster in
@@ -424,11 +425,11 @@ Rules that shape the pages:
   built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, declared by
   `defineSplits` as readings), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
-  Indicators holds the groups as its subcategories (0.8.5); the group pages that held them went in 0.8.6.
-  The Power score is gone (V660, Keren: "remove the power score"): its card, page, composite and history;
+  Indicators holds the groups as its subcategories (0.8.5), and there are no group pages (0.8.6).
+  The Power score is gone (V660): its card, page, composite and history;
   the three fiscal markers it summed each keep their own page.
-- **A parent owns what its children share (V662, Keren: "i want all parent components to have all the properties of
-  their children so we don't have to change different pages all the time").** `npm run check` runs `tools/hygiene.js`,
+- **A parent owns what its children share (V662)**, so a shared property changes in one place rather than page by
+  page. `npm run check` runs `tools/hygiene.js`,
   which fails on: a chart height set outside `histFrame`; a chart margin set outside it (only the mini chart,
   `colPeek`, owns its own); a `font-size` that is not a `--type-` token; a style aimed
   at one page by id (make it an option of the component, as `goodAbove` is for Productivity's bars); a branch on a
@@ -437,7 +438,7 @@ Rules that shape the pages:
   carries (classes built at run time are listed in the tool). V662 removed what that found: the Temperature and
   Growth cycle cards (drawn but shown nowhere since V656), the hidden GDP and Valuation summary blocks, eleven dead
   helpers and 116 dead style rules.
-- **No lab-style range rows (V661, Keren: "remove test result components from the app").** The rows that
+- **No lab-style range rows (V661).** The rows that
   read like a blood test under each history (name, range bar, verdict: `panelRow`, `panelBar`, the sign
   page's `meterHtml` bar, `seatBandReading`'s reading box) are gone. What they carried as notes lives on
   in the chart's (i) menu: `histNote(head, info)` registers it. A reading without a history (Productivity growth until its series lands)
@@ -448,12 +449,10 @@ Rules that shape the pages:
   confirm). Its history is OPHNFB year over year, written by the Backfill as `productivityHistory`, and its
   `splitPages` entry mounts the split chart on the same page (the 1.3% slowdown line is the BLS figure; above it
   is good, so its bars read green).
-- **Every reading keeps its own icon, in its category's colour (V661).** Keren first asked for the category's
-  icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
-  the color." `mountReadings` marks each reading's page with
-  its category class, so the page head disc and the history head take `--cat`. Group rows keep a mark
-  of their own (`SUB_MARK`).
-  The two Treasury spreads stay one page, Treasury spreads (Keren, V658: they read as one).
+- **Every reading keeps its own icon, in its category's colour (V661)**: the category gives the colour, never
+  the icon. `mountReadings` marks each reading's page with its category class, so the page head disc and the
+  history head take `--cat`. Group rows keep a mark of their own (`SUB_MARK`).
+  The two Treasury spreads stay one page, Treasury spreads, because they read as one (V658).
 - **Analysis shows every cycle as one `.era-row`** (V631), opening the cycle's page.
   Don't split it into list + overview.
 - **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
@@ -464,9 +463,8 @@ Rules that shape the pages:
   the current one (V665: a slot inside it once took the gap away; the suite now compares the two frames). In
   between, `eraShow` sets every history page's cycle picker to it (`page.cycles`, cycles mode; each page's own mode
   is restored on leaving). The reading pages' panels and insights stay today's: they are the page, and the picker
-  says which cycle the chart shows. The category cards that showed a closed cycle's figures (`eraCard`, V659 to
-  0.8.5) went with the category pages; a cycle's figures are Cycle Statistics' (Keren, 0.8.6: "All the previous
-  designs we made, we can throw them out").
+  says which cycle the chart shows. A cycle's figures are Cycle Statistics' (0.8.6); the category cards that
+  showed them (`eraCard`) went with the category pages.
 - **Cycle analysis is a blood test of each cycle** (`cycle-analysis`), and since 0.6.1 the tab where every
   reading is found (Search's job before it). One renderer, `drawChart(id)`, draws two hosts: `#chart-home`, the
   tab's home (a search box that is a door, Cycle Statistics with the Health Score inside it, Interest Rates Environment and Insights, the
@@ -549,13 +547,13 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 
 | Marker | Range (primary series) | Band |
 |---|---|---|
-| Federal debt (gross debt ÷ GDP, V643; "Debt burden" until V660) | 0% 1835 (Treasury Fiscal Data) – 125.9% FY2020 (OMB via FRED GFDGDPA188S); today GFDEGDQ188S, latest quarter | ≤ 70%, the series' own FY1976–2025 mean — CBO's 50-year rule applied to gross, since CBO states it only for held (51%); `checkGrossDebt` re-derives all of it |
-| Federal interest payments (BEA gross interest ÷ GDP, 0.9.0; "Interest burden" until V660) | 1.8% 1952 Q4 – 5.0% 1991 Q1, quarterly from 1947 (FRED A091RC1Q027SBEA ÷ GDP); read from the record by `syncInterest` | ≤ 3.5%, the series' own 1976–2025 mean; `checkInterest` re-derives it |
+| Federal debt (gross debt ÷ GDP, V643) | 0% 1835 (Treasury Fiscal Data) – 125.9% FY2020 (OMB via FRED GFDGDPA188S); today GFDEGDQ188S, latest quarter | ≤ 70%, the series' own FY1976–2025 mean — CBO's 50-year rule applied to gross, since CBO states it only for held (51%); `checkGrossDebt` re-derives all of it |
+| Federal interest payments (BEA gross interest ÷ GDP, 0.9.0) | 1.8% 1952 Q4 – 5.0% 1991 Q1, quarterly from 1947 (FRED A091RC1Q027SBEA ÷ GDP); read from the record by `syncInterest` | ≤ 3.5%, the series' own 1976–2025 mean; `checkInterest` re-derives it |
 | Deficit rate (÷ GDP) | −2.3% FY2000 surplus – 26.9% FY1943 (FRED FYFSGDA188S); the low end departs the true-extreme rule (real max surplus FY1948 +4.3%), flagged, Keren's to settle | ≤ 3.8% |
 | Household debt service | 9.05% 2021 Q1 – 15.85% 2007 Q4; FRED TDSP, begins 2005 Q1, rebuilt 2024 on tradeline data — its 15.85% is not the retired series' 13.2%, never in one sentence | below its own mean, `DSR_MEAN` 12.4% |
 | Personal saving rate | 1.8% 2005 Q3 – 24.4% 2020 Q2; BEA via FRED A072RC1Q156SBEA | 4.5–12.2%, 10th–90th pct of 318 quarters |
 | Productivity growth (Activity) | −1.7% 1974 – +6.7% 1950, BLS OPHNFB | ≥ 1.3% YoY, BLS's post-2005 slowdown average; "better than the slowdown", never "at trend" |
-| VIX (close) | 9.14 Nov 3 2017 – 82.69 Mar 16 2020, Cboe via FRED VIXCLS | the market convention (V663, Keren: "set the rules per convention"), `VIX_CALM` 20 and `VIX_FEAR` 30, cited to Chase and TD in `VIX_CONVENTION`: Calm below 20, Elevated 20–30, Fearful above 30; the chart hangs from 20. Its ring is the reading's place between the record low and high on a log scale (`vixPct`) |
+| VIX (close) | 9.14 Nov 3 2017 – 82.69 Mar 16 2020, Cboe via FRED VIXCLS | the market convention (V663), `VIX_CALM` 20 and `VIX_FEAR` 30, cited to Chase and TD in `VIX_CONVENTION`: Calm below 20, Elevated 20–30, Fearful above 30; the chart hangs from 20. Its ring is the reading's place between the record low and high on a log scale (`vixPct`) |
 | Buffett Indicator | 32% Q2 1982 – 256% Q2 2026; Fed Z.1 NCBEILQ027S ÷ FRED GDP | ≤ 80%, his 2001 *Fortune* figure |
 | Shiller CAPE | 4.78 Dec 1920 – 44.19 Dec 1999 | ≤ 17×, the series' long-run mean 17.42 |
 | Durable goods spending (Desire) | the monthly record since 1960, BEA via FRED DDURRA3M086SBEA | ≥ 0, definitional (more or less than a year earlier) |
@@ -578,8 +576,8 @@ threshold, the bar takes that threshold); editorial and Keren's (Temperature). *
 provenance in the (i), or it does not ship.**
 
 **Temperature's band is the one target in the app.** The Fed publishes a point, 2% on PCE, no band; the
-1–3% edges are part of the Season Model's structure, a point either side of it (Keren, 0.6.18: name it the model's structure, never "Keren's call"), the same control range the Bank of Canada and the Reserve Bank of New Zealand set around 2%, read on CPI, which has run 0.39 points higher on
-average since 2000. The (i) says both. Since 0.8.6 Analysis also judges Temperature against it (Keren chose it over the record's middle half): the roster row's `normal` pins a reading's Normal range while its Risk stays past its own record's fence, and the Analysis (i) names the band. The reading page still never calls the band "normal." Nothing is fetched from the
+1–3% edges are part of the Season Model's structure, a point either side of it (0.6.18: the (i) calls them the model's structure, never "Keren's call"), the same control range the Bank of Canada and the Reserve Bank of New Zealand set around 2%, read on CPI, which has run 0.39 points higher on
+average since 2000. The (i) says both. Since 0.8.6 Analysis also judges Temperature against it (the band was chosen over the record's middle half): the roster row's `normal` pins a reading's Normal range while its Risk stays past its own record's fence, and the Analysis (i) names the band. The reading page still never calls the band "normal." Nothing is fetched from the
 Fed; the courier checks monthly that the objective is still 2% and, if it changed, notifies rather than
 moving anything — only Keren moves the band.
 
@@ -587,37 +585,33 @@ moving anything — only Keren moves the band.
 percentile construction fails here: the 87 quarters held contain a decade of a zero-pinned short end. Keren
 was offered three constructions and chose none. **Do not draw one without asking her again.**
 
-The three fiscal markers are one balance sheet asked three questions — stock, flow, carrying cost. Until
-V660 they were also summed into Power (100 − their stress composite); Keren removed it, and
-`git show 46e5b1f:src/js/03-data.js` (V659 on `main`) has the last copy. **Mood's fast members (Volatility,
+The three fiscal markers are one balance sheet asked three questions — stock, flow, carrying cost. Power,
+which summed them (100 − their stress composite), went in V660; `git show 46e5b1f:src/js/03-data.js` (V659 on
+`main`) has the last copy. **Mood's fast members (Volatility,
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
 ## The Diagnosis (V664, under the dial since V665)
 
-Keren: "What I want is a diagnosis. Like a doctor would analyze a patient … based on the app's parameters …
-Also, I want to have emotional intelligence in this analysis." Since V665 it is the Cycle page itself: the dial,
-then `#diagnosis` under it, in place of the four category cards (Keren: "I want the categories to go away from the
-cycle page because we already have it in search and in the diagnosis"; Search is now Cycle analysis), as Clue sets its cycle-phase insights
-under its cycle view. It is two sibling cards inside `#diagnosis` (a flex column with the page gap): the trend card (the emotion in its
-season and the cycle's story, since V681) and, since 1.8.0, the `.dx-years` card, one `.dx-year` row a year, newest
-first since 0.4.1 (Keren: "I want to see 2026 at the top, and then go backwards"), from the cycle's last year to its
-first (`yearByYear`). Since 0.4.1 a row is the Analysis page's cycle row at the scale of
-a year (Keren: "just put a bar, a colored bar, like in the analysis page"): the year's quarters from `m.track` as a
-season strip (`seasonRuns` and `seasonPills` in render-core, the cycle list's own, a single quarter drawn as a bar
-since four quarters fill the row; the quarters not yet run a grey line on the season strip and grey dots on the market
-strip, Keren), and under it the same Growth,
-Prices and S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` (the figures `eraGrowth` and
-`eraInflation` compound) and `sp500AnnualReturns`, whole percents as on the Analysis page. The year in progress reads
-`yearSoFar`: its latest quarter's real GDP on a year earlier and its latest month's CPI, the Growth and Temperature
-cards' own figures; the bar's blank end says the year is not done, so the row carries no "so far", which would not
-fit on a phone. Its grey dots are laid out after layout, not in the markup (`fitYearDots`, run by `renderDiagnosis` and
-`settleAll` on every tab switch and resize): their pitch is one quarter of the open cycle's Herstory row, a width
-only the page knows, so they sit exactly as far apart as Herstory's (Keren, 0.6.18), the first one gap from the market bar, so the
-gaps read even (0.8.8). The emotions and the season names left the row in 0.4.1. A row opens
-Indicators on its year (`data-ind-when`, 0.8.9); the quarter sheet it opened before is gone. A closed cycle's card opened on **After** (the S&P 500 the year after
-the close, `yearAfter`) from 1.8.0 until 0.6.17, when Keren dropped it for the next cycle's own page. The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)
-left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
+The Diagnosis reads the cycle the way a doctor reads a patient, from the app's own parameters and with emotional
+intelligence (V664). Since V665 it is the Cycle page itself: the dial, then `#diagnosis` under it, in place of the
+four category cards, which Cycle analysis and the Diagnosis already cover, as Clue sets its cycle-phase insights
+under its cycle view. It is two sibling cards inside `#diagnosis` (a flex column with the page gap): the trend card
+(the emotion in its season and the cycle's story, since V681) and, since 1.8.0, the `.dx-years` card, one `.dx-year`
+row a year, newest first (0.4.1), from the cycle's last year to its first (`yearByYear`). A row is the Analysis
+page's cycle row at the scale of a year (0.4.1): the year's quarters from `m.track` as a season strip (`seasonRuns`
+and `seasonPills` in render-core, the cycle list's own, a single quarter drawn as a bar since four quarters fill the
+row; the quarters not yet run a grey line on the season strip and grey dots on the market strip), and under it the
+same Growth, Prices and S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` (the figures
+`eraGrowth` and `eraInflation` compound) and `sp500AnnualReturns`, whole percents as on the Analysis page. The year
+in progress reads `yearSoFar`: its latest quarter's real GDP on a year earlier and its latest month's CPI, the
+Growth and Temperature cards' own figures; the bar's blank end says the year is not done, so the row carries no
+"so far", which would not fit on a phone. Its grey dots are laid out after layout, not in the markup
+(`fitYearDots`, run by `renderDiagnosis` and `settleAll` on every tab switch and resize): their pitch is one quarter
+of the open cycle's Herstory row, a width only the page knows, so they sit exactly as far apart as Herstory's
+(0.6.18), the first one gap from the market bar, so the gaps read even (0.8.8). A row opens Indicators on its year
+(`data-ind-when`, 0.8.9). The systems card (Circulation and Energy with their Analysis lines, `analysisFor`,
+`acrossCycle`) left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 **A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`): the
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
@@ -634,7 +628,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   whole record because a run crosses cycle edges.
   Bands, dot and labels are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and non-scaling strokes,
   so the card is fluid. Prices and the Fed funds rate are drawn as quarterly means through a Catmull-Rom curve, so
-  the lines flow as in her tracker (Keren: "make the chart lines a bit more feminine"); the peak sits on its quarter. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at
+  the lines flow as in her tracker; the peak sits on its quarter. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at
   its last month.
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines with the health
   score under it (`cycleScore`, Cycle Statistics' one box; the open cycle has no Cycle Statistics card), opening the
@@ -651,8 +645,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   quarters, annual ones held across their year, each carried to the newest quarter, which takes the labs' own figures),
   scales each by its spread since 1970, and matches a path, not a point: the last `ECHO_WINDOW` quarters (two
   years) against every run of as many quarters that ends before the open cycle, by root-mean-square gap.
-  A single quarter matched COVID-19's 2021 Q1, which shared today's levels after a crash and a rescue; the path
-  separates them (Keren: "COVID-19 is not the same … 1999 and 2018 is good"). Matches closer together than the window
+  A single quarter matched COVID-19's 2021 Q1, which shared today's levels after a crash and a rescue but is not
+  the same moment; the path separates them and keeps the 1999 and 2018 matches. Matches closer together than the window
   are one episode, shown once by its closest quarter. The card shows the top
   three; More details holds the method and the top eight.
 - **One vocabulary** (V686, Keren's "Switch"): the Diagnosis names the Mood page's emotion, the cycle of market
@@ -665,15 +659,14 @@ emotion at the closing month, its years, and what followed a year later. Every l
   `moodToday` for the open cycle), told in month order, with the high or low folded into the opening or closing
   beat when they share a month, and the two emotions with the most months. It is read when More details opens,
   so the card follows the cycle on screen. `moodFigures` is the first fact of `moodInfo`.
-  It replaced Emotion × Season (a twelve-by-four grid with a slid test), which Keren found uninformative.
+  It replaced Emotion × Season (a twelve-by-four grid with a slid test), which told the reader too little.
 - **The record is computed at load, never written down** (`moodTrack`): every month her mood can be read, and the
   S&P 500 twelve months on.
 - **The S&P 500 a year later** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1948, through the Backfill from the same
   workbook the CAPE fetcher reads). **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
-- **Mood and season** (V679, V686): The Diagnosis's mood card (`moodDoor`) named today's feeling in today's season until 0.4.1
-  (its season-share bars went in V686); the Mood page's Insights (`insightMood`) draws the cycle of
+- **Mood and season** (V679, V686): the Mood page's Insights (`insightMood`) draws the cycle of
   market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in model
   ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each against its own history to
   that month (`rankIn`, over `rankToDate`) and averages the three; `moodTrack` keeps every month since all three can
@@ -703,7 +696,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's button opens it (`hubOpen`'s `cat`, on the current quarter) while the dial shows today; a parked
   quarter or a closed cycle's close opens Indicators on that quarter (`hubOpen`'s `when`, 0.8.9). The Diagnosis's Analysis leaves out
-  every `onDial` category. Weather's Insights (behind Weather analysis's More details since 1.5.0) open with `cycleNowNote` (the note the popup used to open with), then
+  every `onDial` category. Weather's Insights (behind Weather analysis's More details since 1.5.0) open with `cycleNowNote`, then
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   Balance. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names
@@ -757,19 +750,16 @@ annual. (V690; 0.8.0)
 **One direction, one source.** Every expansion/contraction on screen comes from `r.regime`/`regimeByQ`.
 Growth's chart is coloured by regime, **never by the sign of growth**.
 
-**Hormones = the policy rate; Pressure = the level the market sets; Horizon = the slope.** Pressure (V639,
-Keren: "the 10-year is the risk-free loan across the economy, so whenever it goes up we can see the pressure
-the US government has to repay its debts") is the Treasury yields, one maturity at a time, opening on the
-10-year with the others in the ⋯ menu; its row prints today's 10-year from the live curve with **no verdict
-word**, because a rate has no sourced band. Its Insights (V640) are the body, the economy and the reading, every
-figure computed. **The chart's resting plate names a quarter, and the quarter still running says "· so far"**:
-the row is today and the plate is an average, and without the words the two read as two different todays
-(Keren caught it in Version 294 and again in V640). This reversed V597 (the loan survey as "resistance") and V598
-(the levels folded into Horizon's menu); the survey was dropped at her choice and is at tag v638-fewer-words.
-The gap is a forecast, not a pressure, judged optimistic or pessimistic; it sat in Mood until V685, was
-Circulation's own Horizon card for V685–V687, Pressure's second ⋯ group from V688 to 0.9.15, and since 0.9.16 its
-own reading in Pressure, Treasury spreads (Keren). The 10-year's page (`drawPressure`, `pressure-range`) draws
-only the yields; the spreads' page (`renderHorizonPage`, `spreads-range`, `#sheet-sign-spreads`) owns `spreadPick`,
+**Hormones = the policy rate; Pressure = the level the market sets; Horizon = the slope.** Pressure (V639) is
+the Treasury yields, one maturity at a time, opening on the 10-year, because the 10-year is the economy's risk-free
+loan and its rise shows the pressure on the US government to repay its debts; the others sit in the ⋯ menu. Its
+row prints today's 10-year from the live curve with **no verdict word**, because a rate has no sourced band. Its
+Insights (V640) are the body, the economy and the reading, every figure computed. **The chart's resting plate names
+a quarter, and the quarter still running says "· so far"**: the row is today and the plate is an average, and
+without the words the two read as two different todays (V640). The loan survey V597 read as "resistance" was
+dropped; its last copy is at tag v638-fewer-words. The gap is a forecast, not a pressure, judged optimistic or
+pessimistic; since 0.9.16 it is its own reading in Pressure, Treasury spreads. The 10-year's page
+(`drawPressure`, `pressure-range`) draws only the yields; the spreads' page (`renderHorizonPage`, `spreads-range`, `#sheet-sign-spreads`) owns `spreadPick`,
 its head (`spreadsHead`: one menu group and the note), its trend and its Insights, and redraws the spread chart
 through `drawSpreadWindow`. Each page has its own window. **The spread's word is slope AND
 direction, never slope alone** (2008 and 2021 both show a steep curve with opposite meanings); its lookback
@@ -780,8 +770,7 @@ it is the level of the spread that forecasts, not the crossing.
 
 **A history page is three containers**: control on the page's ground, the history container (head,
 readout, picture, trend), the reading container. All twelve share one frame, `histFrame`, and one head,
-`histControls`. **The frame's height is every chart's height** (V662, Keren: "make the height universal inside
-the parent component"): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
+`histControls`. **The frame's height is every chart's height** (V662): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
 `divergeChart` and Pressure's two views read `histFrame(W).H` rather than their own numbers, and every axis
 chart takes its four margins from the frame too (`F.L`, `W - F.R`, `F.T`, `H - F.B`); GDP's year-on-year view, the
 one exception, was removed in V668; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
@@ -860,13 +849,13 @@ is its last copy.
 **The date line always reads "Today, <the reader's date>"**, never `DATA_COMPILED`. Provenance lives on
 the figures: every card names the day its number derives from, and a card that doesn't is the bug.
 
-**No optical nudge** — when Keren reports something is off, look for the bug before explaining why it is
+**No optical nudge** — when something is reported off, look for the bug before explaining why it is
 not one. `100vw` includes a classic scrollbar while the card's box does not, and Playwright hides
 scrollbars, so the rig must include a scrollbar run.
 
 ## Charts
 
-**Every chart is bars**, except Pulse's EKG strips (0.9.25, Keren). The test for a new one: can it stand on zero? If not, find the midline it hangs
+**Every chart is bars**, except Pulse's EKG strips (0.9.25). The test for a new one: can it stand on zero? If not, find the midline it hangs
 from; **never truncate the axis under a column.** The strips keep the one frame and the shared plate; because their
 quarters sit in a grid rather than a line, their geometry adds `xOf(i)` (where quarter i's plate sits) and
 `pick(x, y)` (which quarter a touch lands on), which the history component uses in place of its even spacing. They are also the one history whose frame grows: `histFrame(W, plot)` takes the plot height a chart needs and sizes the frame to it, so a strip keeps its height however many years are shown, and `chartAxes`' `gutter` widens the label column for the year and its velocity. Their trend pill shows its word without the toggle, since a fitted line has no place on the strips; the suite names Pulse as the one history whose pill does not draw a line (`TREND_WORD_ONLY`). **Every chart is
@@ -962,7 +951,7 @@ tested against the rule (each feeling's cut-offs, growth's window). Every note o
 history head's and each More details) is read, and none may call a band a "normal range" unless it says it
 is not one: a target is never relabelled normal. Proof (V667): of thirteen regressions planted one at a time,
 the suite and gate catch all thirteen; the old suite caught one of the audit's ten.
-**Every refactor ships with "48 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
+**Every refactor ships with "48 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown); it caught three breaks in V630 alone,
 none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url`, always in place, with a short `label`. If
@@ -1053,7 +1042,7 @@ by its own picture, by cycle = the average never the total.
 
 Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
 or "Sentiment"; Debt-to-income ratio, not "Debt service" or "Debt payments"; Valuations, plural; Growth, not "GDP growth"; Stress is
-Households (Saving rate, Debt-to-income ratio, Margin debt; Delinquencies moved to Desire › Risk as Default risk in 0.9.22) and Government (Federal debt, Federal interest payments, Federal budget) (0.9.21; Stress from V688, Economic power before); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
+Households (Saving rate, Debt-to-income ratio, Margin debt) and Government (Federal debt, Federal interest payments, Federal budget) (0.9.21), and Delinquencies are Default risk, under Desire › Risk (0.9.22); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.
