@@ -7,12 +7,6 @@ jobs:
   probe:
     runs-on: ubuntu-24.04
     steps:
-      - env:
-          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-        run: |
-          set +e
-          echo "== abc listing"; curl -sSL -m 30 -o abc.html -w '%{http_code} %{url_effective}\n' https://data.nber.org/data/abc/; grep -oi 'href="[^"]*"' abc.html | head -60
-          for f in abcq.xlsx abcq.xls abcq.txt abcq.csv; do echo "== $f $(curl -sSL -m 30 -o $f -w '%{http_code} %{size_download}' https://data.nber.org/data/abc/$f)"; done
-          ls -la abcq.* ; head -c 1500 abcq.txt 2>/dev/null; head -c 1500 abcq.csv 2>/dev/null
-          python3 -c "import pandas" 2>/dev/null && echo has pandas
-          for s in Q0896AUSQ240SNBR Q0860AUSQ027SNBR Q0860BUSQ027NNBR; do echo "== $s"; curl -s "https://api.stlouisfed.org/fred/series?series_id=$s&api_key=$FRED_API_KEY&file_type=json" | jq -r '.seriess[0] | .title, .units, .seasonal_adjustment, .notes'; done
+      - run: |
+          curl -sSL -m 30 https://data.nber.org/data/abc/abcq.txt; echo
+          curl -sSL -m 30 https://data.nber.org/data/abc/abcq.csv | awk -F, 'NR==1 || ($1>=1926 && $1<=1949) {print $1","$2","$3","$4","$5}'
