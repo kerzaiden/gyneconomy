@@ -34,9 +34,12 @@ rules below are the ones that matter most.
    set is not a range — say so and ask.
 4. **Never pass `capabilities` on a republish.** Omitting it keeps the artifact's `db` grant; passing
    anything revokes it and every live figure dies silently behind the hard-coded fallbacks.
-5. **Read the live artifact before publishing over it** and diff it against `index.html`. They should
-   differ only by the wrapper the publish adds (a skeleton `<head>` before, a duplicated
-   `</body></html>` after). Any other difference is a merge, never a `force`.
+5. **Read the live artifact before publishing over it** (`action: "read"` saves its source to a file) and diff
+   that file by script against `index.html` of the commit it claims (its menu reads `Version 0.9.25 (796)`;
+   `git show <that commit>:index.html`). They should differ only by the wrapper the publish adds (a skeleton
+   `<head>` before, a duplicated `</body></html>` after). Any other difference is a merge, never a `force`.
+   The page is over a megabyte: the diff is the check, not reading it line by line. If the first publish is
+   refused with the live page's diff and that diff holds only what the merged releases changed, publish again.
 
 ## Always
 
@@ -73,8 +76,11 @@ rules below are the ones that matter most.
 - **Finish a piece of work by committing it.** Two assistants work here (a Claude session with the
   project attached, and Claude Code in this folder); the repo is the only handoff.
 - **Every change goes on a branch and reaches `main` through a pull request** Keren merges (V642). A
-  push to `main` deploys the site, so her review sits in front of every deploy. `npm run bump major|minor|patch`
-  before every version commit (the rule for which is in `docs/DECISIONS.md`, Versions); `git pull --rebase` before pushing — the Data workflow commits `data/live.json`
+  push to `main` deploys the site, so her review sits in front of every deploy. **A release gets its number at
+  merge, not before** (0.9.32): a branch and its PR carry only the release's name (`— Short Name`), and when
+  Keren says merge, the merging session merges `main` in, runs `npm run bump patch` (or the move she chose; the
+  rule is in `docs/DECISIONS.md`, Versions) as the last commit, checks, and squash-merges. Parallel threads then
+  never collide on a number. `git pull --rebase` before pushing — the Data workflow commits `data/live.json`
   to `main` on weekdays and the Backfill workflow commits the FRED histories on the 3rd of each month; those
   two bots are the only things allowed to push there directly, and each starts the site deploy itself.
 - **One version, one commit on `main`: squash-merge** (V647). Title the merge `1.4.0 — Short Name`, so
@@ -84,7 +90,8 @@ rules below are the ones that matter most.
   as the newest tag, so a tag that has not been made yet cannot send it backwards.
 - **`main` and the artifact are the same version, always.** Whoever merges to `main` republishes the
   artifact from that commit, in the same sitting (rules 1, 4 and 5 above), with `label` = the version
-  and build, `1.4.0 (712)`. Only a session with the `Artifact` tool can do it; a GitHub Action cannot. If a merge lands and
+  and build, `1.4.0 (712)`, and `files` carrying `sources.html` and `sw.js` with the page, so the Sources page
+  and the offline cache move with it. Only a session with the `Artifact` tool can do it; a GitHub Action cannot. If a merge lands and
   nobody can publish, say so rather than leaving the two apart.
 
 ## Commands
@@ -97,7 +104,7 @@ npm test                 # the browser suite alone; it waits on the app, never o
 npm run test:unit        # the app booted in Node (jsdom): every page drawn, the model on the real record, ~3 s
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
-npm run bump minor       # next version: major | minor | patch, or exact (`npm run bump 1.4.0`); build + 1
+npm run bump patch       # at merge only: major | minor | patch, or exact (`npm run bump 1.4.0`); build + 1
 npm run typecheck        # strict TypeScript over the modules (in check)
 npm run hygiene          # one frame, one type scale, no page-scoped styles, no name branches, nothing unused
 npm run uncomment        # remove comments from the code; `node tools/uncomment.js --check` is in `check`

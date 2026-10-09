@@ -15,50 +15,45 @@ git show "$(git tag --list 'v665*')":docs/DECISIONS.md
 git show v648-treasury-quarters:src/js/07-forms.js
 ```
 
-To add a decision, state it under its topic in the same form: the rule in bold, then why, then the version. The
-why matters more than the rule (Keren, 0.9.30): give the essence of her reasoning, not her words verbatim, and quote
-her only where a phrase carries the reason better than a paraphrase. When a new decision overturns a rule here,
-rewrite that rule rather than adding a contradiction: keep only what now holds and why the change was made, not the
-back-and-forth, and keep its older versions in the citation. Her full words go in the commit message. A rule whose scope, or the
-code, is in doubt is marked "(check: …)" until Keren settles it; none is open after V668.
+To add a decision, state it under its topic in the same form: the rule in bold, then why, then the version. The why
+matters more than the rule (Keren, 0.9.30): give the essence of her reasoning, not her words verbatim, and quote her
+only where a phrase carries the reason better than a paraphrase. What the code and its tests already pin (where a
+reading sits, its order, its name, head and unit in `ROSTER`, `src/js/roster.ts`) is not restated here; only why it
+is so. When a new decision overturns a rule here, rewrite that rule rather than adding a contradiction: keep only
+what now holds and why the change was made, not the back-and-forth, and keep its older versions in the citation. Her
+full words go in the commit message. A rule whose scope, or the code, is in doubt is marked "(check: …)" until Keren
+settles it; none is open after V668.
 
 ## Voice and wording
 
 ### Names
 
 - **The bloodstream category is Circulation, never Blood.** Keren's choice. (V454)
-- **There are six categories, and each wears one of the I Ching's six forces as its mark: Weather (heaven: sun and
-  cloud), Activity (earth: a sprout, the colour `--earth`), Mood (wind: three wind lines), Desire (fire), Circulation
-  (water) and Stress (thunder: the bolt).** Activity is its own category, apart from Weather, so the real economy has
-  a home; Keren gave the sprout. Mood keeps its wind lines because a spiral looked too mushed. Activity holds Labor
-  (Unemployment rate, Nonfarm payrolls) and Output (GDP growth, Productivity growth). Labor is Keren's word over jobs,
-  because it fits the context of fertility better; the other subcategory names, the factory mark on Output and the
-  olive are Claude's picks. Weather keeps what the season and the market are read from: Economic Season
-  (Temperature, Growth gap, Federal funds rate) and Market. Real GDP growth sits in Output, and Economic Season shows
-  the Growth gap, headed "GDP Growth vs Potential" (Keren), because that is the figure the season actually reads, not
-  pure growth. Only the Growth gap says expansion or contraction. GDP growth reads its own sign against zero, Growing
-  or Shrinking, and its trend accelerating or slowing, like Nonfarm payrolls and Retail sales (Claude's call: with the
-  season's word it read "Contraction" at +2.1%). Stress keeps its name and is its own category, with two
-  subcategories, Credit and Debt, and the lightning bolt as its mark. Desire is its own category, after Mood, with
-  two subcategories, Demand (Discretionary spending, Retail sales) and Risk (Equity risk premium, Concentration risk,
-  Default risk). Its mark is the flame and its colour the red of `--bleed-mid`; Demand wears a shopping bag and Risk
-  a die, Claude's picks for Keren to change. (V457, 0.8.5, 0.9.0, 0.9.3, 0.9.4, 0.9.8, 0.9.11, 0.9.13, 0.9.15)
-- **The Federal funds rate sits in Weather, under Economic Season, after Growth gap: it is the environment the season
-  grows in, not a pressure.** Keren likens it to the hormones, progesterone and estrogen, that set the conditions,
-  and judged its earlier place under Circulation > Pressure her mistake. The rate is a setting the Fed chooses, where
-  the 10-year is a price the market sets. It wears Economic Season's thermometer and keeps its door to its page from
-  the Interest Rates Environment head. (0.8.5, 0.9.15, 0.9.16, Oct 8, 2026)
-- **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two
-  produce: naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
-  season. (V446)
-- **The VIX reading is Fear, after its market name, the fear gauge, so Sentiment reads Confidence beside Fear.**
+- **The economy is read in six categories, and each wears one of the I Ching's six forces as its mark: heaven for
+  Weather, earth for Activity, wind for Mood, fire for Desire, water for Circulation and thunder for Stress.**
+  Activity is its own category, apart from Weather, so the real economy has a home; Keren gave its sprout. Mood
+  keeps its wind lines because a spiral looked too mushed. Labor is Keren's word over jobs, because it fits the
+  context of fertility better; the other subcategory names and marks, and Activity's olive, are Claude's picks for
+  Keren to change. The season is shown by the Growth gap, not pure GDP growth, because that is the figure the season
+  actually reads (Keren). Only the Growth gap says expansion or contraction. GDP growth reads its own sign against
+  zero, Growing or Shrinking, and its trend accelerating or slowing, like Nonfarm payrolls and Retail sales
+  (Claude's call: with the season's word it read "Contraction" at +2.1%). (V457, 0.8.5, 0.9.0, 0.9.3, 0.9.4, 0.9.8,
+  0.9.11, 0.9.13, 0.9.15)
+- **The Federal funds rate is read as the environment the season grows in, like hormones, not as a pressure.** Keren
+  likens it to the hormones, progesterone and estrogen, that set the conditions, and judged its earlier place under
+  Circulation > Pressure her mistake. The rate is a setting the Fed chooses, where the 10-year is a price the market
+  sets. (0.8.5, 0.9.15, 0.9.16, Oct 8, 2026)
+- **The category the season is read from is Weather, never Season.** The season is what its inputs produce: naming
+  the category for it would put the conclusion on a level with its inputs, and the dial already shows the season.
+  (V446)
+- **The VIX reading is named Fear, after its market name, the fear gauge, so it pairs plainly with Confidence.**
   Fear is the opposite of confidence, so the pair reads plainly as "not confident and fearful". It replaces
   Volatility (V663). (V663, 0.8.5)
-- **Households is a subcategory with two readings of its own, Saving rate and Debt-to-income ratio, never one paired
-  reading.** The paired chart was neither clear nor intuitive; both are headline figures (BEA's personal saving
-  rate, the Fed's debt service ratio). "Debt service" stays off the screen, because there is both government and
-  household debt service. Saving's band is the 10th–90th percentile since 1947 (4.5–12.2%); the debt-to-income
-  ratio's line is the series' own mean since 2005. (V463, V660, 0.9.21, 0.9.22)
+- **Saving rate and Debt-to-income ratio are two readings of their own, never one paired reading.** The paired chart
+  was neither clear nor intuitive; both are headline figures (BEA's personal saving rate, the Fed's debt service
+  ratio). "Debt service" stays off the screen, because there is both government and household debt service. Saving's
+  band is the 10th–90th percentile since 1947 (4.5–12.2%); the debt-to-income ratio's line is the series' own mean
+  since 2005. (V463, V660, 0.9.21, 0.9.22)
 - **The fiscal markers are Federal debt (not "Debt burden") and Federal interest payments (not "Interest burden").**
   "Federal debt" because the card shows the debt itself (V660); "Federal interest payments" so it is not read as the
   Federal funds rate reading (0.9.0). Both are Keren's choices.
@@ -82,8 +77,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Weather's gap card is "The Balance", for two totals that should finish level over a cycle, not for its
   verdict.** Keren's choice: a barometer reads pressure, and the card compares price rise with real growth, so the
   instrument's name, which the card bore before, now belongs to Pressure. (V468, 0.9.17)
-- **The policy-rate chart is titled "Federal Funds Rate", and its note says it plots the effective rate.**
-  "Effective" was doing the note's job in the title. (V608)
+- **The policy-rate chart's title does not say "effective"; its note says it plots the effective rate.** "Effective"
+  was doing the note's job in the title. (V608)
 - **A section of sentences about the figures above it is called Insights, on every reading's page.** The app had
   two names for one component and Keren chose one; Insights has been her word for it since V379. A category's
   combined reading is the exception since 1.5.0: it sits behind Indicators' More details on that category,
@@ -342,23 +337,21 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   discarded all the earlier designs. A closed cycle's figures are Cycle Statistics'. This replaced the group card
   (V688), the category page's ground (0.6.2), its cards and More details (1.5.0, 0.6.1), the equal-height cards
   (V688) and the past cycle's category cards (V660, V665). (0.8.6, Oct 6, 2026)
-- **Debt-to-income ratio is the name of the Fed's household debt service ratio (TDSP), and Delinquencies are Default
-  risk under Desire › Risk.** The name makes more sense than debt payments, and delinquencies are a default risk, so
-  they belong in the risk subcategory. The series is unchanged: required payments as a share of disposable
-  (after-tax) income, the ratio a lender checks, across every household; the (i) says it is measured against
-  take-home pay. Since 0.9.22 the Backfill fetches it from FRED, so the record stays current. (0.9.22)
-- **Stress has two subcategories, Households (Saving rate, Debt-to-income ratio, Margin debt) and Government
-  (Federal debt, Federal interest payments, Federal budget); the name Economic power is retired.** Households and
-  government are different things; margin debt belongs with households, not credit, and the Credit subcategory went
-  to Circulation (0.9.21). The category is called Stress because debts are stress (V688), and everything related to
-  debt belongs in it (0.9.0). (V688, 0.9.0, 0.9.4, 0.9.21)
+- **The Fed's household debt service ratio (TDSP) is named Debt-to-income ratio, and delinquencies are read as
+  Default risk.** The name makes more sense than debt payments, and delinquencies are a default risk, so they belong
+  with risk. The series is unchanged: required payments as a share of disposable (after-tax) income, the ratio a
+  lender checks, across every household; the (i) says it is measured against take-home pay. Since 0.9.22 the
+  Backfill fetches it from FRED, so the record stays current. (0.9.22)
+- **Stress holds what is owed, with households and government apart; the name Economic power is retired.**
+  Households and government are different things, and margin debt belongs with households, not credit. The category
+  is called Stress because debts are stress (V688), and everything related to debt belongs in it (0.9.0). (V688,
+  0.9.0, 0.9.4, 0.9.21)
 - **No season says what comes next or what to watch for the turn.** Both read as forecasts, and Keren dropped the
   forecast (1.5.0). They went with the season pop-up, and the book quotes it held went with them, since About
   already carries the book (0.8.9).
-- **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
-  order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster holds
-  the source order and the category sheets and past cycles read it; Cycle analysis and the Diagnosis place the four
-  by each category's `shown`; the layout rearranges the picture and leaves the meaning where it is. (V502, V670)
+- **The roster keeps the taxonomy's order; a display that wants Keren's order places the categories by each one's
+  `shown`, without reordering the source.** The layout rearranges the picture and leaves the meaning where it is.
+  (V502, V670)
 - **The Cycle page is the dial with the Diagnosis under it; it carries no category cards,** since the categories
   are already in search and in the Diagnosis. (V665)
 - **A past cycle opens as the Cycle page itself, through the same components, never as a separate view.**
@@ -674,9 +667,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Attention, red (`--critical`) for Atypical or Risk, on the tick and the ring; the length bars follow.** Period flow's
   ring stays red. Typical means normal, so it is green. (0.8.12, Oct 7, 2026)
 - **Insights lists only the categories; each opens one Indicators page on that category, where every reading is
-  searched, filtered by tier and cycle, and switched between categories by a bar (All, Regularity, Weather, Mood,
-  Circulation, Energy).** The search box on Analysis opens the same page on All. One universal page searches and
-  filters every indicator; Keren accepted it as fine for now, with more work to come. (0.8.3, Oct 6, 2026)
+  searched, filtered by tier and cycle, and switched between categories by a bar.** The search box on Analysis opens
+  the same page on All. One universal page searches and filters every indicator; Keren accepted it as fine for now,
+  with more work to come. (0.8.3, Oct 6, 2026)
 - **On one category, Indicators groups its readings by subcategory: each subcategory is a quiet heading (the
   subcategory's mark and its name, small and grey) over its results, in place of the category's heading, which the
   bar already names.** All keeps one heading per category. Every heading sits in one container, the standard gap
@@ -684,16 +677,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   apricot line between, its mark in apricot and its count in light grey beside its fold chevron. The results stay
   one container without spacing, and the gaps around it are equal. White titles over apricot results recall
   financial newsletters; the apricot is on the mark and the line, not the title's words, which stay grey to stay
-  readable, and the titles are small so they blend in with the data they present. Weather: Economic Season
-  (Temperature, Growth gap, Federal funds rate, 0.9.16), Market (S&P 500) and Activity (Unemployment rate,
-  Productivity growth, Nonfarm payrolls); Mood: Valuations and Sentiment (Confidence, Fear); Desire: Demand
-  (Discretionary spending, Retail sales, Consumer credit, 0.9.25) and Risk (Equity risk premium, Concentration risk,
-  Default risk); Circulation: Pressure (US 10-year Treasury, Treasury spreads) and Money (Pulse, Volume; the Credit
-  subcategory went in 0.9.22); Stress: Households (Saving rate, Debt-to-income ratio, Margin debt) and Government
-  (Federal debt, Federal interest payments, Federal budget). There is no Activity category (Keren, 0.9.0). The names
-  beyond Valuations, Desire, Debt and Keren's Season and Market are Claude's draft. Repeating the category under the
-  bar that already shows it wasted the space, which subcategories now use; temperature and growth are the season, the
-  S&P is the market. Keren renamed Circulation's first subcategory Pressure and the reading that was Pressure the US
+  readable, and the titles are small so they blend in with the data they present. Repeating the category under the
+  bar that already shows it wasted the space, which subcategories now use; temperature and growth are the season,
+  the S&P is the market. The subcategory names beyond Keren's own (Valuations, Season, Market, Labor, Pressure) are
+  Claude's draft. Keren renamed Circulation's first subcategory Pressure and the reading that was Pressure the US
   10-year Treasury. (0.8.5, 0.8.6, 0.9.0, 0.9.16, 0.9.22, 0.9.25, Oct 6, 2026)
 - **An open year's figure carries no "so far" on Indicators:** every figure there is so far. (0.8.5, Oct 6, 2026)
 - **A category opens in Indicators, never on its old page of chart cards.** Its heading on Indicators and the
@@ -812,25 +799,22 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
-- **Readings appear in one order everywhere, the roster's: by category, by subcategory, then by row, on every
-  cycle page, current and past, whatever their results.** Keren wants the order identical in every cycle;
-  Elements had sorted each category by tier (Risk first), so a cycle's results reshuffled it. Economic Season
-  reads Temperature, Growth gap, Federal funds rate, then S&P 500; Activity reads Unemployment, Payrolls, GDP
-  growth, Productivity growth; Mood reads Shiller CAPE, Buffett indicator, Fear, Confidence. A category or
-  subcategory split in the roster is refused at boot, so the file reads in the order the pages show. (0.9.29)
-- **Market holds the S&P 500 alone; there is no separate real-return reading.** The real return is simply the
-  S&P 500 less inflation, which any reader can work out, so a reading of its own added little and distracted.
-  Don't re-propose it. (0.9.19, 0.9.30)
-- **Credit is households borrowing to spend and lives in Desire, under Demand (Consumer credit); Stress holds
-  what is owed, by Households and by Government.** Keren places consumer credit with desire and demand. There is
-  no Credit subcategory. Margin debt is a credit reading, since it is credit used to buy stocks. Activity
-  (Unemployment rate, Productivity growth) sits in Weather. Stress is no longer under Energy (V457, V462, V660),
-  and there is still no separate Load or debt category. (0.9.0, 0.9.4, 0.9.21, 0.9.22, 0.9.25)
-- **The credit readings are the popular, published ones, and few: ones a viewer hears about on CNBC.** Keren
-  wants conventional metrics people already know, and not many of them. Margin debt is FINRA's monthly debit
-  balances, read as growth against a year earlier, zero its only line. Delinquencies (Keren's rename of
-  Delinquency rate, 0.9.21) is the Fed's all-loans rate at commercial banks; no convention bands it, so its line
-  is the record's own 1985–2025 average (Keren's rule: derive it from the record and say so). (0.9.0, 0.9.21)
+- **Readings appear in one order everywhere, the roster's, on every cycle page, current and past, whatever their
+  results.** Keren wants the order identical in every cycle; Elements had sorted each category by tier (Risk first),
+  so a cycle's results reshuffled it. A category or subcategory split in the roster is refused at boot, so the file
+  reads in the order the pages show. (0.9.29)
+- **There is no separate real-return reading beside the S&P 500.** The real return is simply the S&P 500 less
+  inflation, which any reader can work out, so a reading of its own added little and distracted. Don't re-propose
+  it. (0.9.19, 0.9.30)
+- **Consumer credit is read as desire, households borrowing to spend; Stress is what is owed.** Keren places
+  consumer credit with desire and demand. Margin debt is a credit reading, since it is credit used to buy stocks.
+  There is no Credit subcategory, and still no separate Load or debt category. (V457, V462, V660, 0.9.0, 0.9.4,
+  0.9.21, 0.9.22, 0.9.25)
+- **The credit readings are the popular, published ones, and few: ones a viewer hears about on CNBC.** Keren wants
+  conventional metrics people already know, and not many of them. Margin debt is FINRA's monthly debit balances,
+  read as growth against a year earlier, zero its only line. The delinquency reading is the Fed's all-loans rate at
+  commercial banks; no convention bands it, so its line is the record's own 1985–2025 average (Keren's rule: derive
+  it from the record and say so). (0.9.0, 0.9.21)
 - **The Credit gap and Lending standards are gone: their cards, pages, sources and Backfill fetches. Don't re-add
   them.** Keren could not see what they measured, and they are not things people hear about on CNBC. Both were
   central bankers' and loan officers' tools (the BIS gap with Basel III's lines; the Fed's Senior Loan Officer
@@ -839,50 +823,46 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Power score is gone: its card, page, composite and history. Don't re-add it.** Keren's instruction.
   (V660)
 - **Unemployment rate and Productivity growth (its history is OPHNFB, through the Backfill) each have their own
-  page, under Weather's Activity; there is no Activity page or group.** Keren wanted each as its own page and the
-  Activity page gone. (V661, V688)
-- **Nonfarm payrolls join Activity and Retail sales join Desire, each its own page, year over year against zero
-  only.** Keren saw both as good additions, retail sales because people now talk about inflation raising the
-  prices of gas and groceries. Payrolls are the BLS employer survey (FRED PAYEMS, monthly from 1939, so growth
-  from 1940); retail sales are the Census figure the news quotes (FRED RSAFS, from 1992), in dollars before
-  inflation on purpose, and the page says that prices are in it. Year over year rather than the monthly change in
-  jobs is the app's YoY rule; zero is a fact, not a band, and the words (Adding jobs / Losing jobs, Spending more
-  / Spending less) are Claude's, for Keren to rename. Both are Coincident and come through the Backfill. Retail
-  sales sits in Desire, after Discretionary spending, at Keren's choice ("Retail only" on Claude's card): it is
-  spending, as the durables card is; payrolls are the means to pay and stay beside the Unemployment rate from the
-  same jobs report. Desire stays out of the mood score. (0.9.7)
-- **Productivity growth belongs to the activity readings, not Stress, and its range is the annual year-over-year
-  one it plots.** Keren places it with activity, not economic power: output per hour measures what the body is
-  doing. (V395)
+  page; there is no Activity page or group.** Keren wanted each as its own page and the Activity page gone. (V661,
+  V688)
+- **Nonfarm payrolls and Retail sales are readings of their own, year over year against zero only.** Keren saw both
+  as good additions, retail sales because people now talk about inflation raising the prices of gas and groceries.
+  Payrolls are the BLS employer survey (FRED PAYEMS, monthly from 1939, so growth from 1940); retail sales are the
+  Census figure the news quotes (FRED RSAFS, from 1992), in dollars before inflation on purpose, and the page says
+  that prices are in it. Year over year rather than the monthly change in jobs is the app's YoY rule; zero is a
+  fact, not a band, and the words (Adding jobs / Losing jobs, Spending more / Spending less) are Claude's, for Keren
+  to rename. Both come through the Backfill. Retail sales is read as desire at Keren's choice ("Retail only" on
+  Claude's card): it is spending, as the durables card is; payrolls are the means to pay and stay beside the
+  Unemployment rate from the same jobs report. Desire stays out of the mood score. (0.9.7)
+- **Productivity growth is read as activity, not stress or economic power, and its range is the annual
+  year-over-year one it plots.** Output per hour measures what the body is doing. (V395)
 - **Institutional trust (Gallup's confidence survey) is not a Stress reading; don't re-add it.** For Keren, trust
   is embodied in the bond market. (V392)
-- **Circulation reads in the order cause runs: Pressure (the rate the market charges, then the spreads between its
-  maturities), Pulse (how fast money moves), Volume (how much of it there is).** The rate is the cause; pulse and
-  volume are what it acts on. The Federal funds rate no longer leads it and sits in Weather. (V317, V639, 0.9.16)
-- **The policy-rate reading is the Federal funds rate, in Weather › Economic Season; "hormones" is its word only in the
-  Diagnosis.** On its page Keren wants the market's official terminology, which "hormones" is not,
-  and the reading goes by its official name, Federal funds rate (0.9.0); the metaphor belongs in the analysis. The
-  card, page, Search and Insights say Federal funds rate; the Diagnosis's "Hormones are …" left with its systems
-  in 1.8.0. A hormone is a messenger secreted on purpose that sets the tempo of everything downstream, which is
-  the rate the Fed sets; the Insights lede keeps that sentence. (V592, V683, 0.9.0, 1.8.0)
-- **Pressure holds two readings, the US 10-year Treasury and, under it, Treasury spreads, each with its own card and
-  page.** The 10-year's ⋯ menu picks a maturity (Treasury yields, opening on the 10-year); the spreads' ⋯ menu
-  picks 10Y − 3M (the default) or 10Y − 2Y. Keren found the spreads hidden in the ⋯ menu and wanted to see them
-  under the 10-year, which overturns V688's one page with two menu groups. The 10-year opens Pressure because it
-  is considered the risk-free loan across the economy (V639). (V598, V639, V688, 0.9.16)
-- **Pressure is a leading sign.** The market's price of money moves before the activity it finances shows it.
-  (V597, V639)
+- **Circulation reads in the order cause runs: the rate the market charges and the spreads between its maturities,
+  then how fast money moves, then how much of it there is.** The rate is the cause; pulse and volume are what it
+  acts on. (V317, V639, 0.9.16)
+- **The policy rate goes by its official name, Federal funds rate; "hormones" is its word only in the analysis.** On
+  its page Keren wants the market's official terminology, which "hormones" is not (0.9.0); the metaphor belongs in
+  the analysis. The Diagnosis's "Hormones are …" left with its systems in 1.8.0. A hormone is a messenger secreted
+  on purpose that sets the tempo of everything downstream, which is the rate the Fed sets; the Insights lede keeps
+  that sentence. (V592, V683, 0.9.0, 1.8.0)
+- **The Treasury spreads are a reading of their own beside the US 10-year Treasury, never rows hidden in its ⋯
+  menu.** Keren found the spreads hidden in the ⋯ menu and wanted to see them under the 10-year, which overturns
+  V688's one page with two menu groups. The 10-year's ⋯ menu picks a maturity; the spreads' picks 10Y − 3M (the
+  default) or 10Y − 2Y. The 10-year opens Pressure because it is considered the risk-free loan across the economy
+  (V639). (V598, V639, V688, 0.9.16)
+- **Pressure is read as a leading sign, because the market's price of money moves before the activity it finances
+  shows it.** (V597, V639)
 - **Mood swings are Volatility: no separate mood-swing figure, and the VIX keeps the market's words (Calm,
   Elevated, Fearful).** The VIX already measures it, and Keren prefers market terminology. (V686)
-- **The yield spread is the Treasury spreads reading, under Pressure.** It left the mood reading because the curve
-  steepens when the Fed cuts into a crash, so its level does not sort mood (V685), and it became a reading of its
-  own in Pressure at Keren's choice. Its word, optimistic or pessimistic, is its figure's word and leads its
-  Insights. (V473, V598, V685, V688, 0.9.16)
+- **The yield spread is not a mood reading.** It left the mood reading because the curve steepens when the Fed cuts
+  into a crash, so its level does not sort mood (V685), and it became a reading of its own in Pressure at Keren's
+  choice. Its word, optimistic or pessimistic, is its figure's word and leads its Insights. (V473, V598, V685, V688,
+  0.9.16)
 - **The Senior Loan Officer Survey left Pressure by Keren's choice (kept at tag `v638-fewer-words`); don't
   bring it back without asking her.** (V639)
-- **In Valuations, Shiller CAPE comes before the Buffett indicator, and the page ends on its own evidence:
-  don't re-add "The number you hear quoted" or "What it is and is not"; the caveat stays behind More
-  details.** Keren set the order and removed both closing cards. (V365, V494)
+- **The Valuations page ends on its own evidence: don't re-add "The number you hear quoted" or "What it is and is
+  not"; the caveat stays behind More details.** Keren removed both closing cards. (V365, V494)
 - **Desire is consumer demand: real spending on durable goods (BEA's chain-type quantity index, FRED
   DDURRA3M086SBEA), year over year, monthly from 1960, read against zero only, in appetite words: High appetite
   above, Low appetite below.** Keren's Trello ticket defined desire as a want beyond need and demand as desire
@@ -893,9 +873,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   growth. Growth rather than durables' share of spending is Claude's call: the share drifts down for decades as
   goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The
   Risk/Reward grid, which needed the spread, went with it. (V709)
-- **Concentration risk is the ten largest S&P 500 companies' share of the index's market cap, read from SPY, under
-  Desire > Risk, against its record's own 1995–2025 average (22.8%), each year counted once.** Keren asked to
-  track the top-heavy weights of the S&P 500, and named it "Concentration risk" and its history "Top 10 Share of
+- **Concentration risk is the ten largest S&P 500 companies' share of the index's market cap, read from SPY, against
+  its record's own 1995–2025 average (22.8%), each year counted once.** Keren asked to track the top-heavy
+  weights of the S&P 500, and named it "Concentration risk" and its history "Top 10 Share of
   Market Cap" rather than "weight" (0.9.10). She chose "Import once": the quarter ends since 2019 Q3 are SPY's SEC
   N-PORT filings, downloaded once from her own computer (the SEC refuses GitHub's servers and the cloud
   allowlist) and kept in `series.json` by `tools/import-nport.js`; from then on the Backfill reads State Street's
@@ -920,35 +900,31 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   spending, so the app measures it by durable goods.** Keren chose the name over Consumer demand when Retail sales
   arrived, to keep apart what households spend in dollars and what they could do without. The series is
   unchanged. (0.9.7)
-- **Desire is a group of two cards, Discretionary spending (the durables reading above) and the Equity risk
-  premium, with Discretionary spending first and its figure as the group's preview.** Keren places the premium in
-  Desire because risk taking is connected to desire and demand for stocks; she chose "Group" over a ⋯ menu on
-  Desire's page, since a menu is for variants of one reading (Pressure's maturities), not two readings. Claude had
-  recommended Valuations; her placement stands. The premium is Robert Shiller's Excess CAPE Yield (the CAPE's
-  earnings yield less the real 10-year Treasury yield), monthly from 1928, from the workbook CAPE already comes
-  from, through the Backfill: the Fed model needs proprietary forward earnings that are themselves forecasts,
-  Damodaran's implied premium builds in projected growth, and a TIPS version begins only in 2003. Claude's calls,
-  for Keren to overturn: zero is the only line (stocks earning no more than bonds), the reading carries no word
-  until she sets where words begin (a thin premium is a strong appetite, so the scale runs backwards to Desire's),
-  its bars are green above zero and red below as a premium paid or not, its timing is Structural like the CAPE
-  whose yield it shares, and the two cards share Desire's flame. It stays out of the mood score, as Desire does,
-  and because valuations already count its earnings yield. (0.9.7, 1.1.0)
+- **The Equity risk premium is read as desire, since risk taking is connected to desire and demand for stocks; it is
+  a reading of its own, not a ⋯ menu variant.** Claude had recommended Valuations; her placement stands. She chose
+  "Group" over a ⋯ menu on Desire's page, since a menu is for variants of one reading (Pressure's maturities), not
+  two readings. The premium is Robert Shiller's Excess CAPE Yield (the CAPE's earnings yield less the real 10-year
+  Treasury yield), monthly from 1928, from the workbook CAPE already comes from, through the Backfill: the Fed model
+  needs proprietary forward earnings that are themselves forecasts, Damodaran's implied premium builds in projected
+  growth, and a TIPS version begins only in 2003. Claude's calls, for Keren to overturn: zero is the only line
+  (stocks earning no more than bonds), the reading carries no word until she sets where words begin (a thin premium
+  is a strong appetite, so the scale runs backwards to Desire's), its bars are green above zero and red below as a
+  premium paid or not, and its timing is Structural like the CAPE whose yield it shares. It stays out of the mood
+  score, as Desire does, and because valuations already count its earnings yield. (0.9.7, 1.1.0)
 - **Momentum is dropped: Mood has no Momentum card or page.** Keren found the momentum KPI not informative. The
   trend alarm against cash is gone from the Diagnosis too; the Diagnosis reads Momentum as it did before V672: the
   twelve-month change against zero, with Keren's 65% line splitting Euphoria from Optimism. (V672, V676, V677)
-- **Mood holds Confidence, the OECD's index for the United States, read against the OECD's own 100 line; card and
-  page are named Confidence, its history titled "OECD Consumer Confidence".** Keren asked to add the consumer
-  confidence index to Mood because it comes with its own threshold. The OECD scales it so 100 is the long-term
-  average: above is Confident, below is Pessimistic. Michigan's and the Conference Board's 100 are base years
-  (1966, 1985), not thresholds; Keren chose the OECD over Michigan on that ground. It trails the month it
-  describes by a few months. It is a leading sign, as consumer expectations are in the Conference Board's leading
-  index. (V679, V688)
-- **Weather holds the S&P 500 beside Temperature and Growth, read year by year as bull or bear, and the season in
-  the dial's centre opens it.** Keren wants pressing inflation to reach the Weather page with Temperature, Growth
-  and S&P 500, its Insights saying what the season means for bull and bear markets across the cycle's S&P 500
-  history. The card reads the dial's own yearly total returns, so a bull year is a positive year and a bear year a
-  negative one, with no band of ours. A past quarter or a closed cycle in the dial opens Indicators on that
-  quarter instead. (V680, V693, 0.8.9)
+- **Mood reads consumer confidence from the OECD's index for the United States, against the OECD's own 100 line.**
+  Keren asked to add the consumer confidence index to Mood because it comes with its own threshold. The OECD scales
+  it so 100 is the long-term average: above is Confident, below is Pessimistic. Michigan's and the Conference
+  Board's 100 are base years (1966, 1985), not thresholds; Keren chose the OECD over Michigan on that ground. It
+  trails the month it describes by a few months. It is a leading sign, as consumer expectations are in the
+  Conference Board's leading index. (V679, V688)
+- **The S&P 500 is read beside the season, year by year as bull or bear, and the season in the dial's centre opens
+  it.** Keren wants pressing inflation to reach the Weather page with Temperature, Growth and S&P 500, its Insights
+  saying what the season means for bull and bear markets across the cycle's S&P 500 history. The card reads the
+  dial's own yearly total returns, so a bull year is a positive year and a bear year a negative one, with no band of
+  ours. A past quarter or a closed cycle in the dial opens Indicators on that quarter instead. (V680, V693, 0.8.9)
 - **Weather is not in the Diagnosis's Analysis.** The cycle already shows it. The season stays in the Diagnosis's
   subtitle. (V680)
 
@@ -1189,9 +1165,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   the text ink, about the height of the title; the ⋯ is a round button with a hairline border, the same
   size.** Keren wanted the background smaller and brighter, and the icon with its background about as tall as
   the title beside it. (V520, V521)
-- **The Federal budget page's head wears the budget mark its card wears, and the page carries its timing chip
-  (Structural), like every other page.** Keren's call, which ends V518's wait for her to pick a mark. (V518,
-  V670)
+- **The Federal budget page's head wears its card's mark, and the page carries its timing chip like every other
+  page.** Keren's call, which ends V518's wait for her to pick a mark. (V518, V670)
 - **A history's note opens from its head's ⋯ menu, last in the menu, by convention; when the note is all the
   menu would hold, the head shows an (i) in the ⋯'s place that opens it directly.** The (i) spares a click.
   (V518, V522, V582, V593, 0.9.6)
@@ -1355,13 +1330,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   category's colour too, the category marks and the subcategory marks under them, so Labor and Output are
   olive under Activity: the colour tells a reader where they are. (V301, V302, V457, V490, V657, V661, 0.9.14,
   0.9.15)
-- **A reading wears its subcategory's mark: one mark per subcategory, declared once (`SUB_MARK` in the roster),
-  on the Vitals subcategory heading and on every history head in it; the history head's mark is grey in every
-  history component.** A history's icon must match its category's (the federal funds rate should wear
-  pressure's). The mark is the glyph alone, with no disc. Related readings may share a mark (Shiller CAPE and
-  the Buffett indicator wear one diamond), and V510's "no glyph twice" is retired. The per-reading glyphs no
-  subcategory uses were deleted. Money wears a heart, Keren's choice, which replaced Claude's ECG trace.
-  (V300, V449, V586, V657, V661, V668, 0.9.6, 0.9.16)
+- **A reading wears its subcategory's mark: one mark per subcategory, declared once (`SUB_MARK` in the roster), on
+  the subcategory heading and on every history head in it; the history head's mark is grey in every history
+  component.** A history's icon must match its category's. The mark is the glyph alone, with no disc. Related
+  readings may share a mark (Shiller CAPE and the Buffett indicator wear one), and V510's "no glyph twice" is
+  retired. The per-reading glyphs no subcategory uses were deleted. Money's heart is Keren's choice over Claude's
+  ECG trace. (V300, V449, V586, V657, V661, V668, 0.9.6, 0.9.16)
 - **A mark says which reading; a preview says how much; the two slots never swap jobs.** A ring in the mark
   slot took the glyph's job and left the preview untouched. (V585)
 - **One glyph, one function, called everywhere the mark appears.** A second declaration of the same function
@@ -1374,27 +1348,19 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A mark's proportions are measured at the size it is read, and a new mark is chosen by rendering its
   candidates together at 13, 15, 20, 27 and 42px.** At small sizes a mark closes into a scribble or a blob.
   (V457, V490, V510, V524)
-- **Each reading's mark.** Keren chose or drew each one. (V215, V301, V302, V314, V457, V490, V507, V510,
-  V524, V586, V639, V646, V661, V664)
-  - Growth: the SproutMark, a seedling out of the soil, built in the DSM on Keren's ask. (V215)
-  - Temperature: a thermometer. (V301)
-  - Valuations: a diamond (a brilliant cut, the girdle its one interior line), never the piggy bank; Shiller
-    CAPE and the Buffett indicator share it at Keren's request. (V302, V661)
-  - Circulation: a hollow drop, kept apart from Desire's flame by the flame's filled core. In this app
-    Circulation is blood. (V302, V507)
-  - Volume: Circulation's drop, given when the Search headings lost their icons. (V507, V646, V692)
-  - Pulse: the ECG trace, more representative of a pulse than a heart. (V524, V586)
-  - Unemployment rate: a person, head and shoulders, in Search and everywhere else. (V691)
-  - The cycle story: a book, left of its heading, today ("Optimism in Autumn") and on a past cycle ("Cycle
-    story"). (V691)
-  - Interest rates: a heart. (V688)
-  - Stress: Energy's bolt, given when the Search headings lost their icons. (V688, V692)
+- **Some marks keep a shape for a reason; don't bring back what they replaced.** Keren chose or drew each one.
+  (V215, V301, V302, V314, V457, V490, V507, V510, V524, V586, V639, V646, V661, V664)
+  - Valuations: never the piggy bank, which carried the verdict; Shiller CAPE and the Buffett indicator share one
+    mark at Keren's request. (V302, V661)
+  - Circulation: a hollow drop, kept apart from Desire's flame by the flame's filled core. In this app Circulation
+    is blood. (V302, V507)
+  - The cycle story: a book, left of its heading, today ("Optimism in Autumn") and on a past cycle ("Cycle story").
+    (V691)
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
-  - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index,
-    which the page no longer is. (V664)
-  - The categories (Weather, Circulation, Mood, Energy) carry no mark, in Search or on the Diagnosis headings;
-    the drop went to Volume and the bolt to Stress. Keren chose to remove the Diagnosis headings' marks too.
-    (V457, V490, V692)
+  - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index, which the
+    page no longer is. (V664)
+  - The categories carry no mark in Search or on the Diagnosis headings; Keren chose to remove the Diagnosis
+    headings' marks too. (V457, V490, V692)
 
 ### Cards and miniatures
 
@@ -1676,6 +1642,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   **Since 0.6.1 every release moves the last number, and the middle number moves only when Keren says so.**
   Versions had been moving too fast. `npm run bump major` refuses on 0.x; 1.0.0 is given exactly,
   `npm run bump 1.0.0`. (0.0.9, 0.6.1)
+- **A release gets its number when it merges, not when its branch starts.** Several threads work in parallel,
+  and numbering each at the start meant renumbering, re-merging and re-checking whenever another merged first.
+  A branch and its PR carry only the release's name; the merging session merges `main` in, bumps, checks and
+  squash-merges. (0.9.32)
 - **A version is recorded as a git tag and a GitHub Release, not a changelog file.** Keren asked for the GitHub
   convention; Claude recommended, and she accepted: Semantic Versioning, an annotated `vX.Y.Z` tag on each
   version's merge commit, and a GitHub Release built on that tag, its notes taken from the merge. The Tag workflow
