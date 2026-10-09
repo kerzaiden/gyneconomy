@@ -11,8 +11,8 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: |
           set +e
-          for u in https://data.nber.org/data/abc/ https://www.nber.org/research/data/tables-american-business-cycle ; do echo "== $u"; curl -sSL -m 30 "$u" | sed 's/<[^>]*>/ /g' | tr -s ' \n' | head -c 3000; echo; done
-          for t in "gross national product 1972 dollars" "gross national product nber" "real gnp quarterly 1919" "balke gordon"; do
-            echo "== FRED search: $t"
-            curl -s -m 30 "https://api.stlouisfed.org/fred/series/search?search_text=$(echo $t | sed 's/ /+/g')&api_key=$FRED_API_KEY&file_type=json&limit=40" | jq -r '.seriess[]? | [.id,.frequency_short,.observation_start,.observation_end,.title] | @tsv'
-          done
+          echo "== abc listing"; curl -sSL -m 30 -o abc.html -w '%{http_code} %{url_effective}\n' https://data.nber.org/data/abc/; grep -oi 'href="[^"]*"' abc.html | head -60
+          for f in abcq.xlsx abcq.xls abcq.txt abcq.csv; do echo "== $f $(curl -sSL -m 30 -o $f -w '%{http_code} %{size_download}' https://data.nber.org/data/abc/$f)"; done
+          ls -la abcq.* ; head -c 1500 abcq.txt 2>/dev/null; head -c 1500 abcq.csv 2>/dev/null
+          python3 -c "import pandas" 2>/dev/null && echo has pandas
+          for s in Q0896AUSQ240SNBR Q0860AUSQ027SNBR Q0860BUSQ027NNBR; do echo "== $s"; curl -s "https://api.stlouisfed.org/fred/series?series_id=$s&api_key=$FRED_API_KEY&file_type=json" | jq -r '.seriess[0] | .title, .units, .seasonal_adjustment, .notes'; done
