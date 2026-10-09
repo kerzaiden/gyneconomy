@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, gnpLevels, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, gnpLevels, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const { nportQuarter, reportQuarter, quarters, withKey } = require('../tools/import-nport.js');
 const J = t => JSON.parse(t);
 
@@ -116,16 +116,8 @@ ok('durable-goods spending is written as the app reads it',
    J(emit([], [], null, null, null, null, null, null, [{ m: '2026-08', v: 3.1 }])).durablesHistory, [{ m: '2026-08', v: 3.1 }]);
 ok('the equity risk premium is written as the app reads it',
    J(emit([], [], null, null, null, null, null, null, null, [{ m: '2026-08', v: 1.2 }])).premiumHistory, [{ m: '2026-08', v: 1.2 }]);
-ok('the Fed\'s moves are the discount rate, then the target, then its upper bound, netted by month',
-   fedMoves([{ date: '1950-07-01', v: 1.5 }, { date: '1950-08-01', v: 1.75 }],
-            [{ date: '1982-09-27', v: 10.25 }, { date: '1982-10-01', v: 9.5 }],
-            [{ date: '2008-12-16', v: 8.75 }, { date: '2015-12-17', v: 9 }]),
-   [{ m: '1950-08', v: 0.25 }, { m: '1982-10', v: -0.75 }, { m: '2008-12', v: -0.75 }, { m: '2015-12', v: 0.25 }]);
-ok('before 1950 the Fed\'s moves are the New York Fed\'s discount rate, with no move at the join',
-   fedMoves([{ date: '1950-01-01', v: 1.5 }], [], [], [{ date: '1929-07-01', v: 5 }, { date: '1929-08-01', v: 6 }, { date: '1949-12-01', v: 1.75 }]),
-   [{ m: '1929-08', v: 1 }, { m: '1949-12', v: -4.25 }]);
 ok('the New York Fed\'s discount rate is written as the app reads it',
-   J(emit([], [], null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [{ m: '1929-08', v: 6 }])).discountHistory, [{ m: '1929-08', v: 6 }]);
+   J(emit([], [], null, null, null, null, null, null, null, null, null, null, null, null, null, null, [{ m: '1929-08', v: 6 }])).discountHistory, [{ m: '1929-08', v: 6 }]);
 const shiller = [['Stock Market Data'], ['', '', '', '', 'Excess CAPE'], ['Date', 'P', 'E', 'CAPE', 'Yield'],
   [1927.12, 17.5, 1.1, 14, 0.04], [1928.01, 17.53, 1.11, 14.1, 0.0412], [1928.1, 20, 1.2, 16, -0.0051], [1928.11, 21, '', '', '']];
 ok('the Excess CAPE Yield is read from Shiller in percent, from its first month',
@@ -170,7 +162,7 @@ ok('FINRA margin debt is the debit balances column, oldest month first',
    [{ date: '2026-07-01', v: 1417225 }, { date: '2026-08-01', v: 1453832 }]);
 throws('a FINRA sheet without the debit balances is refused', () => marginRows([['Year-Month', 'Other'], ['2026-08', 1]]), /debit balances/);
 ok('the credit readings are written as the app reads them',
-   (({ delinquencyHistory, marginHistory, consumerCreditHistory }) => ({ delinquencyHistory, marginHistory, consumerCreditHistory }))(J(emit([], [], null, null, null, null, null, null, null, null, null, null, null,
+   (({ delinquencyHistory, marginHistory, consumerCreditHistory }) => ({ delinquencyHistory, marginHistory, consumerCreditHistory }))(J(emit([], [], null, null, null, null, null, null, null, null, null, null,
      { delinquency: [{ q: '2026 Q2', v: 1.42 }], margin: [{ m: '2026-08', v: 37.19 }], consumer: [{ m: '2026-08', v: 4.1 }] }))),
    { delinquencyHistory: [{ q: '2026 Q2', v: 1.42 }], marginHistory: [{ m: '2026-08', v: 37.19 }], consumerCreditHistory: [{ m: '2026-08', v: 4.1 }] });
 ok('Debt to the Penny gives the latest total, in billions',

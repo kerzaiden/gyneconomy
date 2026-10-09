@@ -6,7 +6,7 @@ import { potentialYoYHistory } from '../../src/js/history-fred.ts';
 import { marketCycles } from '../../src/js/data.ts';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
 import { seasonStripHtml } from '../../src/js/dial-cycle.ts';
-import { cyclePeak, fedPhases } from '../../src/js/fed-phases.ts';
+import { cyclePeak } from '../../src/js/fed-phases.ts';
 
 const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 'winter'];
 const STAGES = ['Despair', 'Depression', 'Hope', 'Optimism', 'Excitement', 'Thrill', 'Euphoria', 'Panic', 'Desperation', 'Fear', 'Denial', 'Anxiety'];
@@ -107,12 +107,6 @@ test('every cycle has a peak: its highest price reading once the decline it inhe
   assert.deepEqual(cyclePeak('1991-01', '2002-12'), { m: '1996-12', v: 3.38 });
 });
 
-test('the Fed\'s phases alternate, and today\'s move sets the open phase', () => {
-  const p = fedPhases();
-  p.slice(1).forEach((x, i) => assert.notEqual(x.s, p[i].s, x.m));
-  assert.deepEqual(p[p.length - 1], { m: '2026-09', s: 1 });
-});
-
 test('potential is the 1929–48 peak trend before CBO and CBO\'s last quarter after it, as the decisions say', () => {
   const first = potentialYoYHistory[0], last = potentialYoYHistory[potentialYoYHistory.length - 1];
   assert.equal(PEAK_TREND.toFixed(2), '3.46');
@@ -147,7 +141,7 @@ test('every cycle explains the phases under the chart and tells its rates story 
     const levels = [...host.querySelectorAll('.fp-plot .fp-level-tag')].map(t => t.textContent);
     assert.ok(levels.length && levels.every(t => /^\u2212?\d+%$/.test(t)), c.name + ' level labels ' + levels);
     const legend = [...host.querySelectorAll('.fp-legend li')].map(li => li.textContent).join('|');
-    assert.equal(legend, (c.to && c.to < 1954 ? 'Discount rates' : 'Interest rates') + '|Prices|Inflation', c.name + ' legend');
+    assert.equal(legend, (c.to && c.to < 1954 ? 'Discount rates' : 'Interest rates') + '|Prices|Peak', c.name + ' legend');
   }
   assert.equal(notes.size, 1);
 });
