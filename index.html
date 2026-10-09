@@ -574,7 +574,7 @@
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
     font-family:"Public Sans",sans-serif; -webkit-tap-highlight-color:transparent; }
   .dx-sys-head + .dx-year{ border-top:0; padding-top:4px; }
-  .dx-year:last-child, .dx-year:has(+ .dx-years-more[hidden]){ padding-bottom:0; }
+  .dx-year:last-child, .dx-year:has(+ .dx-years-foot[hidden]){ padding-bottom:0; }
   button.dx-year{ cursor:pointer; }
   button.dx-year:hover .dx-year-n, button.dx-year:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
   button.dx-year:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
@@ -856,8 +856,9 @@
   .more-row:focus-visible, .dx-years-more:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--round); }
   .more-row .peek-chev{ color:inherit; opacity:0.9; }
   .more-row .peek-chev svg{ width:8px; height:13px; stroke-width:1.9; }
-  .dx-years-more{ display:inline-flex; width:auto; margin-top:6px; }
-  .dx-years-more[hidden]{ display:none; }
+  .dx-years-more{ display:inline-flex; width:auto; margin-top:0; }
+  .dx-years-foot{ border-top:1px solid var(--border); padding-top:13px; }
+  .dx-years-foot[hidden]{ display:none; }
 
   #metric-page{ max-width:880px; margin:0 auto; width:100%;
     margin-top:calc(-1 * (var(--topbar-gap) + 2px)); }
@@ -47737,11 +47738,11 @@
   }
   var PREVIEW_YEARS = 3;
   function yearsMore(more) {
-    return '<button type="button" class="dx-years-more" aria-expanded="false"' + (more ? "" : " hidden") + "><span>View more</span></button>";
+    return '<div class="dx-years-foot"' + (more ? "" : " hidden") + '><button type="button" class="dx-years-more" aria-expanded="false"><span>View more</span></button></div>';
   }
   function wireYearsMore(host) {
     var btn = host.querySelector(".dx-years-more");
-    if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
+    if (btn && !btn.parentElement.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
   }
   function yearRow(year, lead, foot) {
     return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Elements" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
