@@ -552,19 +552,19 @@
   .fp-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:repeating-linear-gradient(90deg, var(--grid) 0 2px, transparent 2px 6px); }
   .fp-tight{ --wash:var(--accent-wash); } .fp-ease{ --wash:var(--good-wash); } .fp-band{ background:var(--wash); }
   .fp-years{ position:relative; height:16px; margin-top:4px; }
-  .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-label); color:var(--text-muted); }
+  .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:var(--text-muted); }
   .fp-line{ fill:none; stroke:var(--line); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.9; }
   .fp-peak-dot{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
-  .fp-tag{ position:absolute; height:14px; font-size:var(--type-label); line-height:14px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
-  .fp-level-tag{ text-align:left; font-size:calc(var(--type-label) - 2px); opacity:0.6; }
+  .fp-tag{ position:absolute; height:16px; font-size:var(--type-meta); line-height:16px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
+  .fp-level-tag{ text-align:left; font-size:var(--type-label); opacity:0.6; }
   .fp-peak-tag{ color:var(--text-secondary); }
   .fp-peak-dot.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
-  .fp-legend{ display:flex; flex-wrap:wrap; gap:6px 10px; margin:7px 0 0; padding:7px 0; list-style:none; border-top:1px solid var(--border); border-bottom:1px solid var(--border); font-size:var(--type-label); color:var(--text-secondary); }
+  .fp-legend{ display:flex; flex-wrap:wrap; gap:6px 10px; margin:7px 0 0; padding:7px 0; list-style:none; border-top:1px solid var(--border); border-bottom:1px solid var(--border); font-size:var(--type-meta); color:var(--text-secondary); }
   .fp-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
   .fp-legend li::before{ content:""; flex:none; }
   .fp-key-band::before{ width:11px; height:11px; border-radius:3px; background:var(--wash); }
   .fp-key-line::before{ width:12px; height:3px; border-radius:2px; background:var(--line); }
-  .fp-note{ margin:7px 0 0; font-size:var(--type-meta); line-height:1.5; color:var(--text-secondary); }
+  .fp-note{ margin:7px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
@@ -44484,14 +44484,14 @@
     grp.setAttribute("class", "hist-legend");
     grp.setAttribute("aria-hidden", "true");
     var fr = svg.querySelector(".bt-frame");
-    var INSET2 = 6, PLATE_H = 15, PAD_X = 6;
+    var INSET = 6, PLATE_H = 15, PAD_X = 6;
     var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
     var frRight = fr ? attrNum(fr, "x") + attrNum(fr, "width") : g.R;
-    var y = frTop + INSET2 + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
+    var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
     var plate = document.createElementNS(NS, "rect");
     plate.setAttribute("class", "chart-label-plate");
     plate.setAttribute("rx", "5");
-    plate.setAttribute("y", (frTop + INSET2).toFixed(1));
+    plate.setAttribute("y", (frTop + INSET).toFixed(1));
     plate.setAttribute("height", String(PLATE_H));
     grp.appendChild(plate);
     refs.forEach(function(r) {
@@ -44526,7 +44526,7 @@
       total += it.w;
     });
     total += GAP * (items.length - 1);
-    var x = Math.max(g.L + PAD_X, frRight - INSET2 - PAD_X - total);
+    var x = Math.max(g.L + PAD_X, frRight - INSET - PAD_X - total);
     plate.setAttribute("x", (x - PAD_X).toFixed(1));
     plate.setAttribute("width", (total + PAD_X * 2).toFixed(1));
     items.forEach(function(it) {
@@ -47891,7 +47891,7 @@
   }
   var VIEW_W = 1e3;
   var VIEW_H = 300;
-  var INSET = 36;
+  var ROOM = 1;
   var SIDE = 24;
   function monthPoints(list, from, to) {
     var sums = {};
@@ -47939,7 +47939,7 @@
     return out;
   }
   var TAG = {
-    h: 14,
+    h: 16,
     gap: 8,
     clear: 3,
     plotW: 300,
@@ -47984,20 +47984,32 @@
   }
   function peakTag(segs, px, py) {
     return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side2) {
-      return sideTag(px / VIEW_W, py / VIEW_H, 30, side2);
+      return sideTag(px / VIEW_W, py / VIEW_H, 36, side2);
     }), segs);
   }
-  function levelTags(segs, sc) {
-    var pts2 = curvePts(segs), y = sc.y;
+  function peakZone(px, py) {
+    var out = [], cx = px / VIEW_W * TAG.plotW, cy = py / VIEW_H * TAG.plotH;
+    for (var dx = -44; dx <= 44; dx += 4) for (var dy = -24; dy <= 24; dy += 4) out.push([ cx + dx, cy + dy ]);
+    return out;
+  }
+  function levelTags(segs, sc, bands, keep) {
+    var pts2 = curvePts(segs).concat(keep), y = sc.y;
     return ruleLevels(sc).map(function(v) {
-      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%", t = {
-        ax: 0,
-        ay: y(v) / VIEW_H,
-        w: 6 + 5 * text.length,
-        dx: 5,
-        dy: -TAG.h
-      };
-      return tagHits(t, pts2) ? "" : tagSpan("fp-level-tag", text, t);
+      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%", w = 6 + 6 * text.length;
+      var t = bands.filter(function(b) {
+        return b.w * TAG.plotW >= w + 10;
+      }).map(function(b) {
+        return {
+          ax: b.l,
+          ay: y(v) / VIEW_H,
+          w: w,
+          dx: 5,
+          dy: -TAG.h
+        };
+      }).filter(function(c) {
+        return !tagHits(c, pts2);
+      })[0];
+      return t ? tagSpan("fp-level-tag", text, t) : "";
     }).join("");
   }
   function pct(n) {
@@ -48008,22 +48020,22 @@
     var all = [].concat.apply([], lines).map(function(p) {
       return p.v;
     });
-    var min = Math.min.apply(null, all), hi = Math.max.apply(null, all);
+    var lo = Math.min.apply(null, all) - ROOM, hi = Math.max.apply(null, all) + ROOM;
     var step = GRID_STEPS.filter(function(s) {
-      return (hi - min) / s <= 5;
-    })[0] || 20, lo = Math.floor(min / step) * step;
+      return (hi - lo) / s <= 6;
+    })[0] || 20;
     return {
       lo: lo,
       hi: hi,
       step: step,
       y: function(v) {
-        return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / (hi - lo || 1));
+        return VIEW_H * (1 - (v - lo) / (hi - lo));
       }
     };
   }
   function ruleLevels(sc) {
-    var out = [], top = sc.hi + (sc.hi - sc.lo) * INSET / (VIEW_H - 2 * INSET);
-    for (var v = sc.lo; v <= top + 1e-9; v += sc.step) out.push(v);
+    var out = [];
+    for (var v = Math.ceil(sc.lo / sc.step) * sc.step; v <= sc.hi; v += sc.step) out.push(v);
     return out;
   }
   function rulesHtml(sc) {
@@ -48032,14 +48044,22 @@
       return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
     }).join("");
   }
-  function bandsHtml(phases, from, to, rules) {
-    var span = to - from + 1, bands = "";
+  function bandSpans(phases, from, to) {
+    var span = to - from + 1, out = [];
     phases.forEach(function(p, k) {
       var a = Math.max(monthIdx(p.m), from), b = k + 1 < phases.length ? monthIdx(phases[k + 1].m) : to + 1;
-      if (b <= from || a > to) return;
-      bands += '<span class="fp-band ' + stanceClass(p) + '" style="left:' + pct((a - from) / span) + ";width:" + pct((Math.min(b, to + 1) - a) / span) + '">' + rules + "</span>";
+      if (b > from && a <= to) out.push({
+        l: (a - from) / span,
+        w: (Math.min(b, to + 1) - a) / span,
+        cls: stanceClass(p)
+      });
     });
-    return bands;
+    return out;
+  }
+  function bandsHtml(bands, rules) {
+    return bands.map(function(b) {
+      return '<span class="fp-band ' + b.cls + '" style="left:' + pct(b.l) + ";width:" + pct(b.w) + '">' + rules + "</span>";
+    }).join("");
   }
   function stanceClass(p) {
     return p.s > 0 ? "fp-tight" : "fp-ease";
@@ -48049,7 +48069,7 @@
     for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + "</span>";
     return out;
   }
-  function plotSvg(lines, from, to, peak, open) {
+  function plotSvg(lines, from, to, peak, open, bands) {
     var span = to - from + 1, sc = levelScale(lines), y = sc.y;
     var x = function(i) {
       return SIDE + (i - from + .5) / span * (VIEW_W - 2 * SIDE);
@@ -48060,7 +48080,7 @@
     var paths = [ "fp-prices", "fp-rate" ].map(function(cls, k) {
       return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>';
     }).join("");
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(segs, sc) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(segs, sc, bands, peak ? peakZone(x(peak.i), y(peak.v)) : []) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
   }
   function rateSeries(toM) {
     return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
@@ -48082,13 +48102,13 @@
     return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
   }
   function fedPhasesCard(m) {
-    var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
+    var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), bands = bandSpans(fedPhases(), from, to);
     var peak = cyclePeak(fromM, toM);
     var lines = [ monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to) ];
     var top = peak ? lines[0].filter(function(p) {
       return Math.floor(p.i / 3) === Math.floor(monthIdx(peak.m) / 3);
     })[0] || null : null;
-    return '<div class="fp-plot">' + bandsHtml(phases, from, to, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + legendHtml() + footnoteHtml(m, peak);
+    return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + legendHtml() + footnoteHtml(m, peak);
   }
   function fedEnvironment(m) {
     return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
