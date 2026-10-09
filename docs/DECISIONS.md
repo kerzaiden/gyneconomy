@@ -791,8 +791,8 @@ settles it; none is open after V668.
   Spring). The trend is the series' own because Balke and Gordon's 1972 dollars grow more slowly than BEA's
   chained dollars over the war; against BEA's 3.46%, a boom quarter (1935 Q2, +2.2%) read as contraction.
   Measured first: 17 quarters of 1928–47 change season, 1937 reads Summer, Summer, Summer, then
-  Late Autumn and Winter through 1938 Q3, 19 of the 21 NBER recession quarters fall in contraction, and the
-  first season is 1928 Q4, when twelve months of prices are in. From 1948 Q1 every quarter is BEA's, against the
+  Late Autumn and Winter through 1938 Q3, 19 of the 21 NBER recession quarters fall in contraction. Prices are
+  read from January 1927 so that 1928 Q1 has its twelve months (Keren). From 1948 Q1 every quarter is BEA's, against the
   peak trend until 1950 and CBO's potential after. (V690; 0.8.0; New Deal II)
 - **Before BEA's annual growth (1930), growth is MeasuringWorth's real GDP (Johnston and Williamson), joined to
   BEA at 1930, so the Great Depression Cycle has a season in every year from 1928.** Keren chose "Extend GDP"
