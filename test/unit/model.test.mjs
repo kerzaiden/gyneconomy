@@ -131,7 +131,7 @@ test('a reading past the band never prints as the band\'s edge', () => {
   assert.deepEqual([3.04, 2.96, 3.4, 0.96, 1.04, -0.04, -1.26].map(inflationFigure), ['3.04', '3.0', '3.4', '0.96', '1.0', '0.0', '\u22121.3']);
 });
 
-test('every cycle explains the phases under the chart and tells its rates story with its peak month read from the record, Peak and the levels labelled on the plot', async () => {
+test('every cycle explains the phases under the chart and tells its rates story with its peak month read from the record, the peak a strip, the levels labelled and the rate named for its series', async () => {
   const { fedEnvironment, ratesStory } = await import('../../src/js/fed-phases.ts');
   const host = document.createElement('div');
   const notes = new Set();
@@ -143,10 +143,11 @@ test('every cycle explains the phases under the chart and tells its rates story 
     notes.add(note.textContent);
     const story = ratesStory(c);
     assert.ok(story.length > 40 && !/[{}]/.test(story), c.name + ' story');
-    assert.equal(host.querySelectorAll('.fp-plot .fp-peak-tag').length, 1, c.name + ' peak label');
+    assert.equal(host.querySelectorAll('.fp-plot .fp-strip').length, 1, c.name + ' peak strip');
     const levels = [...host.querySelectorAll('.fp-plot .fp-level-tag')].map(t => t.textContent);
     assert.ok(levels.length && levels.every(t => /^\u2212?\d+%$/.test(t)), c.name + ' level labels ' + levels);
-    assert.ok(!/Peak/.test(host.querySelector('.fp-legend').textContent), c.name + ' legend');
+    const legend = [...host.querySelectorAll('.fp-legend li')].map(li => li.textContent).join('|');
+    assert.equal(legend, (c.to && c.to < 1954 ? 'Discount rates' : 'Interest rates') + '|Prices|Inflation', c.name + ' legend');
   }
   assert.equal(notes.size, 1);
 });
