@@ -44,7 +44,7 @@
     --tm-coin-wash: color-mix(in srgb, var(--ylm-5y) 34%, var(--surface));
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
-    --seg-track: #f6f5f5; --seg-on: #ffffff;
+    --seg-track: #f6f5f5; --seg-on: #ffffff; --shade: var(--seg-track);
     --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
     --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
     --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
@@ -90,7 +90,7 @@
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
-      --seg-track: #271921; --seg-on: #4a3540;
+      --seg-track: #271921; --seg-on: #4a3540; --shade: #3f3038;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
@@ -135,7 +135,7 @@
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
-      --seg-track: #271921; --seg-on: #4a3540;
+      --seg-track: #271921; --seg-on: #4a3540; --shade: #3f3038;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
@@ -534,11 +534,12 @@
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
   .fp .rangebar{ margin:14px 0 4px; }
+  .wave-plot, .wave-legend{ --band:var(--shade); }
   .wave-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); }
   .wave-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 11px); }
   .wave-clip{ position:absolute; inset:0; overflow:hidden; border-radius:11px; }
   .wave-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:color-mix(in srgb, var(--grid) 70%, transparent); }
-  .wave-band{ position:absolute; top:0; bottom:0; background:linear-gradient(180deg, color-mix(in srgb, var(--band) 20%, transparent), color-mix(in srgb, var(--band) 6%, transparent)); }
+  .wave-band{ position:absolute; top:0; bottom:0; background:linear-gradient(180deg, var(--band), color-mix(in srgb, var(--band) 50%, transparent)); }
   .wave-area{ stroke:none; }
   .wave-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .wave-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
   .wave-line{ fill:none; stroke:var(--line); stroke-width:1.6; opacity:0.85; stroke-linecap:round; stroke-linejoin:round; }
@@ -552,7 +553,7 @@
   .wave-legend li::before{ content:""; flex:none; }
   .wave-key-blank::before, .wave-key-band::before{ width:9px; height:9px; border-radius:3px; box-sizing:border-box; }
   .wave-key-blank::before{ border:1px solid var(--border-strong); background:var(--surface); }
-  .wave-key-band::before{ background:color-mix(in srgb, var(--band) 20%, transparent); }
+  .wave-key-band::before{ border:1px solid var(--border-strong); background:var(--band); }
   .wave-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
   .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .learn-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
@@ -1249,7 +1250,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.53 (824)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.55 (826)</span></p>
     </div>
   </div>
 
@@ -48169,6 +48170,9 @@
   function lineTone(color) {
     return "--line:var(--" + color + ")";
   }
+  function bandTone(band) {
+    return band ? ' style="--band:var(--' + band + ')"' : "";
+  }
   function monthPoints(list, from, to) {
     var at = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out = [];
     list.forEach(function(d) {
@@ -48304,10 +48308,10 @@
     var lines = o.series.map(function(s) {
       return monthPoints(s.list, o.from, o.to);
     }), sc = levelScale(lines);
-    return '<div class="wave-plot" style="--band:var(--' + (o.band || "normal") + ')"><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + "</span>" + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + "</div>" + axisHtml(o.from, o.to, o.open);
+    return '<div class="wave-plot"' + bandTone(o.band) + '><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + "</span>" + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + "</div>" + axisHtml(o.from, o.to, o.open);
   }
   function waveLegend(keys, band) {
-    return '<ul class="wave-legend" style="--band:var(--' + (band || "normal") + ')">' + keys.map(function(k) {
+    return '<ul class="wave-legend"' + bandTone(band) + ">" + keys.map(function(k) {
       return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + ">" + k.name + "</li>";
     }).join("") + "</ul>";
   }
@@ -50695,6 +50699,8 @@
     buildPortfolio();
   }
   var PULSE_BEATS = 5;
+  var PULSE_VIEW = 4;
+  var PULSE_PEEK = .4;
   var PULSE_FENCE = 1.5;
   var PULSE_FAR = 3;
   var PULSE_GUTTER = 10;
@@ -50783,7 +50789,7 @@
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
     var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-    var F = histFrame(Wpx), sq = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / rows), full = rows * h;
+    var F = histFrame(Wpx), sq = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / (rows > PULSE_VIEW ? PULSE_VIEW + PULSE_PEEK : rows)), full = rows * h;
     var X = function(q) {
       return L + (R - L) * q / 4;
     }, out = [], body = [ stripPaper(L, R, T, T + full, h) ];

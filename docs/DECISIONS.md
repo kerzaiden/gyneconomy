@@ -1035,11 +1035,12 @@ settles it; none is open after V668.
   date column widened to fit it, the year a type step larger and darker so the velocity does not compete with it
   (the label size is already the scale's smallest); each strip's dividing line runs through that column so every
   year reads as its own row; a strip is three squares of the paper tall, since two left no air; each strip's baseline sits exactly in the middle of its three squares, and its tallest beat reaches the strip's edge without crossing it; the chart is never taller than
-  every history's height (Keren: Max ran too long to see the reading when a year was tapped), so about five years show at a
-  time and the strips scroll under the pinned reading and quarter axis, a fade at the bottom showing more below; a window of
-  fewer years (the current cycle's four) keeps the full height and stretches its strips to fill it, each beat
-  centred on its strip and grown in proportion to it, since a chart cut short to its years looked too short and the
-  extra room should make the beats more visible (Keren, reversing 0.9.36, where the chart shrank to its years). The windows are 5Y, 10Y, 25Y and Max; Max starts at 1959 Q1,
+  every history's height (Keren: Max ran too long to see the reading when a year was tapped), so four years and a sliver of the fifth show at a
+  time (the sliver says there is more, Keren) and the strips scroll under the pinned reading and quarter axis, a fade at the bottom showing more below; every
+  window spaces its strips as the current cycle's four fill the frame, each beat centred on its strip and grown in
+  proportion to it, and a window of fewer years stretches them further to fill the height, since a chart cut short to
+  its years looked too short and the room makes the beats more visible (Keren, reversing 0.9.36, where the chart
+  shrank to its years; the spacing extended to every window after she saw it on the current cycle). The windows are 5Y, 10Y, 25Y and Max; Max starts at 1959 Q1,
   the first quarter of the Fed's M2 (FRED M2V), and the cycle picker starts at 1963 because the 1958–1962 cycle
   opens before the data. The earlier EKG histories (scrolling strip, Holter report, Apple Health-style
   ECG) stay dropped. (0.9.25)
@@ -1596,8 +1597,9 @@ settles it; none is open after V668.
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates card is a feel, not a measure, dressed as her Clair hormone chart: the Fed's rate as a
   soft yellow area behind and prices as an orange line with a translucent fill in front, on a white ground
-  inside a light grey border (`--border`) that contains the colours, tightening shaded in zebra bands of apricot
-  (`--normal`, as faint as still reads against white, fading downward) and easing left white, the bands behind the
+  inside a light grey border (`--border`) that contains the colours, tightening shaded in zebra bands of grey
+  (`--shade`: the app's one grey in light, as light as still reads against white; a lighter grey in dark, where the one
+  grey sat too close to the card to tell tightening from easing; fading downward) and easing left white, the bands behind the
   guide rules and the curves so they never cover a line; above it, only a thin 1Y · 5Y · Cycle bar, with the same space above it as below. The large figure of today's
   target range that once sat above the bar was removed: it did not say what it was (Keren, Oct 9, 2026).
   The chart is the app's one wave chart, a component any later chart of month series over bands reuses (Keren,
@@ -1613,8 +1615,8 @@ settles it; none is open after V668.
   market lives in and prices act in front of them, so the trend and the two lines' relation matter more than exact
   values (Keren, Oct 9, 2026). The phases went from pink and green grounds to dashed lines at each turn, to a single
   strip at the cycle's last hike before cuts, and back to bands: the strip told Keren nothing she could see in the
-  chart, and side by side the apricot bands read the Fed's moves against prices more plainly than the lines,
-  in the app's own colour (Oct 9, 2026). No phase line sits under the chart, since "easing since" misread a cycle the Fed reversed
+  chart, and side by side the bands read the Fed's moves against prices more plainly than the lines (Oct 9, 2026).
+  The bands were apricot first; Keren then chose the lightest grey (Oct 9, 2026). No phase line sits under the chart, since "easing since" misread a cycle the Fed reversed
   more than once. Growth is the other half of the season and the dial already shows it; the
   cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. A phase is
   the direction of the Fed's last move (Jensen, Mercer & Johnson, 1996), so a pause stays on
@@ -1624,7 +1626,7 @@ settles it; none is open after V668.
   the inflation peak and then at the Fed's last hike before cuts, and both gave way to the bands; the peak stays in the cycle's rates
   story. The axis ends in Today, or the close's month, so no Current pill or end dot
   is needed. Under the axis, one centred grey legend on one line, read in this order: Easing (a blank square
-  in a light grey border, since easing is not always the default), Tightening (an apricot square), Rates, Prices
+  in a light grey border, since easing is not always the default), Tightening (a grey square in the same border), Rates, Prices
   (short lines in their colours). "Rates" stands for the federal funds rate and, before it, the discount rate, to
   save room. Under it, one explanation of tightening and easing on the app's one grey, the same on every
   cycle. Each cycle's rates story, one or two short lines on what the
