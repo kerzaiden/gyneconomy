@@ -98,15 +98,18 @@ settles it; none is open after V668.
 - **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
   inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, Lighter
   Cycle Pages)
-- **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
-  is told inside the AI Insights page's first container.** The narrative belongs to AI Insights. A closed cycle,
-  which has no AI Insights, keeps its story above Cycle analysis. Keren wanted a sophisticated analysis of the
+- **Every cycle page carries AI Insights above Cycle Analysis, the open cycle and every closed one, and the cycle's
+  story is told inside the AI Insights page's first container.** The narrative belongs to AI Insights. A closed
+  cycle once had none, which left what the app knows about a past cycle (its narrative, its rates, its risks) with
+  nowhere to be read together; a closed cycle's door and lede are its `blurb`, the longer narrative, so its two
+  cards do not repeat the three-line story (Cycle Insights). Keren wanted a sophisticated analysis of the
   cycle's narrative, the economy and the market, not three pass scores, and named it "AI Insights". It is a door
   like the story (three lines, maybe three dots, then a chevron) opening an AI Insights page with one container per
   chapter. Claude writes it: Keren chose "Claude, dated" over a live Generate button, which would change the
   artifact's grant, and over rule-built sentences, which the name would oversell. It holds a lede, The economy and
   The market, dated "Written by Claude from the app's data of …", its figures read live and its words rewritten each
-  release. Its Closest moments are computed: the last two years of today's eight market and economy readings matched
+  release; those two chapters, the by-line and Closest moments are about today, so they stand on the open cycle only,
+  and a closed cycle's page is its narrative, its rates and its risks. Its Closest moments are computed: the last two years of today's eight market and economy readings matched
   against every two-year run since 1970 (analog matching on a path; the readings, equal weights and window are
   Claude's), one moment per episode, with its season and mood then, what is alike and what is apart. Resemblance
   only, never what followed. The match reads the path that led there because one quarter alone put COVID-19's 2021
@@ -1461,13 +1464,12 @@ settles it; none is open after V668.
 - **A cycle page is AI Insights, Cycle Analysis, Year by Year; Interest Rates Environment stands on Analysis
   only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis. Cycle Analysis
   is the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that cycle, and
-  its Learn more opens the Federal funds rate on that same cycle. Past cycles have no AI Insights yet, so theirs
-  is the one card missing until they do. (0.6.17, Lighter Cycle Pages)
+  its Learn more opens the Federal funds rate on that same cycle. (0.6.17, Lighter Cycle Pages, Cycle Insights)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   A change once reached only today's page, because the Diagnosis branched on whether the cycle was open and the
   browser suite expected the past cycle's old layout. The page is one sequence (AI Insights, Cycle Analysis, Year by
-  Year), and a unit test fails if any closed cycle's page differs in shape from today's, AI Insights aside until
-  past cycles have it. (0.6.13, 0.6.17, Lighter Cycle Pages)
+  Year), and a unit test fails if any closed cycle's page differs in shape from today's. (0.6.13, 0.6.17, Lighter
+  Cycle Pages, Cycle Insights)
 - **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Titles were a mix of dark
   purple and black, and should be consistent; Interest Environment and Year by Year lost their small black
   capitals. (0.6.13)
@@ -1593,8 +1595,9 @@ settles it; none is open after V668.
   on most phones. Under the years, one legend at the years' size, between a top and a bottom rule (as in Insights) and set left with
   tight gaps: Tightening, Easing, Rates, Prices. Under it, one explanation of the phases, the same on every cycle, as
   her tracker explains what each phase of a cycle does. Each cycle's rates story, one or two short lines on what the
-  rates did (`rates` in `marketCycles`), is the first Insight on the Federal funds rate page for the cycle on screen,
-  so the card teaches the pattern and the page tells the cycle (0.9.44); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
+  rates did (`rates` in `marketCycles`), is the Interest Rates container in that cycle's AI Insights, after its
+  narrative: the card teaches the pattern and AI Insights tells the cycle, beside the rest of the cycle's reading,
+  while the Federal funds rate page reads the rate across every cycle (0.9.44, Cycle Insights); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
   discount rate; the phases follow the rate alone, so a tightening made another way (the doubling of reserve
   requirements in 1936–37) does not show. A low peak is still a peak: where prices topped in a calm cycle tells

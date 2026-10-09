@@ -373,9 +373,9 @@ manifest's.
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `activity` (the growth gap, nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
-  `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `pulse-strips` (the Pulse history: one EKG strip per year, 0.9.25), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers), `fed-phases` (the Fed's phases on Analysis, and each cycle's story on the Federal funds rate page),
+  `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `pulse-strips` (the Pulse history: one EKG strip per year, 0.9.25), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers), `fed-phases` (the Fed's phases on Analysis, and each cycle's rates story),
   `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
-  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
+  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: every cycle's narrative, rates and risks; on the open cycle, Claude's dated reading and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -632,13 +632,15 @@ emotion at the closing month, its years, and what followed a year later. Every l
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
   1914 to 1954-06) before. The note under the legend is the cycle's `rates` story with `{peak}` and `{month}` filled
   from `cyclePeak`, so the words are written once and the figures are the record's.
-- **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines with the health
-  score under it (`cycleScore`, Cycle Statistics' one box; the open cycle has no Cycle Statistics card), opening the
-  page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): one `trendBox` per chapter (the cycle's name,
-  holding the summary with the cycle's story in it, then
-  The economy, The market, Risk factors, Closest moments), then the byline and More details. The chapters after the summary carry a
+- **AI Insights** (0.6.5, Cycle Insights, `ai-insights`): every cycle page's first door (`aiInsights(m)`), its lede
+  clamped to three lines (Claude's on the open cycle, the cycle's `blurb` on a closed one) with the health score
+  under it (`cycleScore`), opening the page `sheet-ai-insights` (built by `buildAiPage`, drawn on open). Rendering
+  the door records its cycle (`shownModel`) and the page draws that cycle: one `trendBox` per chapter (the cycle's
+  name, holding the summary, then Interest Rates with the cycle's `ratesStory`, then on the open cycle only The
+  economy and The market, then Risk factors, then on the open cycle only Closest moments, the byline and More
+  details, all of which are about today). The chapters after the summary carry a
   picture drawn from the readings: Risk factors takes every result Cycle Statistics reads as Risk (`riskLabs`, the one
-  judgement) and places each reading's latest value against its own record (`rankToDate`); The economy and The market draw
+  judgement) and places each against its own record (`rankToDate`): today's latest value against all of it on the open cycle, a closed cycle's value against the record to its end; The economy and The market draw
   `colPeek` tiles of the last twelve quarters for the readings in `tiles`; each closest moment draws its two-year season
   strip then and now. Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
   them is a `{token}` that `figures` maps to a Cycle analysis lab, so the card prints the open cycle's figure from
@@ -687,13 +689,12 @@ emotion at the closing month, its years, and what followed a year later. Every l
   (`premiumFromRows`) from the workbook `shillerSheet` already fetches for the S&P 500. Shiller publishes it as a
   fraction; the reader refuses a figure that is not one rather than guess the scale. It has no word, so its tag is
   empty and the row draws no pill. Like the other Shiller and FRED histories it lands by running the Backfill.
-- **One cycle, one card** (0.6.17): `diagnosisHtml` is one sequence for every cycle, open or closed, and the only
-  branch is inside `cycleCard`, which picks what the card opens; the unit test "every cycle page, open or closed, is
+- **One cycle, one card** (0.6.17, Cycle Insights): `diagnosisHtml` is one sequence for every cycle, open or closed,
+  with no branch; the unit test "every cycle page, open or closed, is
   built in one shape" compares each closed cycle's containers and their children with today's (the peak mark and
-  the year rows, which vary with the data, aside). Under the Fed's phases the Diagnosis has one card, then Year by Year. Today's is
-  AI Insights (`aiInsights`); a closed cycle's is Cycle Statistics (`chartDoor`): the cycle's `story` from
-  `marketCycles`, clamped to three lines like the AI Insights lede, and its health score, jumping to the Analysis tab
-  set to that cycle. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
+  the year rows, which vary with the data, aside). The Diagnosis is AI Insights (`aiInsights(m)`), Cycle Analysis
+  (`chartDoor`: the cycle's `story` from `marketCycles`, clamped to three lines, and its health score, jumping to the
+  Analysis tab set to that cycle), then Year by Year. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
   hub opens on Indicators (Weather).
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's button opens it (`hubOpen`'s `cat`, on the current quarter) while the dial shows today; a parked
