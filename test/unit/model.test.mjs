@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors } from './dom.mjs';
-import { cycleModel, cycleReturns, cycleStory, diagnoseToday, inflationFigure, moodTrack, moodToday, PEAK_TREND, potentialOf, recessionRecord } from '../../src/js/model.ts';
+import { cycleModel, cycleReturns, cycleStory, diagnoseToday, GNP_TREND, inflationFigure, moodTrack, moodToday, PEAK_TREND, potentialOf, recessionRecord } from '../../src/js/model.ts';
 import { potentialYoYHistory } from '../../src/js/history-fred.ts';
 import { marketCycles } from '../../src/js/data.ts';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
@@ -117,9 +117,14 @@ test('potential is the 1929–48 peak trend before CBO and CBO\'s last quarter a
   const first = potentialYoYHistory[0], last = potentialYoYHistory[potentialYoYHistory.length - 1];
   assert.equal(PEAK_TREND.toFixed(2), '3.46');
   assert.deepEqual([first.q, potentialOf('1949 Q4'), potentialOf(first.q), potentialOf('2099 Q1')], ['1950 Q1', PEAK_TREND, first.v, last.v]);
-  const years = new Set();
-  for (const c of marketCycles) for (const s of cycleModel(c).track) if (s.reading.annual && s.reading.regime === 'contraction') years.add(s.reading.gdpLatest.q);
-  assert.deepEqual([...years].sort(), ['1928', '1930', '1931', '1932', '1933', '1938', '1945', '1946', '1947']);
+});
+
+test('before 1948 a season is read every quarter from Balke and Gordon\'s GNP, against its own 1929–48 trend', () => {
+  assert.equal(GNP_TREND.toFixed(2), '2.34');
+  const seasons = {};
+  for (const c of marketCycles) for (const s of cycleModel(c).track) seasons[s.q] = s.reading.season;
+  assert.deepEqual(['1937 Q1', '1937 Q2', '1937 Q3', '1937 Q4', '1938 Q1'].map(q => seasons[q]), ['summer', 'summer', 'summer', 'lateautumn', 'winter']);
+  assert.deepEqual([Object.keys(seasons).filter(q => q < '1948 Q1').length, Object.keys(seasons).sort()[0]], [80, '1928 Q1']);
 });
 
 test('a reading past the band never prints as the band\'s edge', () => {

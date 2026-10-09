@@ -176,5 +176,5 @@ export function buildAiPage(home: HTMLElement){
   sheetRenderers[AI_PAGE] = function(){ sheet.innerHTML = aiPage(); };
 }
 export function aiInsights(){
-  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(AI.lede), "ai-clamp") + cycleScore(nowModel));
+  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(AI.lede), "ai-clamp"));
 }
