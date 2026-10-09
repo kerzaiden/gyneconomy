@@ -556,7 +556,7 @@
   .wave-key-band::before{ border:1px solid var(--border-strong); background:var(--band); }
   .wave-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
   .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
-  .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
+  .learn-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
@@ -890,7 +890,6 @@
   .home-secs{ display:flex; flex-direction:column; gap:var(--gap); }
   .home-secs > *{ margin-top:0; margin-bottom:0; }
   .home-secs > .lab-sec + .lab-sec{ margin-top:0; }
-  span.lab-score-box{ display:block; margin-top:12px; }
   .lab-score-box .lab-ring circle{ stroke:var(--border); }
   .lab-score-box .lab-ring circle.on{ stroke:var(--normal); }
   .lab-score-box .lab-score{ margin:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
@@ -1251,7 +1250,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.55 (826)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.56 (827)</span></p>
     </div>
   </div>
 
@@ -1679,6 +1678,9 @@
   }
   function trendJump(attrs, mark2, head, body) {
     return trendCard("button", "", ' type="button"' + attrs, mark2, head, "", body);
+  }
+  function learnMore(attrs) {
+    return attrs ? '<button type="button" class="learn-more"' + attrs + ">Learn more</button>" : '<span class="learn-more">Learn more</span>';
   }
   function trendBox(mark2, head, body) {
     return trendCard("section", " is-box", "", mark2, head, "", body);
@@ -48401,7 +48403,7 @@
   var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
   function footnoteHtml(m) {
     var rate = ROSTER_BY["sheet-sign-hormones"];
-    return '<p class="fp-note">' + PHASES + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '">Learn more' + CHEV + "</button></p>";
+    return '<p class="fp-note">' + PHASES + " " + learnMore(' data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '"') + "</p>";
   }
   function ratesStory(c) {
     var m = c.ongoing ? nowModel : cycleModel(c), peak = cyclePeak(c.from + "-01", endMonthOf(m));
@@ -48967,9 +48969,6 @@
     var n = normOf(pastScores());
     return v >= n.lo ? "Normal" : v >= n.floor ? "Attention" : "Risk";
   }
-  function scoreBox(i) {
-    return healthTile(i, "span");
-  }
   function scoreRing(v, label) {
     return '<span class="lab-score-v">' + ring(v) + label + "</span>";
   }
@@ -49196,7 +49195,7 @@
   }
   function chartDoor(m) {
     var i = marketCycles.indexOf(m.era);
-    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(m.era.story, "ai-clamp") + scoreBox(i));
+    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(m.era.story, "ai-clamp") + learnMore());
   }
   var HOME_ID = "chart-home";
   function statRow(name, v, of, side2, page2, cls, text) {
@@ -49204,8 +49203,8 @@
     var c = " stat-row" + (cls ? " " + cls : "");
     return page2 ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page2) + '"', inner) : scoreTile("span", c, "", inner);
   }
-  function statBody(lead, main, side2, still) {
-    return lead + '<span class="stat-main">' + main + "</span>" + (side2 == null ? "" : '<span class="stat-side">' + side2 + (still ? "" : CHEV) + "</span>");
+  function statBody(lead, main, side2) {
+    return lead + '<span class="stat-main">' + main + "</span>" + (side2 == null ? "" : '<span class="stat-side">' + side2 + CHEV + "</span>");
   }
   function yearsText(v) {
     return yearsWord(v) + (Math.round(v * 4) === 4 ? " year" : " years");
@@ -49254,11 +49253,8 @@
     }[scoreTier(v)];
   }
   function healthRow(i) {
-    return healthTile(i, "div");
-  }
-  function healthTile(i, tag) {
-    var v = score(i).v, k = healthTone(v), side2 = mark(" " + k[0], scoreTier(v));
-    return "<" + tag + ' class="lab-score-box">' + (tag === "div" ? statRow("Health Score", v, 100, side2, healthPage(i), k[1], String(v)) : scoreTile("span", " stat-row " + k[1], "", statBody(scoreRing(v, ""), "<small>Health Score</small><b>" + v + "</b>", side2, true))) + "</" + tag + ">";
+    var v = score(i).v, k = healthTone(v);
+    return '<div class="lab-score-box">' + statRow("Health Score", v, 100, mark(" " + k[0], scoreTier(v)), healthPage(i), k[1], String(v)) + "</div>";
   }
   function cycleBars(vs, cls, at, label) {
     var F = histFrame(), W = F.W, H = F.B - F.T, top = Math.max.apply(null, present(vs)), bw = W / vs.length;
@@ -49830,7 +49826,7 @@
   }
   function aiInsights(m) {
     shownModel = m;
-    return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp"));
+    return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp") + learnMore());
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",

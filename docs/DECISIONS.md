@@ -305,13 +305,15 @@ settles it; none is open after V668.
   indicator, Federal debt and Federal budget each have their own; the two Treasury spreads
   (10Y − 3M, 10Y − 2Y) stay one page, which Keren saw no need to split, and the US 10-year Treasury stays one card
   with its maturity picker. (V254, V658)
-- **The door from Interest Rates to the Federal funds rate page is an inline "Learn more ›" after the
+- **The door from Interest Rates to the Federal funds rate page is an inline "Learn more" after the
   card's text, on Analysis, where it lands on the cycle Analysis shows.** Reading is what makes one want
-  to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished. (0.9.1,
-  0.9.40, 0.9.43, 0.9.44, 0.9.46)
+  to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished, and
+  one beside the words is redundant. (0.9.1, 0.9.40, 0.9.43, 0.9.44, 0.9.46, Learn More Links)
 - **A card that opens a page when tapped anywhere carries no chevron: AI Insights and Cycle Analysis on every
   cycle page, and every other card built the same way.** The whole container is the door, so a chevron on its head
-  says nothing the card does not already do. (Chevronless Cards)
+  says nothing the card does not already do. AI Insights and Cycle Analysis end with "Learn more" under their text,
+  without a chevron, the same words as Interest Rates, so the reading ends where the door is. (Chevronless Cards,
+  Learn More Links)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -709,13 +711,13 @@ settles it; none is open after V668.
   every tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the
   left.** One consistent design system: a dark purple headline with its icon inside a container, everything below
   it, tidy and evenly spaced, with the count shown once, not four times. (0.8.5, 0.8.6, 0.8.8, Oct 6, 2026)
-- **Each cycle's Cycle analysis is a card under the cycle story that previews the visit note and the
-  health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
+- **Each cycle's Cycle analysis is a card under the cycle story that previews the visit note, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
   four), worst first; each result's colour bar stops short of the next. The row opens on the cycle on screen. The row
-  keeps the current cycle short, the preview carries the text and health score so the page need not, the picker
-  matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart".
-  (0.3.0, 0.4.0)
+  keeps the current cycle short, the preview carries the text so the page need not, the picker
+  matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart". The
+  health score left the preview: it is read in Cycle Statistics, so the card is the story and its door.
+  (0.3.0, 0.4.0, Learn More Links)
 - **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped,**
   since nothing could be read from it. (V612, V656, 0.2.0)
 - **Rhymes is retired, and the proposed weather analysis was declined as not informative; don't bring either

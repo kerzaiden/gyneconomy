@@ -355,8 +355,8 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
     const word = { 't-optimal': 'Normal', 't-borderline': 'Attention', 't-abnormal': 'Risk' }[[...li.classList].find(c => c.startsWith('t-'))];
     assert.equal(li.querySelector('.lab-where').textContent.split(' \u00b7 ').pop(), word, R.name);
   });
-  assert.equal(document.querySelector('#diagnosis .lab-score small').textContent, 'Health Score');
-  assert.match(document.querySelector('#diagnosis .lab-score .stat-side').textContent, /^(Normal|Attention|Risk)$/);
+  assert.equal(document.querySelector('#diagnosis .lab-score'), null);
+  assert.equal(document.querySelector('#diagnosis [data-chart-cycle] .learn-more').textContent, 'Learn more');
   assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });
