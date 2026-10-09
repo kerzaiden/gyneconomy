@@ -3,7 +3,7 @@ import { AXIS, beatPath, chartAxes, histFrame, publishGeom, vGrid, vhOpen, xLabe
 import { M2_FLOOD, M2V_FROM_YEAR, m2vHistory, m2Yoy } from "./data.ts";
 import { fmtSigned, qAtIndex, quartile } from "./format.ts";
 
-export var PULSE_BEATS = 5, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_VEL = 34;
+export var PULSE_BEATS = 5, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10;
 var fences: number[] | null = null;
 function pulseMove(i: number){ return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100; }
 export function pulseFences(){
@@ -26,7 +26,7 @@ export function pulseStroke(i: number){
 type StripRow = { y: number; top: number; h: number; from: number; end: number; X: (q: number) => number };
 function stripQuarter(r: StripRow, q: number, x: number, limit: number){
   var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(34, r.h * 0.6) * (stroke == null ? 0.5 : stroke);
+  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * 0.58) * (stroke == null ? 0.5 : stroke);
   var cy = r.top + r.h * 0.64, d: string[] = [];
   if (stroke == null) kind = kind || "blank";
   x = Math.max(x, xa);
@@ -46,38 +46,39 @@ function stripRow(r: StripRow){
   }
   var id = "psclip" + r.y, w = r.X(last + 1) - r.X(0);
   out = ['<clipPath id="' + id + '"><rect x="' + f1(r.X(0)) + '" y="' + f1(r.top - r.h) + '" width="' + f1(w) + '" height="' + f1(r.h * 3) + '"/></clipPath><g clip-path="url(#' + id + ')">' + out.join("") + '</g>'];
-  var mid = r.top + r.h / 2 + 3.5;
-  out.push(yLabel(r.X(0) - (AXIS.L + AXIS.RAIL) / 2, mid, r.y, "middle"));
-  out.push(yLabel(r.X(4) + PULSE_VEL, mid, (sum / n).toFixed(2) + "\u00d7", "end"));
+  var lx = r.X(0) - (AXIS.L + PULSE_GUTTER + AXIS.RAIL) / 2, mid = r.top + r.h / 2;
+  out.push(yLabel(lx, mid - 2, r.y, "middle", "ps-year"));
+  out.push(yLabel(lx, mid + 11, (sum / n).toFixed(2) + "\u00d7", "middle"));
   return out.join("");
 }
 function stripPaper(L: number, R: number, T: number, B: number, h: number){
-  var m = (R - L) / 20, minor: string[] = [], major: string[] = [];
+  var m = (R - L) / 20, fx = L - AXIS.L - PULSE_GUTTER, minor: string[] = [], major: string[] = [];
   var rules: string[] = [];
   for (var k = 0; k <= 20; k++) if (k % 5) minor.push("M" + f1(L + k * m) + "," + f1(T) + "V" + f1(B)); else rules.push(vGrid(L + k * m, T, B));
   for (var top = T; top < B - 0.5; top += h){
-    major.push("M" + f1(L) + "," + f1(top) + "H" + f1(R));
+    major.push("M" + f1(fx) + "," + f1(top) + "H" + f1(R));
     for (var y = top + m; y < top + h - 1; y += m) minor.push("M" + f1(L) + "," + f1(y) + "H" + f1(R));
   }
-  major.push("M" + f1(L) + "," + f1(B) + "H" + f1(R));
+  major.push("M" + f1(fx) + "," + f1(B) + "H" + f1(R));
   return '<path class="ekg-minor" d="' + minor.join("") + '"/><path class="ekg-major" d="' + major.join("") + '"/>' + rules.join("");
 }
 export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   from = from || 0;
-  var F = histFrame(Wpx), L = F.L, R = F.R - PULSE_VEL, T = F.T - AXIS.LEG, B = F.B, end = to == null ? m2vHistory.length : to;
-  var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1, h = (B - T) / rows;
+  var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
+  var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) * 3 / 20;
+  var F = histFrame(Wpx, Math.ceil(rows * h) - AXIS.LEG), L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = T + rows * h;
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [];
-  out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String }));
+  out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));
   out.push(stripPaper(L, R, T, B, h));
   ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17)); });
-  for (var y = y0; y <= y1; y++) out.push(stripRow({ y:y, top:T + h * (y - y0), h:h, from:from, end:end, X:X }));
-  var cell = function(i: number){ var k = from + i; return { row:Math.floor(k / 4) + M2V_FROM_YEAR - y0, q:k % 4 }; };
+  for (var y = y0; y <= y1; y++) out.push(stripRow({ y:y, top:T + h * (y1 - y), h:h, from:from, end:end, X:X }));
+  var cell = function(i: number){ return { q:(from + i) % 4 }; };
   publishGeom("pulseStripsChart", { L:L, R:R, T:T, B:B, W:F.W, n:end - from,
     at:function(d: unknown, i: number){ var g = m2Yoy[from + i]; return qAtIndex(M2V_FROM_YEAR, from + i) + (g == null ? "" : " \u00b7 M2 " + fmtSigned(g, 1) + "%"); },
     fmt:function(v: number){ return v.toFixed(3) + "\u00d7"; },
     xOf:function(i: number){ return (X(cell(i).q) + X(cell(i).q + 1)) / 2; },
     pick:function(x: number, yy: number){
-      var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y0 + row - M2V_FROM_YEAR) * 4 + q - from;
+      var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y1 - row - M2V_FROM_YEAR) * 4 + q - from;
       return row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
     },
     vals:m2vHistory.slice(from, end).map(function(v: number){ return { v:v }; }) });
@@ -89,8 +90,8 @@ export function stripsInfo(){
   var f = pulseFences(), pct = function(v: number){ return (v > 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + "%"; };
   var flats: string[] = [];
   for (var i = 1; i < m2vHistory.length; i++) if (pulseBeat(i) === "flat") flats.push(qAtIndex(M2V_FROM_YEAR, i));
-  return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, its quarters across. A beat is a fifth of one turnover of the money stock, ' +
-    'so a year at 1.4\u00d7 carries 7 beats and the gaps widen as money slows; the figure at the end of each strip is that year\u2019s average velocity. ' +
+  return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, the newest on top and its quarters across. A beat is a fifth of one turnover of the money stock, ' +
+    'so a year at 1.4\u00d7 carries 7 beats and the gaps widen as money slows; the figure under each year is its average velocity, in turnovers a year. ' +
     'Five beats a turnover is Claude\u2019s choice, made for legibility (Keren found ten too crowded).</p>' +
     '<p class="caption follow"><b>A beat\u2019s height is the money stock\u2019s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, ' +
     'full height at ' + M2_FLOOD.toFixed(1) + '%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. ' +

@@ -642,6 +642,7 @@
   .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
   .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
   .ps-beat.blank{ stroke:var(--text-muted); }
+  .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }

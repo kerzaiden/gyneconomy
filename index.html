@@ -639,6 +639,7 @@
   .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
   .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
   .ps-beat.blank{ stroke:var(--text-muted); }
+  .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -1259,7 +1260,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.32 (803)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.33 (804)</span></p>
     </div>
   </div>
 
@@ -43087,10 +43088,10 @@
     FOOT: 8,
     READ: 61
   };
-  function histFrame(Wpx) {
+  function histFrame(Wpx, plot) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow2 = W < 430;
-    var H = narrow2 ? 335 : 375;
+    var H = plot ? AXIS.T + AXIS.LEG + AXIS.READ + plot + 17 + AXIS.FOOT : narrow2 ? 335 : 375;
     return {
       W: W,
       narrow: narrow2,
@@ -43104,8 +43105,8 @@
   function xLabel(x, text, y) {
     return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + "</text>";
   }
-  function yLabel(x, y, text, anchor) {
-    return '<text class="bt-yl" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + "</text>";
+  function yLabel(x, y, text, anchor, cls) {
+    return '<text class="bt-yl' + (cls ? " " + cls : "") + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + "</text>";
   }
   function crossLine(top, bot) {
     return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
@@ -43152,7 +43153,7 @@
     })) ticks = ticks.filter(function(t, i) {
       return i % 2 === 0;
     });
-    var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
+    var fx0 = o.x0 - (o.gutter || AXIS.L), fx1 = o.x1 + AXIS.R;
     if (o.top != null && o.bot != null) {
       out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' + (fx1 - fx0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');
       out.push('<path class="bt-grid" d="M' + (o.x0 - AXIS.RAIL) + "," + (+o.top).toFixed(1) + "L" + (o.x0 - AXIS.RAIL) + "," + (+o.bot).toFixed(1) + '"/>');
@@ -46461,7 +46462,6 @@
       term: "Pulse",
       hk: "pulse-range",
       head: "Velocity of Money (M2)",
-      stops: [ "5y", "10y" ],
       hist: {
         s: m2vHistory,
         k: "qi",
@@ -50537,7 +50537,7 @@
   var PULSE_BEATS = 5;
   var PULSE_FENCE = 1.5;
   var PULSE_FAR = 3;
-  var PULSE_VEL = 34;
+  var PULSE_GUTTER = 10;
   var fences = null;
   function pulseMove(i) {
     return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100;
@@ -50563,7 +50563,7 @@
   }
   function stripQuarter(r, q, x, limit) {
     var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(34, r.h * .6) * (stroke == null ? .5 : stroke);
+    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * .58) * (stroke == null ? .5 : stroke);
     var cy = r.top + r.h * .64, d = [];
     if (stroke == null) kind = kind || "blank";
     x = Math.max(x, xa);
@@ -50601,26 +50601,27 @@
     }
     var id = "psclip" + r.y, w = r.X(last + 1) - r.X(0);
     out = [ '<clipPath id="' + id + '"><rect x="' + f1(r.X(0)) + '" y="' + f1(r.top - r.h) + '" width="' + f1(w) + '" height="' + f1(r.h * 3) + '"/></clipPath><g clip-path="url(#' + id + ')">' + out.join("") + "</g>" ];
-    var mid = r.top + r.h / 2 + 3.5;
-    out.push(yLabel(r.X(0) - (AXIS.L + AXIS.RAIL) / 2, mid, r.y, "middle"));
-    out.push(yLabel(r.X(4) + PULSE_VEL, mid, (sum / n).toFixed(2) + "×", "end"));
+    var lx = r.X(0) - (AXIS.L + PULSE_GUTTER + AXIS.RAIL) / 2, mid = r.top + r.h / 2;
+    out.push(yLabel(lx, mid - 2, r.y, "middle", "ps-year"));
+    out.push(yLabel(lx, mid + 11, (sum / n).toFixed(2) + "×", "middle"));
     return out.join("");
   }
   function stripPaper(L, R, T, B, h) {
-    var m = (R - L) / 20, minor = [], major = [];
+    var m = (R - L) / 20, fx = L - AXIS.L - PULSE_GUTTER, minor = [], major = [];
     var rules = [];
     for (var k = 0; k <= 20; k++) if (k % 5) minor.push("M" + f1(L + k * m) + "," + f1(T) + "V" + f1(B)); else rules.push(vGrid(L + k * m, T, B));
     for (var top = T; top < B - .5; top += h) {
-      major.push("M" + f1(L) + "," + f1(top) + "H" + f1(R));
+      major.push("M" + f1(fx) + "," + f1(top) + "H" + f1(R));
       for (var y = top + m; y < top + h - 1; y += m) minor.push("M" + f1(L) + "," + f1(y) + "H" + f1(R));
     }
-    major.push("M" + f1(L) + "," + f1(B) + "H" + f1(R));
+    major.push("M" + f1(fx) + "," + f1(B) + "H" + f1(R));
     return '<path class="ekg-minor" d="' + minor.join("") + '"/><path class="ekg-major" d="' + major.join("") + '"/>' + rules.join("");
   }
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
-    var F = histFrame(Wpx), L = F.L, R = F.R - PULSE_VEL, T = F.T - AXIS.LEG, B = F.B, end = to == null ? m2vHistory.length : to;
-    var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1, h = (B - T) / rows;
+    var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
+    var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) * 3 / 20;
+    var F = histFrame(Wpx, Math.ceil(rows * h) - AXIS.LEG), L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = T + rows * h;
     var X = function(q) {
       return L + (R - L) * q / 4;
     }, out = [];
@@ -50634,7 +50635,8 @@
       base: B,
       top: T - AXIS.READ,
       bot: B,
-      fmt: String
+      fmt: String,
+      gutter: AXIS.L + PULSE_GUTTER
     }));
     out.push(stripPaper(L, R, T, B, h));
     [ "Q1", "Q2", "Q3", "Q4" ].forEach(function(t, q) {
@@ -50642,17 +50644,15 @@
     });
     for (var y = y0; y <= y1; y++) out.push(stripRow({
       y: y,
-      top: T + h * (y - y0),
+      top: T + h * (y1 - y),
       h: h,
       from: from,
       end: end,
       X: X
     }));
     var cell = function(i) {
-      var k = from + i;
       return {
-        row: Math.floor(k / 4) + M2V_FROM_YEAR - y0,
-        q: k % 4
+        q: (from + i) % 4
       };
     };
     publishGeom("pulseStripsChart", {
@@ -50673,7 +50673,7 @@
         return (X(cell(i).q) + X(cell(i).q + 1)) / 2;
       },
       pick: function(x, yy) {
-        var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y0 + row - M2V_FROM_YEAR) * 4 + q - from;
+        var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y1 - row - M2V_FROM_YEAR) * 4 + q - from;
         return row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
       },
       vals: m2vHistory.slice(from, end).map(function(v) {
@@ -50690,7 +50690,7 @@
     };
     var flats = [];
     for (var i = 1; i < m2vHistory.length; i++) if (pulseBeat(i) === "flat") flats.push(qAtIndex(M2V_FROM_YEAR, i));
-    return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, its quarters across. A beat is a fifth of one turnover of the money stock, so a year at 1.4× carries 7 beats and the gaps widen as money slows; the figure at the end of each strip is that year’s average velocity. Five beats a turnover is Claude’s choice, made for legibility (Keren found ten too crowded).</p><p class="caption follow"><b>A beat’s height is the money stock’s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, full height at ' + M2_FLOOD.toFixed(1) + "%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. " + M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.</p><p class="caption follow"><b>A red quarter moved past Tukey’s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' + M2V_FROM_YEAR + ", " + pct2(f[1]) + " or " + pct2(f[2]) + ". <b>A quarter flatlines</b> when its fall passed Tukey’s far-out fence (3 times the range), " + pct2(f[0]) + ": " + flats.join(" and ") + ".</p>";
+    return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, the newest on top and its quarters across. A beat is a fifth of one turnover of the money stock, so a year at 1.4× carries 7 beats and the gaps widen as money slows; the figure under each year is its average velocity, in turnovers a year. Five beats a turnover is Claude’s choice, made for legibility (Keren found ten too crowded).</p><p class="caption follow"><b>A beat’s height is the money stock’s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, full height at ' + M2_FLOOD.toFixed(1) + "%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. " + M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.</p><p class="caption follow"><b>A red quarter moved past Tukey’s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' + M2V_FROM_YEAR + ", " + pct2(f[1]) + " or " + pct2(f[2]) + ". <b>A quarter flatlines</b> when its fall passed Tukey’s far-out fence (3 times the range), " + pct2(f[0]) + ": " + flats.join(" and ") + ".</p>";
   }
   var RHYTHM_WINDOW = 8;
   var RHYTHM_BEFORE = 2008;
