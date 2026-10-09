@@ -43,7 +43,7 @@ export function cyclePeak(from: string, to: string){
 }
 
 // ---- The phases chart ----
-var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 12, CURL = 0.4, WAVE = 14;
+var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 10, CURL = 0.45, WAVE = 10;
 function monthPoints(list: MonthPoint[], from: number, to: number){
   var at: Record<number, number> = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out: Pt[] = [];
   list.forEach(function(d){ var i = monthIdx(d.m); if (i <= to) at[i] = d.v; });

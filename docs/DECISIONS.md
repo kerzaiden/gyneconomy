@@ -1601,10 +1601,10 @@ settles it; none is open after V668.
   (`--surface-2`), a faint dashed line wherever the Fed changes direction, and a narrow lilac strip at the inflation
   peak; above it, today's
   target range (or the rate at a closed cycle's close) as one large serif figure, and a thin 1Y · 5Y · Cycle bar.
-  The curves are drawn as waves: each month and its neighbours smoothed together (a Gaussian about a fourteenth
-  of the window wide, never reading past the window's end), sampled at thirteen even steps and joined by curves
-  that rest flat at every turn, edge to edge of the plot; smoother settings were tried and lost real turns such as
-  the 1980 dip in rates; the scale runs from one point below the lowest reading to one
+  The curves are drawn as waves: each month and its neighbours smoothed together (a Gaussian a tenth of the
+  window wide, never reading past the window's end), sampled at eleven even steps and joined by curves that rest
+  flat at every turn, edge to edge of the plot. Keren chose the smoothest waves knowingly: they soften short turns
+  such as the 1980 dip in rates, and the card is an overview of how rates and prices relate, not a magnifier; the scale runs from one point below the lowest reading to one
   above the highest; faint guide rules at a round step (1%, else 2%, 5% or 10%, at most six), each with its figure
   at the plot's left edge. The type matches Cycle Statistics: the story at reading size, the legend and axis at
   meta size.** It shows the environment at a glance, the way Clair shows hormones: the rates are the backdrop the
