@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const { nportQuarter, reportQuarter, quarters, withKey } = require('../tools/import-nport.js');
 const J = t => JSON.parse(t);
 
@@ -165,8 +165,6 @@ ok('the credit readings are written as the app reads them',
 ok('Debt to the Penny gives the latest total, in billions',
    pennyRow({ data: [{ record_date: '2026-10-05', tot_pub_debt_out_amt: '40249104431078.48' }] }), { d: '2026-10-05', v: 40249 });
 throws('a Debt to the Penny reply without a row is refused', () => pennyRow({ data: [] }), /no usable latest row/);
-ok('federal interest is BEA\'s payments over nominal GDP, both at annual rates, quarter by quarter, to two decimals',
-   interestShare([{ q: '2026 Q2', v: 1279.734 }, { q: '2026 Q3', v: 1300 }], [{ q: '2026 Q2', v: 31800 }]), [{ q: '2026 Q2', v: 4.02 }]);
 const fund = Array.from({ length: 500 }, (_, i) => ({ cusip: String(100000 + i) + '10' + (i % 10), v: i < 10 ? 4 : 0.12 }));
 ok('the top ten share sums the ten largest companies, to two decimals', topTen(fund.slice().reverse()), 40);
 ok('two share classes of one issuer count as one company, as Alphabet\'s A and C do',

@@ -49,8 +49,6 @@ const KEYED = [
   ['fred.json',   'debtDollarsQuarterly',    'q', 240, [300, 100000], 4],
   ['fred.json',   'fiscalHistory.gross',     'y',  85, [10, 200], 2],
   ['fred.json',   'fiscalHistory.held',      'y',  85, [10, 200], 2],
-  ['fred.json',   'interestQuarterly',       'q', 310, [1, 10], 4],
-  ['fred.json',   'interestDollarsQuarterly','q', 310, [1, 5000], 4],
   ['fred.json',   'fiscalHistory.budget',    'y',  95, [-40, 10], 2],
   ['fred.json',   'gdpYoYBefore',            'q', 160, [-15, 20]],
   ['fred.json',   'cpiYoYBefore',            'm', 730, [-15, 25]],

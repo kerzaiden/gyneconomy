@@ -223,11 +223,6 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function interestShare(interest, gdp) {
-  const g = new Map(gdp.map(d => [d.q, d.v]));
-  return interest.filter(d => g.has(d.q)).map(d => ({ q: d.q, v: Math.round(d.v / g.get(d.q) * 10000) / 100 }));
-}
-
 const PENNY = 'https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=1';
 function pennyRow(j) {
   const r = ((j && j.data) || [])[0];
@@ -323,8 +318,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (credit) Object.assign(out, { delinquencyHistory: q(credit.delinquency), marginHistory: m(credit.margin) });
   if (credit && credit.consumer) out.consumerCreditHistory = m(credit.consumer);
   if (credit && credit.dsr) out.dsrQuarterly = q(credit.dsr);
-  if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v },
-    interestQuarterly: q(dollars.share), interestDollarsQuarterly: q(dollars.interest) });
+  if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v } });
   if (activity) Object.assign(out, { payrollsHistory: m(activity.payrolls), retailHistory: m(activity.retail) });
   if (heavy) out.topTenRecent = heavy.map(r => ({ q: r.q, d: r.d, v: r.v }));
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
@@ -424,15 +418,10 @@ async function main() {
     say(('credit ' + k).padEnd(13) + ' ' + a.length + ' periods, ' + (a[0].q || a[0].m) + ' → ' + (a[a.length - 1].q || a[a.length - 1].m));
   }
 
-  const paid = quarterly(await fredSeries('A091RC1Q027SBEA', '1947-01-01'), 0.1, 1e5);
   const dollars = {
     debt: quarterly(await fredSeries('GFDEBTN', '1966-01-01'), 1e5, 1e9).map(d => ({ q: d.q, v: Math.round(d.v / 1000) })),
-    today: await debtToPenny(),
-    interest: paid.map(d => ({ q: d.q, v: Math.round(d.v) })),
-    share: interestShare(paid, quarterly(await fredSeries('GDP', '1947-01-01'), 1, 1e6))
+    today: await debtToPenny()
   };
-  if (dollars.share[0].q !== '1947 Q1') throw new Error('federal interest: expected BEA quarters from 1947 Q1');
-  say('A091RC1Q027SBEA ' + dollars.interest.length + ' quarters, ' + dollars.interest[0].q + ' → ' + dollars.interest[dollars.interest.length - 1].q + ' ($ billions a year, and as a share of GDP)');
   if (dollars.debt[0].q !== '1966 Q1') throw new Error('GFDEBTN: expected quarters from 1966 Q1, as GFDEGDQ188S');
   say('GFDEBTN       ' + dollars.debt.length + ' quarters, ' + dollars.debt[0].q + ' → ' + dollars.debt[dollars.debt.length - 1].q + ' ($ billions)');
   say('Debt to the Penny ' + dollars.today.d + ' $' + dollars.today.v + 'B');
@@ -487,5 +476,5 @@ async function earlySeasons() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, interestShare, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

@@ -1,9 +1,9 @@
 import SERIES from "../data/series.json" with { type: "json" };
 import { bandEnds, mean, metered, pctl, round1 } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
-import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, dsrQuarterly, grossDebtQuarterly, interestDollarsQuarterly, interestQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
+import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, dsrQuarterly, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
 
-export var BUFFETT_LINE = 80, DEBT_LINE = 70, INTEREST_LINE = 3.5, DEFICIT_LINE = 3.8;
+export var BUFFETT_LINE = 80, DEBT_LINE = 70, DEFICIT_LINE = 3.8;
 type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number };
 type SeasonReading = { body: string; economy: string };
 type UninvLagCycle = { cycle: string; uninv: string; recession: string; lag: string };
@@ -112,15 +112,6 @@ var labPanel: Row[] = [
     id:"sheet-metric-debt"
   },
   {
-    sub:"federal interest payments ÷ GDP",
-    meter:{min:0, max:0, value:null, optimal:{lte:INTEREST_LINE, label:"\u2264 " + INTEREST_LINE.toFixed(1) + "%"},
-           ends:{ zone:"50-year average", high:"High" }},
-    shortNote:"",
-    note:"{q}, the federal government paid interest at {d} a year, {v}% of GDP (BEA via FRED, A091RC1Q027SBEA against GDP) — the dollars analysts quote. The figure is gross: interest on all federal debt, before the interest the government earns back, so it runs above the net interest in the budget. The bar runs from the record low of {lo}% ({loq}) to the record high of {hi}% ({hiq}), when debt was smaller but rates far higher. The green band ends at {line}% of GDP: the average of this same series over the fifty years 1976–2025, computed here because no convention sets a line for it.",
-    direction:"up", flagValue:"", flagState:"na",
-    id:"sheet-metric-interest"
-  },
-  {
     sub:"federal deficit or surplus ÷ GDP",
     meter:{min:-2.3, max:26.9, value:5.8, optimal:{lte:DEFICIT_LINE, label:"\u2264 " + DEFICIT_LINE + "%"},
            ends:{ zone:"50-year average", high:"Large deficit", negative:"Surplus" }},
@@ -160,13 +151,11 @@ export var longCycleSrc: Src[] = [
   {t:"Treasury and BEA via FRED — Total public debt, % of GDP, quarterly, 1966– (GFDEGDQ188S; today's reading)", u:"https://fred.stlouisfed.org/series/GFDEGDQ188S"},
   {t:"OMB via FRED — Gross federal debt, % of GDP, FY1939– (GFDGDPA188S; the record and the band)", u:"https://fred.stlouisfed.org/series/GFDGDPA188S"},
   {t:"OMB via FRED — Federal debt held by the public, % of GDP, FY1939– (FYPUGDA188S)", u:"https://fred.stlouisfed.org/series/FYPUGDA188S"},
-  {t:"BEA via FRED — Federal government interest payments, quarterly at an annual rate, 1947– (A091RC1Q027SBEA), against nominal GDP (GDP)", u:"https://fred.stlouisfed.org/series/A091RC1Q027SBEA"},
   {t:"OMB via FRED — Federal surplus or deficit, % of GDP, FY1929– (FYFSGDA188S)", u:"https://fred.stlouisfed.org/series/FYFSGDA188S"},
   {t:"OMB Historical Tables (Tables 1.2 and 7.1 — the source series behind the OMB lines above)", u:"https://www.whitehouse.gov/omb/information-resources/budget/historical-tables/"},
   {t:"U.S. Treasury Fiscal Data — Historical Debt Outstanding, 1790– (the 1835 low point)", u:"https://fiscaldata.treasury.gov/datasets/historical-debt-outstanding/historical-debt-outstanding"},
   {t:"U.S. Treasury Fiscal Data — Debt to the Penny (today's total)", u:"https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny"},
   {t:"BLS via FRED — Nonfarm business output per hour, quarterly index (OPHNFB); the annual averages behind the productivity line", u:"https://fred.stlouisfed.org/series/OPHNFB"},
-  {t:"CBO — Federal Net Interest Costs: A Primer", u:"https://www.cbo.gov/publication/56910"},
   {t:"BLS — Productivity and Costs, Second Quarter 2026 (revised)", u:"https://www.bls.gov/news.release/archives/prod2_09032026.htm"},
   {t:"BLS via FRED — Nonfarm business output per hour, index (OPHNFB) and quarterly % change (PRS85006092), 1947–", u:"https://fred.stlouisfed.org/series/PRS85006092"}
 ];
@@ -184,23 +173,8 @@ function syncGrossDebt(){
   row.noteTpl = row.noteTpl || row.note;
   row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m: string, k: string){ return fill[k] != null ? fill[k] : m; });
 }
-function syncInterest(){
-  var row = labRow("sheet-metric-interest"), h = interestQuarterly, last = h[h.length - 1], paid = interestDollarsQuarterly[interestDollarsQuarterly.length - 1].v;
-  var lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; }), hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; }), at = function(q: string){ return q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"); };
-  var fill: Record<string, string> = { q:at(last.q), v:last.v.toFixed(1), d:"$" + (paid / 1000).toFixed(2) + " trillion", lo:lo.v.toFixed(1), loq:at(lo.q), hi:hi.v.toFixed(1), hiq:at(hi.q), line:INTEREST_LINE.toFixed(1) };
-  row.meter.min = lo.v; row.meter.max = hi.v; row.meter.value = last.v;
-  row.flagValue = fill.v + "%";
-  row.shortNote = fill.q + ", " + fill.d + " a year — " + (last.v >= hi.v ? "the highest share on record." : "below the " + fill.hi + "% record of " + fill.hiq + ".");
-  row.noteTpl = row.noteTpl || row.note;
-  row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m: string, k: string){ return fill[k] != null ? fill[k] : m; });
-}
-function checkInterest(){
-  var w = interestQuarterly.filter(function(d){ var y = +d.q.slice(0, 4); return y >= 1976 && y <= 2025; });
-  var avg = w.reduce(function(a, d){ return a + d.v; }, 0) / w.length;
-  if (w.length !== 200 || Math.round(avg * 10) / 10 !== INTEREST_LINE) console.warn("checkInterest: band " + INTEREST_LINE + " vs " + avg.toFixed(3) + " over " + w.length + " quarters");
-}
-function syncFederal(){ syncGrossDebt(); syncInterest(); }
-function checkFederal(){ checkGrossDebt(); checkInterest(); }
+function syncFederal(){ syncGrossDebt(); }
+function checkFederal(){ checkGrossDebt(); }
 function stressOf(m: Meter): State {
   var v = metered(m), hi = bandEnds(m.optimal, -Infinity, Infinity)[1];
   return v <= hi ? "good" : v >= m.max ? "critical" : "serious";

@@ -59,7 +59,7 @@ function debtPaymentsWord(v: number): CreditWord {
 function householdSpecs(): CreditSpec[] {
   var pct = function(v: number){ return v.toFixed(1) + "%"; };
   return [
-    { id:"sheet-sign-saving", goodAbove:true, term:"Saving rate", econ:"Saving rate", unit:"of income", series:savingPoints, mid:SAV_MID, line:"Median since " + SAV_FROM_YEAR,
+    { id:"sheet-sign-saving", goodAbove:true, term:"Savings rate", econ:"Savings rate", unit:"of income", series:savingPoints, mid:SAV_MID, line:"Median since " + SAV_FROM_YEAR,
       optimal:{ from:SAV_LOW, to:SAV_HIGH, label:SAV_LOW.toFixed(1) + "\u2013" + SAV_HIGH.toFixed(1) + "%" }, ends:{ low:"Saving little" }, fmt:pct, word:savingWord, src:SAVING_SRC,
       about:"What is left of households\u2019 income after tax and spending, as a share of that income, as the Bureau of Economic Analysis reports it each quarter: " +
         "the personal saving rate the news quotes.",
