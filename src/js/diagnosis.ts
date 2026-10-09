@@ -12,7 +12,8 @@ import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
   {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
-  {t:"NBER Macrohistory via FRED \u2014 the Federal Reserve Bank of New York\u2019s discount rate, monthly from 1914: the Fed\u2019s rate line before the federal funds rate begins in July 1954 (M13009USM156NNBR)", u:"https://fred.stlouisfed.org/series/M13009USM156NNBR"},
+  {t:"Federal Reserve via FRED \u2014 the Fed\u2019s moves: the discount rate before September 1982 (INTDSRUSM193N), the federal funds target to December 2008 (DFEDTAR) and its upper limit since (DFEDTARU)", u:"https://fred.stlouisfed.org/series/DFEDTARU"},
+  {t:"NBER Macrohistory via FRED \u2014 the Federal Reserve Bank of New York\u2019s discount rate, monthly from 1914: the Fed\u2019s moves before 1950 and its rate line before the federal funds rate begins in July 1954 (M13009USM156NNBR)", u:"https://fred.stlouisfed.org/series/M13009USM156NNBR"},
   {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
 ];
 function diagnosisHtml(m: CycleModel){

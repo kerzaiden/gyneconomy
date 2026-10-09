@@ -1592,7 +1592,7 @@ settles it; none is open after V668.
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates card is a feel, not a measure, dressed as her Clair hormone chart: the Fed's rate as a
   soft yellow area behind and prices as an orange line with a translucent fill in front, on one light ground
-  (`--surface-2`), and a narrow plum strip at the inflation peak; above it, only a thin 1Y · 5Y · Cycle bar. The large figure of today's
+  (`--surface-2`), and a narrow plum strip at the Fed pivot; above it, only a thin 1Y · 5Y · Cycle bar, with the same space above it as below. The large figure of today's
   target range that once sat above the bar was removed: it did not say what it was (Keren, Oct 9, 2026).
   The curves are drawn as waves: each month and its neighbours smoothed together (a Gaussian a tenth of the
   window wide, never reading past the window's end), sampled at sixty-one even steps and joined edge to edge of the
@@ -1606,13 +1606,18 @@ settles it; none is open after V668.
   values (Keren, Oct 9, 2026). The phases were shaded as two grounds at first, then marked by a dashed line at each
   turn, and both gave way: the rate's own slope already shows tightening and easing, and the lines added little. No phase line sits under the chart, since "easing since" misread a cycle the Fed reversed
   more than once. Growth is the other half of the season and the dial already shows it; the
-  cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. The inflation
-  peak is only a strip, like Clair's LH strip: narrow, near-square, in the plum of the app's titles (`--accent-ink`; the
-  lavender was outside the app's language and Keren wanted no new colour), fading downward, with no dot or label; the prices curve passes
-  through its true reading, and it shows only when the window holds it. The axis ends in Today, or the close's month, so no Current pill or end dot
+  cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. The strip
+  marks the cycle's tipping point, the Fed pivot: the Fed's last hike before it began cutting, the latest such turn
+  in the cycle (Keren chose it over the price peak and the season model's turn, Oct 9, 2026; "pivot" is the
+  market's own word). The moves are the New York Fed's discount rate before 1950 (NBER Macrohistory, the Fed's main
+  lever in the 1920s and 1930s), the discount rate to September 1982 and the target since, with today's live move
+  after the last Backfill. A cycle in which the Fed never turned from hiking to cutting (the late 1930s, the war,
+  1975–77, 2019–22) shows no strip rather than a made-up one. The strip is like Clair's LH strip: narrow,
+  near-square, in the plum of the app's titles (`--accent-ink`; the lavender was outside the app's language and
+  Keren wanted no new colour), fading to clear by its foot so the gradient reads on so dark a colour, with no dot or label, and it shows only when the window holds it.
+  It marked the inflation peak before; the peak stays in the cycle's rates story. The axis ends in Today, or the close's month, so no Current pill or end dot
   is needed. Under the axis, one centred grey legend on one line: Interest rates (Discount rates before the federal
-  funds rate), Prices, Peak, each key a short coloured line. The strip is called Peak, not Inflation, since
-  Inflation beside Prices would read as a third curve. Under it, one explanation of tightening and easing on the app's one grey, the same on every
+  funds rate), Prices, Fed pivot (not Pivot alone, which did not read on its own), each key a short coloured line. Under it, one explanation of tightening and easing on the app's one grey, the same on every
   cycle. Each cycle's rates story, one or two short lines on what the
   rates did (`rates` in `marketCycles`), is the Interest Rates container in that cycle's AI Insights, after its
   narrative: the card teaches the pattern and AI Insights tells the cycle, beside the rest of the cycle's reading,

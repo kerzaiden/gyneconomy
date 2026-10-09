@@ -113,7 +113,7 @@ test('the Fred backfill writes the stored figures back byte for byte', () => {
   const early = { gdp: fred.gdpYoYBefore, cpi: fred.cpiYoYBefore, returns: fred.sp500ReturnsBefore, growth: fred.gdpGrowthBefore, gnp: fred.gnpQuarterlyBefore };
   const fiscal = Object.assign({}, fred.fiscalHistory, { grossQ: fred.grossDebtQuarterly });
   const out = emit(fred.fedFundsHistory, fred.volatilityHistory, fiscal, fred.treasuryQuarterly, fred.productivityHistory,
-    fred.sp500MonthlyHistory, fred.confidenceHistory, early, fred.durablesHistory, fred.premiumHistory, fred.pceYoYHistory, fred.potentialYoYHistory,
+    fred.sp500MonthlyHistory, fred.confidenceHistory, early, fred.durablesHistory, fred.premiumHistory, fred.fedMoves, fred.pceYoYHistory, fred.potentialYoYHistory,
     { delinquency: fred.delinquencyHistory, margin: fred.marginHistory, consumer: fred.consumerCreditHistory, dsr: fred.dsrQuarterly },
     { debt: fred.debtDollarsQuarterly, today: fred.debtToday },
     { payrolls: fred.payrollsHistory, retail: fred.retailHistory }, fred.topTenRecent, fred.discountHistory);

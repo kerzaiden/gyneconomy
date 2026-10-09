@@ -548,8 +548,8 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp-prices{ --line:var(--season-summer); --fill:0.32; } .fp-rate{ --line:var(--gold); --fill:0.45; } .fp-peak, .fp-strip{ --line:var(--accent-ink); }
-  .fp .rangebar{ margin:6px 0 4px; }
+  .fp-prices{ --line:var(--season-summer); --fill:0.32; } .fp-rate{ --line:var(--gold); --fill:0.45; } .fp-pivot, .fp-strip{ --line:var(--accent-ink); }
+  .fp .rangebar{ margin:14px 0 4px; }
   .fp-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; background:var(--surface-2); }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 12px); }
   .fp-clip{ position:absolute; inset:0; overflow:hidden; border-radius:12px; }
@@ -561,7 +561,7 @@
   .fp-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .fp-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
   .fp-line{ fill:none; stroke:var(--line); stroke-linecap:round; stroke-linejoin:round; }
   .fp-line.fp-rate{ stroke-width:1.6; opacity:0.85; } .fp-line.fp-prices{ stroke-width:2.4; }
-  .fp-strip{ position:absolute; top:0; bottom:0; width:10px; margin-left:-5px; border-radius:2px; background:linear-gradient(180deg, var(--line), color-mix(in srgb, var(--line) 12%, transparent)); }
+  .fp-strip{ position:absolute; top:0; bottom:0; width:10px; margin-left:-5px; border-radius:2px; background:linear-gradient(180deg, var(--line), color-mix(in srgb, var(--line) 40%, transparent) 50%, transparent); }
   .fp-tag{ position:absolute; height:22px; font-size:var(--type-meta); line-height:22px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
   .fp-level-tag{ line-height:28px; text-align:left; font-size:var(--type-label); opacity:0.6; }
   .fp-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin:10px 0 0; padding:7px 0; list-style:none; font-size:var(--type-meta); color:var(--text-muted); }

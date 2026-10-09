@@ -306,6 +306,8 @@
     "eraFig": 7,
     "todayValue": 6,
     "monthIdx": 1,
+    "movesToDate": 6,
+    "fedPivot": 5,
     "runStarts": 5,
     "findRuns": 7,
     "cyclePeak": 5,

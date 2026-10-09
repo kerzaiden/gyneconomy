@@ -1,7 +1,8 @@
-import { discountHistory, fedFundsHistory } from "./history-fred.ts";
+import { discountHistory, fedFundsHistory, fedMoves } from "./history-fred.ts";
+import { now } from "./data.ts";
 import { inflationHistory } from "./refresh-season.ts";
 import { cpiDirectionAt, cycleModel, nowModel } from "./model.ts";
-import { CHEV, MONTHS_SHORT, monthLabel } from "./format.ts";
+import { CHEV, MONTHS_SHORT, isoDay, monthLabel } from "./format.ts";
 import { orbitSvg } from "./marks.ts";
 import { dxHead, dxSys } from "./render-core.ts";
 import { tabBar } from "./history.ts";
@@ -10,8 +11,19 @@ import type { CycleModel } from "./model.ts";
 
 type Pt = { i: number; v: number };
 
-// ---- The inflation peak ----
+// ---- The Fed pivot and the inflation peak ----
 function monthIdx(k: string){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1; }
+function movesToDate(){
+  var moves = fedMoves.slice(), day = isoDay(now.fedFunds.asOf), move = Number(String(now.fedFunds.lastMove).replace("\u2212", "-"));
+  var last = moves.length ? moves[moves.length - 1].m : "";
+  if (day && move && day.slice(0, 7) > last) moves.push({ m: day.slice(0, 7), v: move });
+  return moves;
+}
+export function fedPivot(from: string, to: string){
+  var moves = movesToDate(), pivot = "";
+  moves.forEach(function(d, k){ var next = moves[k + 1]; if (d.v > 0 && next && next.v < 0 && d.m >= from && d.m <= to) pivot = d.m; });
+  return pivot;
+}
 var runsCache: { key: string; starts: Record<string, string> } | null = null;
 function runStarts(){
   var last = inflationHistory[inflationHistory.length - 1], key = inflationHistory.length + ":" + (last ? last.m + last.v : "");
@@ -121,7 +133,7 @@ function stripHtml(at: number, from: number, to: number){
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }
 function legendHtml(toM: string){
-  return '<ul class="fp-legend">' + key("fp-key-line fp-rate", rateSeries(toM) === discountHistory ? "Discount rates" : "Interest rates") + key("fp-key-line fp-prices", "Prices") + key("fp-key-line fp-peak", "Peak") + '</ul>';
+  return '<ul class="fp-legend">' + key("fp-key-line fp-rate", rateSeries(toM) === discountHistory ? "Discount rates" : "Interest rates") + key("fp-key-line fp-prices", "Prices") + key("fp-key-line fp-pivot", "Fed pivot") + '</ul>';
 }
 var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
 function footnoteHtml(m: CycleModel){
@@ -141,7 +153,7 @@ var RANGES = [["1y", "1Y"], ["5y", "5Y"], ["cycle", "Cycle"]];
 function windowFrom(range: string, cycleFrom: number, to: number){ return range === "1y" ? to - 11 : range === "5y" ? to - 59 : cycleFrom; }
 function ratesCard(m: CycleModel, host: string, range: string){
   var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
-  var peak = cyclePeak(m.era.from + "-01", toM), at = peak ? monthIdx(peak.m) : -1, top = peak && at >= from ? at : -1;
+  var pivot = fedPivot(m.era.from + "-01", toM), at = pivot ? monthIdx(pivot) : -1, top = pivot && at >= from ? at : -1;
   var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
   return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, top, m) + legendHtml(toM) + footnoteHtml(m);
 }
