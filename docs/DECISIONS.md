@@ -875,6 +875,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
+- **Readings appear in one order everywhere, the roster's: by category, by subcategory, then by row, on every cycle page,
+  current and past, whatever their results.** Keren, 0.9.29: "the order in which the indicators appear is different in some cycles.
+  And I want the order to be identical"; Economic Season reads Temperature, Growth gap, Federal funds rate, then S&P 500;
+  Activity reads Unemployment, Payrolls, GDP growth, Productivity growth; Mood reads Shiller CAPE, Buffett indicator, Fear,
+  Confidence. Elements had sorted each category by tier (Risk first), so a cycle's results reshuffled it. A category or
+  subcategory split in the roster is refused at boot, so the file reads in the order the pages show. (0.9.29)
+
 - **Real return is its own reading in Weather, under Market, after the S&P 500: the index's total return each year with
   inflation taken out.** Keren: "it needs to be under the weather category, under market subcategory" (0.9.19), over
   chips on the cycle pages. It deflates by the app's own inflation gauge (CPI before 2000, PCE since), so one inflation

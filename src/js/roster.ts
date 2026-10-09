@@ -42,8 +42,16 @@ export function keyed(h: HistSpec): Keyed[] {
          : { k:h.k === "y" ? String((d as Point).y) : (d as Point)[h.k] as string, v:(d as Point).v };
   });
 }
+function runsOf(R: RosterRow){ return [R.cat, R.cat + "/" + R.sub, R.group]; }
+function splitRun(R: RosterRow, prev: RosterRow | undefined, runs: string[], bad: string[]){
+  runsOf(R).forEach(function(k, d){
+    if (!k || (prev && runsOf(prev)[d] === k)) return;
+    if (runs.indexOf(k) !== -1) bad.push(R.id + ": " + k + " is split");
+    runs.push(k);
+  });
+}
 function checkRoster(){
-  var bad: string[] = [], seen: Record<string, number> = {}, live: Record<string, number> = {}, groups: string[] = [];
+  var bad: string[] = [], seen: Record<string, number> = {}, live: Record<string, number> = {}, runs: string[] = [];
   ROSTER.forEach(function(R, i){
     var prev = ROSTER[i - 1];
     if (seen[R.id]) bad.push(R.id + ": declared twice");
@@ -51,10 +59,7 @@ function checkRoster(){
     if (!CATEGORIES.some(function(c){ return c.key === R.cat; })) bad.push(R.id + ": no category " + R.cat);
     if (!TIMING[R.timing]) bad.push(R.id + ": no timing " + R.timing);
     if (typeof SUB_MARK[R.sub] !== "function") bad.push(R.id + ": no mark for " + R.sub);
-    if (R.group && !(prev && prev.group === R.group)){
-      if (groups.indexOf(R.group) !== -1) bad.push(R.id + ": " + R.group + " is split");
-      groups.push(R.group);
-    }
+    splitRun(R, prev, runs, bad);
     (R.live || []).forEach(function(n){ live[n] = 1; if (LIVE_NAMES.indexOf(n) === -1) bad.push(R.id + ": no live reading " + n); });
   });
   LIVE_NAMES.forEach(function(n){ if (!live[n]) bad.push(n + ": arrives live and no reading shows it"); });
@@ -116,6 +121,9 @@ function declareRoster(): RosterRow[] {
       cardUnit:"of GDP", live:["valuation"] },
     { id:"sheet-sign-sentiment", name:"Fear", cat:"mood", sub:"Sentiment", good:"down", timing:"leading", hk:"fear-range",
       head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, cardUnit:"VIX", live:["sentiment", "vixClose", "vix3mClose"] },
+    { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", sub:"Sentiment", good:"up", timing:"leading", term:"Confidence",
+      head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE,
+      cardUnit:"OECD index" },
     { id:"sheet-sign-desire", name:"Discretionary spending", cat:"desire", sub:"Demand", good:"up", group:"Demand", timing:"coincident", term:"Desire",
       head:"Discretionary Spending", hist:{ s:durablesHistory, k:"m" }, mid:DESIRE_LINE,
       cardUnit:"durables, YoY" },
@@ -130,10 +138,7 @@ function declareRoster(): RosterRow[] {
       term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE,
       cardUnit:"over bonds" },
     { id:"sheet-metric-delinquency", name:"Default risk", cat:"desire", sub:"Risk", good:"down", group:"Risk", timing:"lagging",
-      term:"Default risk", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" },
-    { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", sub:"Sentiment", good:"up", timing:"leading", term:"Confidence",
-      head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE,
-      cardUnit:"OECD index" }
+      term:"Default risk", head:"Bank Loans Past Due", hist:{ s:delinquencyHistory, k:"q" }, mid:DELINQUENCY_MEAN, cardUnit:"of bank loans" }
   ];
 }
 export function bootRoster(){
