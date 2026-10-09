@@ -1036,8 +1036,8 @@ settles it; none is open after V668.
   every history's height (Keren: Max ran too long to see the reading when a year was tapped), so about five years show at a
   time and the strips scroll under the pinned reading and quarter axis, a fade at the bottom showing more below; a window of
   fewer years (the current cycle's four) keeps the full height and stretches its strips to fill it, each beat
-  keeping its size and centred on its strip, since a chart cut short to its years looked too short (Keren, reversing
-  0.9.36, where the chart shrank to its years). The windows are 5Y, 10Y, 25Y and Max; Max starts at 1959 Q1,
+  centred on its strip and grown in proportion to it, since a chart cut short to its years looked too short and the
+  extra room should make the beats more visible (Keren, reversing 0.9.36, where the chart shrank to its years). The windows are 5Y, 10Y, 25Y and Max; Max starts at 1959 Q1,
   the first quarter of the Fed's M2 (FRED M2V), and the cycle picker starts at 1963 because the 1958–1962 cycle
   opens before the data. The earlier EKG histories (scrolling strip, Holter report, Apple Health-style
   ECG) stay dropped. (0.9.25)
