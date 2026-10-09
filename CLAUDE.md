@@ -6,7 +6,7 @@ A reading companion to Keren's book *Mrs. Market*, which reads the economy as a 
 `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF`, from the same file.
 
 Keren owns every design and editorial decision. **Her decisions are in `docs/DECISIONS.md`**: every rule in
-force, by topic, with its reason in her words and the versions that set it (V666). A new decision goes under its
+force, by topic, with the essence of her reason (not her words verbatim, 0.9.28) and the versions that set it (V666). A new decision goes under its
 topic; one that overturns a rule rewrites it there. Don't overrule one; if it seems wrong, say so and ask. The
 rules below are the ones that matter most.
 

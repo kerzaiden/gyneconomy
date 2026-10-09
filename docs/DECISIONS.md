@@ -1,7 +1,7 @@
 # Keren's decisions
 
-The standing logic of Keren's decisions about Gyneconomy: every rule in force, each with its reason (in her
-words where they carry it) and the versions that set it. Keren owns every design and editorial decision. Don't
+The standing logic of Keren's decisions about Gyneconomy: every rule in force, each with its reason and the
+versions that set it. Keren owns every design and editorial decision. Don't
 overrule one; if a rule seems wrong, say so and ask her.
 
 V666 made this register what it is now. Keren: "if you have decisions that are irrelevant, meaning we decided
@@ -15,9 +15,11 @@ git show "$(git tag --list 'v665*')":docs/DECISIONS.md
 git show v648-treasury-quarters:src/js/07-forms.js
 ```
 
-To add a decision, state it under its topic in the same form: the rule in bold, the reason in her words, the
-version. When a new decision overturns a rule here, rewrite that rule rather than adding a contradiction, and
-keep its older versions in the citation. Her full words go in the commit message. A rule whose scope, or the
+To add a decision, state it under its topic in the same form: the rule in bold, then why, then the version. The
+why matters more than the rule (Keren, 0.9.28): give the essence of her reasoning, not her words verbatim, and quote
+her only where a phrase carries the reason better than a paraphrase. When a new decision overturns a rule here,
+rewrite that rule rather than adding a contradiction: keep only what now holds and why the change was made, not the
+back-and-forth, and keep its older versions in the citation. Her full words go in the commit message. A rule whose scope, or the
 code, is in doubt is marked "(check: …)" until Keren settles it; none is open after V668.
 
 ## Voice and wording
@@ -875,11 +877,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
-- **There is no Real return reading; Market holds the S&P 500 alone.** Keren, 0.9.28: "I think it's obvious that the real
-  return is S&P 500 minus inflation. I think it doesn't really add much and it's just distracting. So let's remove it."
-  It was a reading under Weather > Market from 0.9.19 to 0.9.27 (the S&P 500's yearly total return deflated by the
-  app's inflation gauge, "Beat inflation" / "Lost to inflation"); its card, page, (i), insights and tests were deleted.
-  Don't re-propose it. (0.9.19, 0.9.28)
+- **Market holds the S&P 500 alone; there is no separate real-return reading.** The real return is simply the S&P 500
+  less inflation, which any reader can work out, so a reading of its own added little and distracted (Keren, 0.9.28;
+  it was a reading from 0.9.19). Don't re-propose it.
 
 - **Credit is households borrowing to spend and lives in Desire, under Demand (Consumer credit, 0.9.25); Stress holds what is owed,
   by Households and by Government.** Keren, 0.9.25: "I think consumer credit should belong under desire, demand". Before that it sat in
