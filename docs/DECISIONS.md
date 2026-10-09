@@ -1597,7 +1597,8 @@ settles it; none is open after V668.
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates card is a feel, not a measure, dressed as her Clair hormone chart: the Fed's rate as a
   soft yellow area behind and prices as an orange line with a translucent fill in front, over a plot in two nudes,
-  like a pale and a tan skin: easing the pale, tightening the tan, so the only purple is the Peak's strip; above it, today's
+  like a pale and a tan skin: easing the pale, tightening one shade deeper, seen only at the border between them, so
+  the only purple is the Peak's strip; above it, today's
   target range (or the rate at a closed cycle's close) as one large serif figure, and a thin 1Y · 5Y · Cycle bar.
   The curves are drawn freely: about twelve averaged points per window, lightly smoothed, joined by curves that
   rest flat at every turn, edge to edge of the plot; the scale runs from one point below the lowest reading to one

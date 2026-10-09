@@ -29,7 +29,7 @@
     --critical: #d0383b;
     --m2-deep: #4a0f0a;
     --ff-blue: #4f6fb0;
-    --plot-wash: #f8ebe2; --skin-tan: #e9c9ae; --ease-lilac: #e2cbf6;
+    --plot-wash: #f8ebe2; --skin-tan: #f1dccd; --ease-lilac: #e2cbf6;
     --soft-panel: color-mix(in srgb, var(--seg-track) 55%, var(--surface));
     --ff-deep: #0b2340;
     --critical-ink: #a8292f;
@@ -81,7 +81,7 @@
       --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
       --critical: #f05a55; --m2-deep: #ffd2c8;
       --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
-      --plot-wash: #3a2a27; --skin-tan: #5b4236; --ease-lilac: #9b7bc0;
+      --plot-wash: #3a2a27; --skin-tan: #45322d; --ease-lilac: #9b7bc0;
       --critical-ink: #f6897f;
       --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
       --bleed-mid: #f05a55;
@@ -150,7 +150,7 @@
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
       --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
       --ff-blue: #86a3e0;
-      --plot-wash: #3a2a27; --skin-tan: #5b4236; --ease-lilac: #9b7bc0;
+      --plot-wash: #3a2a27; --skin-tan: #45322d; --ease-lilac: #9b7bc0;
   }
 
   *{box-sizing:border-box;}
