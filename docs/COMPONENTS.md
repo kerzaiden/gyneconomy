@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `b3e0253` on 2026-10-09. **109 components**, **18 shared patterns**.
+Generated from commit `010f9f1` on 2026-10-09. **109 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -103,16 +103,7 @@ Generated from commit `b3e0253` on 2026-10-09. **109 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`areaPath`** | `.fp-area` | `fed-phases.ts:plotSvg` |
-| **`axisMark`** | `.fp-end` | `fed-phases.ts:axisTicks`, `fed-phases.ts:yearsHtml` |
-| **`bandsHtml`** | `.fp-band` | `fed-phases.ts:plotHtml` |
-| **`fillDefs`** | `.fp-fill-low` `.fp-fill-top` | `fed-phases.ts:plotSvg` |
 | **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:ratesCard` |
-| **`legendHtml`** | `.fp-legend` | `fed-phases.ts:ratesCard` |
-| **`lineSvg`** | `.fp-line` | `fed-phases.ts:plotSvg` |
-| **`plotHtml`** | `.fp-clip` `.fp-plot` `.fp-years` | `fed-phases.ts:ratesCard` |
-| **`rulesHtml`** | `.fp-rule` | `fed-phases.ts:plotHtml` |
-| **`tagSpan`** | `.fp-tag` | `fed-phases.ts:levelTags` |
 
 ## format.ts
 
@@ -209,6 +200,20 @@ Generated from commit `b3e0253` on 2026-10-09. **109 components**, **18 shared p
 | **`seasonGrid`** | `.season-grid` `.sg-cell` `.sg-head` | `tabs-menu.ts:seasonModelNote` |
 | **`wireMenu`** | `.menu-card` `.menu-label` `.menu-row` `.menu-section` | `tabs-menu.ts:bootTabsMenu` |
 
+## wave-chart.ts
+
+| Component | Owns | Used by |
+|---|---|---|
+| **`areaPath`** | `.wave-area` | `wave-chart.ts:plotSvg` |
+| **`axisHtml`** | `.wave-axis` | `wave-chart.ts:waveChart` |
+| **`axisMark`** | `.wave-end` | `wave-chart.ts:axisHtml`, `wave-chart.ts:axisTicks` |
+| **`bandsHtml`** | `.wave-band` | `wave-chart.ts:waveChart` |
+| **`fillDefs`** | `.wave-fill-low` `.wave-fill-top` | `wave-chart.ts:plotSvg` |
+| **`levelTags`** | `.wave-level` | `wave-chart.ts:waveChart` |
+| **`rulesHtml`** | `.wave-rule` | `wave-chart.ts:waveChart` |
+| **`waveChart`** | `.wave-clip` `.wave-plot` | `fed-phases.ts:ratesCard` |
+| **`waveLegend`** | `.wave-legend` | `fed-phases.ts:rateSeries` |
+
 ## Vocabulary
 
 Functions that own no class of their own but are called from three or more places — the words every
@@ -259,7 +264,7 @@ renderer speaks. Listed most-used first.
 | **`layer`** | dom.ts | 5 places |
 | **`meanOf`** | cycle-analysis.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
-| **`pct`** | fed-phases.ts | 5 places |
+| **`pct`** | wave-chart.ts | 5 places |
 | **`pctl`** | format.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
@@ -303,7 +308,7 @@ renderer speaks. Listed most-used first.
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
-| **`monthIdx`** | fed-phases.ts | 3 places |
+| **`monthIdx`** | wave-chart.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |

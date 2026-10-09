@@ -1596,6 +1596,8 @@ settles it; none is open after V668.
   (`--normal`, as faint as still reads against white, fading downward) and easing left white, the bands behind the
   guide rules and the curves so they never cover a line; above it, only a thin 1Y · 5Y · Cycle bar, with the same space above it as below. The large figure of today's
   target range that once sat above the bar was removed: it did not say what it was (Keren, Oct 9, 2026).
+  The chart is the app's one wave chart, a component any later chart of month series over bands reuses (Keren,
+  Oct 9, 2026), so its look is decided once.
   The curves are drawn as waves: each month and its neighbours smoothed together (a Gaussian a tenth of the
   window wide, never reading past the window's end), sampled at sixty-one even steps and joined edge to edge of the
   plot. Eleven steps joined by curves resting flat at each step left shoulders on a short cycle (the New Deal
