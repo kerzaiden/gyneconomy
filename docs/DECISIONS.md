@@ -1584,7 +1584,7 @@ settles it; none is open after V668.
   (orange), over the Tightening and Easing bands, with no figures and no growth; the scale starts at the round step just below the lowest point, not at zero, so
   the curves fill the plot; the guides are dashed rules at that step (1% where the range allows, else 2%, 5% or
   10%, at most six), each with a small, faint figure on its left only where no curve covers it, so
-  the eye can gauge the level; they are drawn inside the bands.** It shows the
+  the eye can gauge the level; they are drawn inside the bands, and the curves keep a margin from every band edge.** It shows the
   environment at a glance, the way her tracker shows hormones; growth is the other half of the season and the dial
   already shows it. The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason
   here. The peak is an orange dot on the prices curve (hollow on the open cycle), labelled Peak beside it in the
