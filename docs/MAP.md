@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,799 lines** in 41 files, about 602 KB, roughly **171 thousand tokens**. No session can
+The source is **8,800 lines** in 41 files, about 603 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `79755c9` on 2026-10-09.
+Generated from commit `79bb8f0` on 2026-10-09.
 
 ## The page
 
@@ -33,7 +33,7 @@ Counts: **37** modules, **753** top-level functions, **117** top-level vars, **3
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 41 | 5 | `format`, `history-fred` |
 | `js/data.ts` | 568 | 78 | `format`, `history-fred`, `live` |
-| `js/credit.ts` | 138 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
+| `js/credit.ts` | 139 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
 | `js/model.ts` | 381 | 56 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 483 | 48 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 711 | 63 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
@@ -80,7 +80,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–40 |
 | 5 | `bootData` | `js/data.ts:516`–567 |
-| 6 | `bootCredit` | `js/credit.ts:130`–137 |
+| 6 | `bootCredit` | `js/credit.ts:131`–138 |
 | 7 | `bootModel` | `js/model.ts:356`–380 |
 | 8 | `bootHistory` | `js/history.ts:459`–482 |
 | 9 | `bootReadings` | `js/readings.ts:535`–583 |
@@ -301,20 +301,20 @@ falls in. **export** marks a name other modules import.
 
 ### `js/credit.ts`
 
-#### Credit, households and debt: consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies
+#### Credit, households and debt: consumer credit, margin debt, the saving rate, debt payments and delinquencies
 
 | Line | Name | Anchor |
 |---|---|---|
 | 12 | `CONSUMER_LINE` · export | `var CONSUMER_LINE =` |
-| 35 | `avgSpan` | `function avgSpan(` |
-| 36 | `consumerWord` | `function consumerWord(` |
-| 41 | `marginWord` | `function marginWord(` |
-| 46 | `savingWord` | `function savingWord(` |
-| 53 | `debtPaymentsWord` | `function debtPaymentsWord(` |
-| 58 | `householdSpecs` | `function householdSpecs(` |
-| 77 | `delinquencyWord` | `function delinquencyWord(` |
-| 83 | `specs` | `function specs(` |
-| 108 | `readingOf` | `function readingOf(` |
+| 36 | `avgSpan` | `function avgSpan(` |
+| 37 | `consumerWord` | `function consumerWord(` |
+| 42 | `marginWord` | `function marginWord(` |
+| 47 | `savingWord` | `function savingWord(` |
+| 54 | `debtPaymentsWord` | `function debtPaymentsWord(` |
+| 59 | `householdSpecs` | `function householdSpecs(` |
+| 78 | `delinquencyWord` | `function delinquencyWord(` |
+| 84 | `specs` | `function specs(` |
+| 109 | `readingOf` | `function readingOf(` |
 
 ### `js/model.ts`
 
