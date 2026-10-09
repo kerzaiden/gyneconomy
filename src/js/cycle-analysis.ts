@@ -352,7 +352,7 @@ function variationPage(i: number){
 }
 function statsHome(i: number){
   var x = visits()[i], open = !!marketCycles[i].ongoing, closed = visits().slice(0, closedCount()), top = function(f: (v: Visit) => number){ return Math.max.apply(null, visits().map(f)); };
-  return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note">Averages are based on ' + closedCount() + ' closed market cycles since ' + marketCycles[0].from + '.</p>' + healthRow(i) +
+  return dxSys("", dxHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-note"><b>' + marketCycles[i].name + '</b>, ' + cycLabel(marketCycles[i]).years + '. Averages are based on ' + closedCount() + ' closed market cycles since ' + marketCycles[0].from + '.</p>' + healthRow(i) +
     statRow("Cycle length", meanOf(closed.map(len)), top(len), mark(typical(x.years, open) ? " ok" : " odd", yearsWord(x.years) + " yrs"), lengthPage(i), tone(typical(x.years, open))) +
     statRow("Cycle variation", sdOf(lengths()), meanOf(lengths()), mark(typical(x.years, open) ? " ok" : " odd", driftWord(i)), variationPage(i), tone(typical(x.years, open)), "\u00b1" + yearsWord(sdOf(lengths())) + " years") +
     statRow("Period flow", meanOf(closed.map(flow)), top(flow), "", "", "flow"));
@@ -397,7 +397,7 @@ function searchShell(tag: string, cls: string, attrs: string, inner: string){ re
 function pickCat(t: Element, id: string){
   var b = t.closest && t.closest("[data-ind-cat]"); if (!b) return false;
   findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
-  if (id === IND) drawChart(IND); else if (id === HOME_ID) page.mode[IND] = "cycles";
+  if (id === IND) drawChart(IND); else if (id === HOME_ID){ page.mode[IND] = "cycles"; page.cycles[IND] = page.cycles[HOME_ID]; page.when[IND] = undefined; }
   return true;
 }
 function buildFind(){ var sheet = metricSheet(IND); need("panel-chart").appendChild(sheet); wireFinder(sheet, IND); drawChart(IND); }
@@ -420,8 +420,8 @@ function wireFinder(host: HTMLElement, id: string){
 }
 function setPeriod(id: string, k: string){
   page.mode[id] = cycleByName(k) ? "cycles" : k.length > 4 ? "quarters" : "calendar";
-  if (page.mode[id] === "cycles"){ page.cycles[id] = page.cycles[HOME_ID] = k; page.when[id] = undefined; return; }
-  page.when[id] = k; page.cycles[id] = page.cycles[HOME_ID] = (cycleOfYear(+k.slice(0, 4)) as Cycle).name;
+  if (page.mode[id] === "cycles"){ page.cycles[id] = k; page.when[id] = undefined; return; }
+  page.when[id] = k; page.cycles[id] = (cycleOfYear(+k.slice(0, 4)) as Cycle).name;
 }
 function pick(id: string, b: Element){
   var cat = b.getAttribute("data-pick-cat"), tr = b.getAttribute("data-pick-tier"), f = findOf(id);
@@ -468,6 +468,6 @@ export function buildCycleChart(){
     page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
     drawChart(HOME_ID);
   });
-  need("tab-chart").addEventListener("click", function(){ drawChart(HOME_ID); });
+  need("tab-chart").addEventListener("click", function(){ page.cycles[HOME_ID] = null; drawChart(HOME_ID); });
   drawChart(HOME_ID);
 }
