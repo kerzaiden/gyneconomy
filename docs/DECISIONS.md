@@ -303,9 +303,10 @@ settles it; none is open after V668.
   indicator, Federal debt and Federal budget each have their own; the two Treasury spreads
   (10Y − 3M, 10Y − 2Y) stay one page, which Keren saw no need to split, and the US 10-year Treasury stays one card
   with its maturity picker. (V254, V658)
-- **The door from Interest Rates Environment to the Federal funds rate page is a lone chevron after the last word of
-  the cycle's rates story (no "Learn more"), wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading the
-  story is what makes one want to learn more, so the door sits where the reading ends, not on the head. (0.9.1, 0.9.40, 0.9.43)
+- **The door from Interest Rates Environment to the Federal funds rate page is an inline "Learn more ›" after the
+  card's text, wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading is what makes one want
+  to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished. (0.9.1,
+  0.9.40, 0.9.43, 0.9.44)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -1591,8 +1592,10 @@ settles it; none is open after V668.
   here. The peak is an orange dot on the prices curve (hollow on the open cycle), labelled Peak beside it in the
   legend's type, on whichever side keeps clear of both curves; the label left the legend so the legend fits one line
   on most phones. Under the years, one legend at the years' size, between a top and a bottom rule (as in Insights) and set left with
-  tight gaps: Tightening, Easing, Rates, Prices. Under it, each cycle's rates story in one or two short lines on what the rates did (`rates` in `marketCycles`), so readers know what
-  went on; its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
+  tight gaps: Tightening, Easing, Rates, Prices. Under it, one explanation of the phases, the same on every cycle, as
+  her tracker explains what each phase of a cycle does. Each cycle's rates story, one or two short lines on what the
+  rates did (`rates` in `marketCycles`), is the first Insight on the Federal funds rate page for the cycle on screen,
+  so the card teaches the pattern and the page tells the cycle (0.9.44); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
   discount rate; the phases follow the rate alone, so a tightening made another way (the doubling of reserve
   requirements in 1936–37) does not show. A low peak is still a peak: where prices topped in a calm cycle tells
