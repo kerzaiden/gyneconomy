@@ -49259,7 +49259,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return statsHome(i) + fedEnvironment(nowModel) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
+    return statsHome(i) + fedEnvironment(marketCycles[i].ongoing ? nowModel : cycleModel(marketCycles[i])) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;

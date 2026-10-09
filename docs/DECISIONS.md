@@ -639,7 +639,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **Analysis opens on the current cycle and names the cycle it shows; a period picked on Elements stays on
   Elements.** A past cycle reaches Analysis only from its own cycle page (Cycle Statistics), and Cycle Statistics
-  opens with that cycle's name and years. Keren chose "Current by default" after picking the Housing Cycle on
+  opens with that cycle's name and years; Interest Rates Environment follows the cycle shown (Keren: "yes"). Keren chose "Current by default" after picking the Housing Cycle on
   Elements left Analysis on it, unnamed, after Back. (0.9.27)
 - **Each cycle in Analysis shows its growth and its prices, totalled the same way over the same closed years,
   side by side on one line.** Keren: "this is so interesting — put it in the analysis tab per cycle". (V276)

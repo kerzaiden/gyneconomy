@@ -371,7 +371,7 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  return statsHome(i) + fedEnvironment(nowModel) +
+  return statsHome(i) + fedEnvironment(marketCycles[i].ongoing ? nowModel : cycleModel(marketCycles[i])) +
     dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){

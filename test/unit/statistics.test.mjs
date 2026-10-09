@@ -86,6 +86,8 @@ test('a period picked on Elements stays there: Analysis reopens on the open cycl
   assert.equal(name(), marketCycles[open].name);
   const d = document.createElement('button'); d.setAttribute('data-chart-cycle', housing.name); document.body.appendChild(d); d.click(); d.remove();
   assert.equal(name(), housing.name);
+  assert.match(document.querySelector('#chart-home .fp').textContent, new RegExp(String(housing.from)));
+  assert.doesNotMatch(document.querySelector('#chart-home .fp').textContent, new RegExp(String(calendarTodayY)));
   document.querySelector('#chart-home [data-ind-cat="desire"]').click();
   assert.equal(document.querySelector('#sheet-find .period-now b').textContent, housing.name);
 });
