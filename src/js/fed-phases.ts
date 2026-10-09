@@ -1,10 +1,11 @@
 import { discountHistory, fedFundsHistory, fedMoves } from "./history-fred.ts";
-import { now } from "./data.ts";
+import { fedFundsRange, now } from "./data.ts";
 import { inflationHistory } from "./refresh-season.ts";
 import { cpiDirectionAt, cycleModel, nowModel } from "./model.ts";
-import { CHEV, isoDay, monthLabel } from "./format.ts";
+import { CHEV, MONTHS_SHORT, isoDay, monthLabel } from "./format.ts";
 import { orbitSvg } from "./marks.ts";
 import { dxHead, dxSys } from "./render-core.ts";
+import { tabBar } from "./history.ts";
 import { ROSTER_BY } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
@@ -42,19 +43,25 @@ export function cyclePeak(from: string, to: string){
 }
 
 // ---- The phases chart ----
-var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, SIDE = 24;
+var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 12, CURL = 0.4;
 function monthPoints(list: MonthPoint[], from: number, to: number){
-  var sums: Record<number, number[]> = {};
-  list.forEach(function(d){ var i = monthIdx(d.m); if (i >= from && i <= to) (sums[Math.floor(i / 3)] = sums[Math.floor(i / 3)] || []).push(d.v); });
-  return Object.keys(sums).map(Number).sort(function(a, b){ return a - b; }).map(function(q){
-    return { i: Math.min(Math.max(q * 3 + 1, from), to), v: sums[q].reduce(function(a, b){ return a + b; }, 0) / sums[q].length };
+  var size = Math.max(1, Math.round((to - from + 1) / POINTS)), sums: Record<number, number[]> = {};
+  list.forEach(function(d){ var i = monthIdx(d.m), b = Math.floor((i - from) / size); if (i >= from && i <= to) (sums[b] = sums[b] || []).push(d.v); });
+  return Object.keys(sums).map(Number).sort(function(a, b){ return a - b; }).map(function(b){
+    return { i: Math.min(from + b * size + (size - 1) / 2, to), v: sums[b].reduce(function(a, c){ return a + c; }, 0) / sums[b].length };
+  });
+}
+function slopes(p: number[][]){
+  return p.map(function(b, k){
+    var a = p[Math.max(k - 1, 0)], c = p[Math.min(k + 1, p.length - 1)], s0 = (b[1] - a[1]) / ((b[0] - a[0]) || 1), s1 = (c[1] - b[1]) / ((c[0] - b[0]) || 1);
+    return s0 * s1 <= 0 ? 0 : Math.sign(s0) * Math.min(Math.abs(s0 + s1) / 2, 3 * Math.abs(s0), 3 * Math.abs(s1));
   });
 }
 function segments(pts: Pt[], x: (i: number) => number, y: (v: number) => number){
-  var p = pts.map(function(d){ return [x(d.i), y(d.v)]; }), out: number[][] = [];
+  var p = pts.map(function(d){ return [x(d.i), y(d.v)]; }), m = slopes(p), out: number[][] = [];
   for (var k = 0; k < p.length - 1; k++){
-    var a = p[Math.max(k - 1, 0)], b = p[k], c = p[k + 1], e = p[Math.min(k + 2, p.length - 1)];
-    out.push([b[0], b[1], b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1]]);
+    var b = p[k], c = p[k + 1], h = (c[0] - b[0]) * CURL;
+    out.push([b[0], b[1], b[0] + h, b[1] + m[k] * h, c[0] - h, c[1] - m[k + 1] * h, c[0], c[1]]);
   }
   return out;
 }
@@ -72,7 +79,7 @@ function sample(segs: number[][]){
   });
   return out;
 }
-var TAG = { h: 16, gap: 8, clear: 3, plotW: 300, plotH: 150 };
+var TAG = { h: 22, gap: 6, clear: 3, plotW: 300, plotH: 150 };
 var TAG_SIDES = [[1, 0], [-1, 0], [0, -1], [0, 1], [1, -1], [-1, -1], [1, 1], [-1, 1]];
 type Tag = { ax: number; ay: number; dx: number; dy: number; w: number };
 function sideTag(ax: number, ay: number, w: number, side: number[]): Tag {
@@ -95,21 +102,13 @@ function tagSpan(cls: string, text: string, t: Tag){
   return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ';top:' + pct(t.ay) + ';width:' + t.w + 'px;margin:' + t.dy + 'px 0 0 ' + t.dx + 'px">' + text + '</span>';
 }
 function peakTag(segs: number[][][], px: number, py: number){
-  return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side){ return sideTag(px / VIEW_W, py / VIEW_H, 36, side); }), segs);
+  return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side){ return sideTag(px / VIEW_W, py / VIEW_H, 48, side); }), segs);
 }
-function peakZone(px: number, py: number){
-  var out: number[][] = [], cx = px / VIEW_W * TAG.plotW, cy = py / VIEW_H * TAG.plotH;
-  for (var dx = -44; dx <= 44; dx += 4) for (var dy = -24; dy <= 24; dy += 4) out.push([cx + dx, cy + dy]);
-  return out;
-}
-function levelTags(segs: number[][][], sc: Scale, bands: Band[], keep: number[][]){
-  var pts = curvePts(segs).concat(keep), y = sc.y;
-  var marks = ruleLevels(sc).map(function(v){ var text = (v < 0 ? "\u2212" : "") + Math.abs(v) + "%"; return { v: v, text: text, w: 6 + 6 * text.length }; });
-  var wide = Math.max.apply(null, marks.map(function(k){ return k.w; }).concat(0));
-  var tries = bands.filter(function(b){ return b.w * TAG.plotW >= wide + 10; }).map(function(b){
-    return marks.map(function(k){ var t = { ax: b.l, ay: y(k.v) / VIEW_H, w: k.w, dx: 5, dy: -TAG.h }; return tagHits(t, pts) ? "" : tagSpan("fp-level-tag", k.text, t); });
-  });
-  return tries.reduce(function(a, c){ return c.filter(Boolean).length > a.filter(Boolean).length ? c : a; }, [] as string[]).join("");
+function levelTags(sc: Scale){
+  return ruleLevels(sc).filter(function(v){ return sc.y(v) / VIEW_H > TAG.h / TAG.plotH; }).map(function(v){
+    var text = (v < 0 ? "\u2212" : "") + Math.abs(v) + "%";
+    return tagSpan("fp-level-tag", text, { ax: 0, ay: sc.y(v) / VIEW_H, w: 6 + 6 * text.length, dx: 5, dy: -TAG.h });
+  }).join("");
 }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
 var GRID_STEPS = [1, 2, 5, 10];
@@ -139,20 +138,33 @@ function bandSpans(phases: Phase[], from: number, to: number){
   return out;
 }
 function bandsHtml(bands: Band[], rules: string){
-  return bands.map(function(b){ return '<span class="fp-band ' + b.cls + '" style="left:' + pct(b.l) + ';width:' + pct(b.w) + '">' + rules + '</span>'; }).join("");
+  return '<span class="fp-clip">' + bands.map(function(b){ return '<span class="fp-band ' + b.cls + '" style="left:' + pct(b.l) + ';width:' + pct(b.w) + '">' + rules + '</span>'; }).join("") + '</span>';
 }
 function stanceClass(p: Phase){ return p.s > 0 ? "fp-tight" : "fp-ease"; }
-function yearsHtml(from: number, to: number){
-  var span = to - from + 1, y0 = Math.floor(from / 12), y1 = Math.floor(to / 12), step = Math.ceil((y1 - y0 + 1) / 6), out = "";
-  for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + '</span>';
+function axisMark(left: number | null, text: string){ return '<span class="fp-year' + (left == null ? ' fp-end"' : '" style="left:' + pct(left) + '"') + '>' + text + '</span>'; }
+function axisTicks(from: number, to: number){
+  var span = to - from + 1, out = "";
+  if (span <= 13) for (var i = from; i < to - 1; i += 3) out += axisMark((i - from) / span, MONTHS_SHORT[i % 12]);
+  else for (var y = Math.ceil(from / 12), step = Math.ceil((Math.floor(to / 12) - y) / 4); (y * 12 - from) / span < 0.7; y += step) out += axisMark((y * 12 - from) / span, String(y));
   return out;
 }
-function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open: boolean, bands: Band[]){
-  var span = to - from + 1, sc = levelScale(lines), y = sc.y;
-  var x = function(i: number){ return SIDE + (i - from + 0.5) / span * (VIEW_W - 2 * SIDE); };
+function yearsHtml(from: number, to: number, open: boolean){
+  return axisTicks(from, to) + axisMark(null, open ? "Today" : MONTHS_SHORT[to % 12] + " " + Math.floor(to / 12));
+}
+function fillDefs(){
+  return '<defs>' + ["fp-rate", "fp-prices"].map(function(cls){ return '<linearGradient id="' + cls + '-fill" class="' + cls + '" x1="0" y1="0" x2="0" y2="1"><stop class="fp-fill-top" offset="0"/><stop class="fp-fill-low" offset="1"/></linearGradient>'; }).join("") + '</defs>';
+}
+function areaPath(segs: number[][], cls: string){
+  if (!segs.length) return "";
+  return '<path class="fp-area" fill="url(#' + cls + '-fill)" d="' + curve(segs) + ' L' + segs[segs.length - 1][6].toFixed(1) + ' ' + VIEW_H + ' L' + segs[0][0].toFixed(1) + ' ' + VIEW_H + ' Z"/>';
+}
+function lineSvg(segs: number[][], cls: string){ return '<path class="fp-line ' + cls + '" d="' + curve(segs) + '" vector-effect="non-scaling-stroke"/>'; }
+function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open: boolean){
+  var sc = levelScale(lines), y = sc.y;
+  var x = function(i: number){ return (i - from) / Math.max(to - from, 1) * VIEW_W; };
   var segs = lines.map(function(l){ return segments(l, x, y); });
-  var paths = ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
-  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + levelTags(segs, sc, bands, peak ? peakZone(x(peak.i), y(peak.v)) : []) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
+  var paths = fillDefs() + areaPath(segs[1], "fp-rate") + areaPath(segs[0], "fp-prices") + lineSvg(segs[1], "fp-rate") + lineSvg(segs[0], "fp-prices");
+  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + levelTags(sc) + (peak ? '<span class="fp-strip" style="left:' + pct(x(peak.i) / VIEW_W) + '"></span><span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }
@@ -174,13 +186,32 @@ function endMonthOf(m: CycleModel){
   var ff = fedFundsHistory[fedFundsHistory.length - 1];
   return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
 }
-function fedPhasesCard(m: CycleModel){
-  var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), bands = bandSpans(fedPhases(), from, to);
-  var peak = cyclePeak(fromM, toM);
-  var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
-  var top = peak ? lines[0].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml(m);
+var RANGES = [["1y", "1Y"], ["5y", "5Y"], ["cycle", "Cycle"]];
+function windowFrom(range: string, cycleFrom: number, to: number){ return range === "1y" ? to - 11 : range === "5y" ? to - 59 : cycleFrom; }
+function closingRate(m: CycleModel, toM: string){
+  if (m.ongoing) return fedFundsRange().replace("%", "");
+  var d = rateSeries(toM).filter(function(p){ return p.m <= toM; }).pop();
+  return d ? d.v.toFixed(2) : "";
 }
-export function fedEnvironment(m: CycleModel){
-  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
+function heroHtml(m: CycleModel, toM: string){ return '<div class="fp-hero"><b class="fp-fig">' + closingRate(m, toM) + '<small>%</small></b></div>'; }
+function soften(lines: Pt[][], from: number, to: number){
+  return lines.map(function(l){ return l.map(function(p, k){ var a = l[Math.max(k - 1, 0)], b = l[Math.min(k + 1, l.length - 1)]; return { i: k === 0 ? from : k === l.length - 1 ? to : p.i, v: (a.v + 2 * p.v + b.v) / 4 }; }); });
+}
+function pinPeak(line: Pt[], at: number, v: number){
+  var k = line.filter(function(p){ return p.i < at; }).length, near = k > 0 && k < line.length && Math.abs(line[k].i - at) < 1 ? k : -1;
+  if (near >= 0) line[near] = { i: at, v: v }; else line.splice(k, 0, { i: at, v: v });
+  return k;
+}
+function fedPhasesCard(m: CycleModel, host: string, range: string){
+  var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to), bands = bandSpans(fedPhases(), from, to);
+  var peak = cyclePeak(m.era.from + "-01", toM), at = peak ? monthIdx(peak.m) : -1, shown = peak && at >= from ? peak : null;
+  var raw = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)], k = shown ? pinPeak(raw[0], at, (shown as MonthPoint).v) : -1;
+  var lines = soften(raw, from, to), top = k < 0 ? null : lines[0][k];
+  return heroHtml(m, toM) + tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, top, m, bands) + legendHtml() + footnoteHtml(m);
+}
+function plotHtml(lines: Pt[][], from: number, to: number, top: Pt | null, m: CycleModel, bands: Band[]){
+  return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + '</div>';
+}
+export function fedEnvironment(m: CycleModel, host: string, range: string){
+  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + fedPhasesCard(m, host, range));
 }

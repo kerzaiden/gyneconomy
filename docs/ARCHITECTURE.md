@@ -467,7 +467,7 @@ Rules that shape the pages:
   showed them (`eraCard`) went with the category pages.
 - **Cycle analysis is a blood test of each cycle** (`cycle-analysis`), and since 0.6.1 the tab where every
   reading is found (Search's job before it). One renderer, `drawChart(id)`, draws two hosts: `#chart-home`, the
-  tab's home (a search box that is a door, Cycle Statistics with the Health Score inside it, Interest Rates Environment and Insights, the
+  tab's home (a search box that is a door, Cycle Statistics with the Health Score inside it, Interest Rates and Insights, the
   category rows, 0.8.3), and `#sheet-find`, the Indicators page, built at boot by `buildFind` and redrawn when it opens
   or a live reading lands (`repaint`). Every Insights row and the home's search box open it, setting its category
   (`finds[IND].cat`, a `tabBar`); the two share one cycle through `page.cycles`. Cycle Statistics reads the cycle it shows
@@ -625,13 +625,19 @@ emotion at the closing month, its years, and what followed a year later. Every l
   they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak.
   The walk is over the whole record because a run crosses cycle edges.
   Bands and the peak's dot are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and
-  non-scaling strokes, so the card is fluid. Prices and the rate are drawn as quarterly means through a Catmull-Rom
-  curve, so the lines flow as in her tracker; the peak's dot sits on its quarter. The Peak and level labels are HTML too, placed by
-  sampling both drawn curves and taking the first side whose box they miss (the level figures share one band's left edge, the band that leaves the most of them clear); the test assumes the narrowest plot
-  (300px), because a label's box in px is a smaller share of a wider plot and so stays clear there too. `rateSeries` is
+  non-scaling strokes, so the card is fluid; the bands sit in one rounded clip (`fp-clip`) so the plot's four
+  corners stay round. `monthPoints` averages the window into about `POINTS` buckets, `pinPeak` inserts the peak's
+  true reading at its month, and `soften` pins both ends to the window's edges and smooths once ([1,2,1]/4), so the
+  curves run edge to edge and still pass through the Peak; `segments` joins the points with a monotone cubic whose
+  slope is zero at every turn, so no curve overshoots a reading. The Peak's strip, dot and bubble are HTML: the bubble
+  is placed by sampling both drawn curves and taking the first side whose box they miss; the test assumes the
+  narrowest plot (300px), because a box in px is a smaller share of a wider plot and so stays clear there too. The level
+  figures all sit at the plot's left edge, and one that would cross the top is left out. The 1Y · 5Y · Cycle bar is
+  the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`; the
+  figure is `fedFundsRange()` on the open cycle and the rate's last reading at a closed cycle's end. `rateSeries` is
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
-  1914 to 1954-06) before. The note under the legend is the cycle's `rates` story with `{peak}` and `{month}` filled
-  from `cyclePeak`, so the words are written once and the figures are the record's.
+  1914 to 1954-06) before. The note under the legend is one explanation of the phases, the same on every cycle; the cycle's `rates`
+  story, with `{peak}` and `{month}` filled from `cyclePeak`, is read in its AI Insights.
 - **AI Insights** (0.6.5, Cycle Insights, `ai-insights`): every cycle page's first door (`aiInsights(m)`), its lede
   clamped to three lines (Claude's on the open cycle, the cycle's `blurb` on a closed one), with no health score
   (Cycle Analysis carries it, 0.9.46), opening the page `sheet-ai-insights` (built by `buildAiPage`, drawn on open). Rendering

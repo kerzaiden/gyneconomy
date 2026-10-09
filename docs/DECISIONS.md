@@ -305,7 +305,7 @@ settles it; none is open after V668.
   indicator, Federal debt and Federal budget each have their own; the two Treasury spreads
   (10Y − 3M, 10Y − 2Y) stay one page, which Keren saw no need to split, and the US 10-year Treasury stays one card
   with its maturity picker. (V254, V658)
-- **The door from Interest Rates Environment to the Federal funds rate page is an inline "Learn more ›" after the
+- **The door from Interest Rates to the Federal funds rate page is an inline "Learn more ›" after the
   card's text, on Analysis, where it lands on the cycle Analysis shows.** Reading is what makes one want
   to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished. (0.9.1,
   0.9.40, 0.9.43, 0.9.44, 0.9.46)
@@ -590,7 +590,7 @@ settles it; none is open after V668.
 
 - **Analysis opens on the current cycle and names the cycle it shows; a period picked on Elements stays on
   Elements.** A past cycle reaches Analysis only from its own cycle page (Cycle Analysis), which opens with that
-  cycle's name and years, and Interest Rates Environment follows the cycle shown. Keren chose current by default
+  cycle's name and years, and Interest Rates follows the cycle shown. Keren chose current by default
   because a cycle picked on Elements had left Analysis showing it, unnamed, after Back. (0.9.31)
 - **Each cycle in Analysis shows its growth and its prices, totalled the same way over the same closed years,
   side by side on one line.** Keren found the comparison worth a place per cycle in Analysis. (V276)
@@ -646,7 +646,7 @@ settles it; none is open after V668.
   explain FIGO or compare the app with cycle-tracking apps,** which overcomplicated it. The ±0.47 band stays
   "Sensitivity", Keren's better word than "margin for noise". (0.8.3, Oct 6, 2026)
 - **The Analysis tab reads in Clue's order, one container after another at the app's one gap: the search box, the
-  Cycle Statistics (the Health Score, white, first inside it), Interest Rates Environment, then Insights.** It follows
+  Cycle Statistics (the Health Score, white, first inside it), Interest Rates, then Insights.** It follows
   Clue's analysis screen (cycle statistics, period flow, insights by category); the health score and search stay on
   the main Analysis page, and the spacing is always the app's own. Bleed is called Period flow everywhere. (0.8.3,
   Oct 6, 2026)
@@ -669,8 +669,8 @@ settles it; none is open after V668.
   show every time. The cycle pages show the same tile, ring, score and tier, inside their Cycle Analysis card
   only, so it looks as it does on Analysis; it opens nothing of its own there, since the card it sits in is the
   door. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
-- **The interest-rate container is titled Interest Rates Environment, on Analysis,** because
-  most people recognize "interest rates". (0.8.12, Oct 7, 2026)
+- **The interest-rate container is titled Interest Rates, on Analysis,** because most people recognize "interest
+  rates"; "Environment" made the head too long. (0.8.12, Oct 7 and 9, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
   adds that the verdict is relative to the market's own past cycles.** Typical is within Tukey's fences of her closed
   cycles, the app's outlier rule, and a page says how in a line or two because the model is new. Normal is the word
@@ -1458,7 +1458,10 @@ settles it; none is open after V668.
   pill (`--seg-on`); track and pill are fully round, the choices spread evenly in dark text, the chosen one a
   touch bolder on a softly lifted pill.** Taken from Clair's grey-and-white selection bar and a hormone-app
   reference Keren found prettier. It is the one grey in the app; containers stay white, as grey read too grey.
-  (V579, 0.6.2, 0.8.5)
+  The Interest Rates card's range bar is the thin form (`rangebar thin`), closer to Clair's proportions: the soft grey
+  of the card's text panel (`--soft-panel`), a shorter, narrower white pill with no shadow, lighter labels. The
+  history rows keep the 40px bar, since they sit at one height beside the cycle picker. (V579, 0.6.2, 0.8.5,
+  Oct 9, 2026)
 - **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a
   white page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer
   salmon-orange, Spring marigold, Winter periwinkle and Autumn its light tint.** The dark purple, the light
@@ -1471,7 +1474,7 @@ settles it; none is open after V668.
   background should be organic, delicate and feminine, flowing like hormones or a flower, prominent without
   competing with the foreground. With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3, 0.6.13, 0.6.14)
-- **A cycle page is AI Insights, Cycle Analysis, Year by Year; Interest Rates Environment stands on Analysis
+- **A cycle page is AI Insights, Cycle Analysis, Year by Year; Interest Rates stands on Analysis
   only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis. Cycle Analysis
   is the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that cycle, and
   its Learn more opens the Federal funds rate on that same cycle. The Health Score shows once, in Cycle Analysis, since the analysis is
@@ -1592,27 +1595,35 @@ settles it; none is open after V668.
   open cycle with no confirmed peak shows its peak so far, hollow, since Keren wants to see the highest prices of
   the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
-- **The Interest Rates Environment card is a feel, not a measure: two curves, the Fed's rate (blue) and prices
-  (orange), over the Tightening and Easing bands, with no figures and no growth; the scale runs from one point below the lowest reading to one point above the
-  highest, not from zero, so the curves fill the plot without touching its edges; the guides are dashed rules at a
-  round step (1% where the range allows, else 2%, 5% or 10%, at most six), each with a small, faint figure at the left
-  edge of one band, the same band for every figure (the one that leaves the most figures clear), skipped where a
-  curve covers it, so the eye can gauge the level; they are drawn inside the
-  bands. The card's type matches Cycle Statistics: the story at reading size, the legend, years and Peak at meta size.** It shows the
-  environment at a glance, the way her tracker shows hormones; growth is the other half of the season and the dial
-  already shows it. The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason
-  here. The peak is an orange dot on the prices curve (hollow on the open cycle), labelled Peak beside it in the
-  legend's type, on whichever side keeps clear of both curves; the label left the legend so the legend fits one line
-  on most phones. Under the years, one legend at the years' size, between a top and a bottom rule (as in Insights) and set left with
-  tight gaps: Tightening, Easing, Rates, Prices. Under it, one explanation of the phases, the same on every cycle, as
-  her tracker explains what each phase of a cycle does. Each cycle's rates story, one or two short lines on what the
+- **The Interest Rates card is a feel, not a measure, dressed as her Clair hormone chart: the Fed's rate as a
+  soft yellow area behind and prices as an orange line with a translucent fill in front, over a plot in two nudes,
+  like a pale and a tan skin: easing the pale, tightening one shade deeper, seen only at the border between them, so
+  the only purple is the Peak's strip; above it, today's
+  target range (or the rate at a closed cycle's close) as one large serif figure, and a thin 1Y · 5Y · Cycle bar.
+  The curves are drawn freely: about twelve averaged points per window, lightly smoothed, joined by curves that
+  rest flat at every turn, edge to edge of the plot; the scale runs from one point below the lowest reading to one
+  above the highest; faint guide rules at a round step (1%, else 2%, 5% or 10%, at most six), each with its figure
+  at the plot's left edge. The type matches Cycle Statistics: the story at reading size, the legend, axis and Peak
+  at meta size.** It shows the environment at a glance, the way Clair shows hormones: the rates are the backdrop the
+  market lives in and prices act in front of them, so the trend and the two lines' relation matter more than exact
+  values (Keren, Oct 9, 2026). Easing is the default of recent decades, so the plot is pale and darkens only while
+  the Fed tightens. The one figure is the rate itself; no phase line sits under it, since "easing since" misread a
+  cycle the Fed reversed more than once. Growth is the other half of the season and the dial already shows it; the
+  cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. The peak is an
+  orange dot on the prices curve (hollow on the open cycle), the curve passing through its true reading, labelled
+  Peak in a white bubble beside it on whichever side keeps clear of both curves; it shows only when the window holds
+  it. A narrow lilac strip runs the plot's height through the Peak, like the LH strip in Clair: the cycle's turning
+  point. A phase is the direction of the Fed's last move, so a pause stays in the phase it followed and no month is
+  grey; an "on hold" state would need a cut-off nobody has published (Keren asked, Oct 9, 2026). The axis ends in Today, or the close's month, so no Current pill or end dot is needed. Under the axis, one
+  centred grey legend: Tightening, Easing, Rates, Prices. Under it, one explanation of the phases on a soft grey
+  panel, the same on every cycle. Each cycle's rates story, one or two short lines on what the
   rates did (`rates` in `marketCycles`), is the Interest Rates container in that cycle's AI Insights, after its
   narrative: the card teaches the pattern and AI Insights tells the cycle, beside the rest of the cycle's reading,
   while the Federal funds rate page reads the rate across every cycle (0.9.44, Cycle Insights); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
   discount rate; the phases follow the rate alone, so a tightening made another way (the doubling of reserve
   requirements in 1936–37) does not show. A low peak is still a peak: where prices topped in a calm cycle tells
-  something about the cycle too. (0.9.40)
+  something about the cycle too. (0.9.40, Oct 9, 2026)
 - **Every cycle has a peak: its highest price reading within the cycle, once the decline it inherited from the
   cycle before has passed.** A cycle's range is its own length, so by definition it has a peak and a trough. The
   Go-Stop Cycle's is Nov 1969 (5.9%), at its close. The inherited decline is skipped because a cycle's opening
