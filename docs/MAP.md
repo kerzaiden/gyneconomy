@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,803 lines** in 41 files, about 601 KB, roughly **171 thousand tokens**. No session can
+The source is **8,812 lines** in 41 files, about 602 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `aa20b75` on 2026-10-09.
+Generated from commit `f78cc3a` on 2026-10-09.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `aa20b75` on 2026-10-09.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,191 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,190 | the whole stylesheet, every token and rule |
 | `page-body.html` | 251 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 37 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **37** modules, **756** top-level functions, **118** top-level vars, **371** exported names, **20** boots.
+Counts: **37** modules, **761** top-level functions, **119** top-level vars, **371** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -51,7 +51,7 @@ Counts: **37** modules, **756** top-level functions, **118** top-level vars, **3
 | `js/ai-insights.ts` | 181 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 239 | 32 | — |
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
-| `js/cycle-analysis.ts` | 480 | 130 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `live`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/cycle-analysis.ts` | 490 | 136 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `live`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 133 | 22 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
@@ -1023,50 +1023,56 @@ falls in. **export** marks a name other modules import.
 | 307 | `HOME_ID` | `var HOME_ID =` |
 | 308 | `statRow` | `function statRow(` |
 | 313 | `statBody` | `function statBody(` |
-| 316 | `meanOf` | `function meanOf(` |
-| 317 | `lengths` | `function lengths(` |
-| 318 | `typical` | `function typical(` |
-| 319 | `TICK` | `var TICK =` |
-| 320 | `tone` | `function tone(` |
-| 321 | `mark` | `function mark(` |
-| 322 | `RELATIVE` | `var RELATIVE =` |
-| 323 | `healthPage` | `function healthPage(` |
-| 327 | `healthTone` | `function healthTone(` |
-| 328 | `healthRow` | `function healthRow(` |
-| 329 | `healthTile` | `function healthTile(` |
-| 334 | `cycleBars` | `function cycleBars(` |
-| 342 | `barClass` | `function barClass(` |
-| 343 | `lengthPage` | `function lengthPage(` |
-| 348 | `driftWord` | `function driftWord(` |
-| 349 | `variationPage` | `function variationPage(` |
-| 354 | `statsHome` | `function statsHome(` |
-| 361 | `insightSec` | `function insightSec(` |
-| 364 | `catName` | `function catName(` |
-| 365 | `markName` | `function markName(` |
-| 366 | `countTag` | `function countTag(` |
-| 367 | `insightsHome` | `function insightsHome(` |
-| 374 | `homeSections` | `function homeSections(` |
-| 378 | `whenPicked` | `function whenPicked(` |
-| 382 | `pickedKey` | `function pickedKey(` |
-| 383 | `periodAt` | `function periodAt(` |
-| 387 | `drawChart` | `function drawChart(` |
-| 395 | `IND` · export | `var IND =` |
-| 396 | `IND_ALL` | `var IND_ALL =` |
-| 397 | `searchShell` | `function searchShell(` |
-| 398 | `pickCat` | `function pickCat(` |
-| 404 | `buildFind` | `function buildFind(` |
-| 405 | `fold` | `function fold(` |
-| 409 | `wireFinder` | `function wireFinder(` |
-| 422 | `setPeriod` | `function setPeriod(` |
-| 427 | `pick` | `function pick(` |
-| 433 | `refreshSheet` | `function refreshSheet(` |
-| 438 | `PICKS` | `var PICKS =` |
-| 439 | `centreList` | `function centreList(` |
-| 443 | `wirePicks` | `function wirePicks(` |
-| 453 | `openWhen` | `function openWhen(` |
-| 458 | `wireCatDoors` | `function wireCatDoors(` |
-| 464 | `crossToChart` | `function crossToChart(` |
-| 469 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 316 | `yearsText` | `function yearsText(` |
+| 317 | `meanOf` | `function meanOf(` |
+| 318 | `lengths` | `function lengths(` |
+| 319 | `typical` | `function typical(` |
+| 320 | `flows` | `function flows(` |
+| 321 | `flowTypical` | `function flowTypical(` |
+| 322 | `verdict` | `function verdict(` |
+| 323 | `TICK` | `var TICK =` |
+| 324 | `tone` | `function tone(` |
+| 325 | `mark` | `function mark(` |
+| 326 | `TYPICAL_KEY` | `var TYPICAL_KEY =` |
+| 327 | `RELATIVE` | `var RELATIVE =` |
+| 328 | `healthPage` | `function healthPage(` |
+| 332 | `healthTone` | `function healthTone(` |
+| 333 | `healthRow` | `function healthRow(` |
+| 334 | `healthTile` | `function healthTile(` |
+| 339 | `cycleBars` | `function cycleBars(` |
+| 347 | `barClass` | `function barClass(` |
+| 348 | `lengthPage` | `function lengthPage(` |
+| 353 | `driftWord` | `function driftWord(` |
+| 354 | `variationPage` | `function variationPage(` |
+| 359 | `flowPage` | `function flowPage(` |
+| 364 | `statsHome` | `function statsHome(` |
+| 371 | `insightSec` | `function insightSec(` |
+| 374 | `catName` | `function catName(` |
+| 375 | `markName` | `function markName(` |
+| 376 | `countTag` | `function countTag(` |
+| 377 | `insightsHome` | `function insightsHome(` |
+| 384 | `homeSections` | `function homeSections(` |
+| 388 | `whenPicked` | `function whenPicked(` |
+| 392 | `pickedKey` | `function pickedKey(` |
+| 393 | `periodAt` | `function periodAt(` |
+| 397 | `drawChart` | `function drawChart(` |
+| 405 | `IND` · export | `var IND =` |
+| 406 | `IND_ALL` | `var IND_ALL =` |
+| 407 | `searchShell` | `function searchShell(` |
+| 408 | `pickCat` | `function pickCat(` |
+| 414 | `buildFind` | `function buildFind(` |
+| 415 | `fold` | `function fold(` |
+| 419 | `wireFinder` | `function wireFinder(` |
+| 432 | `setPeriod` | `function setPeriod(` |
+| 437 | `pick` | `function pick(` |
+| 443 | `refreshSheet` | `function refreshSheet(` |
+| 448 | `PICKS` | `var PICKS =` |
+| 449 | `centreList` | `function centreList(` |
+| 453 | `wirePicks` | `function wirePicks(` |
+| 463 | `openWhen` | `function openWhen(` |
+| 468 | `wireCatDoors` | `function wireCatDoors(` |
+| 474 | `crossToChart` | `function crossToChart(` |
+| 479 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/era.ts`
 
@@ -1439,14 +1445,14 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 734 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 876 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
 | 885 | The symptoms: a cycle's years against today |
-| 1,032 | yield curve charts |
-| 1,056 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,075 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,088 | un-inversion-to-recession historical lag panel |
-| 1,097 | the reading's tag |
-| 1,105 | info icon + popover (progressive disclosure for longer notes) |
-| 1,119 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,182 | footer |
+| 1,031 | yield curve charts |
+| 1,055 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,074 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,087 | un-inversion-to-recession historical lag panel |
+| 1,096 | the reading's tag |
+| 1,104 | info icon + popover (progressive disclosure for longer notes) |
+| 1,118 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,181 | footer |
 
 ## Markup landmarks
 

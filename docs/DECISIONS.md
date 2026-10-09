@@ -641,20 +641,19 @@ settles it; none is open after V668.
   Clue's analysis screen (cycle statistics, period flow, insights by category); the health score and search stay on
   the main Analysis page, and the spacing is always the app's own. Bleed is called Period flow everywhere. (0.8.3,
   Oct 6, 2026)
-- **Cycle Statistics holds three cards, Cycle length, Cycle variation and Period flow, each a ring and a figure in
-  years; the first two carry a dividing line, aligned across both, and open a page explaining their figure.** Each
-  card is the average of every closed cycle since 1928, and a line under the title says so: "Averages are based on 18
-  closed market cycles since 1928." Most analysts put the average market cycle at four to eight years, and the app
-  should not be the outlier, so the averages rest on all 18 cycles rather than the last six as Clue does. The line
-  speaks of market cycles, not "her", since users would need the book to follow it. Cycle length's page draws every
-  cycle as a bar, Typical or Atypical. Cycle variation is the standard deviation (above). Period flow's ring is red
-  and has no page. The aligned dividing line makes the two cards read as one component. (0.8.3, 0.8.12, Oct 6, 2026)
-- **Beside each average, Cycle Statistics shows the cycle on screen, the open one or a past one: its length (3¾ yrs)
-  and how far it ran from the average (−1½ yrs), each with a green or red tick for Typical or Atypical.** Each card
-  opens a page saying so in a line or two, with every cycle as a bar and the one shown in bold. "More info" is gone.
-  The Health Score counts the cycle's length once, Normal when Typical, Risk when not; an open cycle's length is
-  Typical until it passes the fence. The current cycle's statistics need to be seen, and a health score should take
-  in whether the cycle's length and variation are typical. (0.8.12, Oct 7, 2026)
+- **Cycle Statistics holds three cards, Cycle length, Cycle variation and Period flow, each a ring, the shown
+  cycle's own figure (3¾ years, −1½ years) and its verdict, Typical or Atypical, with a green or red tick; each opens a
+  page explaining it, with a dividing line aligned across the cards.** The cycle's figure leads and the verdict
+  replaces the average beside it, since the average is the yardstick, not the news; the pages still give it. The
+  ring is the cycle against the closed cycles' average of the same figure (length against average length, distance
+  from the average against the standard deviation, flow against average flow), full at or past the average. The
+  line under the title says what Typical is judged against: "Typical is judged against 18 closed market cycles since
+  1928." Every verdict rests on all 18 closed cycles, not the last six as Clue does, because most analysts put the
+  average market cycle at four to eight years and the app should not be the outlier. The line speaks of market
+  cycles, not "her", since users would need the book to follow it. The open cycle has no Period flow yet, so it shows
+  none. Period flow is Typical inside Tukey's fence above its closed cycles; as 14 of 18 bled exactly one year, the
+  fence sits at one year. The Health Score counts the cycle's length once, Normal when Typical, Risk when not; an
+  open cycle's length is Typical until it passes the fence. (0.8.3, 0.8.12, Oct 6–9, 2026)
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
   against.** Only its colour sets it apart, and the detail of what it is judged against (18 closed cycles) need not
@@ -669,8 +668,8 @@ settles it; none is open after V668.
   for parameters, so cycles take Typical; Normal/Abnormal was tried and rejected. The relative line is Keren's: the
   verdict is relative to her own past cycles. (0.8.3, 0.8.12, Oct 7, 2026)
 - **Cycle Statistics' verdicts carry the tier colours: green (`--good`) for Typical or Normal, yellow (`--gold`) for
-  Attention, red (`--critical`) for Atypical or Risk, on the tick and the ring; the length bars follow.** Period flow's
-  ring stays red. Typical means normal, so it is green. (0.8.12, Oct 7, 2026)
+  Attention, red (`--critical`) for Atypical or Risk, on the tick and the ring; the length bars follow.** Typical means
+  normal, so it is green. (0.8.12, Oct 7, 2026)
 - **Insights lists only the categories; each opens one Indicators page on that category, where every reading is
   searched, filtered by tier and cycle, and switched between categories by a bar.** The search box on Analysis opens
   the same page on All. One universal page searches and filters every indicator; Keren accepted it as fine for now,
