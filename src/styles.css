@@ -643,6 +643,11 @@
   .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
+  .ps-scroll{ position:absolute; left:0; right:0; overflow-y:auto; scrollbar-width:none; }
+  .ps-scroll::-webkit-scrollbar{ display:none; }
+  .ps-fade{ position:sticky; bottom:0; height:32px; margin-top:-32px; pointer-events:none;
+    background:linear-gradient(to bottom, transparent, var(--surface)); transition:opacity 0.2s; }
+  .ps-scroll.at-end .ps-fade{ opacity:0; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -650,7 +655,7 @@
   .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.42; }
   .peek-chart.heat .now{ opacity:1; }
   .peek-chart svg{ display:block; width:100%; height:var(--mini-h); overflow:visible; }
-  .vh-host{ margin:10px 0 2px; }
+  .vh-host{ position:relative; margin:10px 0 2px; }
 
   .vh-svg{ display:block; width:100%; height:auto; margin:10px 0 2px; overflow:visible; }
   /* ---- Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of ---- */

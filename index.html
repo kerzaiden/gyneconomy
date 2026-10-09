@@ -640,6 +640,11 @@
   .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
+  .ps-scroll{ position:absolute; left:0; right:0; overflow-y:auto; scrollbar-width:none; }
+  .ps-scroll::-webkit-scrollbar{ display:none; }
+  .ps-fade{ position:sticky; bottom:0; height:32px; margin-top:-32px; pointer-events:none;
+    background:linear-gradient(to bottom, transparent, var(--surface)); transition:opacity 0.2s; }
+  .ps-scroll.at-end .ps-fade{ opacity:0; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -647,7 +652,7 @@
   .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.42; }
   .peek-chart.heat .now{ opacity:1; }
   .peek-chart svg{ display:block; width:100%; height:var(--mini-h); overflow:visible; }
-  .vh-host{ margin:10px 0 2px; }
+  .vh-host{ position:relative; margin:10px 0 2px; }
 
   .vh-svg{ display:block; width:100%; height:auto; margin:10px 0 2px; overflow:visible; }
 
@@ -43088,10 +43093,10 @@
     FOOT: 8,
     READ: 61
   };
-  function histFrame(Wpx, plot) {
+  function histFrame(Wpx) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow2 = W < 430;
-    var H = plot ? AXIS.T + AXIS.LEG + AXIS.READ + plot + 17 + AXIS.FOOT : narrow2 ? 335 : 375;
+    var H = narrow2 ? 335 : 375;
     return {
       W: W,
       narrow: narrow2,
@@ -50236,12 +50241,12 @@
     }());
   }
   function cycleRowsHtml() {
-    var strips = {};
+    var strips2 = {};
     marketCycles.forEach(function(c) {
-      strips[c.from] = seasonStripHtml(c);
+      strips2[c.from] = seasonStripHtml(c);
     });
     return marketCycles.slice().reverse().map(function(cyc) {
-      var total = eraMarketTotal(cyc), strip2 = strips[cyc.from];
+      var total = eraMarketTotal(cyc), strip2 = strips2[cyc.from];
       var head = '<span class="era-name">' + cyc.name + '</span><span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip2.years + "Y)</b></span>" + CHEV;
       var bands = strip2.strip + marketStripHtml(cyc, strip2.span, strip2.done);
       var foot = econChips(eraGrowth(cyc).total, eraInflation(cyc).total, total, 0, !!cyc.ongoing, "");
@@ -50617,14 +50622,17 @@
     major.push("M" + f1(fx) + "," + f1(B) + "H" + f1(R));
     return '<path class="ekg-minor" d="' + minor.join("") + '"/><path class="ekg-major" d="' + major.join("") + '"/>' + rules.join("");
   }
+  var strips = {
+    off: 0
+  };
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
     var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-    var W = histFrame(Wpx), h = (W.R - W.L - PULSE_GUTTER) * 3 / 20;
-    var F = histFrame(Wpx, Math.ceil(rows * h) - AXIS.LEG), L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = T + rows * h;
+    var F = histFrame(Wpx), h = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, full = rows * h;
     var X = function(q) {
       return L + (R - L) * q / 4;
-    }, out = [];
+    }, out = [], body = [ stripPaper(L, R, T, T + full, h) ];
+    strips.off = 0;
     out.push(chartAxes({
       ticks: [],
       y: function() {
@@ -50638,11 +50646,10 @@
       fmt: String,
       gutter: AXIS.L + PULSE_GUTTER
     }));
-    out.push(stripPaper(L, R, T, B, h));
     [ "Q1", "Q2", "Q3", "Q4" ].forEach(function(t, q) {
       out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17));
     });
-    for (var y = y0; y <= y1; y++) out.push(stripRow({
+    for (var y = y0; y <= y1; y++) body.push(stripRow({
       y: y,
       top: T + h * (y1 - y),
       h: h,
@@ -50650,6 +50657,7 @@
       end: end,
       X: X
     }));
+    out.push('<clipPath id="psview"><rect x="0" y="' + f1(T) + '" width="' + F.W + '" height="' + f1(B - T) + '"/></clipPath><g clip-path="url(#psview)"><g class="ps-rows">' + body.join("") + "</g></g>");
     var cell = function(i) {
       return {
         q: (from + i) % 4
@@ -50673,8 +50681,8 @@
         return (X(cell(i).q) + X(cell(i).q + 1)) / 2;
       },
       pick: function(x, yy) {
-        var row = Math.floor((yy - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y1 - row - M2V_FROM_YEAR) * 4 + q - from;
-        return row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
+        var row = Math.floor((yy + strips.off - T) / h), q = Math.floor((x - L) / (R - L) * 4), i = (y1 - row - M2V_FROM_YEAR) * 4 + q - from;
+        return yy < T || yy > B || row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
       },
       vals: m2vHistory.slice(from, end).map(function(v) {
         return {
@@ -50682,7 +50690,49 @@
         };
       })
     });
-    return vhOpen(F.W, F.H) + 'aria-label="Money velocity’s heartbeat, one strip per year from ' + y0 + " to " + y1 + ", " + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; a quarter whose fall was far out of the record flatlines">' + out.join("") + "</svg>";
+    return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + " " + f1(B - T) + " " + f1(full) + " " + f1(h) + '" aria-label="Money velocity’s heartbeat, one strip per year from ' + y0 + " to " + y1 + ", " + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; a quarter whose fall was far out of the record flatlines">' + out.join("") + "</svg>";
+  }
+  function stripView(svg) {
+    var v = (svg.getAttribute("data-view") || "").split(" ").map(Number), k = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+    return {
+      top: v[0],
+      view: v[1],
+      full: v[2],
+      h: v[3],
+      k: k
+    };
+  }
+  function stripScrolled(el, rows, V) {
+    strips.off = el.scrollTop / V.k;
+    rows.setAttribute("transform", "translate(0 " + f1(-strips.off) + ")");
+    el.classList.toggle("at-end", el.scrollTop + el.clientHeight >= el.scrollHeight - 1);
+  }
+  function stripFollow(el, svg, V) {
+    var on = svg.querySelector(".hcol.on");
+    if (!on) return;
+    var b = on.getBBox(), top = V.top + Math.floor((b.y + b.height / 2 - V.top) / V.h) * V.h - V.top;
+    if (top < strips.off) el.scrollTop = top * V.k; else if (top + V.h > strips.off + V.view) el.scrollTop = (top + V.h - V.view) * V.k;
+  }
+  function stripScroller(box) {
+    var svg = box.querySelector("svg.vh-svg"), rows = svg && svg.querySelector(".ps-rows"), old = box.querySelector(".ps-scroll");
+    if (old) old.remove();
+    strips.off = 0;
+    if (!svg || !rows) return;
+    var V = stripView(svg), el = document.createElement("div"), host = svg.parentElement;
+    if (!(V.full > V.view + 1) || !V.k) return;
+    el.className = "ps-scroll";
+    el.style.top = f1(svg.getBoundingClientRect().top - host.getBoundingClientRect().top - host.clientTop + V.top * V.k) + "px";
+    el.style.height = f1(V.view * V.k) + "px";
+    el.innerHTML = '<div style="height:' + f1(V.full * V.k) + 'px"></div><div class="ps-fade"></div>';
+    host.appendChild(el);
+    el.addEventListener("scroll", function() {
+      stripScrolled(el, rows, V);
+    });
+    box.addEventListener("keydown", function() {
+      setTimeout(function() {
+        if (el.isConnected) stripFollow(el, svg, V);
+      }, 0);
+    });
   }
   function stripsInfo() {
     var f = pulseFences(), pct2 = function(v) {
@@ -50850,6 +50900,26 @@
     if (!ind) throw new Error("no " + term + " reading");
     return ind;
   }
+  function pulseHistory() {
+    var key = page.range["pulse-range"], cyc = pageCycle("pulse-range"), idx = cyc ? cycleQtrIdx(M2V_FROM_YEAR, cyc, m2vHistory.length) : null;
+    var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : void 0;
+    var chart = function(w) {
+      return pulseStripsChart(w, from, to);
+    };
+    return {
+      geom: "pulseStripsChart",
+      wrap: "vh-host",
+      chart: chart,
+      paint: function(box) {
+        refitHistory(box, chart);
+        stripScroller(box);
+      },
+      trend: trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, false, {
+        rising: "accelerating",
+        falling: "decelerating"
+      })
+    };
+  }
   function defineFlow() {
     defineReading("sheet-sign-pulse", {
       face: function() {
@@ -50864,21 +50934,7 @@
           depth: Math.floor(m2vHistory.length / 4)
         });
       },
-      history: function() {
-        var key = page.range["pulse-range"], cyc = pageCycle("pulse-range"), idx = cyc ? cycleQtrIdx(M2V_FROM_YEAR, cyc, m2vHistory.length) : null;
-        var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : void 0;
-        return {
-          geom: "pulseStripsChart",
-          wrap: "vh-host",
-          chart: function(w) {
-            return pulseStripsChart(w, from, to);
-          },
-          trend: trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, false, {
-            rising: "accelerating",
-            falling: "decelerating"
-          })
-        };
-      },
+      history: pulseHistory,
       insight: function() {
         var ind = flowRow("Pulse");
         return indicatorInsight(ROSTER_BY["sheet-sign-pulse"], ind, function(v) {
