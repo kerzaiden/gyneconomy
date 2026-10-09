@@ -1563,23 +1563,27 @@ settles it; none is open after V668.
   curves and peak inflation marked where ovulation sits in the tracker.** The mark reads "Peak", on the
   prices curve, never "ovulation" or "inflation peak": the app should not say ovulation, and the orange legend
   already says prices. A phase is the direction of the Fed's last move (Jensen, Mercer & Johnson, 1996), so a
-  pause stays in its phase and there are only two; the moves are the discount rate before September 1982 and the
-  target since. The peak is the cycle's highest price reading (0.6.17, below). The curves stop at today: an
+  pause stays in its phase and there are only two; the moves are the New York Fed's discount rate before 1950
+  (NBER Macrohistory, the Fed's main lever in the 1920s and 1930s), the discount rate to September 1982 and the
+  target since, so the Depression's cycles read their phases too. The peak is the cycle's highest price reading (0.6.17, below). The curves stop at today: an
   economic cycle has no known length, so no typical cycle is drawn ahead. There is no title, since the chart
   already says it; the head is like the page's other cards, "Interest environment", with an orbit mark
   (`orbitSvg`: a hollow centre, a ring, three hollow dots on it) redrawn from Keren's own drawing (0.7.1). An
   open cycle with no confirmed peak shows its peak so far, hollow, since Keren wants to see the highest prices of
   the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
-- **The Interest Rates Environment card draws two curves, the Fed funds rate and prices, and no growth.** The
-  card is about the Fed's lever against prices; growth is the other half of the season and the dial already shows
-  it, so the card stays as simple as her tracker: two hormones, two phases, one peak. The cost, accepted: a cut made
-  to rescue growth while prices sit calm reads without its reason here. "Peak" is written above the chart on a line
-  down to its dot, clear of the curves as her tracker writes its ovulation; the legend says "Peak (so far)" on the open
-  cycle. The legend is a small table, name, state and figure, each name with its curve's colour as a short line,
-  and its states are the body's words, not the model's: the rate Tightening or Easing, prices Rising, Falling or
-  Steady (the season model's own price trend). A low peak is still a peak: where prices topped in a calm cycle tells
-  something about the cycle too. (Two Hormones)
+- **The Interest Rates Environment card draws two curves, the Fed's rate and prices, and no growth.** The card is
+  about the Fed's lever against prices; growth is the other half of the season and the dial already shows it, so the
+  card stays as simple as her tracker: two hormones, two phases, one peak. The cost, accepted: a cut made to rescue
+  growth while prices sit calm reads without its reason here. The rate's line takes its phase's colour (deep pink
+  while tightening, deep green while easing) instead of a third colour of its own, and the phases carry no labels,
+  since short phases have no room for them; the legend names the phase in force. "Peak" stands beside its dot, on
+  whichever side clears both curves, with no line. The legend is a small table, name, state and figure, the names in
+  the text colour and each curve's colour in its swatch; its states are the body's words: the rate Tightening or
+  Easing, prices Rising, Falling or Steady (the season model's own price trend), "Peak (so far)" on the open cycle.
+  Before the federal funds rate begins (July 1954) the line is the New York Fed's discount rate, named "Discount
+  rate". A low peak is still a peak: where prices topped in a calm cycle tells something about the cycle too.
+  (Two Hormones)
 - **Every cycle has a peak: its highest price reading within the cycle, once the decline it inherited from the
   cycle before has passed.** A cycle's range is its own length, so by definition it has a peak and a trough. The
   Go-Stop Cycle's is Nov 1969 (5.9%), at its close. The inherited decline is skipped because a cycle's opening

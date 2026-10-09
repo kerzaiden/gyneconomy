@@ -119,6 +119,11 @@ ok('the Fed\'s moves are the discount rate, then the target, then its upper boun
             [{ date: '1982-09-27', v: 10.25 }, { date: '1982-10-01', v: 9.5 }],
             [{ date: '2008-12-16', v: 8.75 }, { date: '2015-12-17', v: 9 }]),
    [{ m: '1950-08', v: 0.25 }, { m: '1982-10', v: -0.75 }, { m: '2008-12', v: -0.75 }, { m: '2015-12', v: 0.25 }]);
+ok('before 1950 the Fed\'s moves are the New York Fed\'s discount rate, with no move at the join',
+   fedMoves([{ date: '1950-01-01', v: 1.5 }], [], [], [{ date: '1929-07-01', v: 5 }, { date: '1929-08-01', v: 6 }, { date: '1949-12-01', v: 1.75 }]),
+   [{ m: '1929-08', v: 1 }, { m: '1949-12', v: -4.25 }]);
+ok('the New York Fed\'s discount rate is written as the app reads it',
+   J(emit([], [], null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [{ m: '1929-08', v: 6 }])).discountHistory, [{ m: '1929-08', v: 6 }]);
 const shiller = [['Stock Market Data'], ['', '', '', '', 'Excess CAPE'], ['Date', 'P', 'E', 'CAPE', 'Yield'],
   [1927.12, 17.5, 1.1, 14, 0.04], [1928.01, 17.53, 1.11, 14.1, 0.0412], [1928.1, 20, 1.2, 16, -0.0051], [1928.11, 21, '', '', '']];
 ok('the Excess CAPE Yield is read from Shiller in percent, from its first month',

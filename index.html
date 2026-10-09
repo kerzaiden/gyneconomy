@@ -344,7 +344,7 @@
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
-    --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f; --summer-ink:#b04f24;
+    --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f;
 
     --mini-h:42px;
     --pad:10px;
@@ -357,8 +357,8 @@
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
     --type-section:20px; --type-reading-head:26px; --type-page-title:30px;
   }
-  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; --summer-ink:#f29a6e; }
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; --summer-ink:#f29a6e; } }
+  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; } }
 
   .season-wheel-wrap{ --dial:min(calc(100vw - 76px), calc(100vh - 220px), 560px); width:100%; flex:none; display:flex; flex-direction:column; align-items:center; }
   .season-wheel{ position:relative; width:var(--dial); max-width:100%; height:var(--dial); }
@@ -545,28 +545,23 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp-prices{ --line:var(--season-summer); --line-ink:var(--summer-ink); } .fp-rate{ --line:var(--ff-blue); --line-ink:var(--ff-blue); }
-  .fp-marks{ position:relative; height:18px; margin-top:10px; }
-  .fp-ov-label{ position:absolute; bottom:2px; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--summer-ink); }
-  .fp-ov-label.fp-end{ transform:translateX(-100%); } .fp-ov-label.fp-start{ transform:none; }
-  .fp-plot{ position:relative; height:150px; margin-top:8px; }
-  .fp-marks + .fp-plot{ margin-top:0; }
+  .fp-prices{ --line:var(--season-summer); } .fp-tight{ --line:var(--accent-ink); } .fp-ease{ --line:var(--good-ink); } .fp-quiet{ --line:var(--text-muted); }
+  .fp-plot{ position:relative; height:150px; margin-top:20px; }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .fp-plot stop{ stop-color:var(--line); }
   .fp-band{ position:absolute; top:0; bottom:0; border-radius:10px; box-shadow:inset 0 0 0 1.5px var(--surface); }
   .fp-band.fp-tight{ background:var(--accent-wash); } .fp-band.fp-ease{ background:var(--good-wash); }
   .fp-years{ position:relative; height:16px; margin-top:4px; }
   .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-label); color:var(--text-muted); }
   .fp-line{ fill:none; stroke:var(--line); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.9; }
   .fp-zero{ stroke:var(--border-strong); stroke-width:1; stroke-dasharray:2 3; }
-  .fp-ov-line{ stroke:var(--season-summer); stroke-width:1.5; }
   .fp-ov{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
   .fp-ov.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
-  .fp-phases{ position:relative; height:18px; margin-top:2px; }
-  .fp-ph{ position:absolute; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; }
-  .fp-ph.fp-tight{ color:var(--accent-ink); } .fp-ph.fp-ease{ color:var(--good-ink); }
+  .fp-ov-tag{ position:absolute; --tx:6px; --ty:4px; transform:translate(var(--tx), var(--ty)); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
+  .fp-ov-tag.fp-l{ --tx:calc(-100% - 6px); } .fp-ov-tag.fp-a{ --ty:calc(-100% - 4px); }
   .fp-levels{ margin:16px 0 0; padding:0; list-style:none; font-size:var(--type-meta); border-top:1px solid var(--border); }
   .fp-levels li{ display:grid; grid-template-columns:8.6em 1fr auto; align-items:center; column-gap:14px; padding:7px 0; border-bottom:1px solid var(--border); line-height:1.4; white-space:nowrap; }
-  .fp-levels b{ display:flex; align-items:center; gap:8px; color:var(--line-ink); font-weight:600; }
+  .fp-levels b{ display:flex; align-items:center; gap:8px; color:var(--text-primary); font-weight:600; }
   .fp-levels b::before{ content:""; flex:none; width:14px; height:3px; border-radius:2px; background:var(--line); }
   .fp-levels li.fp-peak b::before{ width:9px; height:9px; margin:0 2.5px; border-radius:50%; }
   .fp-levels li.fp-so-far b::before{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--line); }
@@ -25406,6 +25401,7 @@
       m: "2026-09",
       v: .25
     } ],
+    discountHistory: [],
     pceYoYHistory: [ {
       m: "2000-01",
       v: 2.19
@@ -39949,6 +39945,7 @@
   var durablesHistory = fred_default.durablesHistory;
   var premiumHistory = fred_default.premiumHistory;
   var fedMoves = fred_default.fedMoves;
+  var discountHistory = fred_default.discountHistory;
   var gdpYoYBefore = fred_default.gdpYoYBefore;
   var cpiYoYBefore = fred_default.cpiYoYBefore;
   var pceYoYHistory = fred_default.pceYoYHistory;
@@ -46247,48 +46244,98 @@
     return (n * 100).toFixed(2) + "%";
   }
   function bandsHtml(phases, from, to) {
-    var span = to - from + 1, bands = "", labels = "";
+    var span = to - from + 1, bands = "";
     phases.forEach(function(p, k) {
       var a = Math.max(monthIdx(p.m), from), b = k + 1 < phases.length ? monthIdx(phases[k + 1].m) : to + 1;
       if (b <= from || a > to) return;
-      var cls = p.s > 0 ? "fp-tight" : "fp-ease", word2 = p.s > 0 ? "Tightening" : "Easing", w = (Math.min(b, to + 1) - a) / span;
-      bands += '<span class="fp-band ' + cls + '" style="left:' + pct((a - from) / span) + ";width:" + pct(w) + '"></span>';
-      if (w >= .18) labels += '<span class="fp-ph ' + cls + '" style="left:' + pct((a - from) / span + w / 2) + '">' + word2 + "</span>";
+      bands += '<span class="fp-band ' + stanceClass(p) + '" style="left:' + pct((a - from) / span) + ";width:" + pct((Math.min(b, to + 1) - a) / span) + '"></span>';
     });
-    return {
-      bands: bands,
-      labels: labels
-    };
+    return bands;
+  }
+  function stanceClass(p) {
+    return p ? p.s > 0 ? "fp-tight" : "fp-ease" : "fp-quiet";
+  }
+  function monthKey(i) {
+    return Math.floor(i / 12) + "-" + String(i % 12 + 1).padStart(2, "0");
+  }
+  var gradients = 0;
+  function rateStroke(phases, from, to, id) {
+    var span = to - from + 1, cls = stanceClass(phaseAt(phases, monthKey(from))), stops = '<stop class="' + cls + '" offset="0"/>';
+    phases.forEach(function(p) {
+      var i = monthIdx(p.m), at = ((i - from) / span).toFixed(4);
+      if (i <= from || i > to) return;
+      stops += '<stop class="' + cls + '" offset="' + at + '"/>';
+      cls = stanceClass(p);
+      stops += '<stop class="' + cls + '" offset="' + at + '"/>';
+    });
+    return '<linearGradient id="' + id + '" gradientUnits="userSpaceOnUse" x1="0" x2="' + VIEW_W + '" y1="0" y2="0">' + stops + '<stop class="' + cls + '" offset="1"/></linearGradient>';
   }
   function yearsHtml(from, to) {
     var span = to - from + 1, y0 = Math.floor(from / 12), y1 = Math.floor(to / 12), step = Math.ceil((y1 - y0 + 1) / 6), out = "";
     for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + "</span>";
     return out;
   }
-  function plotSvg(lines, from, to, peak, open) {
+  var TAG_W = 92;
+  var TAG_H = 32;
+  var TAG_DX = 17;
+  var TAG_DY = 8;
+  function lineYAt(p, px) {
+    for (var k = 0; k < p.length - 1; k++) if (p[k][0] <= px && px <= p[k + 1][0]) return p[k][1] + (p[k + 1][1] - p[k][1]) * (px - p[k][0]) / (p[k + 1][0] - p[k][0] || 1);
+    return null;
+  }
+  function tagHits(paths, x0, y0) {
+    if (x0 < 0 || x0 + TAG_W > VIEW_W || y0 < -TAG_H || y0 + TAG_H > VIEW_H) return 99;
+    var hits = 0;
+    for (var px = x0; px <= x0 + TAG_W; px += 8) paths.forEach(function(p) {
+      var v = lineYAt(p, px);
+      if (v != null && v >= y0 - 6 && v <= y0 + TAG_H + 6) hits++;
+    });
+    return hits;
+  }
+  function tagSide(paths, px, py) {
+    var best = {
+      side: "fp-r fp-a",
+      hits: Infinity
+    };
+    [ "fp-r fp-a", "fp-l fp-a", "fp-r fp-b", "fp-l fp-b" ].forEach(function(side2) {
+      var x0 = side2.indexOf("fp-r") === 0 ? px + TAG_DX : px - TAG_DX - TAG_W, y0 = side2.indexOf("fp-a") > 0 ? py - TAG_DY - TAG_H : py + TAG_DY, hits = tagHits(paths, x0, y0);
+      if (hits < best.hits) best = {
+        side: side2,
+        hits: hits
+      };
+    });
+    return best.side;
+  }
+  function plotSvg(lines, from, to, peak, open, phases) {
     var all = [].concat.apply([], lines).map(function(p) {
       return p.v;
     });
-    var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
+    var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1, id = "fp-grad-" + ++gradients;
     var x = function(i) {
       return (i - from + .5) / span * VIEW_W;
     }, y = function(v) {
       return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / (hi - lo || 1));
     };
     var zero = lo < 0 ? '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
-    var mark2 = peak ? '<line class="fp-ov-line" x1="' + x(peak.i).toFixed(1) + '" x2="' + x(peak.i).toFixed(1) + '" y1="0" y2="' + y(peak.v).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
-    var paths = [ "fp-prices", "fp-rate" ].map(function(cls, k) {
-      return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>';
-    }).join("");
-    var dot = peak ? '<span class="fp-ov' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark2 + paths + "</svg>" + dot;
+    var paths = '<path class="fp-line fp-prices" d="' + curve(lines[0], x, y) + '" vector-effect="non-scaling-stroke"/><path class="fp-line fp-rate" style="stroke:url(#' + id + ')" d="' + curve(lines[1], x, y) + '" vector-effect="non-scaling-stroke"/>';
+    var at = peak ? "left:" + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) : "";
+    var side2 = peak ? tagSide(lines.map(function(l) {
+      return l.map(function(d) {
+        return [ x(d.i), y(d.v) ];
+      });
+    }), x(peak.i), y(peak.v)) : "";
+    var dot = peak ? '<span class="fp-ov' + (open ? " fp-open" : "") + '" style="' + at + '"></span><span class="fp-ov-tag ' + side2 + '" style="' + at + '">Peak</span>' : "";
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true"><defs>' + rateStroke(phases, from, to, id) + "</defs>" + zero + paths + "</svg>" + dot;
   }
   function level(cls, name, state2, value) {
     return '<li class="' + cls + '"><b>' + name + '</b><span class="fp-state">' + state2 + '</span><span class="fp-val">' + value + "</span></li>";
   }
+  function rateSeries(toM) {
+    return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
+  }
   function rateAt(m, toM) {
     if (m.ongoing) return fedFundsRange();
-    var upTo = fedFundsHistory.filter(function(d) {
+    var upTo = rateSeries(toM).filter(function(d) {
       return d.m <= toM;
     });
     return upTo.length ? upTo[upTo.length - 1].v.toFixed(2) + "%" : "";
@@ -46296,25 +46343,21 @@
   function levelsHtml(m, at, peak, toM) {
     var r = m.reading, rate = rateAt(m, toM);
     var trend = r.cpiDirection === "rising" ? "Rising" : r.cpiDirection === "falling" ? "Falling" : "Steady";
-    return '<ul class="fp-levels">' + (at && rate ? level("fp-rate", "Fed funds rate", at.s > 0 ? "Tightening" : "Easing", rate) : "") + level("fp-prices", "Prices", trend, inflationFigure(r.cpiNow) + "%") + (peak ? level("fp-prices fp-peak" + (m.ongoing ? " fp-so-far" : ""), m.ongoing ? "Peak (so far)" : "Peak", monthName(peak.m), peak.v.toFixed(1) + "%") : "") + "</ul>";
+    return '<ul class="fp-levels">' + (at && rate ? level("fp-rate " + stanceClass(at), rateSeries(toM) === fedFundsHistory ? "Fed funds rate" : "Discount rate", at.s > 0 ? "Tightening" : "Easing", rate) : "") + level("fp-prices", "Prices", trend, inflationFigure(r.cpiNow) + "%") + (peak ? level("fp-prices fp-peak" + (m.ongoing ? " fp-so-far" : ""), m.ongoing ? "Peak (so far)" : "Peak", monthName(peak.m), peak.v.toFixed(1) + "%") : "") + "</ul>";
   }
   function endMonthOf(m) {
     if (!m.ongoing) return m.endMonth;
     var ff = fedFundsHistory[fedFundsHistory.length - 1];
     return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
   }
-  function peakLabel(at) {
-    return '<span class="fp-ov-label' + (at > .92 ? " fp-end" : at < .08 ? " fp-start" : "") + '" style="left:' + pct(at) + '">Peak</span>';
-  }
   function fedPhasesCard(m) {
     var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
-    var peak = cyclePeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
-    var lines = [ monthPoints(inflationHistory, from, to), monthPoints(fedFundsHistory, from, to) ];
+    var peak = cyclePeak(fromM, toM), at = phaseAt(phases, toM);
+    var lines = [ monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to) ];
     var top = peak ? lines[0].filter(function(p) {
       return Math.floor(p.i / 3) === Math.floor(monthIdx(peak.m) / 3);
     })[0] || null : null;
-    var ov = top ? peakLabel((top.i - from + .5) / (to - from + 1)) : "";
-    return (ov ? '<div class="fp-marks">' + ov + "</div>" : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div><div class="fp-phases">' + b.labels + "</div>" + levelsHtml(m, at, peak, toM);
+    return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing, phases) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + levelsHtml(m, at, peak, toM);
   }
   function fedEnvironment(m) {
     var rate = ROSTER_BY["sheet-sign-hormones"];
@@ -47689,6 +47732,9 @@
   }, {
     t: "Federal Reserve via FRED — the Fed’s moves: the discount rate before September 1982 (INTDSRUSM193N), the federal funds target to December 2008 (DFEDTAR) and its upper limit since (DFEDTARU)",
     u: "https://fred.stlouisfed.org/series/DFEDTARU"
+  }, {
+    t: "NBER Macrohistory via FRED — the Federal Reserve Bank of New York’s discount rate, monthly from 1914: the Fed’s moves before 1950 and its rate line before the federal funds rate begins in July 1954 (M13009USM156NNBR)",
+    u: "https://fred.stlouisfed.org/series/M13009USM156NNBR"
   }, {
     t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
     u: "https://shillerdata.com/"

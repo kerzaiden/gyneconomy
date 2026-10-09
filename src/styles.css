@@ -343,7 +343,7 @@
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
-    --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f; --summer-ink:#b04f24;
+    --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f;
     /* ---- THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change ---- */
     --mini-h:42px;
     --pad:10px;
@@ -356,8 +356,8 @@
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
     --type-section:20px; --type-reading-head:26px; --type-page-title:30px;
   }
-  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; --summer-ink:#f29a6e; }
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; --summer-ink:#f29a6e; } }
+  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; } }
 
   .season-wheel-wrap{ --dial:min(calc(100vw - 76px), calc(100vh - 220px), 560px); width:100%; flex:none; display:flex; flex-direction:column; align-items:center; }
   .season-wheel{ position:relative; width:var(--dial); max-width:100%; height:var(--dial); }
@@ -548,28 +548,23 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp-prices{ --line:var(--season-summer); --line-ink:var(--summer-ink); } .fp-rate{ --line:var(--ff-blue); --line-ink:var(--ff-blue); }
-  .fp-marks{ position:relative; height:18px; margin-top:10px; }
-  .fp-ov-label{ position:absolute; bottom:2px; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--summer-ink); }
-  .fp-ov-label.fp-end{ transform:translateX(-100%); } .fp-ov-label.fp-start{ transform:none; }
-  .fp-plot{ position:relative; height:150px; margin-top:8px; }
-  .fp-marks + .fp-plot{ margin-top:0; }
+  .fp-prices{ --line:var(--season-summer); } .fp-tight{ --line:var(--accent-ink); } .fp-ease{ --line:var(--good-ink); } .fp-quiet{ --line:var(--text-muted); }
+  .fp-plot{ position:relative; height:150px; margin-top:20px; }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .fp-plot stop{ stop-color:var(--line); }
   .fp-band{ position:absolute; top:0; bottom:0; border-radius:10px; box-shadow:inset 0 0 0 1.5px var(--surface); }
   .fp-band.fp-tight{ background:var(--accent-wash); } .fp-band.fp-ease{ background:var(--good-wash); }
   .fp-years{ position:relative; height:16px; margin-top:4px; }
   .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-label); color:var(--text-muted); }
   .fp-line{ fill:none; stroke:var(--line); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.9; }
   .fp-zero{ stroke:var(--border-strong); stroke-width:1; stroke-dasharray:2 3; }
-  .fp-ov-line{ stroke:var(--season-summer); stroke-width:1.5; }
   .fp-ov{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
   .fp-ov.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
-  .fp-phases{ position:relative; height:18px; margin-top:2px; }
-  .fp-ph{ position:absolute; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; }
-  .fp-ph.fp-tight{ color:var(--accent-ink); } .fp-ph.fp-ease{ color:var(--good-ink); }
+  .fp-ov-tag{ position:absolute; --tx:6px; --ty:4px; transform:translate(var(--tx), var(--ty)); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
+  .fp-ov-tag.fp-l{ --tx:calc(-100% - 6px); } .fp-ov-tag.fp-a{ --ty:calc(-100% - 4px); }
   .fp-levels{ margin:16px 0 0; padding:0; list-style:none; font-size:var(--type-meta); border-top:1px solid var(--border); }
   .fp-levels li{ display:grid; grid-template-columns:8.6em 1fr auto; align-items:center; column-gap:14px; padding:7px 0; border-bottom:1px solid var(--border); line-height:1.4; white-space:nowrap; }
-  .fp-levels b{ display:flex; align-items:center; gap:8px; color:var(--line-ink); font-weight:600; }
+  .fp-levels b{ display:flex; align-items:center; gap:8px; color:var(--text-primary); font-weight:600; }
   .fp-levels b::before{ content:""; flex:none; width:14px; height:3px; border-radius:2px; background:var(--line); }
   .fp-levels li.fp-peak b::before{ width:9px; height:9px; margin:0 2.5px; border-radius:50%; }
   .fp-levels li.fp-so-far b::before{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--line); }

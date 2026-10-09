@@ -110,8 +110,8 @@ function monthlyLevels(rows, lo, hi) {
   return rows.filter(r => band(r.v, lo, hi)).map(r => ({ m: r.date.slice(0, 7), v: r.v }));
 }
 
-const TARGET_FROM = '1982-09-27', UPPER_FROM = '2008-12-16';
-function fedMoves(discount, target, upper) {
+const TARGET_FROM = '1982-09-27', UPPER_FROM = '2008-12-16', DISCOUNT_FROM = '1950-01-01', FEDFUNDS_FROM = '1954-07';
+function fedMoves(discount, target, upper, newYork) {
   const net = new Map();
   const walk = (rows, from, to, prev) => {
     for (const r of rows) {
@@ -121,7 +121,8 @@ function fedMoves(discount, target, upper) {
     }
     return prev;
   };
-  walk(discount, '1950-01-01', TARGET_FROM, null);
+  if (newYork) walk(newYork, '1914-01-01', DISCOUNT_FROM, null);
+  walk(discount, DISCOUNT_FROM, TARGET_FROM, null);
   walk(upper, UPPER_FROM, '9999-12-31', walk(target, TARGET_FROM, UPPER_FROM, null));
   return [...net].map(([m, v]) => ({ m, v: Math.round(v * 100) / 100 })).filter(d => d.v !== 0).sort((a, b) => (a.m < b.m ? -1 : 1));
 }
@@ -293,7 +294,7 @@ async function spyToday() {
   return spyDailyRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy, discount) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -313,6 +314,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (durables) out.durablesHistory = m(durables);
   if (premium) out.premiumHistory = m(premium);
   if (moves) out.fedMoves = m(moves);
+  if (discount) out.discountHistory = m(discount);
   if (pce) out.pceYoYHistory = m(pce);
   if (potential) out.potentialYoYHistory = q(potential);
   if (credit) Object.assign(out, { delinquencyHistory: q(credit.delinquency), marginHistory: m(credit.margin) });
@@ -330,9 +332,14 @@ async function main() {
   const fedFunds = monthlyLevels(ff, 0, 25);
   say('FEDFUNDS      ' + fedFunds.length + ' months, ' + fedFunds[0].m + ' → ' + fedFunds[fedFunds.length - 1].m);
 
-  const moves = fedMoves(await fredSeries('INTDSRUSM193N', '1950-01-01'), await fredSeries('DFEDTAR', TARGET_FROM), await fredSeries('DFEDTARU', UPPER_FROM));
-  if (!moves.length || moves[0].m > '1951-12' || !moves.some(d => d.m === '2008-12' && d.v < 0)) throw new Error('Fed moves: expected discount-rate moves from the 1950s and the December 2008 cut');
-  say('Fed moves     ' + moves.length + ' months with a move, ' + moves[0].m + ' → ' + moves[moves.length - 1].m + ' (discount rate before ' + TARGET_FROM + ', then the target)');
+  const newYork = await fredSeries('M13009USM156NNBR', '1914-01-01');
+  const discount = monthlyLevels(newYork, 0, 10).filter(d => d.m < FEDFUNDS_FROM);
+  if (!discount.length || discount[0].m > '1915-12' || !discount.some(d => d.m === '1953-12')) throw new Error('New York Fed discount rate: expected monthly rates from 1914–15 through 1953');
+  say('NY discount   ' + discount.length + ' months, ' + discount[0].m + ' → ' + discount[discount.length - 1].m + ' (the line before Fed funds, ' + FEDFUNDS_FROM + ')');
+
+  const moves = fedMoves(await fredSeries('INTDSRUSM193N', DISCOUNT_FROM), await fredSeries('DFEDTAR', TARGET_FROM), await fredSeries('DFEDTARU', UPPER_FROM), newYork);
+  if (!moves.length || moves[0].m > '1916-12' || !moves.some(d => d.m === '1929-08' && d.v > 0) || !moves.some(d => d.m === '2008-12' && d.v < 0)) throw new Error('Fed moves: expected New York discount-rate moves from 1914–16, the August 1929 hike and the December 2008 cut');
+  say('Fed moves     ' + moves.length + ' months with a move, ' + moves[0].m + ' → ' + moves[moves.length - 1].m + ' (New York discount rate before ' + DISCOUNT_FROM + ', the discount rate before ' + TARGET_FROM + ', then the target)');
 
   const vix = await fredSeries('VIXCLS', '1990-01-01');
 
@@ -441,7 +448,7 @@ async function main() {
   const heavy = keepQuarter(kept, spy);
   say('SPY top ten   ' + spy.d + ' ' + spy.v + '% (State Street daily holdings), kept for ' + heavy.length + ' quarter(s) since the SEC import');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy));
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy, discount));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
