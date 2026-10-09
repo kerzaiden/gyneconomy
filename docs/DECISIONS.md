@@ -1572,19 +1572,18 @@ settles it; none is open after V668.
   open cycle with no confirmed peak shows its peak so far, hollow, since Keren wants to see the highest prices of
   the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
-- **The Interest Rates Environment card draws two curves, the Fed's rate and prices, and no growth.** The card is
-  about the Fed's lever against prices; growth is the other half of the season and the dial already shows it, so the
-  card stays as simple as her tracker: two hormones, two phases, one peak. The cost, accepted: a cut made to rescue
-  growth while prices sit calm reads without its reason here. The rate's line takes its phase's colour (deep pink
-  while tightening, deep green while easing) instead of a third colour of its own, and the phases carry no labels,
-  since short phases have no room for them; the legend names the phase in force. "Peak" stands beside its dot, on
-  whichever side clears both curves, with no line. The legend is a small table, name, state and figure, the names in
-  the text colour and each curve's colour in its swatch; its states are the body's words: the rate Tightening or
-  Easing, prices Rising, Falling or Steady (the season model's own price trend), "Peak (so far)" on the open cycle.
-  Before the federal funds rate begins (July 1954) the line is the New York Fed's discount rate, named "Discount
-  rate"; the phases follow the rate alone, so a tightening made another way (the doubling of reserve requirements
-  in 1936–37) does not show. A low peak is still a peak: where prices topped in a calm cycle tells something about the cycle too.
-  (Two Hormones)
+- **The Interest Rates Environment card is a feel, not a measure: two curves, the Fed's rate (blue) and prices
+  (orange), over the Tightening and Easing bands, with no figures and no growth.** It shows the environment at a
+  glance, the way her tracker shows hormones; growth is the other half of the season and the dial already shows it.
+  The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. The peak is
+  drawn as her tracker draws ovulation: a vertical line through the chart with a dot at its top and "Peak" above it.
+  Under the chart, the years, then one legend: Tightening and Easing (the band colours), the rate's line, Prices and
+  Peak ("Peak (so far)" on the open cycle), and a two-sentence footnote, written from the cycle's own record, so
+  readers know what went on: when prices peaked and what the Fed was doing then, and how the Fed closed the cycle (or
+  what it has been doing since when, on the open one). Before the federal funds rate begins (July 1954) the line is the New York
+  Fed's discount rate, named "Discount rate"; the phases follow the rate alone, so a tightening made another way (the
+  doubling of reserve requirements in 1936–37) does not show. A low peak is still a peak: where prices topped in a
+  calm cycle tells something about the cycle too. (Two Hormones)
 - **Every cycle has a peak: its highest price reading within the cycle, once the decline it inherited from the
   cycle before has passed.** A cycle's range is its own length, so by definition it has a peak and a trough. The
   Go-Stop Cycle's is Nov 1969 (5.9%), at its close. The inherited decline is skipped because a cycle's opening

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `5b8a4db` on 2026-10-09. **103 components**, **18 shared patterns**.
+Generated from commit `a02f709` on 2026-10-09. **104 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -103,9 +103,10 @@ Generated from commit `5b8a4db` on 2026-10-09. **103 components**, **18 shared p
 |---|---|---|
 | **`bandsHtml`** | `.fp-band` | `fed-phases.ts:fedPhasesCard` |
 | **`fedPhasesCard`** | `.fp-plot` `.fp-years` | `fed-phases.ts:fedEnvironment` |
-| **`level`** | `.fp-state` `.fp-val` | `fed-phases.ts:levelsHtml` |
-| **`levelsHtml`** | `.fp-levels` | `fed-phases.ts:fedPhasesCard` |
-| **`plotSvg`** | `.fp-line` `.fp-ov-tag` `.fp-prices` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
+| **`footnoteHtml`** | `.fp-note` | `fed-phases.ts:fedPhasesCard` |
+| **`legendHtml`** | `.fp-legend` | `fed-phases.ts:fedPhasesCard` |
+| **`peakMark`** | `.fp-peak-line` | `fed-phases.ts:plotSvg` |
+| **`plotSvg`** | `.fp-line` | `fed-phases.ts:fedPhasesCard` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
 
 ## format.ts
@@ -222,13 +223,13 @@ renderer speaks. Listed most-used first.
 | **`publishGeom`** | charts.ts | 10 places |
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
+| **`monthLabel`** | format.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
 | **`addSources`** | dom.ts | 8 places |
 | **`colPath`** | charts.ts | 8 places |
 | **`colWidth`** | charts.ts | 8 places |
 | **`cycleSlice`** | model.ts | 8 places |
 | **`f1`** | pulse-strips.ts | 8 places |
-| **`monthLabel`** | format.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`keyed`** | roster.ts | 7 places |
@@ -247,8 +248,6 @@ renderer speaks. Listed most-used first.
 | **`cycleModel`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`factsFrom`** | format.ts | 5 places |
-| **`fedFundsRange`** | data.ts | 5 places |
-| **`inflationFigure`** | model.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
@@ -268,13 +267,14 @@ renderer speaks. Listed most-used first.
 | **`cycleOfYear`** | model.ts | 4 places |
 | **`dollars`** | indicators.ts | 4 places |
 | **`dxSys`** | render-core.ts | 4 places |
+| **`fedFundsRange`** | data.ts | 4 places |
 | **`fill`** | ai-insights.ts | 4 places |
 | **`fmt`** | cycle-analysis.ts | 4 places |
 | **`growthWord`** | model.ts | 4 places |
+| **`inflationFigure`** | model.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
 | **`listWords`** | cycle-analysis.ts | 4 places |
-| **`monthIdx`** | fed-phases.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`panel`** | ai-insights.ts | 4 places |
@@ -298,13 +298,13 @@ renderer speaks. Listed most-used first.
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
+| **`monthIdx`** | fed-phases.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
 | **`quartile`** | format.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
-| **`rateSeries`** | fed-phases.ts | 3 places |
 | **`readingFor`** | reading.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
@@ -316,7 +316,6 @@ renderer speaks. Listed most-used first.
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`side`** | cycle-analysis.ts | 3 places |
 | **`spreadSeries`** | render-pages.ts | 3 places |
-| **`stanceClass`** | fed-phases.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tabBar`** | history.ts | 3 places |
 | **`tagFor`** | format.ts | 3 places |
