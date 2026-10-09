@@ -32,11 +32,11 @@ function yearByYear(m: CycleModel){
 }
 var PREVIEW_YEARS = 3;
 function yearsMore(more: boolean){
-  return '<div class="dx-years-foot"' + (more ? "" : " hidden") + '><button type="button" class="dx-years-more" aria-expanded="false"><span>View more</span></button></div>';
+  return '<button type="button" class="cyc-more dx-years-more" aria-expanded="false"' + (more ? "" : " hidden") + '><span>View more</span>' + CHEV + '</button>';
 }
 function wireYearsMore(host: HTMLElement){
   var btn = host.querySelector<HTMLElement>(".dx-years-more");
-  if (btn && !(btn.parentElement as HTMLElement).hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
+  if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
 }
 function yearRow(year: string, lead: string, foot: string){
   return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Elements" data-ind-when="' + year + '">' +

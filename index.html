@@ -574,7 +574,9 @@
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
     font-family:"Public Sans",sans-serif; -webkit-tap-highlight-color:transparent; }
   .dx-sys-head + .dx-year{ border-top:0; padding-top:4px; }
-  .dx-year:last-child, .dx-year:has(+ .dx-years-foot[hidden]){ padding-bottom:0; }
+  .dx-years .dx-sys-head{ margin:0 -18px; padding:0 18px 12px; width:auto; border-bottom:1px solid var(--border); }
+  .dx-years .dx-sys-head + .dx-year{ padding-top:13px; }
+  .dx-year:last-child, .dx-year:has(+ .cyc-more[hidden]){ padding-bottom:0; }
   button.dx-year{ cursor:pointer; }
   button.dx-year:hover .dx-year-n, button.dx-year:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
   button.dx-year:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
@@ -845,20 +847,17 @@
   .mood-arrow{ fill:none; stroke:#a7a8ab; stroke-width:3; }
 
   @media (max-width:400px){ .rangebar{ flex-wrap:wrap; } .rangebar .range-seg{ flex:1 1 auto; } }
-  .more-row, .dx-years-more{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
+  .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
     border:1px solid var(--border); background:var(--surface); border-radius:var(--round);
     padding:12px 22px; min-height:var(--btn-h); box-sizing:border-box; margin-top:var(--gap);
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:700;
     color:var(--accent-ink); }
   .hi-card + .more-row, .aux-stat + .more-row{ margin-top:12px; }
   .metric-sheet .highlights .more-row{ margin-bottom:7px; }
-  .more-row:hover, .dx-years-more:hover{ border-color:var(--border-strong); }
-  .more-row:focus-visible, .dx-years-more:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--round); }
+  .more-row:hover{ border-color:var(--border-strong); }
+  .more-row:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--round); }
   .more-row .peek-chev{ color:inherit; opacity:0.9; }
   .more-row .peek-chev svg{ width:8px; height:13px; stroke-width:1.9; }
-  .dx-years-more{ display:inline-flex; width:auto; margin-top:0; }
-  .dx-years-foot{ border-top:1px solid var(--border); padding-top:13px; }
-  .dx-years-foot[hidden]{ display:none; }
 
   #metric-page{ max-width:880px; margin:0 auto; width:100%;
     margin-top:calc(-1 * (var(--topbar-gap) + 2px)); }
@@ -875,8 +874,11 @@
     color:var(--accent-ink); }
   .cyc-more:hover{ background:var(--surface-2); }
   .cyc-more:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
-  .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
-  .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
+  .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transform:rotate(90deg); transition:transform 0.16s ease; }
+  .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(-90deg); }
+  .cyc-more[hidden]{ display:none; }
+  .dx-years-more{ width:calc(100% + 36px); margin:0 -18px; padding:13px 18px 0; }
+  .dx-years-more:hover{ background:transparent; }
 
   .cat-weather{ --cat:var(--season-summer); } .cat-activity{ --cat:var(--earth); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
@@ -47733,11 +47735,11 @@
   }
   var PREVIEW_YEARS = 3;
   function yearsMore(more) {
-    return '<div class="dx-years-foot"' + (more ? "" : " hidden") + '><button type="button" class="dx-years-more" aria-expanded="false"><span>View more</span></button></div>';
+    return '<button type="button" class="cyc-more dx-years-more" aria-expanded="false"' + (more ? "" : " hidden") + "><span>View more</span>" + CHEV + "</button>";
   }
   function wireYearsMore(host) {
     var btn = host.querySelector(".dx-years-more");
-    if (btn && !btn.parentElement.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
+    if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
   }
   function yearRow(year, lead, foot) {
     return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Elements" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";

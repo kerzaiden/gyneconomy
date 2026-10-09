@@ -1605,8 +1605,9 @@ settles it; none is open after V668.
   cycle has no "After" row: the next cycle shows what followed. (1.8.0, 0.6.17, 0.8.9)
 - **Year by Year shows the cycle's newest three years, and View more opens the rest.** A long cycle's every year
   at once was too much to read; the latest years carry the story, the rest are a tap away. A cycle of three years
-  or fewer has no button. It looks like More details but only as wide as its words, with no chevron: it opens
-  nothing new, only lengthens the list.
+  or fewer has no button. The card is framed as The Idea in About Gyneconomy is: a line under the title, a line
+  over View more. A View more's chevron points down, and up once open: it lengthens what is on screen rather than
+  opening a page.
 - **The Mood page has one Insights box (the sheet behind Mood analysis's More details): the cycle of market
   emotions, then "She's in …" with the cycle on screen (its name and years) and its story as the card's text,
   and one details button; the figures behind her stage (her score, its rank, and each reading's rank) are the
