@@ -66,7 +66,7 @@ export var strips = { off:0 };
 export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   from = from || 0;
   var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-  var F = histFrame(Wpx), h = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, full = rows * h;
+  var F = histFrame(Wpx), h = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, full = rows * h, B = Math.min(F.B, T + full), H = F.H - F.B + B;
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [], body: string[] = [stripPaper(L, R, T, T + full, h)];
   strips.off = 0;
   out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));
@@ -83,7 +83,7 @@ export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
       return yy < T || yy > B || row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
     },
     vals:m2vHistory.slice(from, end).map(function(v: number){ return { v:v }; }) });
-  return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + ' ' + f1(B - T) + ' ' + f1(full) + ' ' + f1(h) + '" aria-label="Money velocity\u2019s heartbeat, one strip per year from ' + y0 + ' to ' + y1 +
+  return vhOpen(F.W, H) + 'data-view="' + f1(T) + ' ' + f1(B - T) + ' ' + f1(full) + ' ' + f1(h) + '" aria-label="Money velocity\u2019s heartbeat, one strip per year from ' + y0 + ' to ' + y1 +
     ', ' + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; ' +
     'a quarter whose fall was far out of the record flatlines">' + out.join("") + '</svg>';
 }

@@ -1015,9 +1015,10 @@ settles it; none is open after V668.
   year is on top; each year's average velocity sits under the year with its ×, which she finds important, in a
   date column widened to fit it, the year a type step larger and darker so the velocity does not compete with it
   (the label size is already the scale's smallest); each strip's dividing line runs through that column so every
-  year reads as its own row; a strip is three squares of the paper tall, since two left no air; each strip's baseline sits exactly in the middle of its three squares, and its tallest beat reaches the strip's edge without crossing it; the chart keeps every
-  history's height (Keren: Max ran too long to see the reading when a year was tapped), so about five years show at a
-  time and the strips scroll under the pinned reading and quarter axis, a fade at the bottom showing more below. The windows are 5Y, 10Y, 25Y and Max; Max starts at 1959 Q1,
+  year reads as its own row; a strip is three squares of the paper tall, since two left no air; each strip's baseline sits exactly in the middle of its three squares, and its tallest beat reaches the strip's edge without crossing it; the chart is never taller than
+  every history's height (Keren: Max ran too long to see the reading when a year was tapped), so about five years show at a
+  time and the strips scroll under the pinned reading and quarter axis, a fade at the bottom showing more below; a window of
+  fewer years (the current cycle's four) shrinks the chart to fit them, since an empty frame under them was only white space (Keren). The windows are 5Y, 10Y, 25Y and Max; Max starts at 1959 Q1,
   the first quarter of the Fed's M2 (FRED M2V), and the cycle picker starts at 1963 because the 1958–1962 cycle
   opens before the data. The earlier EKG histories (scrolling strip, Holter report, Apple Health-style
   ECG) stay dropped. (0.9.25)
