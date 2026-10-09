@@ -5,7 +5,7 @@ import { DSR_FROM_YEAR, DSR_MEAN, dsrHistory, SAV_FROM_YEAR, SAV_HIGH, SAV_LOW, 
 import { activitySpecs } from "./activity.ts";
 import { concentrationSpecs } from "./concentration.ts";
 
-// ---- Credit, households and debt: consumer credit, margin debt, the saving rate, debt payments and delinquencies ----
+// ---- Credit, households and debt: consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies ----
 export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
 export type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
 
@@ -66,10 +66,10 @@ function householdSpecs(): CreditSpec[] {
       band:"<b>The band is computed, not chosen</b>: the tenth to ninetieth percentile of every quarter since " + SAV_FROM_YEAR + ", and the line is their median. " +
         "No convention sets a normal saving rate. Below the band households have little set aside for a month that goes wrong.",
       lede:"What households keep of what they earn: the cushion against a bad month." },
-    { id:"sheet-metric-debt-payments", term:"Debt payments", econ:"Debt payments", unit:"of income", series:debtPaymentPoints, mid:DSR_MEAN, line:"Average since " + DSR_FROM_YEAR,
+    { id:"sheet-metric-debt-payments", term:"Debt-to-income ratio", econ:"Debt-to-income ratio", unit:"of income", series:debtPaymentPoints, mid:DSR_MEAN, line:"Average since " + DSR_FROM_YEAR,
       optimal:{ lte:DSR_MEAN, label:"\u2264 " + DSR_MEAN.toFixed(1) + "%" }, ends:{ high:"Above average" }, fmt:pct, word:debtPaymentsWord, src:DEBT_PAYMENTS_SRC,
-      about:"What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, " +
-        "as the Federal Reserve estimates it: its household debt service ratio, taken across every household and measured against income after tax. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month. Much of today\u2019s mortgage debt was fixed at the low rates of 2020\u201321, so the bill is light partly because that debt is cheap, not only because households owe less. When debt grows much faster than income, downturns run deeper and longer, as after 2007 (Jord\u00e0, Schularick and Taylor).",
+      about:"Required payments on mortgages, credit cards and loans divided by income after tax, for all US households together, as the Federal Reserve estimates it each quarter. " +
+        "It measures every household\u2019s income, including households without debt, so it runs well below one borrower\u2019s figure. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month. Much of today\u2019s mortgage debt was fixed at the low rates of 2020\u201321, so the bill is light partly because that debt is cheap, not only because households owe less. When debt grows much faster than income, downturns run deeper and longer, as after 2007 (Jord\u00e0, Schularick and Taylor).",
       band:"<b>The line is the series\u2019 own average since " + DSR_FROM_YEAR + "</b>. No convention sets a band, so the line is derived from the record and " +
         "only above it is flagged: a light debt bill is not a condition.",
       lede:"The share of take-home pay that goes to paying debts: the load households carry each month." }
