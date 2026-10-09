@@ -495,7 +495,7 @@ export var marketCycles: Cycle[] = [
     name:"AI Cycle",
     story:"Out of the 2022 correction, the build-out of artificial intelligence became the story everyone wanted to own. Mrs. Market has moved from Hope into Optimism and Excitement, and the cycle is still being written.",
     blurb:"Out of the 2022 correction, a bull run carried by the build-out of artificial intelligence. Three full years so far and the fourth under way, with no losing year in it yet. Still being written.",
-    rates:"Cuts began in 2024 as inflation cooled, but prices turned up in 2026, peaking so far in {month}, and in September the Fed hiked again."
+    rates:"The Fed cut through 2024 and 2025, then tariffs and the oil shock of the Iran war turned prices up again, peaking so far in {month}. In September it raised rates for the first time since 2023."
   }
 ];
 export var typicalCycleYears = 6;
