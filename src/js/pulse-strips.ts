@@ -23,10 +23,10 @@ export function pulseStroke(i: number){
   var g = m2Yoy[i];
   return g == null ? null : Math.max(-1, Math.min(1, g / M2_FLOOD));
 }
-type StripRow = { y: number; top: number; h: number; from: number; end: number; X: (q: number) => number };
+type StripRow = { y: number; top: number; h: number; sq: number; from: number; end: number; X: (q: number) => number };
 function stripQuarter(r: StripRow, q: number, x: number, limit: number){
   var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * 0.5) * (stroke == null ? 0.5 : stroke);
+  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.sq * 0.5) * (stroke == null ? 0.5 : stroke);
   var cy = r.top + r.h / 2, d: string[] = [];
   if (stroke == null) kind = kind || "blank";
   x = Math.max(x, xa);
@@ -57,7 +57,7 @@ function stripPaper(L: number, R: number, T: number, B: number, h: number){
   for (var k = 0; k <= 20; k++) if (k % 5) minor.push("M" + f1(L + k * m) + "," + f1(T) + "V" + f1(B)); else rules.push(vGrid(L + k * m, T, B));
   for (var top = T; top < B - 0.5; top += h){
     major.push("M" + f1(fx) + "," + f1(top) + "H" + f1(R));
-    for (var y = top + m; y < top + h - 1; y += m) minor.push("M" + f1(L) + "," + f1(y) + "H" + f1(R));
+    for (var d = m / 2; d < h / 2 - 1; d += m) minor.push("M" + f1(L) + "," + f1(top + h / 2 - d) + "H" + f1(R) + "M" + f1(L) + "," + f1(top + h / 2 + d) + "H" + f1(R));
   }
   major.push("M" + f1(fx) + "," + f1(B) + "H" + f1(R));
   return '<path class="ekg-minor" d="' + minor.join("") + '"/><path class="ekg-major" d="' + major.join("") + '"/>' + rules.join("");
@@ -66,12 +66,12 @@ export var strips = { off:0 };
 export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   from = from || 0;
   var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-  var F = histFrame(Wpx), h = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, full = rows * h, B = Math.min(F.B, T + full), H = F.H - F.B + B;
+  var F = histFrame(Wpx), sq = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / rows), full = rows * h;
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [], body: string[] = [stripPaper(L, R, T, T + full, h)];
   strips.off = 0;
   out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));
   ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17)); });
-  for (var y = y0; y <= y1; y++) body.push(stripRow({ y:y, top:T + h * (y1 - y), h:h, from:from, end:end, X:X }));
+  for (var y = y0; y <= y1; y++) body.push(stripRow({ y:y, top:T + h * (y1 - y), h:h, sq:sq, from:from, end:end, X:X }));
   out.push('<clipPath id="psview"><rect x="0" y="' + f1(T) + '" width="' + F.W + '" height="' + f1(B - T) + '"/></clipPath><g clip-path="url(#psview)"><g class="ps-rows">' + body.join("") + '</g></g>');
   var cell = function(i: number){ return { q:(from + i) % 4 }; };
   publishGeom("pulseStripsChart", { L:L, R:R, T:T, B:B, W:F.W, n:end - from,
@@ -83,7 +83,7 @@ export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
       return yy < T || yy > B || row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
     },
     vals:m2vHistory.slice(from, end).map(function(v: number){ return { v:v }; }) });
-  return vhOpen(F.W, H) + 'data-view="' + f1(T) + ' ' + f1(B - T) + ' ' + f1(full) + ' ' + f1(h) + '" aria-label="Money velocity\u2019s heartbeat, one strip per year from ' + y0 + ' to ' + y1 +
+  return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + ' ' + f1(B - T) + ' ' + f1(full) + ' ' + f1(h) + '" aria-label="Money velocity\u2019s heartbeat, one strip per year from ' + y0 + ' to ' + y1 +
     ', ' + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; ' +
     'a quarter whose fall was far out of the record flatlines">' + out.join("") + '</svg>';
 }
