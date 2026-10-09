@@ -624,11 +624,12 @@ emotion at the closing month, its years, and what followed a year later. Every l
   ±0.02) and gives each month that is not falling the top of its run; the cycle's opening months are skipped while
   they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak.
   The walk is over the whole record because a run crosses cycle edges.
-  Bands and the peak's line, dot and label are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and
+  Bands and the peak's dot are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and
   non-scaling strokes, so the card is fluid. Prices and the rate are drawn as quarterly means through a Catmull-Rom
-  curve, so the lines flow as in her tracker; the peak's line stands on its quarter. `rateSeries` is
+  curve, so the lines flow as in her tracker; the peak's dot sits on its quarter. `rateSeries` is
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
-  1914 to 1954-06) before; the legend names whichever it drew.
+  1914 to 1954-06) before. The note under the legend is the cycle's `rates` story with `{peak}` and `{month}` filled
+  from `cyclePeak`, so the words are written once and the figures are the record's.
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines with the health
   score under it (`cycleScore`, Cycle Statistics' one box; the open cycle has no Cycle Statistics card), opening the
   page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): one `trendBox` per chapter (the cycle's name,

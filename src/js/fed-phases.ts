@@ -82,29 +82,18 @@ function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open:
   var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
   var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; }, y = function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
   var paths = ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
-  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + (peak ? peakMark(x(peak.i) / VIEW_W, open) : "");
-}
-function peakMark(at: number, open: boolean){
-  var edge = at > 0.92 ? " fp-end" : at < 0.08 ? " fp-start" : "";
-  return '<span class="fp-peak-line" style="left:' + pct(at) + '"></span><span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(at) + '"></span><span class="fp-peak-tag' + edge + '" style="left:' + pct(at) + '">Peak</span>';
+  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' : "");
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }
 function legendHtml(m: CycleModel, toM: string, peak: boolean){
   return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") +
-    key("fp-key-line fp-rate", rateSeries(toM) === fedFundsHistory ? "Fed funds rate" : "Discount rate") + key("fp-key-line fp-prices", "Prices") +
-    (peak ? key("fp-key-peak" + (m.ongoing ? " fp-open" : ""), m.ongoing ? "Peak (so far)" : "Peak") : "") + '</ul>';
+    key("fp-key-line fp-rate", "Rate") + key("fp-key-line fp-prices", "Prices") +
+    (peak ? key("fp-key-peak" + (m.ongoing ? " fp-open" : ""), "Peak") : "") + '</ul>';
 }
-function stanceAt(phases: Phase[], k: string){ return phases.filter(function(p){ return p.m <= k; }).pop() || null; }
-function stanceWord(p: Phase){ return p.s > 0 ? "tightening" : "easing"; }
-function footnoteHtml(m: CycleModel, phases: Phase[], fromM: string, toM: string, peak: MonthPoint | null){
-  var last = stanceAt(phases, toM), atPeak = peak ? stanceAt(phases, peak.m) : null;
-  var turns = phases.filter(function(p){ return p.m > fromM && p.m <= toM; }).length;
-  var times = turns === 1 ? "once" : turns === 2 ? "twice" : turns + " times";
-  var lead = peak ? "Prices " + (m.ongoing ? "have peaked so far" : "peaked") + " in " + monthLabel(peak.m) + (atPeak ? ", while the Fed was " + stanceWord(atPeak) : "") + ". " : "";
-  var fed = !last ? "" : m.ongoing ? "The Fed has been " + stanceWord(last) + " since " + monthLabel(last.m) + "." :
-    turns ? "The Fed changed course " + times + " and closed the cycle " + stanceWord(last) + "." : "The Fed was " + stanceWord(last) + " throughout.";
-  return lead + fed ? '<p class="fp-note">' + lead + fed + '</p>' : "";
+function footnoteHtml(m: CycleModel, peak: MonthPoint | null){
+  var text = m.era.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", "\u00a0") : "");
+  return '<p class="fp-note">' + text + '</p>';
 }
 function endMonthOf(m: CycleModel){
   if (!m.ongoing) return m.endMonth;
@@ -116,7 +105,7 @@ function fedPhasesCard(m: CycleModel){
   var peak = cyclePeak(fromM, toM);
   var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
   var top = peak ? lines[0].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml(m, toM, !!top) + footnoteHtml(m, phases, fromM, toM, peak);
+  return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml(m, toM, !!top) + footnoteHtml(m, peak);
 }
 export function fedEnvironment(m: CycleModel){
   var rate = ROSTER_BY["sheet-sign-hormones"];

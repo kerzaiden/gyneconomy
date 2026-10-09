@@ -124,3 +124,15 @@ test('potential is the 1929–48 peak trend before CBO and CBO\'s last quarter a
 test('a reading past the band never prints as the band\'s edge', () => {
   assert.deepEqual([3.04, 2.96, 3.4, 0.96, 1.04, -0.04, -1.26].map(inflationFigure), ['3.04', '3.0', '3.4', '0.96', '1.0', '0.0', '\u22121.3']);
 });
+
+test('every cycle tells its rates story under the chart, its peak month read from the record', async () => {
+  const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
+  for (const c of marketCycles) {
+    assert.match(c.rates, /\{month\}/, c.name);
+    renderDiagnosis(cycleModel(c));
+    const note = document.querySelector('#diagnosis .fp-note');
+    assert.ok(note && note.textContent.length > 40 && !/[{}]/.test(note.textContent), c.name);
+  }
+  const { nowModel } = await import('../../src/js/model.ts');
+  renderDiagnosis(nowModel);
+});
