@@ -1095,7 +1095,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   the history component instead of a bar chart, I want an EKG chart … for each year … a small height grid with that row
   of the pulse … it will show the velocity, it will show the year … and it will show abnormalities like in the COVID 2020
   example where it flatlined for an entire quarter"; "it will show us both the rhythm … and how fast it is". Quarters run
-  across, years down, on pink EKG paper; a beat is a tenth of one turnover (Claude's choice), so beats per year = 10 ×
+  across, years down, on pink EKG paper; a beat is a fifth of one turnover (Claude's choice; ten was too crowded, Keren), so beats per year = 5 ×
   velocity and the gaps are honest; each strip ends with the year's average velocity. A quarter past Tukey's fence
   (1.5 IQR) of every quarterly change since 1959 is red; a fall past the far-out fence (3 IQR) flatlines (2008 Q4,
   2020 Q2). A beat's height is M2's growth year on year, the stroke volume (Keren: "Let's do the Money stock as the

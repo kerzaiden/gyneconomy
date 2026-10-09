@@ -636,7 +636,7 @@
     stroke-linecap:round; stroke-linejoin:round; }
   .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
   .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
-  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
+  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
   .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .peek-chart{ width:100%; margin-top:12px; }
@@ -50647,7 +50647,7 @@
   function bootPortfolio() {
     buildPortfolio();
   }
-  var PULSE_BEATS = 10;
+  var PULSE_BEATS = 5;
   var PULSE_FENCE = 1.5;
   var PULSE_FAR = 3;
   var PULSE_VEL = 34;
@@ -50676,7 +50676,7 @@
   }
   function stripQuarter(r, q, x, limit) {
     var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(18, r.h * .58) * (stroke == null ? .5 : stroke);
+    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(34, r.h * .6) * (stroke == null ? .5 : stroke);
     var cy = r.top + r.h * .64, d = [];
     if (stroke == null) kind = kind || "blank";
     x = Math.max(x, xa);
@@ -50684,7 +50684,7 @@
       d.push("M" + f1(xa) + "," + f1(cy) + "H" + f1(xb));
       x = xb;
     }
-    while (kind !== "flat" && x < xb && x + p <= limit) {
+    while (kind !== "flat" && x < xb && x + p * .55 <= limit) {
       d.push(beatPath(x, x, cy, p, amp));
       x += p;
     }
@@ -50712,6 +50712,8 @@
       sum += m2vHistory[i];
       n++;
     }
+    var id = "psclip" + r.y, w = r.X(last + 1) - r.X(0);
+    out = [ '<clipPath id="' + id + '"><rect x="' + f1(r.X(0)) + '" y="' + f1(r.top - r.h) + '" width="' + f1(w) + '" height="' + f1(r.h * 3) + '"/></clipPath><g clip-path="url(#' + id + ')">' + out.join("") + "</g>" ];
     var mid = r.top + r.h / 2 + 3.5;
     out.push(yLabel(r.X(0) - (AXIS.L + AXIS.RAIL) / 2, mid, r.y, "middle"));
     out.push(yLabel(r.X(4) + PULSE_VEL, mid, (sum / n).toFixed(2) + "×", "end"));
@@ -50801,7 +50803,7 @@
     };
     var flats = [];
     for (var i = 1; i < m2vHistory.length; i++) if (pulseBeat(i) === "flat") flats.push(qAtIndex(M2V_FROM_YEAR, i));
-    return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, its quarters across. A beat is a tenth of one turnover of the money stock, so a year at 1.4× carries 14 beats and the gaps widen as money slows; the figure at the end of each strip is that year’s average velocity. Ten beats a turnover is Claude’s choice, made for legibility.</p><p class="caption follow"><b>A beat’s height is the money stock’s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, full height at ' + M2_FLOOD.toFixed(1) + "%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. " + M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.</p><p class="caption follow"><b>A red quarter moved past Tukey’s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' + M2V_FROM_YEAR + ", " + pct2(f[1]) + " or " + pct2(f[2]) + ". <b>A quarter flatlines</b> when its fall passed Tukey’s far-out fence (3 times the range), " + pct2(f[0]) + ": " + flats.join(" and ") + ".</p>";
+    return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, its quarters across. A beat is a fifth of one turnover of the money stock, so a year at 1.4× carries 7 beats and the gaps widen as money slows; the figure at the end of each strip is that year’s average velocity. Five beats a turnover is Claude’s choice, made for legibility (Keren found ten too crowded).</p><p class="caption follow"><b>A beat’s height is the money stock’s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, full height at ' + M2_FLOOD.toFixed(1) + "%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. " + M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.</p><p class="caption follow"><b>A red quarter moved past Tukey’s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' + M2V_FROM_YEAR + ", " + pct2(f[1]) + " or " + pct2(f[2]) + ". <b>A quarter flatlines</b> when its fall passed Tukey’s far-out fence (3 times the range), " + pct2(f[0]) + ": " + flats.join(" and ") + ".</p>";
   }
   var RHYTHM_WINDOW = 8;
   var RHYTHM_BEFORE = 2008;

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,877 lines** in 41 files, about 608 KB, roughly **173 thousand tokens**. No session can
+The source is **8,879 lines** in 41 files, about 609 KB, roughly **173 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `f8163b3` on 2026-10-08.
+Generated from commit `d85328e` on 2026-10-09.
 
 ## The page
 
@@ -62,7 +62,7 @@ Counts: **37** modules, **760** top-level functions, **119** top-level vars, **3
 | `js/insights.ts` | 185 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/marks.ts` | 60 | 27 | — |
 | `js/pressure.ts` | 320 | 13 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `pulse-strips`, `reading`, `readings`, `rhythm`, `roster` |
-| `js/pulse-strips.ts` | 100 | 11 | `charts`, `data`, `format` |
+| `js/pulse-strips.ts` | 102 | 11 | `charts`, `data`, `format` |
 | `js/reading.ts` | 94 | 12 | `charts`, `dom`, `format`, `history`, `render-core`, `roster` |
 | `js/rhythm.ts` | 47 | 8 | `data`, `format` |
 | `js/main.ts` | 44 | 0 | `analysis`, `credit`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
@@ -1369,9 +1369,9 @@ falls in. **export** marks a name other modules import.
 | 22 | `pulseStroke` · export | `function pulseStroke(` |
 | 27 | `stripQuarter` | `function stripQuarter(` |
 | 38 | `stripRow` | `function stripRow(` |
-| 52 | `stripPaper` | `function stripPaper(` |
-| 63 | `pulseStripsChart` · export | `function pulseStripsChart(` |
-| 86 | `stripsInfo` · export | `function stripsInfo(` |
+| 54 | `stripPaper` | `function stripPaper(` |
+| 65 | `pulseStripsChart` · export | `function pulseStripsChart(` |
+| 88 | `stripsInfo` · export | `function stripsInfo(` |
 
 ### `js/reading.ts`
 

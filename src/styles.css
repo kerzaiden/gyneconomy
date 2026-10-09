@@ -639,7 +639,7 @@
     stroke-linecap:round; stroke-linejoin:round; }
   .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
   .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
-  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
+  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
   .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .peek-chart{ width:100%; margin-top:12px; }
