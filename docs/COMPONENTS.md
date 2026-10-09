@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `ee77e6a` on 2026-10-09. **105 components**, **18 shared patterns**.
+Generated from commit `d4f13a5` on 2026-10-09. **106 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -79,6 +79,7 @@ Generated from commit `ee77e6a` on 2026-10-09. **105 components**, **18 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`yearRow`** | `.dx-year` `.dx-year-lead` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:yearByYear` |
+| **`yearsMore`** | `.cyc-more` `.dx-years-more` | `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
 

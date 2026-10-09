@@ -308,6 +308,15 @@ async function openPage(p, url, sheet) {
      yearRun(past.years) && past.opens === past.years.length)
       ? ok('the cycle reads year by year, newest first, each year opening Elements, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening Elements, today and at a close', JSON.stringify([today, past]));
+    const preview = await p.evaluate(async () => {
+      const yrs = document.querySelector('#diagnosis .dx-years'), btn = yrs.querySelector('.dx-years-more');
+      const shown = () => [...yrs.querySelectorAll('.dx-year')].filter(r => !r.hidden).length;
+      const before = shown(); btn.click(); const after = shown(), label = btn.textContent.trim(); btn.click();
+      return { before, after, all: yrs.querySelectorAll('.dx-year').length, label, back: shown() };
+    });
+    (preview.before === 3 && preview.after === preview.all && preview.all > 3 && preview.label === 'View less' && preview.back === 3)
+      ? ok('Year by Year shows the newest three years, and View more the rest', preview.before + ' of ' + preview.all)
+      : bad('Year by Year shows the newest three years, and View more the rest', JSON.stringify(preview));
     await p.evaluate(() => [...document.querySelectorAll('#diagnosis .dx-year')].find(b => b.dataset.indWhen === '2010').click()); await settle(p);
     const yearInd = await p.evaluate(() => { const h = document.getElementById('sheet-find');
       return { title: document.getElementById('topbar-title').textContent, shown: !!h.offsetParent,
