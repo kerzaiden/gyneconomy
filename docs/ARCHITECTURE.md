@@ -626,7 +626,9 @@ emotion at the closing month, its years, and what followed a year later. Every l
   The walk is over the whole record because a run crosses cycle edges.
   Bands and the peak's dot are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and
   non-scaling strokes, so the card is fluid. Prices and the rate are drawn as quarterly means through a Catmull-Rom
-  curve, so the lines flow as in her tracker; the peak's dot sits on its quarter. `rateSeries` is
+  curve, so the lines flow as in her tracker; the peak's dot sits on its quarter. The Peak and 0% labels are HTML too, placed by
+  sampling both drawn curves and taking the first side whose box they miss; the test assumes the narrowest plot
+  (300px), because a label's box in px is a smaller share of a wider plot and so stays clear there too. `rateSeries` is
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
   1914 to 1954-06) before. The note under the legend is the cycle's `rates` story with `{peak}` and `{month}` filled
   from `cyclePeak`, so the words are written once and the figures are the record's.

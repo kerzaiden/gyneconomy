@@ -51,15 +51,51 @@ function monthPoints(list: MonthPoint[], from: number, to: number){
     return { i: Math.min(Math.max(q * 3 + 1, from), to), v: sums[q].reduce(function(a, b){ return a + b; }, 0) / sums[q].length };
   });
 }
-function curve(pts: Pt[], x: (i: number) => number, y: (v: number) => number){
-  var p = pts.map(function(d){ return [x(d.i), y(d.v)]; });
-  if (p.length < 2) return "";
-  var d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1);
+function segments(pts: Pt[], x: (i: number) => number, y: (v: number) => number){
+  var p = pts.map(function(d){ return [x(d.i), y(d.v)]; }), out: number[][] = [];
   for (var k = 0; k < p.length - 1; k++){
     var a = p[Math.max(k - 1, 0)], b = p[k], c = p[k + 1], e = p[Math.min(k + 2, p.length - 1)];
-    d += " C" + [b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1]].map(function(n){ return n.toFixed(1); }).join(" ");
+    out.push([b[0], b[1], b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1]]);
   }
-  return d;
+  return out;
+}
+function curve(segs: number[][]){
+  if (!segs.length) return "";
+  return "M" + segs[0][0].toFixed(1) + " " + segs[0][1].toFixed(1) + segs.map(function(g){ return " C" + g.slice(2).map(function(n){ return n.toFixed(1); }).join(" "); }).join("");
+}
+function sample(segs: number[][]){
+  var out: number[][] = [];
+  segs.forEach(function(g){
+    for (var t = 0; t <= 1; t += 0.05){
+      var u = 1 - t, w = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+      out.push([w[0] * g[0] + w[1] * g[2] + w[2] * g[4] + w[3] * g[6], w[0] * g[1] + w[1] * g[3] + w[2] * g[5] + w[3] * g[7]]);
+    }
+  });
+  return out;
+}
+var TAG = { h: 14, gap: 8, clear: 3, plotW: 300, plotH: 150 };
+var TAG_SIDES = [[1, 0], [-1, 0], [0, -1], [0, 1], [1, -1], [-1, -1], [1, 1], [-1, 1]];
+type Tag = { ax: number; ay: number; dx: number; dy: number; w: number };
+function sideTag(ax: number, ay: number, w: number, side: number[]): Tag {
+  var g = side[0] && side[1] ? TAG.gap / 2 : TAG.gap;
+  return { ax: ax, ay: ay, w: w, dx: side[0] > 0 ? g : side[0] < 0 ? -g - w : -w / 2, dy: side[1] > 0 ? g : side[1] < 0 ? -g - TAG.h : -TAG.h / 2 };
+}
+function tagHits(t: Tag, pts: number[][]){
+  var x0 = t.ax * TAG.plotW + t.dx, y0 = t.ay * TAG.plotH + t.dy;
+  if (x0 < 0 || y0 < 0 || x0 + t.w > TAG.plotW || y0 + TAG.h > TAG.plotH) return Infinity;
+  return pts.filter(function(q){ return q[0] > x0 - TAG.clear && q[0] < x0 + t.w + TAG.clear && q[1] > y0 - TAG.clear && q[1] < y0 + TAG.h + TAG.clear; }).length;
+}
+function tagHtml(cls: string, text: string, tags: Tag[], segs: number[][][]){
+  var pts = ([] as number[][]).concat.apply([], segs.map(sample)).map(function(q){ return [q[0] / VIEW_W * TAG.plotW, q[1] / VIEW_H * TAG.plotH]; });
+  var t = tags.map(function(c){ return { t: c, n: tagHits(c, pts) }; }).reduce(function(a, c){ return c.n < a.n ? c : a; }).t;
+  return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ';top:' + pct(t.ay) + ';width:' + t.w + 'px;margin:' + t.dy + 'px 0 0 ' + t.dx + 'px">' + text + '</span>';
+}
+function peakTag(segs: number[][][], px: number, py: number){
+  return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side){ return sideTag(px / VIEW_W, py / VIEW_H, 30, side); }), segs);
+}
+function zeroTag(segs: number[][][], zy: number){
+  var ay = zy / VIEW_H, w = 22;
+  return tagHtml("fp-zero-tag", "0%", [[0, 1, -1], [1, -1, -1], [0, 1, 1], [1, -1, 1]].map(function(c){ return sideTag(c[0], ay, w, [c[1], c[2]]); }), segs);
 }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
 function bandsHtml(phases: Phase[], from: number, to: number){
@@ -82,15 +118,15 @@ function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open:
   var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
   var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; }, y = function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
   var zero = '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0) + '" y2="' + y(0) + '" vector-effect="non-scaling-stroke"/>';
-  var paths = zero + ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
-  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' : "");
+  var segs = lines.map(function(l){ return segments(l, x, y); });
+  var paths = zero + ["fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
+  return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>' + zeroTag(segs, y(0)) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 function key(cls: string, name: string){ return '<li class="' + cls + '">' + name + '</li>'; }
-function legendHtml(m: CycleModel, toM: string, peak: boolean){
+function legendHtml(){
   return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") +
-    key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") +
-    (peak ? key("fp-key-peak" + (m.ongoing ? " fp-open" : ""), m.ongoing ? "Peak (so far)" : "Peak") : "") + '</ul>';
+    key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + '</ul>';
 }
 function footnoteHtml(m: CycleModel, peak: MonthPoint | null){
   var text = m.era.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", "\u00a0") : "");
@@ -107,7 +143,7 @@ function fedPhasesCard(m: CycleModel){
   var peak = cyclePeak(fromM, toM);
   var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
   var top = peak ? lines[0].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml(m, toM, !!top) + footnoteHtml(m, peak);
+  return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml(m, peak);
 }
 export function fedEnvironment(m: CycleModel){
   return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));

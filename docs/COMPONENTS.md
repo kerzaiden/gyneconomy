@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `22471a7` on 2026-10-09. **103 components**, **18 shared patterns**.
+Generated from commit `dec9f9d` on 2026-10-09. **104 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -106,6 +106,7 @@ Generated from commit `22471a7` on 2026-10-09. **103 components**, **18 shared p
 | **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:fedPhasesCard` |
 | **`legendHtml`** | `.fp-legend` | `fed-phases.ts:fedPhasesCard` |
 | **`plotSvg`** | `.fp-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
+| **`tagHtml`** | `.fp-tag` | `fed-phases.ts:peakTag`, `fed-phases.ts:zeroTag` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
 
 ## format.ts
@@ -239,6 +240,7 @@ renderer speaks. Listed most-used first.
 | **`fileRow`** | data.ts | 6 places |
 | **`fitLine`** | charts.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
+| **`pct`** | fed-phases.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
 | **`windowYears`** | charts.ts | 6 places |
@@ -252,7 +254,6 @@ renderer speaks. Listed most-used first.
 | **`layer`** | dom.ts | 5 places |
 | **`meanOf`** | cycle-analysis.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
-| **`pct`** | fed-phases.ts | 5 places |
 | **`pctl`** | format.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |

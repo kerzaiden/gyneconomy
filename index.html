@@ -555,14 +555,15 @@
   .fp-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
   .fp-line{ fill:none; stroke:var(--line); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.9; }
   .fp-peak-dot{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
+  .fp-tag{ position:absolute; height:14px; font-size:var(--type-label); line-height:14px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
+  .fp-zero-tag{ text-align:left; }
+  .fp-peak-tag{ color:var(--text-secondary); }
   .fp-peak-dot.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
   .fp-legend{ display:flex; flex-wrap:wrap; gap:6px 10px; margin:12px 0 0; padding:8px 12px; list-style:none; border:1px solid var(--border); border-radius:var(--radius-inner); font-size:var(--type-label); color:var(--text-secondary); }
   .fp-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
   .fp-legend li::before{ content:""; flex:none; }
   .fp-key-band::before{ width:11px; height:11px; border-radius:3px; background:var(--wash); }
   .fp-key-line::before{ width:12px; height:3px; border-radius:2px; background:var(--line); }
-  .fp-key-peak::before{ width:8px; height:8px; border-radius:50%; background:var(--season-summer); }
-  .fp-key-peak.fp-open::before{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer); }
   .fp-note{ margin:12px 0 0; font-size:var(--type-meta); line-height:1.5; color:var(--text-secondary); }
   .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
@@ -47908,19 +47909,83 @@
       };
     });
   }
-  function curve(pts2, x, y) {
-    var p = pts2.map(function(d2) {
-      return [ x(d2.i), y(d2.v) ];
-    });
-    if (p.length < 2) return "";
-    var d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1);
+  function segments(pts2, x, y) {
+    var p = pts2.map(function(d) {
+      return [ x(d.i), y(d.v) ];
+    }), out = [];
     for (var k = 0; k < p.length - 1; k++) {
       var a = p[Math.max(k - 1, 0)], b = p[k], c = p[k + 1], e = p[Math.min(k + 2, p.length - 1)];
-      d += " C" + [ b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1] ].map(function(n) {
+      out.push([ b[0], b[1], b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1] ]);
+    }
+    return out;
+  }
+  function curve(segs) {
+    if (!segs.length) return "";
+    return "M" + segs[0][0].toFixed(1) + " " + segs[0][1].toFixed(1) + segs.map(function(g) {
+      return " C" + g.slice(2).map(function(n) {
         return n.toFixed(1);
       }).join(" ");
-    }
-    return d;
+    }).join("");
+  }
+  function sample(segs) {
+    var out = [];
+    segs.forEach(function(g) {
+      for (var t = 0; t <= 1; t += .05) {
+        var u = 1 - t, w = [ u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t ];
+        out.push([ w[0] * g[0] + w[1] * g[2] + w[2] * g[4] + w[3] * g[6], w[0] * g[1] + w[1] * g[3] + w[2] * g[5] + w[3] * g[7] ]);
+      }
+    });
+    return out;
+  }
+  var TAG = {
+    h: 14,
+    gap: 8,
+    clear: 3,
+    plotW: 300,
+    plotH: 150
+  };
+  var TAG_SIDES = [ [ 1, 0 ], [ -1, 0 ], [ 0, -1 ], [ 0, 1 ], [ 1, -1 ], [ -1, -1 ], [ 1, 1 ], [ -1, 1 ] ];
+  function sideTag(ax, ay, w, side2) {
+    var g = side2[0] && side2[1] ? TAG.gap / 2 : TAG.gap;
+    return {
+      ax: ax,
+      ay: ay,
+      w: w,
+      dx: side2[0] > 0 ? g : side2[0] < 0 ? -g - w : -w / 2,
+      dy: side2[1] > 0 ? g : side2[1] < 0 ? -g - TAG.h : -TAG.h / 2
+    };
+  }
+  function tagHits(t, pts2) {
+    var x0 = t.ax * TAG.plotW + t.dx, y0 = t.ay * TAG.plotH + t.dy;
+    if (x0 < 0 || y0 < 0 || x0 + t.w > TAG.plotW || y0 + TAG.h > TAG.plotH) return Infinity;
+    return pts2.filter(function(q) {
+      return q[0] > x0 - TAG.clear && q[0] < x0 + t.w + TAG.clear && q[1] > y0 - TAG.clear && q[1] < y0 + TAG.h + TAG.clear;
+    }).length;
+  }
+  function tagHtml(cls, text, tags, segs) {
+    var pts2 = [].concat.apply([], segs.map(sample)).map(function(q) {
+      return [ q[0] / VIEW_W * TAG.plotW, q[1] / VIEW_H * TAG.plotH ];
+    });
+    var t = tags.map(function(c) {
+      return {
+        t: c,
+        n: tagHits(c, pts2)
+      };
+    }).reduce(function(a, c) {
+      return c.n < a.n ? c : a;
+    }).t;
+    return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ";top:" + pct(t.ay) + ";width:" + t.w + "px;margin:" + t.dy + "px 0 0 " + t.dx + 'px">' + text + "</span>";
+  }
+  function peakTag(segs, px, py) {
+    return tagHtml("fp-peak-tag", "Peak", TAG_SIDES.map(function(side2) {
+      return sideTag(px / VIEW_W, py / VIEW_H, 30, side2);
+    }), segs);
+  }
+  function zeroTag(segs, zy) {
+    var ay = zy / VIEW_H, w = 22;
+    return tagHtml("fp-zero-tag", "0%", [ [ 0, 1, -1 ], [ 1, -1, -1 ], [ 0, 1, 1 ], [ 1, -1, 1 ] ].map(function(c) {
+      return sideTag(c[0], ay, w, [ c[1], c[2] ]);
+    }), segs);
   }
   function pct(n) {
     return (n * 100).toFixed(2) + "%";
@@ -47953,10 +48018,13 @@
       return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / (hi - lo || 1));
     };
     var zero = '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0) + '" y2="' + y(0) + '" vector-effect="non-scaling-stroke"/>';
+    var segs = lines.map(function(l) {
+      return segments(l, x, y);
+    });
     var paths = zero + [ "fp-prices", "fp-rate" ].map(function(cls, k) {
-      return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>';
+      return '<path class="fp-line ' + cls + '" d="' + curve(segs[k]) + '" vector-effect="non-scaling-stroke"/>';
     }).join("");
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' : "");
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + zeroTag(segs, y(0)) + (peak ? '<span class="fp-peak-dot' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' + peakTag(segs, x(peak.i), y(peak.v)) : "");
   }
   function rateSeries(toM) {
     return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
@@ -47964,8 +48032,8 @@
   function key(cls, name) {
     return '<li class="' + cls + '">' + name + "</li>";
   }
-  function legendHtml(m, toM, peak) {
-    return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") + key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + (peak ? key("fp-key-peak" + (m.ongoing ? " fp-open" : ""), m.ongoing ? "Peak (so far)" : "Peak") : "") + "</ul>";
+  function legendHtml() {
+    return '<ul class="fp-legend">' + key("fp-key-band fp-tight", "Tightening") + key("fp-key-band fp-ease", "Easing") + key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + "</ul>";
   }
   function footnoteHtml(m, peak) {
     var text = m.era.rates.replace("{peak}", peak ? peak.v.toFixed(1) + "%" : "").replace("{month}", peak ? monthLabel(peak.m).replace(" ", " ") : "");
@@ -47984,7 +48052,7 @@
     var top = peak ? lines[0].filter(function(p) {
       return Math.floor(p.i / 3) === Math.floor(monthIdx(peak.m) / 3);
     })[0] || null : null;
-    return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + legendHtml(m, toM, !!top) + footnoteHtml(m, peak);
+    return '<div class="fp-plot">' + bandsHtml(phases, from, to) + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + "</div>" + legendHtml() + footnoteHtml(m, peak);
   }
   function fedEnvironment(m) {
     return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));
