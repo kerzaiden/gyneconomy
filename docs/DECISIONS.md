@@ -1582,7 +1582,8 @@ settles it; none is open after V668.
   the text colour and each curve's colour in its swatch; its states are the body's words: the rate Tightening or
   Easing, prices Rising, Falling or Steady (the season model's own price trend), "Peak (so far)" on the open cycle.
   Before the federal funds rate begins (July 1954) the line is the New York Fed's discount rate, named "Discount
-  rate". A low peak is still a peak: where prices topped in a calm cycle tells something about the cycle too.
+  rate"; the phases follow the rate alone, so a tightening made another way (the doubling of reserve requirements
+  in 1936–37) does not show. A low peak is still a peak: where prices topped in a calm cycle tells something about the cycle too.
   (Two Hormones)
 - **Every cycle has a peak: its highest price reading within the cycle, once the decline it inherited from the
   cycle before has passed.** A cycle's range is its own length, so by definition it has a peak and a trough. The
