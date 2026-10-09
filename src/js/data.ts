@@ -369,133 +369,133 @@ export var marketCycles: Cycle[] = [
     name:"Great Depression Cycle",
     story:"The Roaring Twenties ended in the crash of October 1929, and bank failures, tight money and a tariff war turned it into the Great Depression. Mrs. Market fell from Euphoria into the deepest Despair in the record, four bear years in a row.",
     blurb:"The last boom year of the Twenties, then the crash of 1929 and three more years of falling prices, failing banks and lost jobs. It ends in 1932, at the bottom of the Great Depression.",
-    rates:"The Fed raised rates through 1928 and 1929 to cool stock speculation, and prices peaked in {month}. After the crash it cut fast, but in October 1931 it raised rates again to defend gold, and the deflation deepened."
+    rates:"The Fed tightened into the 1929 bubble, then again in 1931 to defend gold, turning a crash into deflation. Prices peaked in {month}."
   },
   {
     from:1933, to:1934,
     name:"New Deal Cycle",
     story:"Roosevelt closed the banks, took the dollar off gold and launched the New Deal, and 1933 became one of the best years in the record. Mrs. Market leapt from Depression to Hope in a few months, then lost her nerve in 1934 as the recovery came slowly.",
     blurb:"The New Deal: the bank holiday, the dollar off gold and the first relief programmes. It ends in 1934, a flat year after the leap of 1933.",
-    rates:"With the banks reopened and the dollar off gold, the Fed kept cutting, and prices turned from falling to rising, peaking in {month}."
+    rates:"Off gold, with the banks reopened, money was cheap again, and falling prices turned to rising, peaking in {month}."
   },
   {
     from:1935, to:1937,
     name:"Second New Deal Cycle",
     story:"Output climbed back toward its 1929 level, until the Fed raised reserve requirements and Washington cut spending in 1937. Mrs. Market grew Optimistic too soon and fell back into Fear in the recession of 1937–38.",
     blurb:"Two strong years of recovery, then the policy turn of 1937 and a sharp recession inside the Depression. It ends in 1937, one of the worst years in the record.",
-    rates:"Rates were already at record lows, so the Fed tightened another way: it doubled the reserves banks had to hold in 1936 and 1937, as prices peaked in {month}, and the economy fell back into recession."
+    rates:"With rates at the floor, the Fed tightened by doubling bank reserves, and the recovery broke into the 1937 recession. Prices peaked in {month}."
   },
   {
     from:1938, to:1941,
     name:"Keynesian Cycle",
     story:"The market bounced in 1938, but war in Europe, the fall of France and then Pearl Harbor kept it falling for three years. Mrs. Market lived in Anxiety and Fear, even as war orders put the factories back to work.",
     blurb:"A rebound year, then three bear years as the war in Europe spreads and America is drawn in. It ends in 1941, the year of Pearl Harbor.",
-    rates:"Gold fleeing a Europe at war kept money cheap and rates near the floor. Prices only woke with the war orders, peaking in {month}."
+    rates:"Gold fleeing a Europe at war kept money cheap; only the war orders woke prices, peaking in {month}."
   },
   {
     from:1942, to:1946,
     name:"WWII Cycle",
     story:"After Midway the tide of WWII turned, and war production with price controls carried four rising years to victory in 1945. Mrs. Market went from Hope to Euphoria, until controls ended in 1946, prices jumped and she fell back into Anxiety.",
     blurb:"The WWII economy at full stretch, from the turn of 1942 to victory in 1945. It ends in 1946, when price controls lift and inflation surges.",
-    rates:"The Fed pinned rates low to pay for the war while price controls held inflation down. When the controls came off in 1946, prices surged to {peak} in {month}."
+    rates:"Rates were pinned low to fund the war and controls held prices, until the controls came off and prices surged to {peak} in {month}."
   },
   {
     from:1947, to:1953,
     name:"Baby Boom Cycle",
     story:"Soldiers came home and started families in record numbers, while Marshall Plan exports and then the Korean War kept the factories busy. Mrs. Market climbed out of the postwar slump into a steady Optimism that held for six years, until the war’s end and the 1953 recession brought her first Anxiety.",
     blurb:"The baby boom begins: new households, years of pent-up demand, Marshall Plan exports and then the Korean War. It ends in 1953, the year the war ended and military spending was cut.",
-    rates:"Post-war inflation peaked at {peak} in {month} while the Fed was still holding rates down for the Treasury. The 1951 Accord set it free to raise them on its own."
+    rates:"Inflation hit {peak} in {month} while the Fed still held rates down for the Treasury, until the 1951 Accord set it free."
   },
   {
     from:1954, to:1957,
     name:"Suburban Cycle",
     story:"Cars, highways and new suburbs carried the economy, and 1954 became the best year in the record. Mrs. Market went from Hope to Euphoria in a single year, then slid into Anxiety as rates rose and the 1957 recession arrived.",
     blurb:"Out of the 1953–54 recession comes the best year in the record, 1954, and a boom in cars, highways and new suburbs. It ends with the recession of 1957.",
-    rates:"The Fed began raising rates in 1955 to lean against the boom, and prices peaked in {month}, just before the 1957 recession."
+    rates:"The Fed leaned against the boom from 1955, and prices peaked in {month}, just before the 1957 recession."
   },
   {
     from:1958, to:1962,
     name:"Space Race Cycle",
     story:"Sputnik set off a race in rockets and electronics, and almost any company with “tronics” in its name found buyers. Mrs. Market rode that Excitement into Thrill, until the slide of 1962 turned it to Fear.",
     blurb:"Sputnik sets off a race in rockets and electronics, and the market chases the new technology stocks of the day. It ends in the slide of 1962.",
-    rates:"The Fed cut into the 1958 recession, then raised rates again in 1959. Prices stayed calm all cycle, peaking early, in {month}."
+    rates:"A cut into the 1958 recession, a hike in 1959, and calm prices that peaked early, in {month}."
   },
   {
     from:1963, to:1966,
     name:"Great Society Cycle",
     story:"The 1964 tax cut and Johnson’s Great Society spending, then the build-up in Vietnam, stretched the long 1960s expansion. Mrs. Market was Thrilled and sure of herself, until inflation, rising rates and the credit crunch of 1966 left her Anxious.",
     blurb:"The 1964 tax cut, the Great Society programmes and a long expansion running hot. It ends in 1966 as rates climb and credit tightens.",
-    rates:"Spending on the Great Society and on Vietnam warmed prices until they peaked in {month}, and the Fed's tightening of 1966 brought on a credit crunch."
+    rates:"War and welfare spending warmed prices to a peak in {month}, and the Fed's 1966 tightening brought a credit crunch."
   },
   {
     from:1967, to:1969,
     name:"Go-Stop Cycle",
     story:"Go-go fund managers traded growth stocks at speed, and conglomerates grew by buying everything in sight, their earnings flattered by the deals themselves. Mrs. Market was in Euphoria about them, and in Denial as inflation and the credit crunch of 1969 took them apart.",
     blurb:"The go-go funds and the conglomerates peak in 1968, with speculation running alongside. It ends in 1969 as inflation and rising rates catch up.",
-    rates:"The Fed eased after the 1966 crunch, then tightened hard as inflation built. Prices peaked at the cycle's close, in {month}."
+    rates:"Easy money after the 1966 crunch, then hard tightening as inflation built. Prices peaked at the close, in {month}."
   },
   {
     from:1970, to:1974,
     name:"Nifty Fifty Cycle",
     story:"Investors crowded into fifty blue chips they believed could be bought at any price and held forever. Mrs. Market’s Euphoria turned to Fear with the oil embargo of 1973, and to Panic and Despair in 1974, her worst year since 1937.",
     blurb:"Investors crowd into fifty blue-chip growth stocks they believe can be bought at any price. It ends in the bear market of 1973–74, with the oil embargo and a deep recession.",
-    rates:"The Fed eased into the 1970 recession; then the end of the dollar's gold link, the oil shock and the lifting of price controls sent inflation to {peak} in {month}, even with rates in double digits."
+    rates:"The end of gold, the oil shock and lifted price controls sent inflation to {peak} in {month}, even with rates in double digits."
   },
   {
     from:1975, to:1977,
     name:"Bicentennial Cycle",
     story:"Out of the 1974 collapse came one of the sharpest rebounds in the record, +37% in 1975, and the rally ran into the Bicentennial year before topping out late in 1976. Mrs. Market moved from Despair back to Hope and Optimism, but inflation never left, and by 1977 she was Anxious again.",
     blurb:"A sharp recovery out of the 1973–74 collapse that tops out in the Bicentennial year, with inflation never far behind. It ends in 1977 as prices start to run again.",
-    rates:"The Fed cut through the 1975 recession as inflation cooled from its peak, but prices never settled and climbed again, peaking in {month}."
+    rates:"The Fed cut through the 1975 recession, but inflation never settled and climbed again, peaking in {month}."
   },
   {
     from:1978, to:1981,
     name:"Volcker Cycle",
     story:"Prices ran into double digits, and money fled into oil, gold and anything real. Mrs. Market was Excited but uneasy throughout, and fell into Fear in 1981 when Volcker raised rates high enough to break inflation.",
     blurb:"Inflation runs into double digits and hard assets like oil and gold lead, until Paul Volcker takes the Fed in 1979. It ends in 1981, when his rates, near 20%, break it.",
-    rates:"Inflation reached {peak} in {month}, months after Paul Volcker's Fed began driving rates toward 20% to break it. It broke, at the cost of two recessions."
+    rates:"Inflation peaked at {peak} in {month} as Volcker drove rates toward 20% to break it. It broke, at the cost of two recessions."
   },
   {
     from:1982, to:1990,
     name:"Buyout Cycle",
     story:"With inflation beaten and rates falling, a long bull market ran on junk bonds and leveraged buyouts. Mrs. Market’s Euphoria broke in the one-day Panic of October 1987, came back, and ended in Fear in 1990 with the savings-and-loan collapse and the Gulf War.",
     blurb:"The defeat of inflation opens a long bull market, fuelled by falling rates, junk bonds and leveraged buyouts, through the crash of 1987. It ends in 1990 with the savings-and-loan collapse, the Gulf War oil shock and recession.",
-    rates:"The Fed cut as inflation broke in 1982, then steered with small moves through the decade. Prices crept back up and peaked in {month}, when the Gulf War oil spike met the 1990 recession."
+    rates:"Small, steady moves after 1982 kept inflation low until the Gulf War oil spike lifted it to a peak in {month}."
   },
   {
     from:1991, to:2002,
     name:"Dot-Com Cycle",
     story:"The internet promised a new economy, and the market believed it for nine straight years. Mrs. Market climbed from Hope to full Euphoria in 1999, then spent three years in Denial, Fear and finally Despair as the bubble burst.",
     blurb:"Nine years of uninterrupted growth out of the 1990–91 recession — confidence building all decade and cresting into the internet mania that gives the cycle its name — then three straight losing years to unwind it, a run of consecutive declines the market had not seen since the 1930s. The mania and its undoing are one story, and the cycle holds both.",
-    rates:"Prices stayed calm all cycle, peaking modestly in {month}. The Fed raised rates in 1994 and again in 1999–2000 as the bubble grew, then cut hard after it burst."
+    rates:"Prices stayed calm, peaking modestly in {month}; the Fed hiked into the bubble in 1999–2000, then cut hard when it burst."
   },
   {
     from:2003, to:2008,
     name:"Housing Cycle",
     story:"Cheap money and easy mortgages made houses the boom, and the banks built a tower of debt on top of them. Mrs. Market was Optimistic and then Thrilled, until Lehman’s collapse in 2008 sent her into Panic and Despair.",
     blurb:"A rebuild out of the dot-com wreckage, carried by a housing boom that was quietly becoming the next crisis the whole way up. It ends where the boom had been heading all along: the subprime collapse, and the worst year the market had seen since 1931.",
-    rates:"Cheap money fed a housing boom; the Fed raised rates seventeen times from 2004 to 2006, and prices peaked with oil in {month}, just before the crash."
+    rates:"Cheap money fed the housing boom, seventeen hikes followed, and prices peaked with oil in {month}, just before the crash."
   },
   {
     from:2009, to:2018,
     name:"Big Tech Cycle",
     story:"Out of the crisis, near-zero rates and a handful of technology giants carried one of the longest bull markets on record. Mrs. Market crept from Despair to Hope and stayed Optimistic for a decade, until the trade war and rising rates left her Anxious at the end of 2018.",
     blurb:"One of the longest, steadiest bull markets on record — a decade of rebuilding led by a handful of technology giants that ended it carrying more of the index than any five companies before them. It closes on the trade-war scare of late 2018, the mildest ending of any cycle here: a stumble rather than a bust.",
-    rates:"After the crisis rates sat near zero for seven years and prices stayed calm, peaking modestly in {month}. The Fed only began raising rates in December 2015."
+    rates:"Seven years near zero, and prices barely stirred, peaking modestly in {month}."
   },
   {
     from:2019, to:2022,
     name:"COVID-19 Cycle",
     story:"A strong 2019, then the pandemic brought the fastest crash on record and the largest rescue ever attempted. Mrs. Market went from Panic to Euphoria inside a year, and into Fear in 2022 as inflation returned and the Fed raised rates at its fastest pace in decades.",
     blurb:"A strong year, then the fastest bear market in history as COVID-19 arrives — and one of the fastest recoveries on record, bought with the largest fiscal and monetary transfusion ever attempted. The bill arrives at the end: inflation at a four-decade high, and a sharp correction to close the cycle. Worth knowing that the pandemic crash itself never appears as a losing year — it fell and recovered inside 2020 — so this cycle's bleed is the inflation bear, not the virus.",
-    rates:"The Fed cut to zero when the pandemic struck. Reopening and stimulus sent prices to their highest in forty years, peaking in {month}, and the Fed raised rates at its fastest pace since the 1980s."
+    rates:"Rates went to zero, then reopening and stimulus brought the highest inflation in forty years, peaking in {month}, and the fastest hikes since the 1980s."
   },
   {
     from:2023, to:null, ongoing:true,
     name:"AI Cycle",
     story:"Out of the 2022 correction, the build-out of artificial intelligence became the story everyone wanted to own. Mrs. Market has moved from Hope into Optimism and Excitement, and the cycle is still being written.",
     blurb:"Out of the 2022 correction, a bull run carried by the build-out of artificial intelligence. Three full years so far and the fourth under way, with no losing year in it yet. Still being written.",
-    rates:"The Fed held rates high through 2023 and began cutting in 2024 as inflation cooled. Prices turned up again in 2026, peaking so far in {month}, and in September the Fed raised rates again."
+    rates:"Cuts began in 2024 as inflation cooled, but prices turned up in 2026, peaking so far in {month}, and in September the Fed hiked again."
   }
 ];
 export var typicalCycleYears = 6;

@@ -1587,7 +1587,7 @@ settles it; none is open after V668.
   here. The peak is an orange dot on the prices curve (hollow on the open cycle), labelled Peak beside it in the
   legend's type, on whichever side keeps clear of both curves; the label left the legend so the legend fits one line
   on most phones. Under the years, one legend at the years' size, on a light gray panel and set left with
-  tight gaps: Tightening, Easing, Rates, Prices. Under it, each cycle's rates story in a sentence or two (`rates` in `marketCycles`), so readers know what
+  tight gaps: Tightening, Easing, Rates, Prices. Under it, each cycle's rates story in one or two short lines on what the rates did (`rates` in `marketCycles`), so readers know what
   went on; its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
   discount rate; the phases follow the rate alone, so a tightening made another way (the doubling of reserve
