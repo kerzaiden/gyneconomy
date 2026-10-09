@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d4f13a5` on 2026-10-09. **106 components**, **18 shared patterns**.
+Generated from commit `88b6b1d` on 2026-10-09. **106 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -104,7 +104,7 @@ Generated from commit `d4f13a5` on 2026-10-09. **106 components**, **18 shared p
 |---|---|---|
 | **`bandsHtml`** | `.fp-band` | `fed-phases.ts:fedPhasesCard` |
 | **`fedPhasesCard`** | `.fp-plot` `.fp-years` | `fed-phases.ts:fedEnvironment` |
-| **`footnoteHtml`** | `.fp-end` `.fp-more` `.fp-note` | `fed-phases.ts:fedPhasesCard` |
+| **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:fedPhasesCard` |
 | **`legendHtml`** | `.fp-legend` | `fed-phases.ts:fedPhasesCard` |
 | **`plotSvg`** | `.fp-line` | `fed-phases.ts:fedPhasesCard` |
 | **`rulesHtml`** | `.fp-rule` | `fed-phases.ts:fedPhasesCard` |
@@ -240,6 +240,7 @@ renderer speaks. Listed most-used first.
 | **`put`** | dom.ts | 7 places |
 | **`qAtIndex`** | format.ts | 7 places |
 | **`cycLabel`** | model.ts | 6 places |
+| **`cycleModel`** | model.ts | 6 places |
 | **`fileRow`** | data.ts | 6 places |
 | **`fitLine`** | charts.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
@@ -248,7 +249,6 @@ renderer speaks. Listed most-used first.
 | **`windowYears`** | charts.ts | 6 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`colScale`** | history-charts.ts | 5 places |
-| **`cycleModel`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`factsFrom`** | format.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |

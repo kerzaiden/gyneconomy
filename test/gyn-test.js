@@ -421,16 +421,18 @@ async function openPage(p, url, sheet) {
         document.querySelector('.tab-btn[data-tab="' + tab + '"]').click(); await frame();
         if (past){ [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click(); await frame(); }
         const head = [...document.querySelectorAll('.fp-note .fp-more[data-open="sheet-sign-hormones"]')].find(e => e.offsetParent);
-        if (!head || !head.querySelector('.peek-chev') || head.textContent.trim() || !head.getAttribute('aria-label') || !head.closest('.fp-end')) return 'no chevron';
+        if (!head || !head.querySelector('.peek-chev') || head.textContent.trim() !== 'Learn more') return 'no Learn more';
         head.click(); await frame();
         const sh = document.getElementById('sheet-sign-hormones');
-        return sh && sh.offsetParent ? document.getElementById('topbar-title').textContent : 'no page';
+        if (!sh || !sh.offsetParent) return 'no page';
+        const want = past ? /Dot-Com/ : /AI/, story = [...sh.querySelectorAll('.hi-card .hi-name')].find(n => want.test(n.textContent));
+        return story && story.parentNode.querySelector('p').textContent.length > 40 ? document.getElementById('topbar-title').textContent : 'no story';
       }, [tab, past]);
     };
     const got = [await rateFrom('cycle'), await rateFrom('chart'), await rateFrom('analysis', true)];
     got.every(t => t === 'Federal funds rate')
-      ? ok('the chevron after the rates story opens the Federal funds rate on Current Cycle, Analysis and a past cycle')
-      : bad('the chevron after the rates story opens the Federal funds rate on Current Cycle, Analysis and a past cycle', JSON.stringify(got));
+      ? ok('Learn more after the phases opens the Federal funds rate with that cycle\'s rates story, on Current Cycle, Analysis and a past cycle')
+      : bad('Learn more after the phases opens the Federal funds rate with that cycle\'s rates story', JSON.stringify(got));
   }
 
   {
