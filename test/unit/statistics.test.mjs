@@ -10,6 +10,8 @@ import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
 import { todayFace } from '../../src/js/reading.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { labs, yearsWord } from '../../src/js/cycle-analysis.ts';
+import { page } from '../../src/js/history.ts';
+import { categoriesShown } from '../../src/js/roster.ts';
 
 const open = marketCycles.findIndex(c => c.ongoing);
 const lab = id => labs().find(l => l.id === id);
@@ -72,4 +74,14 @@ test('Cycle Statistics shows the averages of every closed cycle, and the cycle s
   assert.deepEqual(shown(marketCycles[open].name).map(r => r[0]), rows.map(r => r[0]));
   assert.match(document.querySelector('#chart-home .stat-note').textContent, /^Averages are based on 18 closed market cycles since 1928\.$/);
   assert.match(document.querySelector('#chart-home .lab-score-box .stat-side').textContent, /^(Normal|Attention|Risk)$/);
+});
+
+test('every cycle lists its readings in the roster’s order, whatever their results', () => {
+  const order = categoriesShown().flatMap(c => ROSTER.filter(R => R.cat === c.key)).map(R => R.id), mode = page.mode['sheet-find'], was = page.cycles['sheet-find'];
+  marketCycles.forEach(c => {
+    page.mode['sheet-find'] = 'cycles'; page.cycles['sheet-find'] = c.name; sheetRenderers['sheet-find']();
+    const ids = [...document.querySelectorAll('#sheet-find .lab-row[data-open]')].map(b => b.getAttribute('data-open'));
+    assert.deepEqual(ids, order.filter(id => ids.includes(id)), c.name);
+  });
+  page.mode['sheet-find'] = mode; page.cycles['sheet-find'] = was; sheetRenderers['sheet-find']();
 });
