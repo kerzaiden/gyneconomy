@@ -1,7 +1,7 @@
 # Keren's decisions
 
-The standing logic of Keren's decisions about Gyneconomy: every rule in force, each with its reason (in her
-words where they carry it) and the versions that set it. Keren owns every design and editorial decision. Don't
+The standing logic of Keren's decisions about Gyneconomy: every rule in force, each with its reason and the
+versions that set it. Keren owns every design and editorial decision. Don't
 overrule one; if a rule seems wrong, say so and ask her.
 
 V666 made this register what it is now. Keren: "if you have decisions that are irrelevant, meaning we decided
@@ -15,9 +15,11 @@ git show "$(git tag --list 'v665*')":docs/DECISIONS.md
 git show v648-treasury-quarters:src/js/07-forms.js
 ```
 
-To add a decision, state it under its topic in the same form: the rule in bold, the reason in her words, the
-version. When a new decision overturns a rule here, rewrite that rule rather than adding a contradiction, and
-keep its older versions in the citation. Her full words go in the commit message. A rule whose scope, or the
+To add a decision, state it under its topic in the same form: the rule in bold, then why, then the version. The
+why matters more than the rule (Keren, 0.9.30): give the essence of her reasoning, not her words verbatim, and quote
+her only where a phrase carries the reason better than a paraphrase. When a new decision overturns a rule here,
+rewrite that rule rather than adding a contradiction: keep only what now holds and why the change was made, not the
+back-and-forth, and keep its older versions in the citation. Her full words go in the commit message. A rule whose scope, or the
 code, is in doubt is marked "(check: …)" until Keren settles it; none is open after V668.
 
 ## Voice and wording
@@ -577,10 +579,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Deal 1933–34, Recovery 1935–37, War Clouds 1938–41, Victory 1942–46; Claude's draft names) and the Baby Boom
   Cycle opens at 1947, its first bull year under the cycle rule. Before 1957 the returns are the S&P's 90-stock
   predecessor's, as Damodaran's table carries them. (V690; from 1948 in V689, 1991 from V511.)
-- **The 1935–37 cycle is the Second New Deal, 1938–41 the Keynesian, and 1942–46 the WWII Victory, the war
+- **The 1935–37 cycle is the Second New Deal, 1938–41 the Keynesian, and 1942–46 the WWII Cycle, the war
   written in Roman numerals wherever that cycle names it.** Keren: "rename the recovery cycle between 1935 and 1937
-  as the second New Deal cycle", "instead of war cloud cycle, I want to call it Keynesian cycle", and for 1942–46
-  "WW2 … in Latin … II". (V708; Recovery, War Clouds and Victory in V690.)
+  as the second New Deal cycle", "instead of war cloud cycle, I want to call it Keynesian cycle", for 1942–46
+  "WW2 … in Latin … II", and then "call the World War II victory cycle just WWII cycle". (0.9.31; WWII Victory
+  in V708; Recovery, War Clouds and Victory in V690.)
 - **A cycle that closed before her mood can be read keeps its Diagnosis: the Mood door says when the mood begins,
   and Circulation, Energy and what followed read as for any closed cycle.** (V689)
 - **To close an era, set its `to` to its last bear year, drop `ongoing`, and open the next era on the
@@ -636,6 +639,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Analysis
 
+- **Analysis opens on the current cycle and names the cycle it shows; a period picked on Elements stays on
+  Elements.** A past cycle reaches Analysis only from its own cycle page (Cycle Statistics), and Cycle Statistics
+  opens with that cycle's name and years; Interest Rates Environment follows the cycle shown (Keren: "yes"). Keren chose "Current by default" after picking the Housing Cycle on
+  Elements left Analysis on it, unnamed, after Back. (0.9.31)
 - **Each cycle in Analysis shows its growth and its prices, totalled the same way over the same closed years,
   side by side on one line.** Keren: "this is so interesting — put it in the analysis tab per cycle". (V276)
 - **Each cycle carries her chart, read like a blood test: every reading averaged over the cycle and sorted into
@@ -875,13 +882,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
-- **Real return is its own reading in Weather, under Market, after the S&P 500: the index's total return each year with
-  inflation taken out.** Keren: "it needs to be under the weather category, under market subcategory" (0.9.19), over
-  chips on the cycle pages. It deflates by the app's own inflation gauge (CPI before 2000, PCE since), so one inflation
-  figure is used everywhere; the open year's inflation is the latest twelve-month rate taken for the share of the year
-  gone (Claude's call: the app holds no price index to measure the year so far). Zero is the definitional line, like the
-  S&P 500's; the words are "Beat inflation" and "Lost to inflation". A cycle's real years are read on its page through
-  the Cycles window. (0.9.19)
+- **Readings appear in one order everywhere, the roster's: by category, by subcategory, then by row, on every cycle page,
+  current and past, whatever their results.** Keren, 0.9.29: "the order in which the indicators appear is different in some cycles.
+  And I want the order to be identical"; Economic Season reads Temperature, Growth gap, Federal funds rate, then S&P 500;
+  Activity reads Unemployment, Payrolls, GDP growth, Productivity growth; Mood reads Shiller CAPE, Buffett indicator, Fear,
+  Confidence. Elements had sorted each category by tier (Risk first), so a cycle's results reshuffled it. A category or
+  subcategory split in the roster is refused at boot, so the file reads in the order the pages show. (0.9.29)
+
+- **Market holds the S&P 500 alone; there is no separate real-return reading.** The real return is simply the S&P 500
+  less inflation, which any reader can work out, so a reading of its own added little and distracted (Keren, 0.9.30;
+  it was a reading from 0.9.19). Don't re-propose it.
 
 - **Credit is households borrowing to spend and lives in Desire, under Demand (Consumer credit, 0.9.25); Stress holds what is owed,
   by Households and by Government.** Keren, 0.9.25: "I think consumer credit should belong under desire, demand". Before that it sat in
@@ -1104,7 +1114,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   2020 Q2). A beat's height is M2's growth year on year, the stroke volume (Keren: "Let's do the Money stock as the
   stroke volume", after M × V = nominal GDP was set beside rate × stroke volume = cardiac output): full height at
   Volume's Flooding edge (13.5%, the pre-2020 record) and capped there, upside down when the stock shrank (2023 Q1 to
-  2024 Q1, the record's only such quarters, which Keren noted a healthy heart never shows). Since 0.9.26 (Keren):
+  2024 Q1, the record's only such quarters, which Keren noted a healthy heart never shows). Since 0.9.32 (Keren):
   the newest year is on top; each year's average velocity sits under the year with its × ("I think it's
   important"), at the label size while the year takes the next step up and a darker grey, so the velocity does not
   compete with the year (the label size is the type scale's smallest), in a date column widened to fit it, and each strip's dividing line runs through that column ("so I can

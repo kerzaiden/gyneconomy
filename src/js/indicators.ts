@@ -5,7 +5,7 @@ import { calendarTodayY } from "./refresh-season.ts";
 import { buffettHistory, CONFIDENCE_SRC, DEBT_DOLLAR_SRC, DESIRE_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
 import { currentEra, cycleSlice } from "./model.ts";
 import { histControls, page, pageCycle, timelineWindow } from "./history.ts";
-import { confidenceReading, desireReading, marketReading, meterFlagged, premiumReading, productivityReading, realReading } from "./readings.ts";
+import { confidenceReading, desireReading, marketReading, meterFlagged, premiumReading, productivityReading } from "./readings.ts";
 import { ROSTER } from "./roster.ts";
 import { defineReading, recordInsight } from "./reading.ts";
 import type { History } from "./reading.ts";
@@ -41,7 +41,7 @@ function splitPages(): Record<string, SplitPage> {
       fmt:tenth, at:function(d){ var b = interestDollarsQuarterly.filter(function(x){ return x.q === d.q; })[0]; return qPretty(d.q) + (b ? " \u00b7 " + dollars(b.v) + " a year" : ""); }, src:[longCycleSrc[4], longCycleSrc[10]], insight:interestInsight },
     "sheet-sign-productivity-growth": productivityPage(tenth),
     "sheet-sign-desire": desirePage(), "sheet-sign-premium": premiumPage(), "sheet-sign-confidence": confidencePage(),
-    "sheet-sign-market": marketPage(), "sheet-sign-real-return": realPage()
+    "sheet-sign-market": marketPage()
   });
 }
 type PageReading = { info: () => string; metricSub: string; caption: string; meter: Meter; metric: string; tag: { state?: Tone; text?: string } };
@@ -58,10 +58,6 @@ function premiumPage(){ return readingPage(premiumReading, { line:"No premium", 
 function marketPage(){
   return readingPage(marketReading, { line:"No change", fmt:signedPct, tick:wholePct, at:function(d){ return String(d.y); },
     src:sp500AnnualReturnSource, insight:marketInsight });
-}
-function realPage(){
-  return readingPage(realReading, { line:"No change", fmt:signedPct, tick:wholePct, at:function(d){ return String(d.y); },
-    src:sp500AnnualReturnSource, insight:realInsight });
 }
 function withCredit(o: Record<string, SplitPage>){
   Object.keys(creditPages).forEach(function(id){
@@ -172,14 +168,6 @@ function marketInsight(s: SplitSpec){
       (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")),
     hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " +
       bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.")]);
-}
-function realInsight(s: SplitSpec){
-  var h = s.series, last = h[h.length - 1], r = realReading, ahead = h.filter(function(d){ return d.v >= 0; }).length;
-  return highlightsHtml([lede('What the stock market returned each year after inflation, dividends included: the buying power money in it gained or lost.'),
-    hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "% after inflation, against " +
-      fmtSigned(marketReading.now.v, 1) + "% before it" + (last.v >= 0 ? "." : ": the market lost buying power.")),
-    hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + ahead + " beat inflation and " + (h.length - ahead) +
-      " lost to it. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.")]);
 }
 function interestInsight(s: SplitSpec){
   var hist = interestQuarterly, last = hist[hist.length - 1], paid = interestDollarsQuarterly[interestDollarsQuarterly.length - 1];

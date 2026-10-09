@@ -481,7 +481,7 @@ async function openPage(p, url, sheet) {
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
     (door.first === 'home-secs' && door.rows === 'weather,activity,mood,desire,circulation,stress' && weather.title === 'Elements' && weather.shown === 'weather' &&
-     weather.subs === 'Economic Season 3,Market 2')
+     weather.subs === 'Economic Season 3,Market 1')
       ? ok('Elements lists the categories, each opening Elements on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Elements lists the categories, each opening Elements on its own, grouped by subcategory', JSON.stringify({ door, weather }));
     await filt(p, '[data-pick-cat=""]'); await shut(p);
@@ -604,7 +604,7 @@ async function openPage(p, url, sheet) {
     if (wx) wx.cards = await p.evaluate(() => [...document.querySelectorAll('#detail-modal-body .hi-name')].map(n => n.textContent.trim()));
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (wx && wx.bar === 'Elements' && wx.names === 'Federal funds rate+Growth gap+Real return+S&P 500+Temperature' && !wx.modal &&
+    (wx && wx.bar === 'Elements' && wx.names === 'Federal funds rate+Growth gap+S&P 500+Temperature' && !wx.modal &&
      wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Balance') > 0)
       ? ok('the season in the dial opens Elements on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Elements on Weather, with the market and what the season means', JSON.stringify(wx));
