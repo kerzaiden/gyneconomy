@@ -283,7 +283,7 @@ async function openPage(p, url, sheet) {
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-open="sheet-find"][data-ind-when]').length : 0,
-                   score: !d.querySelector('[data-open="sheet-ai-insights"] .lab-score') && d.querySelectorAll('[data-chart-cycle] .lab-score').length === 1,
+                   score: !d.querySelector('[data-open="sheet-ai-insights"] .lab-score, [data-chart-cycle] .lab-score') && d.querySelectorAll('[data-open="sheet-ai-insights"] .learn-more, [data-chart-cycle] .learn-more').length === 2,
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
                    boxes: [...d.children].map(c => c.matches('[data-open="sheet-ai-insights"]') ? 'ai' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
@@ -424,8 +424,8 @@ async function openPage(p, url, sheet) {
         if (document.querySelector('#diagnosis .fp')) return 'rates card on a cycle page';
         if (past) document.querySelector('#diagnosis [data-chart-cycle]').click(); else document.querySelector('.tab-btn[data-tab="chart"]').click();
         await frame();
-        const head = [...document.querySelectorAll('.fp-note .fp-more[data-open="sheet-sign-hormones"]')].find(e => e.offsetParent);
-        if (!head || !head.querySelector('.peek-chev') || head.textContent.trim() !== 'Learn more') return 'no Learn more';
+        const head = [...document.querySelectorAll('.fp-note .learn-more[data-open="sheet-sign-hormones"]')].find(e => e.offsetParent);
+        if (!head || head.querySelector('.peek-chev') || head.textContent.trim() !== 'Learn more') return 'no Learn more';
         head.click(); await frame();
         const sh = document.getElementById('sheet-sign-hormones');
         return sh && sh.offsetParent ? document.getElementById('topbar-title').textContent : 'no page';

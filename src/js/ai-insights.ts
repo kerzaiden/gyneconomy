@@ -1,5 +1,5 @@
 import AI from "../data/ai-insights.json" with { type: "json" };
-import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
+import { learnMore, moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
 import { metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
 import { clockSvg, orbitSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
@@ -186,5 +186,5 @@ export function buildAiPage(home: HTMLElement){
 }
 export function aiInsights(m: CycleModel){
   shownModel = m;
-  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp"));
+  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp") + learnMore());
 }

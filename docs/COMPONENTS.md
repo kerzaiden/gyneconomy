@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `010f9f1` on 2026-10-09. **109 components**, **18 shared patterns**.
+Generated from commit `700542a` on 2026-10-09. **110 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -60,18 +60,18 @@ Generated from commit `010f9f1` on 2026-10-09. **109 components**, **18 shared p
 | **`filterSheet`** | `.ind-filter` `.ind-filter-head` `.ind-reset` `.ind-show` | `cycle-analysis.ts:drawChart` |
 | **`finder`** | `.lab-find` | `cycle-analysis.ts:drawChart` |
 | **`foldSec`** | `.lab-fold` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:subSec` |
-| **`healthTile`** | `.lab-score-box` | — |
+| **`healthRow`** | `.lab-score-box` | `cycle-analysis.ts:statsHome` |
 | **`insightSec`** | `.insight-mark` | `cycle-analysis.ts:insightsHome` |
 | **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:foldSec` |
 | **`labSec`** | `.lab-cat` | `cycle-analysis.ts:bySystem` |
-| **`mark`** | `.len-key` `.odd` `.ok` | `cycle-analysis.ts:healthTile`, `dial-cycle.ts:renderCycleDial` |
+| **`mark`** | `.len-key` `.odd` `.ok` | `cycle-analysis.ts:healthRow`, `dial-cycle.ts:renderCycleDial` |
 | **`markName`** | `.lab-mark` | `cycle-analysis.ts:subSec` |
 | **`periodCal`** | `.cal-key` `.period-cal` | `cycle-analysis.ts:filterSheet` |
 | **`ring`** | `.lab-ring` | — |
 | **`rowTag`** | `.lab-row` | `cycle-analysis.ts:labItem` |
-| **`scoreRing`** | `.lab-score-v` | `cycle-analysis.ts:healthTile`, `cycle-analysis.ts:statRow` |
+| **`scoreRing`** | `.lab-score-v` | `cycle-analysis.ts:statRow` |
 | **`sheetSec`** | `.ind-sec` | `cycle-analysis.ts:filterSheet` |
-| **`statBody`** | `.stat-main` `.stat-side` | `cycle-analysis.ts:healthTile`, `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:statRow` |
+| **`statBody`** | `.stat-main` `.stat-side` | `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:statRow` |
 | **`statsHome`** | `.stat-note` | `cycle-analysis.ts:homeSections` |
 | **`stepper`** | `.period-step` | `cycle-analysis.ts:drawChart` |
 
@@ -94,6 +94,7 @@ Generated from commit `010f9f1` on 2026-10-09. **109 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
+| **`learnMore`** | `.learn-more` | `ai-insights.ts:aiInsights`, `cycle-analysis.ts:chartDoor`, `fed-phases.ts:footnoteHtml` |
 | **`moreRow`** | `.more-row` | `ai-insights.ts:todayBoxes`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendJump`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
@@ -103,7 +104,7 @@ Generated from commit `010f9f1` on 2026-10-09. **109 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:ratesCard` |
+| **`footnoteHtml`** | `.fp-note` | `fed-phases.ts:ratesCard` |
 
 ## format.ts
 
@@ -318,7 +319,6 @@ renderer speaks. Listed most-used first.
 | **`readingFor`** | reading.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
-| **`scoreTile`** | cycle-analysis.ts | 3 places |
 | **`seasonPills`** | render-core.ts | 3 places |
 | **`seasonRuns`** | render-core.ts | 3 places |
 | **`seasonRunsLabel`** | render-core.ts | 3 places |
