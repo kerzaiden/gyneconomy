@@ -1,0 +1,18 @@
+name: Probe
+on:
+  push:
+    branches: [claude/project-thread-7ddynq]
+    paths: [.github/workflows/probe.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          set +e
+          for u in https://data.nber.org/data/abc/ https://www.nber.org/research/data/tables-american-business-cycle ; do echo "== $u"; curl -sSL -m 30 "$u" | sed 's/<[^>]*>/ /g' | tr -s ' \n' | head -c 3000; echo; done
+          for t in "gross national product 1972 dollars" "gross national product nber" "real gnp quarterly 1919" "balke gordon"; do
+            echo "== FRED search: $t"
+            curl -s -m 30 "https://api.stlouisfed.org/fred/series/search?search_text=$(echo $t | sed 's/ /+/g')&api_key=$FRED_API_KEY&file_type=json&limit=40" | jq -r '.seriess[]? | [.id,.frequency_short,.observation_start,.observation_end,.title] | @tsv'
+          done
