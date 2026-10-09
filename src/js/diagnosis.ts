@@ -8,7 +8,6 @@ import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, y
 import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor, IND } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage } from "./ai-insights.ts";
-import { fedEnvironment } from "./fed-phases.ts";
 import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
@@ -19,9 +18,8 @@ var DIAG_SRC = [
 ];
 function diagnosisHtml(m: CycleModel){
   if (m.ongoing && !diagnoseToday()) return "";
-  return fedEnvironment(m) + cycleCard(m) + yearByYear(m);
+  return (m.ongoing ? aiInsights() : "") + chartDoor(m) + yearByYear(m);
 }
-function cycleCard(m: CycleModel){ return m.ongoing ? aiInsights() : chartDoor(m); }
 function yearByYear(m: CycleModel){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
   for (var y = m.era.from; y <= m.endYear; y++){

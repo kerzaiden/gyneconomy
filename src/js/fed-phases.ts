@@ -161,9 +161,9 @@ function legendHtml(){
     key("fp-key-line fp-rate", "Rates") + key("fp-key-line fp-prices", "Prices") + '</ul>';
 }
 var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
-function footnoteHtml(){
+function footnoteHtml(m: CycleModel){
   var rate = ROSTER_BY["sheet-sign-hormones"];
-  return '<p class="fp-note">' + PHASES + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '">Learn more' + CHEV + '</button></p>';
+  return '<p class="fp-note">' + PHASES + ' <button type="button" class="fp-more" data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '">Learn more' + CHEV + '</button></p>';
 }
 export function ratesStory(c: Cycle){
   var m = c.ongoing ? nowModel : cycleModel(c), peak = cyclePeak(c.from + "-01", endMonthOf(m));
@@ -179,7 +179,7 @@ function fedPhasesCard(m: CycleModel){
   var peak = cyclePeak(fromM, toM);
   var lines = [monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to)];
   var top = peak ? lines[0].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml();
+  return '<div class="fp-plot">' + bandsHtml(bands, rulesHtml(levelScale(lines))) + plotSvg(lines, from, to, top, !!m.ongoing, bands) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' + legendHtml() + footnoteHtml(m);
 }
 export function fedEnvironment(m: CycleModel){
   return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates Environment") + fedPhasesCard(m));

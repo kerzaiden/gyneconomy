@@ -127,23 +127,21 @@ test('a reading past the band never prints as the band\'s edge', () => {
 });
 
 test('every cycle explains the phases under the chart and tells its rates story with its peak month read from the record, Peak and the levels labelled on the plot', async () => {
-  const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
-  const { ratesStory } = await import('../../src/js/fed-phases.ts');
+  const { fedEnvironment, ratesStory } = await import('../../src/js/fed-phases.ts');
+  const host = document.createElement('div');
   const notes = new Set();
   for (const c of marketCycles) {
     assert.match(c.rates, /\{month\}/, c.name);
-    renderDiagnosis(cycleModel(c));
-    const note = document.querySelector('#diagnosis .fp-note');
+    host.innerHTML = fedEnvironment(cycleModel(c));
+    const note = host.querySelector('.fp-note');
     assert.ok(note && /Learn more$/.test(note.textContent.trim()), c.name);
     notes.add(note.textContent);
     const story = ratesStory(c);
     assert.ok(story.length > 40 && !/[{}]/.test(story), c.name + ' story');
-    assert.equal(document.querySelectorAll('#diagnosis .fp-plot .fp-peak-tag').length, 1, c.name + ' peak label');
-    const levels = [...document.querySelectorAll('#diagnosis .fp-plot .fp-level-tag')].map(t => t.textContent);
+    assert.equal(host.querySelectorAll('.fp-plot .fp-peak-tag').length, 1, c.name + ' peak label');
+    const levels = [...host.querySelectorAll('.fp-plot .fp-level-tag')].map(t => t.textContent);
     assert.ok(levels.length && levels.every(t => /^\u2212?\d+%$/.test(t)), c.name + ' level labels ' + levels);
-    assert.ok(!/Peak/.test(document.querySelector('#diagnosis .fp-legend').textContent), c.name + ' legend');
+    assert.ok(!/Peak/.test(host.querySelector('.fp-legend').textContent), c.name + ' legend');
   }
   assert.equal(notes.size, 1);
-  const { nowModel } = await import('../../src/js/model.ts');
-  renderDiagnosis(nowModel);
 });

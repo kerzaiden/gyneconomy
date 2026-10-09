@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,891 lines** in 41 files, about 609 KB, roughly **173 thousand tokens**. No session can
+The source is **8,894 lines** in 41 files, about 609 KB, roughly **173 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `88b6b1d` on 2026-10-09.
+Generated from commit `953e1cb` on 2026-10-09.
 
 ## The page
 
@@ -40,7 +40,7 @@ Counts: **37** modules, **778** top-level functions, **124** top-level vars, **3
 | `js/roster.ts` | 151 | 6 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 381 | 21 | `charts`, `data`, `dom`, `fed-phases`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
-| `js/diagnosis.ts` | 97 | 16 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
+| `js/diagnosis.ts` | 95 | 15 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
 | `js/dial-cycle.ts` | 385 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 82 | 6 | `data`, `dial-cycle`, `dom`, `format`, `history`, `live`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
@@ -51,7 +51,7 @@ Counts: **37** modules, **778** top-level functions, **124** top-level vars, **3
 | `js/ai-insights.ts` | 181 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 239 | 32 | — |
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
-| `js/cycle-analysis.ts` | 490 | 136 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `live`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/cycle-analysis.ts` | 495 | 137 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `live`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 187 | 39 | `data`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/format.ts` | 85 | 37 | — |
@@ -88,7 +88,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 11 | `bootRoster` | `js/roster.ts:138`–150 |
 | 12 | `bootRenderCore` | `js/render-core.ts:150`–155 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:372`–377 |
-| 14 | `bootDiagnosis` | `js/diagnosis.ts:93`–96 |
+| 14 | `bootDiagnosis` | `js/diagnosis.ts:91`–94 |
 | 15 | `bootDialCycle` | `js/dial-cycle.ts:363`–384 |
 | 16 | `bootAnalysis` | `js/analysis.ts:77`–81 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
@@ -632,22 +632,21 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14 | `DIAG_SRC` | `var DIAG_SRC =` |
-| 20 | `diagnosisHtml` | `function diagnosisHtml(` |
-| 24 | `cycleCard` | `function cycleCard(` |
-| 25 | `yearByYear` | `function yearByYear(` |
-| 34 | `PREVIEW_YEARS` | `var PREVIEW_YEARS =` |
-| 35 | `yearsMore` | `function yearsMore(` |
-| 38 | `wireYearsMore` | `function wireYearsMore(` |
-| 42 | `yearRow` | `function yearRow(` |
-| 47 | `yearStrip` | `function yearStrip(` |
-| 52 | `stripGap` | `function stripGap(` |
-| 55 | `yearMarket` | `function yearMarket(` |
-| 59 | `renderDiagnosis` · export | `function renderDiagnosis(` |
-| 63 | `fitYearDots` · export | `function fitYearDots(` |
-| 76 | `diagnosisHost` | `function diagnosisHost(` |
-| 81 | `buildDoors` | `function buildDoors(` |
-| 85 | `buildDiagnosis` | `function buildDiagnosis(` |
+| 13 | `DIAG_SRC` | `var DIAG_SRC =` |
+| 19 | `diagnosisHtml` | `function diagnosisHtml(` |
+| 23 | `yearByYear` | `function yearByYear(` |
+| 32 | `PREVIEW_YEARS` | `var PREVIEW_YEARS =` |
+| 33 | `yearsMore` | `function yearsMore(` |
+| 36 | `wireYearsMore` | `function wireYearsMore(` |
+| 40 | `yearRow` | `function yearRow(` |
+| 45 | `yearStrip` | `function yearStrip(` |
+| 50 | `stripGap` | `function stripGap(` |
+| 53 | `yearMarket` | `function yearMarket(` |
+| 57 | `renderDiagnosis` · export | `function renderDiagnosis(` |
+| 61 | `fitYearDots` · export | `function fitYearDots(` |
+| 74 | `diagnosisHost` | `function diagnosisHost(` |
+| 79 | `buildDoors` | `function buildDoors(` |
+| 83 | `buildDiagnosis` | `function buildDiagnosis(` |
 
 ### `js/dial-cycle.ts`
 
@@ -1077,7 +1076,8 @@ falls in. **export** marks a name other modules import.
 | 463 | `openWhen` | `function openWhen(` |
 | 468 | `wireCatDoors` | `function wireCatDoors(` |
 | 474 | `crossToChart` | `function crossToChart(` |
-| 479 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 479 | `rateCycle` | `function rateCycle(` |
+| 483 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/era.ts`
 
