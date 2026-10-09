@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f237d50` on 2026-10-09. **103 components**, **18 shared patterns**.
+Generated from commit `6c98605` on 2026-10-09. **106 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -102,10 +102,13 @@ Generated from commit `f237d50` on 2026-10-09. **103 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`bandsHtml`** | `.fp-band` `.fp-ph` | `fed-phases.ts:fedPhasesCard` |
-| **`fedPhasesCard`** | `.fp-marks` `.fp-phases` `.fp-plot` `.fp-years` | `fed-phases.ts:fedEnvironment` |
-| **`levelsHtml`** | `.fp-levels` | `fed-phases.ts:fedPhasesCard` |
-| **`plotSvg`** | `.fp-line` `.fp-ov-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
+| **`bandsHtml`** | `.fp-band` | `fed-phases.ts:fedPhasesCard` |
+| **`fedPhasesCard`** | `.fp-plot` `.fp-years` | `fed-phases.ts:fedEnvironment` |
+| **`footnoteHtml`** | `.fp-more` `.fp-note` | `fed-phases.ts:fedPhasesCard` |
+| **`legendHtml`** | `.fp-legend` | `fed-phases.ts:fedPhasesCard` |
+| **`plotSvg`** | `.fp-line` | `fed-phases.ts:fedPhasesCard` |
+| **`rulesHtml`** | `.fp-rule` | `fed-phases.ts:fedPhasesCard` |
+| **`tagSpan`** | `.fp-tag` | `fed-phases.ts:levelTags`, `fed-phases.ts:tagHtml` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
 
 ## format.ts
@@ -210,8 +213,8 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`fmtSigned`** | format.ts | 24 places |
 | **`need`** | dom.ts | 24 places |
+| **`fmtSigned`** | format.ts | 23 places |
 | **`titleCase`** | format.ts | 17 places |
 | **`byId`** | dom.ts | 14 places |
 | **`pageCycle`** | history.ts | 14 places |
@@ -222,24 +225,24 @@ renderer speaks. Listed most-used first.
 | **`publishGeom`** | charts.ts | 10 places |
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
+| **`monthLabel`** | format.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
 | **`addSources`** | dom.ts | 8 places |
 | **`colPath`** | charts.ts | 8 places |
 | **`colWidth`** | charts.ts | 8 places |
 | **`cycleSlice`** | model.ts | 8 places |
 | **`f1`** | pulse-strips.ts | 8 places |
-| **`monthLabel`** | format.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`keyed`** | roster.ts | 7 places |
 | **`normOf`** | cycle-analysis.ts | 7 places |
+| **`pct`** | fed-phases.ts | 7 places |
 | **`put`** | dom.ts | 7 places |
 | **`qAtIndex`** | format.ts | 7 places |
 | **`cycLabel`** | model.ts | 6 places |
 | **`fileRow`** | data.ts | 6 places |
 | **`fitLine`** | charts.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
-| **`pct`** | fed-phases.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`strip`** | render-core.ts | 6 places |
 | **`windowYears`** | charts.ts | 6 places |
@@ -248,8 +251,6 @@ renderer speaks. Listed most-used first.
 | **`cycleModel`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`factsFrom`** | format.ts | 5 places |
-| **`growthWord`** | model.ts | 5 places |
-| **`inflationFigure`** | model.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
@@ -271,6 +272,8 @@ renderer speaks. Listed most-used first.
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`fill`** | ai-insights.ts | 4 places |
 | **`fmt`** | cycle-analysis.ts | 4 places |
+| **`growthWord`** | model.ts | 4 places |
+| **`inflationFigure`** | model.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
 | **`listWords`** | cycle-analysis.ts | 4 places |

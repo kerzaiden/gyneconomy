@@ -116,7 +116,7 @@ test('the Fred backfill writes the stored figures back byte for byte', () => {
     fred.sp500MonthlyHistory, fred.confidenceHistory, early, fred.durablesHistory, fred.premiumHistory, fred.fedMoves, fred.pceYoYHistory, fred.potentialYoYHistory,
     { delinquency: fred.delinquencyHistory, margin: fred.marginHistory, consumer: fred.consumerCreditHistory, dsr: fred.dsrQuarterly },
     { debt: fred.debtDollarsQuarterly, today: fred.debtToday },
-    { payrolls: fred.payrollsHistory, retail: fred.retailHistory }, fred.topTenRecent);
+    { payrolls: fred.payrollsHistory, retail: fred.retailHistory }, fred.topTenRecent, fred.discountHistory);
   assert.equal(out, fs.readFileSync(new URL('../../src/data/fred.json', import.meta.url), 'utf8'));
 });
 
