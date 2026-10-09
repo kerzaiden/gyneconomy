@@ -615,19 +615,23 @@ emotion at the closing month, its years, and what followed a year later. Every l
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
 - **The Fed's phases** (0.6.7, `fed-phases`): the first card, for today and any closed cycle. `fedPhases` turns
-  `fedMoves` (the Backfill's months with a Fed move, netted: the discount rate `INTDSRUSM193N` before 1982-09-27,
-  `DFEDTAR` to 2008-12-15, `DFEDTARU` since, the join a real cut) into alternating phases, and today's live move
+  `fedMoves` (the Backfill's months with a Fed move, netted: the New York Fed's discount rate `M13009USM156NNBR`
+  before 1950, the discount rate `INTDSRUSM193N` to 1982-09-27, `DFEDTAR` to 2008-12-15, `DFEDTARU` since, each
+  join a fresh walk so no move is made up at a seam) into alternating phases, and today's live move
   (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `cyclePeak` marks every cycle's peak, its highest CPI
   reading once the decline it inherited from the cycle before has passed. `findRuns` walks the whole record once
   (cached on the history's length and last value) with `cpiDirectionAt` (the season model's own 12-month trend,
   ±0.02) and gives each month that is not falling the top of its run; the cycle's opening months are skipped while
-  they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak
-  ("Peak", on the prices curve and as a level line; "Peak so far", hollow, on the open cycle). The walk is over the
-  whole record because a run crosses cycle edges.
-  Bands, dot and labels are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and non-scaling strokes,
-  so the card is fluid. Prices and the Fed funds rate are drawn as quarterly means through a Catmull-Rom curve, so
-  the lines flow as in her tracker; the peak sits on its quarter. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at
-  its last month.
+  they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak.
+  The walk is over the whole record because a run crosses cycle edges.
+  Bands and the peak's dot are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and
+  non-scaling strokes, so the card is fluid. Prices and the rate are drawn as quarterly means through a Catmull-Rom
+  curve, so the lines flow as in her tracker; the peak's dot sits on its quarter. The Peak and level labels are HTML too, placed by
+  sampling both drawn curves and taking the first side whose box they miss; the test assumes the narrowest plot
+  (300px), because a label's box in px is a smaller share of a wider plot and so stays clear there too. `rateSeries` is
+  `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
+  1914 to 1954-06) before. The note under the legend is the cycle's `rates` story with `{peak}` and `{month}` filled
+  from `cyclePeak`, so the words are written once and the figures are the record's.
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines with the health
   score under it (`cycleScore`, Cycle Statistics' one box; the open cycle has no Cycle Statistics card), opening the
   page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): one `trendBox` per chapter (the cycle's name,

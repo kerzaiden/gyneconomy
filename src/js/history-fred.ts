@@ -11,6 +11,7 @@ export var confidenceHistory = FRED.confidenceHistory;
 export var durablesHistory = FRED.durablesHistory;
 export var premiumHistory = FRED.premiumHistory;
 export var fedMoves: MonthPoint[] = FRED.fedMoves;
+export var discountHistory: MonthPoint[] = FRED.discountHistory;
 export var gdpYoYBefore = FRED.gdpYoYBefore;
 export var cpiYoYBefore = FRED.cpiYoYBefore;
 export var pceYoYHistory: MonthPoint[] = FRED.pceYoYHistory;

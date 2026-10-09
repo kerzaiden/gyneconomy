@@ -303,8 +303,10 @@ settles it; none is open after V668.
   indicator, Federal debt and Federal budget each have their own; the two Treasury spreads
   (10Y − 3M, 10Y − 2Y) stay one page, which Keren saw no need to split, and the US 10-year Treasury stays one card
   with its maturity picker. (V254, V658)
-- **The Interest Rates Environment head is a door to the Federal funds rate page, with a chevron, wherever it stands:**
-  Current Cycle, every past cycle and Analysis. (0.9.1)
+- **The door from Interest Rates Environment to the Federal funds rate page is "Learn more" with a chevron, at the end
+  of the cycle's rates story, wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading the
+  story is what makes one want to learn more, so the door sits where the reading ends, not on the head. (0.9.1, Two
+  Hormones)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -1565,20 +1567,35 @@ settles it; none is open after V668.
 ## The Diagnosis
 
 - **The Diagnosis opens on the Fed's phases, the economy's hormone chart: two phases, Tightening and Easing, as
-  the follicular and luteal phases are in her cycle-tracking app, with growth, prices and the Fed funds rate as
-  the curves and peak inflation marked where ovulation sits in the tracker.** The mark reads "Peak", on the
+  the follicular and luteal phases are in her cycle-tracking app, with prices and the Fed funds rate as the
+  curves and peak inflation marked where ovulation sits in the tracker.** The mark reads "Peak", on the
   prices curve, never "ovulation" or "inflation peak": the app should not say ovulation, and the orange legend
   already says prices. A phase is the direction of the Fed's last move (Jensen, Mercer & Johnson, 1996), so a
-  pause stays in its phase and there are only two; the moves are the discount rate before September 1982 and the
-  target since. The peak is the cycle's highest price reading (0.6.17, below). The curves stop at today: an
+  pause stays in its phase and there are only two; the moves are the New York Fed's discount rate before 1950
+  (NBER Macrohistory, the Fed's main lever in the 1920s and 1930s), the discount rate to September 1982 and the
+  target since, so the Depression's cycles read their phases too. The peak is the cycle's highest price reading (0.6.17, below). The curves stop at today: an
   economic cycle has no known length, so no typical cycle is drawn ahead. There is no title, since the chart
   already says it; the head is like the page's other cards, "Interest environment", with an orbit mark
-  (`orbitSvg`: a hollow centre, a ring, three hollow dots on it) redrawn from Keren's own drawing (0.7.1). No
-  legend: each level line carries its curve's colour as a dot and on its label, and the rate's line is named
-  "Federal funds rate"; every line fits on one line at the meta size, with smaller text if that is what it
-  takes. An open cycle with no confirmed peak shows its peak so far, hollow, and names it on its own line, since
-  Keren wants to see the highest prices of the current cycle. The Fed's stance is the only rate reading beside
+  (`orbitSvg`: a hollow centre, a ring, three hollow dots on it) redrawn from Keren's own drawing (0.7.1). An
+  open cycle with no confirmed peak shows its peak so far, hollow, since Keren wants to see the highest prices of
+  the current cycle. The Fed's stance is the only rate reading beside
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
+- **The Interest Rates Environment card is a feel, not a measure: two curves, the Fed's rate (blue) and prices
+  (orange), over the Tightening and Easing bands, with no figures and no growth; the scale starts at the round step just below the lowest point, not at zero, so
+  the curves fill the plot; the guides are dashed rules at that step (1% where the range allows, else 2%, 5% or
+  10%, at most six), each with a small, faint figure on its left only where no curve covers it, so
+  the eye can gauge the level; they are drawn inside the bands.** It shows the
+  environment at a glance, the way her tracker shows hormones; growth is the other half of the season and the dial
+  already shows it. The cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason
+  here. The peak is an orange dot on the prices curve (hollow on the open cycle), labelled Peak beside it in the
+  legend's type, on whichever side keeps clear of both curves; the label left the legend so the legend fits one line
+  on most phones. Under the years, one legend at the years' size, between a top and a bottom rule (as in Insights) and set left with
+  tight gaps: Tightening, Easing, Rates, Prices. Under it, each cycle's rates story in one or two short lines on what the rates did (`rates` in `marketCycles`), so readers know what
+  went on; its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
+  1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
+  discount rate; the phases follow the rate alone, so a tightening made another way (the doubling of reserve
+  requirements in 1936–37) does not show. A low peak is still a peak: where prices topped in a calm cycle tells
+  something about the cycle too. (0.9.40)
 - **Every cycle has a peak: its highest price reading within the cycle, once the decline it inherited from the
   cycle before has passed.** A cycle's range is its own length, so by definition it has a peak and a trough. The
   Go-Stop Cycle's is Nov 1969 (5.9%), at its close. The inherited decline is skipped because a cycle's opening
