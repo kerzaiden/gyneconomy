@@ -571,7 +571,9 @@
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
     font-family:"Public Sans",sans-serif; -webkit-tap-highlight-color:transparent; }
   .dx-sys-head + .dx-year{ border-top:0; padding-top:4px; }
-  .dx-year:last-child{ padding-bottom:0; }
+  .dx-years .dx-sys-head{ margin:0 -18px; padding:0 18px 12px; width:auto; border-bottom:1px solid var(--border); }
+  .dx-years .dx-sys-head + .dx-year{ padding-top:13px; }
+  .dx-year:last-child, .dx-year:has(+ .cyc-more[hidden]){ padding-bottom:0; }
   button.dx-year{ cursor:pointer; }
   button.dx-year:hover .dx-year-n, button.dx-year:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
   button.dx-year:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
@@ -582,6 +584,7 @@
   .dx-year-lead{ font-size:var(--type-reading); font-weight:600; line-height:1.3; }
   .dx-year-foot{ grid-column:2 / 4; margin-top:6px; }
   .dx-year-lead .strip{ margin:0; }
+  .dx-year[hidden]{ display:none; }
   .trend-card{ display:block; width:100%; box-sizing:border-box; margin:0; padding:14px 16px 12px; text-align:left; cursor:pointer;
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); font-family:"Public Sans",sans-serif;
     -webkit-tap-highlight-color:transparent; }
@@ -862,14 +865,17 @@
     .peek-chart svg{ height:calc(var(--mini-h) + 11px); }
   }
 
-  .cyc-more{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
+  .cyc-more{ display:flex; align-items:center; justify-content:flex-start; gap:8px; width:100%;
     border:0; border-top:1px solid var(--border); background:transparent; padding:13px 14px 12px;
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:600;
     color:var(--accent-ink); }
   .cyc-more:hover{ background:var(--surface-2); }
   .cyc-more:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
-  .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
-  .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
+  .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transform:rotate(90deg); transition:transform 0.16s ease; }
+  .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(-90deg); }
+  .cyc-more[hidden]{ display:none; }
+  .dx-years-more{ width:calc(100% + 36px); margin:0 -18px; padding:13px 18px 0; }
+  .dx-years-more:hover{ background:transparent; }
 
   .cat-weather{ --cat:var(--season-summer); } .cat-activity{ --cat:var(--earth); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
@@ -1010,7 +1016,6 @@
   .lab-res small{ padding-right:17px; }
   .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .lab-item.t-abnormal .lab-res b{ color:var(--critical-ink); }
-  .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }
   .era-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
@@ -1219,10 +1224,6 @@
   <div class="tab-panel" data-tab="analysis" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
     <div id="calendar-list">
       <div id="cycle-list"></div>
-      <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
-        <span id="cycle-more-label">View more</span>
-        <span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>
-      </button>
     </div>
     <div id="calendar-cycle" hidden></div>
   </div>
@@ -1261,7 +1262,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.41 (812)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.42 (813)</span></p>
     </div>
   </div>
 
@@ -49494,7 +49495,15 @@
       }), ytd = m.ongoing && y === calendarTodayY, now2 = yearSoFar(y);
       rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
     }
-    return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
+    return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join("") + yearsMore(rows.length > PREVIEW_YEARS));
+  }
+  var PREVIEW_YEARS = 3;
+  function yearsMore(more) {
+    return '<button type="button" class="cyc-more dx-years-more" aria-expanded="false"' + (more ? "" : " hidden") + "><span>View more</span>" + CHEV + "</button>";
+  }
+  function wireYearsMore(host) {
+    var btn = host.querySelector(".dx-years-more");
+    if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(".dx-years .dx-year")).slice(PREVIEW_YEARS));
   }
   function yearRow(year, lead, foot) {
     return '<button class="dx-year" type="button" data-open="' + IND + '" data-title="Elements" data-ind-when="' + year + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + CHEV + foot + "</button>";
@@ -49520,6 +49529,7 @@
     var host = document.getElementById("diagnosis");
     if (host && m) {
       host.innerHTML = diagnosisHtml(m);
+      wireYearsMore(host);
       fitYearDots();
     }
   }
@@ -50051,16 +50061,6 @@
     var list = need("cycle-list");
     list.innerHTML = cycleRowsHtml();
     settleStrips();
-    var PREVIEW_CYCLES = 99;
-    (function() {
-      var rows = [].slice.call(list.querySelectorAll(".era-row"));
-      var btn = need("cycle-more");
-      if (!btn || rows.length <= PREVIEW_CYCLES) {
-        if (btn) btn.hidden = true;
-        return;
-      }
-      viewMore(btn, rows.slice(PREVIEW_CYCLES));
-    })();
     var listWrap = need("calendar-list"), detail = need("calendar-cycle");
     function open(from, y) {
       var era = marketCycles.filter(function(c) {
