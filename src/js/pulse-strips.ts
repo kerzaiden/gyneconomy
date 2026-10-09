@@ -26,8 +26,8 @@ export function pulseStroke(i: number){
 type StripRow = { y: number; top: number; h: number; from: number; end: number; X: (q: number) => number };
 function stripQuarter(r: StripRow, q: number, x: number, limit: number){
   var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * 0.58) * (stroke == null ? 0.5 : stroke);
-  var cy = r.top + r.h * 0.64, d: string[] = [];
+  var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * 0.5) * (stroke == null ? 0.5 : stroke);
+  var cy = r.top + r.h / 2, d: string[] = [];
   if (stroke == null) kind = kind || "blank";
   x = Math.max(x, xa);
   if (kind === "flat"){ d.push("M" + f1(xa) + "," + f1(cy) + "H" + f1(xb)); x = xb; }

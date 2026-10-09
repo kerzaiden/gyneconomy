@@ -50563,8 +50563,8 @@
   }
   function stripQuarter(r, q, x, limit) {
     var i = (r.y - M2V_FROM_YEAR) * 4 + q, xa = r.X(q), xb = r.X(q + 1), kind = pulseBeat(i);
-    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * .58) * (stroke == null ? .5 : stroke);
-    var cy = r.top + r.h * .64, d = [];
+    var p = (r.X(4) - r.X(0)) / (PULSE_BEATS * m2vHistory[i]), stroke = pulseStroke(i), amp = Math.min(30, r.h * .5) * (stroke == null ? .5 : stroke);
+    var cy = r.top + r.h / 2, d = [];
     if (stroke == null) kind = kind || "blank";
     x = Math.max(x, xa);
     if (kind === "flat") {
