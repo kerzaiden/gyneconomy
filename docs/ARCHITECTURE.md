@@ -371,7 +371,7 @@ manifest's.
 - **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.ts` (`DESIRE_LINE`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
-  mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
+  mechanism), `marks` (icons), `charts` (drawing primitives), `wave-chart` (the wave chart: smoothed month lines over shaded bands), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `activity` (the growth gap, nonfarm payrolls and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `pulse-strips` (the Pulse history: one EKG strip per year, 0.9.25), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers), `fed-phases` (the Fed's phases on Analysis, and each cycle's rates story),
   `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
@@ -614,26 +614,30 @@ of the open cycle's Herstory row, a width only the page knows, so they sit exact
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
-- **The Fed's phases** (0.6.7, `fed-phases`): the Interest Rates card, for today and any closed cycle. `fedPhases` turns
-  `fedMoves` (the Backfill's months with a Fed move, netted: the New York Fed's discount rate `M13009USM156NNBR`
-  before 1950, the discount rate `INTDSRUSM193N` to 1982-09-27, `DFEDTAR` to 2008-12-15, `DFEDTARU` since, each
-  join a fresh walk so no move is made up at a seam) into alternating phases, and today's live move
-  (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `cyclePeak` marks every cycle's peak, its highest CPI
+- **Interest Rates** (0.6.7, `fed-phases`): the card, for today and any closed cycle. `fedPhases` turns
+  `fedMoves` (the Backfill's
+  months with a Fed move, netted: the New York Fed's discount rate `M13009USM156NNBR` before 1950, the discount rate
+  `INTDSRUSM193N` to 1982-09-27, `DFEDTAR` to 2008-12-15, `DFEDTARU` since, each join a fresh walk so no move is
+  made up at a seam), with today's live move (`now.fedFunds.lastMove` on `asOf`) when it is newer, into alternating
+  phases; `tightBands` hands the tightening phases to the wave chart as its bands. `cyclePeak` marks every cycle's peak, its highest CPI
   reading once the decline it inherited from the cycle before has passed. `findRuns` walks the whole record once
   (cached on the history's length and last value) with `cpiDirectionAt` (the season model's own 12-month trend,
   ±0.02) and gives each month that is not falling the top of its run; the cycle's opening months are skipped while
   they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak.
   The walk is over the whole record because a run crosses cycle edges.
-  The rules, the turn lines (`turnsHtml`, one dashed line at each phase start inside the window) and the peak's strip
-  are HTML in one rounded clip (`fp-clip`) under an SVG drawn with `preserveAspectRatio="none"` and non-scaling
-  strokes, so the card is fluid and the plot's four corners stay round. `monthPoints` samples the window at `POINTS` + 1 even steps from its first month to its last,
+  The card draws with the **wave chart** (`wave-chart`, `waveChart` and `waveLegend`), the one component for a smoothed
+  chart of month series over shaded bands, so a later chart reuses it instead of copying it: it takes series (a month
+  list, a colour token, a fill strength, bold or not, drawn back to front), bands (month spans, clipped to the window),
+  the band's colour token (default `normal`), the window and whether it is open; the legend takes keys of three
+  kinds (a line in a colour, the band, a blank square). The bands and the rules
+  are HTML in one rounded clip (`wave-clip`) under an SVG drawn with `preserveAspectRatio="none"` and non-scaling
+  strokes, so the chart is fluid and the plot's four corners stay round. `monthPoints` samples the window at `POINTS` + 1 even steps from its first month to its last,
   each a Gaussian-weighted mean of the months around it (σ = the window over `WAVE`, at least a month), reading
   months before the window but none after its end, so the curves run edge to edge without a forecast; `segments` joins the points with a monotone cubic whose
   slope is zero at every turn, so no curve overshoots a reading. The level figures all sit at the plot's left edge, and one that would cross the top is left out. The 1Y · 5Y · Cycle bar is
-  the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`; the
-  figure is `fedFundsRange()` on the open cycle and the rate's last reading at a closed cycle's end, and the legend names the rate for the series it draws. `rateSeries` is
+  the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`, and the legend reads Easing, Tightening, Rates, Prices for every series. `rateSeries` is
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
-  1914 to 1954-06) before. The note under the legend is one explanation of the phases, the same on every cycle; the cycle's `rates`
+  1914 to 1954-06) before. The note under the legend is one explanation of tightening and easing, the same on every cycle; the cycle's `rates`
   story, with `{peak}` and `{month}` filled from `cyclePeak`, is read in its AI Insights.
 - **AI Insights** (0.6.5, Cycle Insights, `ai-insights`): every cycle page's first door (`aiInsights(m)`), its lede
   clamped to three lines (Claude's on the open cycle, the cycle's `blurb` on a closed one), with no health score

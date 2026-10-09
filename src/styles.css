@@ -18,20 +18,17 @@
     --overlay: rgba(43,21,32,0.38);
     --track: #f3e3dd;
     --good: #2a9488;
-    --good-ink: #16675f;
-    --good-wash: color-mix(in srgb, var(--good) 14%, var(--surface));
-    --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 8%, var(--surface));
+    --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
     --cold: var(--season-winter);
     --cold-ink: #4a54a6;
     --phase-up-ink: #7a5709;
     --phase-down-ink: var(--cold-ink);
-    --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
+    --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
     --critical: #d0383b;
     --m2-deep: #4a0f0a;
     --ff-blue: #4f6fb0;
     --ff-deep: #0b2340;
     --critical-ink: #a8292f;
-    --critical-wash: color-mix(in srgb, var(--critical) 12%, var(--surface));
     --bleed-mid: #d0383b;
     --ovulate: #2a9488;
     --bull-ink: #16675f; --bull-wash: color-mix(in srgb, var(--ovulate) 18%, var(--surface));
@@ -69,18 +66,15 @@
       --overlay: rgba(0,0,0,0.62);
       --track: #3a2530;
       --good: #4cc2b4;
-      --good-ink: #6fd6ca;
-      --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
-      --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 10%, var(--surface));
+      --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
       --cold: var(--season-winter);
       --cold-ink: #b4bdeb;
       --phase-up-ink: #f2c24d;
       --phase-down-ink: var(--cold-ink);
-      --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
+      --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
       --critical: #f05a55; --m2-deep: #ffd2c8;
       --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
       --critical-ink: #f6897f;
-      --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
       --bleed-mid: #f05a55;
       --ovulate: #4cc2b4;
       --bull-ink: #4cc2b4; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
@@ -99,44 +93,39 @@
     }
   }
   :root[data-theme="dark"]{
-    color-scheme: dark;
-    --page: #170d13;
-    --surface: #22141c;
-    --surface-2: #2b1a24;
-    --border: rgba(255,230,240,0.09);
-    --border-strong: rgba(255,230,240,0.17);
-    --grid: rgba(255,230,240,0.13);
-    --text-primary: #f8eef1;
-    --text-secondary: #d4c2c9;
-    --text-muted: #a48e98;
-    --placeholder: #6e6469;
-    --accent: #eba3b9;
-    --accent-ink: #f5c6d3;
-    --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
-    --on-accent: #170d13;
-    --track: #3a2530;
-    --good: #4cc2b4;
-    --good-ink: #6fd6ca;
-    --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
-    --warning: #eda100;
-    --warning-ink: #f2c24d;
-    --warning-wash: rgba(237,161,0,0.16);
-    --cold: var(--season-winter);
-    --cold-ink: #b4bdeb;
-    --phase-up-ink: #f2c24d;
-    --phase-down-ink: var(--cold-ink);
-    --serious: #ec835a;
-    --serious-ink: #f5a385;
-    --serious-wash: rgba(236,131,90,0.16);
-    --critical: #f05a55; --m2-deep: #ffd2c8;
-    --critical-ink: #f6897f;
-    --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
-    --bleed-mid: #f05a55;
-    --ovulate: #4cc2b4;
-    --bull-ink: #4cc2b4; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
-    --bear-ink: #f6897f; --bear-wash: color-mix(in srgb, var(--bleed-mid) 22%, var(--surface));
-    --shadow: none;
-    --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-30y:#7458c8;
+      color-scheme: dark;
+      --page: #170d13;
+      --surface: #22141c;
+      --surface-2: #2b1a24;
+      --border: rgba(255,230,240,0.09);
+      --border-strong: rgba(255,230,240,0.17);
+      --grid: rgba(255,230,240,0.13);
+      --text-primary: #f8eef1;
+      --text-secondary: #d4c2c9;
+      --text-muted: #a48e98;
+      --placeholder: #6e6469;
+      --accent: #eba3b9;
+      --accent-ink: #f5c6d3;
+      --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
+      --on-accent: #170d13;
+      --overlay: rgba(0,0,0,0.62);
+      --track: #3a2530;
+      --good: #4cc2b4;
+      --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
+      --cold: var(--season-winter);
+      --cold-ink: #b4bdeb;
+      --phase-up-ink: #f2c24d;
+      --phase-down-ink: var(--cold-ink);
+      --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
+      --critical: #f05a55; --m2-deep: #ffd2c8;
+      --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
+      --critical-ink: #f6897f;
+      --bleed-mid: #f05a55;
+      --ovulate: #4cc2b4;
+      --bull-ink: #4cc2b4; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
+      --bear-ink: #f6897f; --bear-wash: color-mix(in srgb, var(--bleed-mid) 22%, var(--surface));
+      --shadow: none;
+      --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-30y:#7458c8;
       --tm-lead-wash: color-mix(in srgb, var(--ylm-3m) 16%, var(--surface));
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
@@ -146,7 +135,6 @@
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
       --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
-      --ff-blue: #86a3e0;
   }
 
   *{box-sizing:border-box;}
@@ -354,7 +342,7 @@
     --round:999px;
     --radius-inner:13px;
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
-    --type-section:20px; --type-reading-head:26px; --type-page-title:30px; --type-figure:46px;
+    --type-section:20px; --type-reading-head:26px; --type-page-title:30px;
   }
   :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; }
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; } }
@@ -548,31 +536,27 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp-prices{ --line:var(--season-summer); --fill:0.32; } .fp-rate{ --line:var(--gold); --fill:0.45; }
-  .fp-hero{ display:flex; justify-content:center; margin:10px 0 0; }
-  .fp-fig{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-figure); line-height:1; letter-spacing:-0.01em; color:var(--text-primary); }
-  .fp-fig small{ font-size:0.65em; margin-left:2px; }
-  .fp .rangebar{ margin:22px 0 4px; }
-  .fp-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; background:var(--surface-2); }
-  .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 12px); }
-  .fp-clip{ position:absolute; inset:0; overflow:hidden; border-radius:12px; }
-  .fp-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:color-mix(in srgb, var(--grid) 70%, transparent); }
-  .fp-years{ position:relative; height:16px; margin-top:4px; }
-  .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:var(--text-muted); }
-  .fp-year.fp-end{ right:0; left:auto; margin:0; color:var(--text-primary); }
-  .fp-area{ stroke:none; }
-  .fp-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .fp-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
-  .fp-line{ fill:none; stroke:var(--line); stroke-linecap:round; stroke-linejoin:round; }
-  .fp-line.fp-rate{ stroke-width:1.6; opacity:0.85; } .fp-line.fp-prices{ stroke-width:2.4; }
-  .fp-turn{ position:absolute; top:0; bottom:0; width:1px; margin-left:-0.5px; background:repeating-linear-gradient(180deg, color-mix(in srgb, var(--text-muted) 40%, transparent) 0 3px, transparent 3px 9px); }
-  .fp-strip{ position:absolute; top:0; bottom:0; width:10px; margin-left:-5px; border-radius:2px; background:linear-gradient(180deg, var(--ylm-3m), color-mix(in srgb, var(--ylm-3m) 12%, transparent)); }
-  .fp-tag{ position:absolute; height:22px; font-size:var(--type-meta); line-height:22px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
-  .fp-level-tag{ line-height:28px; text-align:left; font-size:var(--type-label); opacity:0.6; }
-  .fp-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin:10px 0 0; padding:7px 0; list-style:none; font-size:var(--type-meta); color:var(--text-muted); }
-  .fp-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
-  .fp-legend li::before{ content:""; flex:none; }
-  .fp-key-peak::before{ width:9px; height:9px; border-radius:50%; background:var(--ylm-3m); }
-  .fp-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
+  .fp .rangebar{ margin:14px 0 4px; }
+  .wave-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); }
+  .wave-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 11px); }
+  .wave-clip{ position:absolute; inset:0; overflow:hidden; border-radius:11px; }
+  .wave-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:color-mix(in srgb, var(--grid) 70%, transparent); }
+  .wave-band{ position:absolute; top:0; bottom:0; background:linear-gradient(180deg, color-mix(in srgb, var(--band) 20%, transparent), color-mix(in srgb, var(--band) 6%, transparent)); }
+  .wave-area{ stroke:none; }
+  .wave-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .wave-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
+  .wave-line{ fill:none; stroke:var(--line); stroke-width:1.6; opacity:0.85; stroke-linecap:round; stroke-linejoin:round; }
+  .wave-line.wave-bold{ stroke-width:2.4; opacity:1; }
+  .wave-level{ position:absolute; left:0; height:22px; margin:-22px 0 0 5px; font-size:var(--type-label); line-height:28px; color:var(--text-muted); white-space:nowrap; opacity:0.6; pointer-events:none; }
+  .wave-axis{ position:relative; height:16px; margin-top:4px; }
+  .wave-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:var(--text-muted); }
+  .wave-year.wave-end{ right:0; left:auto; margin:0; color:var(--text-primary); }
+  .wave-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin:10px 0 0; padding:7px 0; list-style:none; font-size:var(--type-meta); color:var(--text-muted); }
+  .wave-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
+  .wave-legend li::before{ content:""; flex:none; }
+  .wave-key-blank::before, .wave-key-band::before{ width:9px; height:9px; border-radius:3px; box-sizing:border-box; }
+  .wave-key-blank::before{ border:1px solid var(--border-strong); background:var(--surface); }
+  .wave-key-band::before{ background:color-mix(in srgb, var(--band) 20%, transparent); }
+  .wave-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
   .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
@@ -1104,10 +1088,6 @@
 
 
   /* ---- the reading's tag ---- */
-  .tag{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; padding:3px 8px; border-radius:var(--radius); white-space:nowrap;}
-  .tag.good{ background:var(--good-wash); color:var(--good-ink); }
-  .tag.warning{ background:var(--warning-wash); color:var(--warning-ink); }
-  .tag.serious{ background:var(--serious-wash); color:var(--serious-ink); }
   .hi-name.phase-up{ color:var(--phase-up-ink); } .hi-name.phase-down{ color:var(--phase-down-ink); }
 
 

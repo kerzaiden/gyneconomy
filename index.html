@@ -23,20 +23,17 @@
     --overlay: rgba(43,21,32,0.38);
     --track: #f3e3dd;
     --good: #2a9488;
-    --good-ink: #16675f;
-    --good-wash: color-mix(in srgb, var(--good) 14%, var(--surface));
-    --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 8%, var(--surface));
+    --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
     --cold: var(--season-winter);
     --cold-ink: #4a54a6;
     --phase-up-ink: #7a5709;
     --phase-down-ink: var(--cold-ink);
-    --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
+    --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
     --critical: #d0383b;
     --m2-deep: #4a0f0a;
     --ff-blue: #4f6fb0;
     --ff-deep: #0b2340;
     --critical-ink: #a8292f;
-    --critical-wash: color-mix(in srgb, var(--critical) 12%, var(--surface));
     --bleed-mid: #d0383b;
     --ovulate: #2a9488;
     --bull-ink: #16675f; --bull-wash: color-mix(in srgb, var(--ovulate) 18%, var(--surface));
@@ -74,18 +71,15 @@
       --overlay: rgba(0,0,0,0.62);
       --track: #3a2530;
       --good: #4cc2b4;
-      --good-ink: #6fd6ca;
-      --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
-      --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 10%, var(--surface));
+      --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
       --cold: var(--season-winter);
       --cold-ink: #b4bdeb;
       --phase-up-ink: #f2c24d;
       --phase-down-ink: var(--cold-ink);
-      --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
+      --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
       --critical: #f05a55; --m2-deep: #ffd2c8;
       --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
       --critical-ink: #f6897f;
-      --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
       --bleed-mid: #f05a55;
       --ovulate: #4cc2b4;
       --bull-ink: #4cc2b4; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
@@ -104,44 +98,39 @@
     }
   }
   :root[data-theme="dark"]{
-    color-scheme: dark;
-    --page: #170d13;
-    --surface: #22141c;
-    --surface-2: #2b1a24;
-    --border: rgba(255,230,240,0.09);
-    --border-strong: rgba(255,230,240,0.17);
-    --grid: rgba(255,230,240,0.13);
-    --text-primary: #f8eef1;
-    --text-secondary: #d4c2c9;
-    --text-muted: #a48e98;
-    --placeholder: #6e6469;
-    --accent: #eba3b9;
-    --accent-ink: #f5c6d3;
-    --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
-    --on-accent: #170d13;
-    --track: #3a2530;
-    --good: #4cc2b4;
-    --good-ink: #6fd6ca;
-    --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
-    --warning: #eda100;
-    --warning-ink: #f2c24d;
-    --warning-wash: rgba(237,161,0,0.16);
-    --cold: var(--season-winter);
-    --cold-ink: #b4bdeb;
-    --phase-up-ink: #f2c24d;
-    --phase-down-ink: var(--cold-ink);
-    --serious: #ec835a;
-    --serious-ink: #f5a385;
-    --serious-wash: rgba(236,131,90,0.16);
-    --critical: #f05a55; --m2-deep: #ffd2c8;
-    --critical-ink: #f6897f;
-    --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
-    --bleed-mid: #f05a55;
-    --ovulate: #4cc2b4;
-    --bull-ink: #4cc2b4; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
-    --bear-ink: #f6897f; --bear-wash: color-mix(in srgb, var(--bleed-mid) 22%, var(--surface));
-    --shadow: none;
-    --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-30y:#7458c8;
+      color-scheme: dark;
+      --page: #170d13;
+      --surface: #22141c;
+      --surface-2: #2b1a24;
+      --border: rgba(255,230,240,0.09);
+      --border-strong: rgba(255,230,240,0.17);
+      --grid: rgba(255,230,240,0.13);
+      --text-primary: #f8eef1;
+      --text-secondary: #d4c2c9;
+      --text-muted: #a48e98;
+      --placeholder: #6e6469;
+      --accent: #eba3b9;
+      --accent-ink: #f5c6d3;
+      --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
+      --on-accent: #170d13;
+      --overlay: rgba(0,0,0,0.62);
+      --track: #3a2530;
+      --good: #4cc2b4;
+      --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
+      --cold: var(--season-winter);
+      --cold-ink: #b4bdeb;
+      --phase-up-ink: #f2c24d;
+      --phase-down-ink: var(--cold-ink);
+      --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
+      --critical: #f05a55; --m2-deep: #ffd2c8;
+      --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
+      --critical-ink: #f6897f;
+      --bleed-mid: #f05a55;
+      --ovulate: #4cc2b4;
+      --bull-ink: #4cc2b4; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
+      --bear-ink: #f6897f; --bear-wash: color-mix(in srgb, var(--bleed-mid) 22%, var(--surface));
+      --shadow: none;
+      --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-30y:#7458c8;
       --tm-lead-wash: color-mix(in srgb, var(--ylm-3m) 16%, var(--surface));
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
@@ -151,7 +140,6 @@
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
       --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
-      --ff-blue: #86a3e0;
   }
 
   *{box-sizing:border-box;}
@@ -355,7 +343,7 @@
     --round:999px;
     --radius-inner:13px;
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
-    --type-section:20px; --type-reading-head:26px; --type-page-title:30px; --type-figure:46px;
+    --type-section:20px; --type-reading-head:26px; --type-page-title:30px;
   }
   :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; }
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#fcc94d; --season-summer:#f29a6e; --season-autumn:#b4bdeb; --gold:#fcc94d; --earth:#b5c46e; } }
@@ -545,31 +533,27 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp-prices{ --line:var(--season-summer); --fill:0.32; } .fp-rate{ --line:var(--gold); --fill:0.45; }
-  .fp-hero{ display:flex; justify-content:center; margin:10px 0 0; }
-  .fp-fig{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-figure); line-height:1; letter-spacing:-0.01em; color:var(--text-primary); }
-  .fp-fig small{ font-size:0.65em; margin-left:2px; }
-  .fp .rangebar{ margin:22px 0 4px; }
-  .fp-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; background:var(--surface-2); }
-  .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 12px); }
-  .fp-clip{ position:absolute; inset:0; overflow:hidden; border-radius:12px; }
-  .fp-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:color-mix(in srgb, var(--grid) 70%, transparent); }
-  .fp-years{ position:relative; height:16px; margin-top:4px; }
-  .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:var(--text-muted); }
-  .fp-year.fp-end{ right:0; left:auto; margin:0; color:var(--text-primary); }
-  .fp-area{ stroke:none; }
-  .fp-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .fp-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
-  .fp-line{ fill:none; stroke:var(--line); stroke-linecap:round; stroke-linejoin:round; }
-  .fp-line.fp-rate{ stroke-width:1.6; opacity:0.85; } .fp-line.fp-prices{ stroke-width:2.4; }
-  .fp-turn{ position:absolute; top:0; bottom:0; width:1px; margin-left:-0.5px; background:repeating-linear-gradient(180deg, color-mix(in srgb, var(--text-muted) 40%, transparent) 0 3px, transparent 3px 9px); }
-  .fp-strip{ position:absolute; top:0; bottom:0; width:10px; margin-left:-5px; border-radius:2px; background:linear-gradient(180deg, var(--ylm-3m), color-mix(in srgb, var(--ylm-3m) 12%, transparent)); }
-  .fp-tag{ position:absolute; height:22px; font-size:var(--type-meta); line-height:22px; color:var(--text-muted); text-align:center; white-space:nowrap; pointer-events:none; }
-  .fp-level-tag{ line-height:28px; text-align:left; font-size:var(--type-label); opacity:0.6; }
-  .fp-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin:10px 0 0; padding:7px 0; list-style:none; font-size:var(--type-meta); color:var(--text-muted); }
-  .fp-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
-  .fp-legend li::before{ content:""; flex:none; }
-  .fp-key-peak::before{ width:9px; height:9px; border-radius:50%; background:var(--ylm-3m); }
-  .fp-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
+  .fp .rangebar{ margin:14px 0 4px; }
+  .wave-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); }
+  .wave-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 11px); }
+  .wave-clip{ position:absolute; inset:0; overflow:hidden; border-radius:11px; }
+  .wave-rule{ position:absolute; left:4px; right:4px; height:1px; margin-top:-0.5px; background:color-mix(in srgb, var(--grid) 70%, transparent); }
+  .wave-band{ position:absolute; top:0; bottom:0; background:linear-gradient(180deg, color-mix(in srgb, var(--band) 20%, transparent), color-mix(in srgb, var(--band) 6%, transparent)); }
+  .wave-area{ stroke:none; }
+  .wave-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .wave-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
+  .wave-line{ fill:none; stroke:var(--line); stroke-width:1.6; opacity:0.85; stroke-linecap:round; stroke-linejoin:round; }
+  .wave-line.wave-bold{ stroke-width:2.4; opacity:1; }
+  .wave-level{ position:absolute; left:0; height:22px; margin:-22px 0 0 5px; font-size:var(--type-label); line-height:28px; color:var(--text-muted); white-space:nowrap; opacity:0.6; pointer-events:none; }
+  .wave-axis{ position:relative; height:16px; margin-top:4px; }
+  .wave-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:var(--text-muted); }
+  .wave-year.wave-end{ right:0; left:auto; margin:0; color:var(--text-primary); }
+  .wave-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 14px; margin:10px 0 0; padding:7px 0; list-style:none; font-size:var(--type-meta); color:var(--text-muted); }
+  .wave-legend li{ display:flex; align-items:center; gap:4px; white-space:nowrap; }
+  .wave-legend li::before{ content:""; flex:none; }
+  .wave-key-blank::before, .wave-key-band::before{ width:9px; height:9px; border-radius:3px; box-sizing:border-box; }
+  .wave-key-blank::before{ border:1px solid var(--border-strong); background:var(--surface); }
+  .wave-key-band::before{ background:color-mix(in srgb, var(--band) 20%, transparent); }
+  .wave-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
   .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .fp-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
@@ -1086,10 +1070,6 @@
   .lag-row.lag-row-head{ background:var(--surface-2); font-weight:600; color:var(--text-secondary); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.04em; }
   .lag-row span:last-child{ text-align:right; font-family:"IBM Plex Mono",monospace; }
 
-  .tag{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; padding:3px 8px; border-radius:var(--radius); white-space:nowrap;}
-  .tag.good{ background:var(--good-wash); color:var(--good-ink); }
-  .tag.warning{ background:var(--warning-wash); color:var(--warning-ink); }
-  .tag.serious{ background:var(--serious-wash); color:var(--serious-ink); }
   .hi-name.phase-up{ color:var(--phase-up-ink); } .hi-name.phase-down{ color:var(--phase-down-ink); }
 
   .info-btn, .expand-btn{ position:relative; flex:none; }
@@ -1270,7 +1250,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.50 (821)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.52 (823)</span></p>
     </div>
   </div>
 
@@ -1789,12 +1769,12 @@
   }
   var detailTexts = [];
   function detailSlot(html) {
-    var key2 = String(html == null ? "" : html);
-    var idx = detailSlots[key2];
+    var key = String(html == null ? "" : html);
+    var idx = detailSlots[key];
     if (idx === void 0) {
       idx = detailTexts.length;
-      detailTexts.push(key2);
-      detailSlots[key2] = idx;
+      detailTexts.push(key);
+      detailSlots[key] = idx;
     }
     return idx;
   }
@@ -42493,9 +42473,9 @@
     for (var i = 0; i < now.valuation.rows.length; i++) if (now.valuation.rows[i].key === k) return now.valuation.rows[i];
     return null;
   }
-  function fileRow(key2) {
-    var r = valRow(key2);
-    if (!r) throw new Error("the valuation panel has no " + key2 + " row");
+  function fileRow(key) {
+    var r = valRow(key);
+    if (!r) throw new Error("the valuation panel has no " + key + " row");
     return r;
   }
   var M2V_FROM_YEAR = 1959;
@@ -43051,9 +43031,9 @@
     rising: '<svg class="tp-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 11.5L7 7l3 3 3.2-4.2"/><path d="M13.2 9V5.8H10"/></svg>',
     falling: '<svg class="tp-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5L7 9l3-3 3.2 4.2"/><path d="M13.2 7v3.2H10"/></svg>'
   };
-  function trendPill(t, key2, toggles, words) {
+  function trendPill(t, key, toggles, words) {
     var word2 = words && words[t.word] || t.word;
-    var inner = '<span class="tp-k">' + (key2 || "Trend") + '</span><span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word2 + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
+    var inner = '<span class="tp-k">' + (key || "Trend") + '</span><span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word2 + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
     var none = t.word === "unavailable";
     if (!toggles || !t.fit) return '<div class="trendpill' + (none ? " none" : "") + '">' + inner + "</div>";
     return '<button type="button" class="trendpill can-toggle" aria-pressed="false" aria-label="Show the trend on the chart">' + inner + "</button>";
@@ -44150,8 +44130,8 @@
   function seasonOfQ(q) {
     return seasonByQ[q] || "";
   }
-  function seasonGroup(key2) {
-    return key2 === "springdeflation" ? "spring" : key2 === "lateautumn" ? "autumn" : key2;
+  function seasonGroup(key) {
+    return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key;
   }
   function rankToDate(prior, v) {
     if (v == null || prior.length < 12) return null;
@@ -44529,8 +44509,8 @@
   };
   var HIST_NOTE = {};
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
-  function headPickRow(on, attr, key2, label) {
-    return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key2 + '"><span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + label + "</span></button>";
+  function headPickRow(on, attr, key, label) {
+    return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '"><span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + label + "</span></button>";
   }
   function histHead(id) {
     var H = page.head[id];
@@ -44628,8 +44608,8 @@
     label: "Max",
     span: Infinity
   } ];
-  function timelineSpan(key2) {
-    for (var i = 0; i < TIMELINE_STOPS.length; i++) if (TIMELINE_STOPS[i].key === key2) return TIMELINE_STOPS[i].span;
+  function timelineSpan(key) {
+    for (var i = 0; i < TIMELINE_STOPS.length; i++) if (TIMELINE_STOPS[i].key === key) return TIMELINE_STOPS[i].span;
     return null;
   }
   function timelineFor(o) {
@@ -44640,8 +44620,8 @@
       return r.span === Infinity || depth >= r.span;
     });
   }
-  function timelineWindow(series, key2) {
-    var sp = timelineSpan(key2);
+  function timelineWindow(series, key) {
+    var sp = timelineSpan(key);
     if (sp == null || sp === Infinity || !series.length) return series;
     var first = yearOf(series[series.length - 1]) - sp + 1;
     return series.filter(function(d) {
@@ -44976,16 +44956,16 @@
       histLive(host).textContent = [ part(".hr-label"), part(".hr-value") ].filter(Boolean).join(", ");
     });
   }
-  function mWindowFrom(len2, key2) {
-    var sp = timelineSpan(key2);
+  function mWindowFrom(len2, key) {
+    var sp = timelineSpan(key);
     return sp == null || sp === Infinity ? 0 : Math.max(0, len2 - sp * 12);
   }
-  function qWindowFrom(len2, key2) {
-    var sp = timelineSpan(key2);
+  function qWindowFrom(len2, key) {
+    var sp = timelineSpan(key);
     return sp == null || sp === Infinity ? 0 : Math.max(0, len2 - sp * 4);
   }
-  function defFrom(key2) {
-    var sp = timelineSpan(key2);
+  function defFrom(key) {
+    var sp = timelineSpan(key);
     return sp == null || sp === Infinity ? 0 : Math.max(0, deficitHistory.length - sp);
   }
   function tabSegs(items, active, attr) {
@@ -45048,8 +45028,8 @@
       return pickRow(c.name === cur.name, "data-cycle", c.name, L.name, L.years);
     }).join("") + "</div></div>";
   }
-  function pickRow(on, attr, key2, name, aside) {
-    return '<button type="button" class="cycsel-opt' + (on ? " on" : "") + '" role="option" aria-selected="' + on + '" ' + attr + '="' + key2 + '"><span class="cycsel-tick" aria-hidden="true"></span>' + nameAside(name, aside) + "</button>";
+  function pickRow(on, attr, key, name, aside) {
+    return '<button type="button" class="cycsel-opt' + (on ? " on" : "") + '" role="option" aria-selected="' + on + '" ' + attr + '="' + key + '"><span class="cycsel-tick" aria-hidden="true"></span>' + nameAside(name, aside) + "</button>";
   }
   function nameAside(name, aside) {
     return '<span class="cycsel-nm">' + name + '</span><span class="cycsel-yr">' + aside + "</span>";
@@ -46946,8 +46926,8 @@
   function dxSys(cls, inner) {
     return '<section class="dx-sys' + cls + '">' + inner + "</section>";
   }
-  function catHeadCard(cls, key2, head, body) {
-    return '<section class="' + cls + " ind-card cat-" + key2 + '"><' + head.tag + ' class="' + head.cls + 'cat-head"' + head.attrs + '><span class="ind-cat-name">' + head.name + "</span>" + head.aside + "</" + head.tag + ">" + body + "</section>";
+  function catHeadCard(cls, key, head, body) {
+    return '<section class="' + cls + " ind-card cat-" + key + '"><' + head.tag + ' class="' + head.cls + 'cat-head"' + head.attrs + '><span class="ind-cat-name">' + head.name + "</span>" + head.aside + "</" + head.tag + ">" + body + "</section>";
   }
   function timingMark(kind) {
     var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
@@ -47711,11 +47691,11 @@
       }
     };
   }
-  function spreadDetail(key2) {
-    var sr = spreadSeries()[key2];
+  function spreadDetail(key) {
+    var sr = spreadSeries()[key];
     return sr.detail.replace("</h4>", '</h4><p class="caption">' + sr.lede + "</p>");
   }
-  function paintSpreads(key2, from, to) {
+  function paintSpreads(key, from, to) {
     var svg = need("spread-history-svg");
     var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
     var innerW = W - padL - padR, innerH = H - padT - padB;
@@ -47737,7 +47717,7 @@
     function pts2(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2) + " pts";
     }
-    var s = spreadSeries()[key2];
+    var s = spreadSeries()[key];
     var data = s.data.slice(from, to);
     if (data.length < 2) data = s.data;
     var shell = svg.parentElement;
@@ -47868,9 +47848,9 @@
     key: "2y",
     label: "10Y − 2Y"
   } ];
-  function spreadLabel(key2) {
+  function spreadLabel(key) {
     var r = HZN_SPREADS.filter(function(x) {
-      return x.key === key2;
+      return x.key === key;
     })[0];
     return r ? r.label : HZN_SPREADS[0].label;
   }
@@ -47890,7 +47870,7 @@
     };
   }
   function defineSpreads() {
-    var key2 = "spreads-range", hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
+    var key = "spreads-range", hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
     function hznData() {
       return spreadPick === "2y" ? t10y2yHistory : t10y3mHistory;
     }
@@ -47906,13 +47886,13 @@
         return horizonInfoHtml(spreadPick, spreadDetail(spreadPick));
       },
       controls: function() {
-        return histControls(key2, {
+        return histControls(key, {
           depth: Math.floor(hznData().length / 4)
         }, hznY0);
       },
       history: function() {
-        var data = hznData(), cyc = pageCycle(key2, hznY0), idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
-        var from = idx ? idx[0] : qWindowFrom(data.length, page.range[key2]), to = idx ? idx[1] : data.length;
+        var data = hznData(), cyc = pageCycle(key, hznY0), idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
+        var from = idx ? idx[0] : qWindowFrom(data.length, page.range[key]), to = idx ? idx[1] : data.length;
         var w = [];
         data.slice(from, to).forEach(function(d) {
           if (d.v != null) w.push(d.v);
@@ -48016,20 +47996,20 @@
     return highlightsHtml(cards, '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div>");
   }
   function defineHormones() {
-    var key2 = "hormones-range", FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
+    var key = "hormones-range", FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
     defineReading("sheet-sign-hormones", {
       face: function() {
         return [ fedFundsRange(), policyDirection() ];
       },
       info: hormonesInfo,
       controls: function() {
-        return histControls(key2, {
+        return histControls(key, {
           series: fedFundsHistory
         }, FF_Y0);
       },
       history: function() {
-        var cyc = pageCycle(key2), span = cyc ? ffCycleMonths(cyc) : null;
-        var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, page.range[key2]), to = span ? span[1] : void 0;
+        var cyc = pageCycle(key), span = cyc ? ffCycleMonths(cyc) : null;
+        var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, page.range[key]), to = span ? span[1] : void 0;
         var win = fedFundsHistory.slice(from, to);
         return {
           geom: "fedFundsHistoryChart",
@@ -48051,20 +48031,20 @@
     });
   }
   function defineVolatility() {
-    var key2 = "fear-range", VOL_Y0 = parseInt(volatilityHistory[0].m.slice(0, 4), 10);
+    var key = "fear-range", VOL_Y0 = parseInt(volatilityHistory[0].m.slice(0, 4), 10);
     defineReading("sheet-sign-sentiment", {
       face: function() {
         return [ now.vixRow.flagValue, volatilityTag().text ];
       },
       info: volatilityDetailHtml,
       controls: function() {
-        return histControls(key2, {
+        return histControls(key, {
           series: volatilityHistory
         }, VOL_Y0);
       },
       history: function() {
-        var cyc = pageCycle(key2, VOL_Y0), span = cyc ? cycleSlice(volatilityHistory, cyc) : null;
-        var vals = span ? volatilityHistory.slice(span[0], span[1]) : timelineWindow(volatilityHistory, page.range[key2]);
+        var cyc = pageCycle(key, VOL_Y0), span = cyc ? cycleSlice(volatilityHistory, cyc) : null;
+        var vals = span ? volatilityHistory.slice(span[0], span[1]) : timelineWindow(volatilityHistory, page.range[key]);
         if (!vals.length) vals = volatilityHistory.slice(-12);
         var fit = trendOf(vals.map(function(d) {
           return d.v;
@@ -48162,67 +48142,31 @@
     var v = +m[0].replace("−", "-").replace(/,/g, "");
     return R.flip ? /surplus/.test(R.cardUnit || "") ? Math.abs(v) : -Math.abs(v) : v;
   }
-  function monthIdx(k) {
-    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
-  }
-  function fedPhases() {
-    var out = [];
-    function add(m, v) {
-      var s = v > 0 ? 1 : -1;
-      if (!out.length || out[out.length - 1].s !== s) out.push({
-        m: m,
-        s: s
-      });
-    }
-    fedMoves.forEach(function(d) {
-      add(d.m, d.v);
-    });
-    var day = isoDay(now.fedFunds.asOf), move = Number(String(now.fedFunds.lastMove).replace("−", "-"));
-    var last = fedMoves.length ? fedMoves[fedMoves.length - 1].m : "";
-    if (day && move && day.slice(0, 7) > last) add(day.slice(0, 7), move);
-    return out;
-  }
-  var runsCache = null;
-  function runStarts() {
-    var last = inflationHistory[inflationHistory.length - 1], key2 = inflationHistory.length + ":" + (last ? last.m + last.v : "");
-    if (!runsCache || runsCache.key !== key2) runsCache = {
-      key: key2,
-      starts: findRuns()
-    };
-    return runsCache.starts;
-  }
-  function findRuns() {
-    var run = [], starts = {};
-    function close() {
-      if (run.length) {
-        var first = run[0].m;
-        run.forEach(function(c) {
-          starts[c.m] = first;
-        });
-      }
-      run = [];
-    }
-    inflationHistory.forEach(function(c) {
-      if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c);
-    });
-    close();
-    return starts;
-  }
-  function cyclePeak(from, to) {
-    var starts = runStarts(), months = inflationHistory.filter(function(c) {
-      return c.m >= from && c.m <= to;
-    }), k = 0;
-    while (k < months.length - 1 && !(starts[months[k].m] >= from)) k++;
-    return months.slice(k).reduce(function(a, b) {
-      return !a || b.v > a.v ? b : a;
-    }, null);
-  }
+  var KEY_CLASS = {
+    line: "wave-key-line",
+    band: "wave-key-band",
+    blank: "wave-key-blank"
+  };
   var VIEW_W = 1e3;
   var VIEW_H = 300;
   var ROOM = 1;
-  var POINTS = 10;
+  var POINTS = 60;
   var CURL = .45;
   var WAVE = 10;
+  var LEVEL = {
+    h: 22,
+    plotH: 150
+  };
+  var GRID_STEPS = [ 1, 2, 5, 10 ];
+  function monthIdx(k) {
+    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
+  }
+  function pct(n) {
+    return (n * 100).toFixed(2) + "%";
+  }
+  function lineTone(color) {
+    return "--line:var(--" + color + ")";
+  }
   function monthPoints(list, from, to) {
     var at = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out = [];
     list.forEach(function(d) {
@@ -48267,31 +48211,6 @@
       }).join(" ");
     }).join("");
   }
-  var TAG = {
-    h: 22,
-    plotH: 150
-  };
-  function tagSpan(cls, text, t) {
-    return '<span class="fp-tag ' + cls + '" style="left:' + pct(t.ax) + ";top:" + pct(t.ay) + ";width:" + t.w + "px;margin:" + t.dy + "px 0 0 " + t.dx + 'px">' + text + "</span>";
-  }
-  function levelTags(sc) {
-    return ruleLevels(sc).filter(function(v) {
-      return sc.y(v) / VIEW_H > TAG.h / TAG.plotH;
-    }).map(function(v) {
-      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%";
-      return tagSpan("fp-level-tag", text, {
-        ax: 0,
-        ay: sc.y(v) / VIEW_H,
-        w: 6 + 6 * text.length,
-        dx: 5,
-        dy: -TAG.h
-      });
-    }).join("");
-  }
-  function pct(n) {
-    return (n * 100).toFixed(2) + "%";
-  }
-  var GRID_STEPS = [ 1, 2, 5, 10 ];
   function levelScale(lines) {
     var all = [].concat.apply([], lines).map(function(p) {
       return p.v;
@@ -48315,66 +48234,166 @@
     return out;
   }
   function rulesHtml(sc) {
-    var y = sc.y;
     return ruleLevels(sc).map(function(v) {
-      return '<i class="fp-rule" style="top:' + pct(y(v) / VIEW_H) + '"></i>';
+      return '<i class="wave-rule" style="top:' + pct(sc.y(v) / VIEW_H) + '"></i>';
+    }).join("");
+  }
+  function levelTags(sc) {
+    return ruleLevels(sc).filter(function(v) {
+      return sc.y(v) / VIEW_H > LEVEL.h / LEVEL.plotH;
+    }).map(function(v) {
+      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%";
+      return '<span class="wave-level" style="top:' + pct(sc.y(v) / VIEW_H) + ";width:" + (6 + 6 * text.length) + 'px">' + text + "</span>";
     }).join("");
   }
   function axisMark(left, text) {
-    return '<span class="fp-year' + (left == null ? ' fp-end"' : '" style="left:' + pct(left) + '"') + ">" + text + "</span>";
+    return '<span class="wave-year' + (left == null ? ' wave-end"' : '" style="left:' + pct(left) + '"') + ">" + text + "</span>";
   }
   function axisTicks(from, to) {
     var span = to - from + 1, out = "";
     if (span <= 13) for (var i = from; i < to - 1; i += 3) out += axisMark((i - from) / span, MONTHS_SHORT[i % 12]); else for (var y = Math.ceil(from / 12), step = Math.ceil((Math.floor(to / 12) - y) / 4); (y * 12 - from) / span < .7; y += step) out += axisMark((y * 12 - from) / span, String(y));
     return out;
   }
-  function yearsHtml(from, to, open) {
-    return axisTicks(from, to) + axisMark(null, open ? "Today" : MONTHS_SHORT[to % 12] + " " + Math.floor(to / 12));
+  function axisHtml(from, to, open) {
+    return '<div class="wave-axis">' + axisTicks(from, to) + axisMark(null, open ? "Today" : MONTHS_SHORT[to % 12] + " " + Math.floor(to / 12)) + "</div>";
   }
-  function fillDefs() {
-    return "<defs>" + [ "fp-rate", "fp-prices" ].map(function(cls) {
-      return '<linearGradient id="' + cls + '-fill" class="' + cls + '" x1="0" y1="0" x2="0" y2="1"><stop class="fp-fill-top" offset="0"/><stop class="fp-fill-low" offset="1"/></linearGradient>';
+  function fillId(s) {
+    return "wave-fill-" + s.color + "-" + Math.round(s.fill * 100);
+  }
+  function fillDefs(series) {
+    return "<defs>" + series.map(function(s) {
+      return '<linearGradient id="' + fillId(s) + '" style="' + lineTone(s.color) + ";--fill:" + s.fill + '" x1="0" y1="0" x2="0" y2="1"><stop class="wave-fill-top" offset="0"/><stop class="wave-fill-low" offset="1"/></linearGradient>';
     }).join("") + "</defs>";
   }
-  function areaPath(segs, cls) {
+  function areaPath(segs, s) {
     if (!segs.length) return "";
-    return '<path class="fp-area" fill="url(#' + cls + '-fill)" d="' + curve(segs) + " L" + segs[segs.length - 1][6].toFixed(1) + " " + VIEW_H + " L" + segs[0][0].toFixed(1) + " " + VIEW_H + ' Z"/>';
+    return '<path class="wave-area" fill="url(#' + fillId(s) + ')" d="' + curve(segs) + " L" + segs[segs.length - 1][6].toFixed(1) + " " + VIEW_H + " L" + segs[0][0].toFixed(1) + " " + VIEW_H + ' Z"/>';
   }
-  function lineSvg(segs, cls) {
-    return '<path class="fp-line ' + cls + '" d="' + curve(segs) + '" vector-effect="non-scaling-stroke"/>';
+  function lineSvg(segs, s) {
+    return '<path class="wave-line' + (s.bold ? " wave-bold" : "") + '" style="' + lineTone(s.color) + '" d="' + curve(segs) + '" vector-effect="non-scaling-stroke"/>';
   }
-  function plotSvg(lines, from, to) {
-    var sc = levelScale(lines), y = sc.y;
+  function plotSvg(series, lines, sc, from, to) {
     var x = function(i) {
       return (i - from) / Math.max(to - from, 1) * VIEW_W;
     };
     var segs = lines.map(function(l) {
-      return segments(l, x, y);
+      return segments(l, x, sc.y);
     });
-    var paths = fillDefs() + areaPath(segs[1], "fp-rate") + areaPath(segs[0], "fp-prices") + lineSvg(segs[1], "fp-rate") + lineSvg(segs[0], "fp-prices");
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>" + levelTags(sc);
+    var paths = fillDefs(series) + segs.map(function(g, k) {
+      return areaPath(g, series[k]);
+    }).join("") + segs.map(function(g, k) {
+      return lineSvg(g, series[k]);
+    }).join("");
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>";
   }
-  function turnsHtml(from, to) {
-    return fedPhases().map(function(p) {
-      return monthIdx(p.m);
-    }).filter(function(i) {
-      return i > from && i < to;
-    }).map(function(i) {
-      return '<i class="fp-turn" style="left:' + pct((i - from) / (to - from)) + '"></i>';
+  function bandsHtml(bands, from, to) {
+    return bands.map(function(b) {
+      return {
+        a: Math.max(b.from, from),
+        z: Math.min(b.to, to)
+      };
+    }).filter(function(b) {
+      return b.z > b.a;
+    }).map(function(b) {
+      return '<i class="wave-band" style="left:' + pct((b.a - from) / (to - from)) + ";width:" + pct((b.z - b.a) / (to - from)) + '"></i>';
     }).join("");
   }
-  function stripHtml(at, from, to) {
-    return at < 0 ? "" : '<span class="fp-strip" style="left:' + pct((at - from) / Math.max(to - from, 1)) + '"></span>';
+  function waveChart(o) {
+    var lines = o.series.map(function(s) {
+      return monthPoints(s.list, o.from, o.to);
+    }), sc = levelScale(lines);
+    return '<div class="wave-plot" style="--band:var(--' + (o.band || "normal") + ')"><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + "</span>" + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + "</div>" + axisHtml(o.from, o.to, o.open);
+  }
+  function waveLegend(keys, band) {
+    return '<ul class="wave-legend" style="--band:var(--' + (band || "normal") + ')">' + keys.map(function(k) {
+      return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + ">" + k.name + "</li>";
+    }).join("") + "</ul>";
+  }
+  function movesToDate() {
+    var moves = fedMoves.slice(), day = isoDay(now.fedFunds.asOf), move = Number(String(now.fedFunds.lastMove).replace("−", "-"));
+    var last = moves.length ? moves[moves.length - 1].m : "";
+    if (day && move && day.slice(0, 7) > last) moves.push({
+      m: day.slice(0, 7),
+      v: move
+    });
+    return moves;
+  }
+  function fedPhases() {
+    var out = [];
+    movesToDate().forEach(function(d) {
+      var s = d.v > 0 ? 1 : -1;
+      if (!out.length || out[out.length - 1].s !== s) out.push({
+        m: d.m,
+        s: s
+      });
+    });
+    return out;
+  }
+  var runsCache = null;
+  function runStarts() {
+    var last = inflationHistory[inflationHistory.length - 1], key = inflationHistory.length + ":" + (last ? last.m + last.v : "");
+    if (!runsCache || runsCache.key !== key) runsCache = {
+      key: key,
+      starts: findRuns()
+    };
+    return runsCache.starts;
+  }
+  function findRuns() {
+    var run = [], starts = {};
+    function close() {
+      if (run.length) {
+        var first = run[0].m;
+        run.forEach(function(c) {
+          starts[c.m] = first;
+        });
+      }
+      run = [];
+    }
+    inflationHistory.forEach(function(c) {
+      if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c);
+    });
+    close();
+    return starts;
+  }
+  function cyclePeak(from, to) {
+    var starts = runStarts(), months = inflationHistory.filter(function(c) {
+      return c.m >= from && c.m <= to;
+    }), k = 0;
+    while (k < months.length - 1 && !(starts[months[k].m] >= from)) k++;
+    return months.slice(k).reduce(function(a, b) {
+      return !a || b.v > a.v ? b : a;
+    }, null);
+  }
+  function tightBands() {
+    var ph = fedPhases();
+    return ph.map(function(p, k) {
+      return {
+        s: p.s,
+        from: monthIdx(p.m),
+        to: k + 1 < ph.length ? monthIdx(ph[k + 1].m) : Infinity
+      };
+    }).filter(function(p) {
+      return p.s > 0;
+    });
   }
   function rateSeries(toM) {
     return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory;
   }
-  function key(cls, name) {
-    return '<li class="' + cls + '">' + name + "</li>";
-  }
-  function legendHtml(toM) {
-    return '<ul class="fp-legend">' + key("fp-key-line fp-rate", rateSeries(toM) === discountHistory ? "Discount rates" : "Interest rates") + key("fp-key-line fp-prices", "Prices") + key("fp-key-peak", "Inflation") + "</ul>";
-  }
+  var LEGEND = waveLegend([ {
+    name: "Easing",
+    kind: "blank"
+  }, {
+    name: "Tightening",
+    kind: "band"
+  }, {
+    name: "Rates",
+    kind: "line",
+    color: "gold"
+  }, {
+    name: "Prices",
+    kind: "line",
+    color: "season-summer"
+  } ]);
   var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
   function footnoteHtml(m) {
     var rate = ROSTER_BY["sheet-sign-hormones"];
@@ -48393,24 +48412,25 @@
   function windowFrom(range, cycleFrom, to) {
     return range === "1y" ? to - 11 : range === "5y" ? to - 59 : cycleFrom;
   }
-  function closingRate(m, toM) {
-    if (m.ongoing) return fedFundsRange().replace("%", "");
-    var d = rateSeries(toM).filter(function(p) {
-      return p.m <= toM;
-    }).pop();
-    return d ? d.v.toFixed(2) : "";
-  }
-  function heroHtml(m, toM) {
-    return '<div class="fp-hero"><b class="fp-fig">' + closingRate(m, toM) + "<small>%</small></b></div>";
-  }
   function ratesCard(m, host, range) {
     var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
-    var peak = cyclePeak(m.era.from + "-01", toM), at = peak ? monthIdx(peak.m) : -1, top = peak && at >= from ? at : -1;
-    var lines = [ monthPoints(inflationHistory, from, to), monthPoints(rateSeries(toM), from, to) ];
-    return heroHtml(m, toM) + tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + plotHtml(lines, from, to, top, m) + legendHtml(toM) + footnoteHtml(m);
-  }
-  function plotHtml(lines, from, to, top, m) {
-    return '<div class="fp-plot"><span class="fp-clip">' + rulesHtml(levelScale(lines)) + turnsHtml(from, to) + stripHtml(top, from, to) + "</span>" + plotSvg(lines, from, to) + '</div><div class="fp-years">' + yearsHtml(from, to, !!m.ongoing) + "</div>";
+    var series = [ {
+      list: rateSeries(toM),
+      color: "gold",
+      fill: .45
+    }, {
+      list: inflationHistory,
+      color: "season-summer",
+      fill: .32,
+      bold: true
+    } ];
+    return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + waveChart({
+      series: series,
+      bands: tightBands(),
+      from: from,
+      to: to,
+      open: !!m.ongoing
+    }) + LEGEND + footnoteHtml(m);
   }
   function fedEnvironment(m, host, range) {
     return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m, host, range));
@@ -48612,8 +48632,8 @@
     mood: insightMood,
     stress: insightStress
   };
-  function catInsight(key2) {
-    return INSIGHT[key2] ? INSIGHT[key2]() : "";
+  function catInsight(key) {
+    return INSIGHT[key] ? INSIGHT[key]() : "";
   }
   var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
   var FENCE_SRC = {
@@ -48904,9 +48924,9 @@
     var v = at.v(l), n = at.n(l), up = v > n.hi, down = v < n.lo;
     return l.id === "length" ? v <= n.fence && (at.open || v >= n.floor) ? "optimal" : "abnormal" : !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, at) ? "abnormal" : "borderline";
   }
-  function catTitle(key2) {
+  function catTitle(key) {
     return categoriesShown().filter(function(c) {
-      return c.key === key2;
+      return c.key === key;
     })[0].title;
   }
   function side(l, at) {
@@ -49042,30 +49062,30 @@
   function sheetSec(title, inner, aside) {
     return '<div class="ind-sec"><h5>' + title + (aside ? "<em>" + aside + "</em>" : "") + "</h5>" + inner + "</div>";
   }
-  function calBtn(k, key2, cls, label, inner) {
-    return '<button type="button" class="' + cls + (k === key2 ? " on" : "") + '" data-pick-period="' + k + '" aria-pressed="' + (k === key2) + '" aria-label="' + label + '">' + inner + "</button>";
+  function calBtn(k, key, cls, label, inner) {
+    return '<button type="button" class="' + cls + (k === key ? " on" : "") + '" data-pick-period="' + k + '" aria-pressed="' + (k === key) + '" aria-label="' + label + '">' + inner + "</button>";
   }
   function calOff(cls, inner) {
     return '<span class="' + cls + ' is-off">' + inner + "</span>";
   }
-  function calQuarter(q, key2) {
+  function calQuarter(q, key) {
     var g = seasonOfQ(q) || (q === nowWhen(true) ? seasonGroup(currentSeason) : "");
-    return hasWhen(q) ? calBtn(q, key2, "cal-q " + g, qLabel(q) + ", " + cap(g), q.slice(5)) : calOff("cal-q", "");
+    return hasWhen(q) ? calBtn(q, key, "cal-q " + g, qLabel(q) + ", " + cap(g), q.slice(5)) : calOff("cal-q", "");
   }
-  function calYear(y, key2) {
+  function calYear(y, key) {
     var w = String(y), qs = [ 1, 2, 3, 4 ].map(function(n) {
-      return calQuarter(w + " Q" + n, key2);
+      return calQuarter(w + " Q" + n, key);
     }).join("");
-    return '<div class="cal-year' + (key2 === w ? " in" : "") + '">' + (hasWhen(w) ? calBtn(w, key2, "cal-y", w, w) : calOff("cal-y", w)) + qs + "</div>";
+    return '<div class="cal-year' + (key === w ? " in" : "") + '">' + (hasWhen(w) ? calBtn(w, key, "cal-y", w, w) : calOff("cal-y", w)) + qs + "</div>";
   }
-  function calCycle(c, key2) {
+  function calCycle(c, key) {
     var years = cycLabel(c).years, rows = "";
-    for (var y = c.to || calendarTodayY; y >= c.from; y--) rows += calYear(y, key2);
-    return calBtn(c.name, key2, "cal-band", c.name + ", " + years, "<b>" + c.name + "</b><small>" + years + "</small>") + rows;
+    for (var y = c.to || calendarTodayY; y >= c.from; y--) rows += calYear(y, key);
+    return calBtn(c.name, key, "cal-band", c.name + ", " + years, "<b>" + c.name + "</b><small>" + years + "</small>") + rows;
   }
-  function periodCal(key2) {
+  function periodCal(key) {
     return '<div class="period-cal">' + marketCycles.slice().reverse().map(function(c) {
-      return calCycle(c, key2);
+      return calCycle(c, key);
     }).join("") + '</div><p class="cal-key">' + [ "winter", "spring", "summer", "autumn" ].map(function(g) {
       return '<span class="' + g + '"><i></i>' + cap(g) + "</span>";
     }).join("") + "</p>";
@@ -49077,17 +49097,17 @@
     }).length;
   }
   function filterSheet(id, at, j, rows) {
-    var f = findOf(id), key2 = pickedKey(id), n = shown(id, at, j), keys = categoriesShown().map(function(c) {
+    var f = findOf(id), key = pickedKey(id), n = shown(id, at, j), keys = categoriesShown().map(function(c) {
       return c.key;
     }).filter(function(k) {
       return j.some(function(l) {
         return l.cat === k;
       });
     });
-    return '<div class="ind-filter"><div class="ind-filter-head"><h4>Filter</h4><button type="button" class="ind-reset" data-pick-reset="">Reset</button></div>' + sheetSec("Period", periodCal(key2), (rows.filter(function(r) {
-      return r.key === key2;
+    return '<div class="ind-filter"><div class="ind-filter-head"><h4>Filter</h4><button type="button" class="ind-reset" data-pick-reset="">Reset</button></div>' + sheetSec("Period", periodCal(key), (rows.filter(function(r) {
+      return r.key === key;
     })[0] || {
-      name: key2
+      name: key
     }).name) + sheetSec("Category", tabBar('aria-label="Category"', [ [ "", "All" ] ].concat(keys.map(function(k) {
       return [ k, catTitle(k) ];
     })), f.cat, "data-pick-cat", "ind-cats")) + sheetSec(RESULT, tabBar('aria-label="' + RESULT + '"', tierOpts(at, j).map(function(o) {
@@ -50247,10 +50267,10 @@
       dialSay();
     });
   }
-  function dialKeyStep(key2) {
+  function dialKeyStep(key) {
     if (!dialState) return null;
     var n = dialState.quarters.length, at = dialState.parked == null ? n : dialState.parked;
-    var to = key2 === "ArrowLeft" ? at - 1 : key2 === "ArrowRight" ? at + 1 : key2 === "Home" ? 0 : key2 === "End" ? n : null;
+    var to = key === "ArrowLeft" ? at - 1 : key === "ArrowRight" ? at + 1 : key === "Home" ? 0 : key === "End" ? n : null;
     if (to == null) return null;
     to = Math.max(0, Math.min(n, to));
     return to === n ? -1 : to;
@@ -51041,8 +51061,8 @@
     return ind;
   }
   function pulseHistory() {
-    var key2 = page.range["pulse-range"], cyc = pageCycle("pulse-range"), idx = cyc ? cycleQtrIdx(M2V_FROM_YEAR, cyc, m2vHistory.length) : null;
-    var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key2), to = idx ? idx[1] : void 0;
+    var key = page.range["pulse-range"], cyc = pageCycle("pulse-range"), idx = cyc ? cycleQtrIdx(M2V_FROM_YEAR, cyc, m2vHistory.length) : null;
+    var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : void 0;
     var chart = function(w) {
       return pulseStripsChart(w, from, to);
     };
@@ -51097,9 +51117,9 @@
         });
       },
       history: function() {
-        var len2 = m2Yoy.length - 4, key2 = page.range["volume-range"], cyc = pageCycle("volume-range");
+        var len2 = m2Yoy.length - 4, key = page.range["volume-range"], cyc = pageCycle("volume-range");
         var idx = cyc ? cycleQtrIdx(M2_FROM_YEAR + 1, cyc, len2) : null;
-        var from = idx ? idx[0] : qWindowFrom(len2, key2), to = idx ? idx[1] : void 0;
+        var from = idx ? idx[0] : qWindowFrom(len2, key), to = idx ? idx[1] : void 0;
         return {
           geom: "m2GrowthChart",
           wrap: "vh-host",
@@ -51901,7 +51921,7 @@
     });
   }
   function defineDeficit() {
-    var id = "sheet-marker-deficit", key2 = "deficit-range";
+    var id = "sheet-marker-deficit", key = "deficit-range";
     defineReading(id, {
       face: function() {
         var row = labRow(id);
@@ -51909,13 +51929,13 @@
       },
       info: deficitInfoHtml,
       controls: function() {
-        return histControls(key2, {
+        return histControls(key, {
           depth: deficitHistory.length
         });
       },
       history: function() {
-        var cyc = pageCycle(key2), idx = cyc ? [ Math.max(0, cyc.from - DEF_FROM_YEAR), Math.min(deficitHistory.length, (cyc.to || calendarTodayY) - DEF_FROM_YEAR + 1) ] : null;
-        var from = idx ? idx[0] : defFrom(page.range[key2]), to = idx ? idx[1] : void 0;
+        var cyc = pageCycle(key), idx = cyc ? [ Math.max(0, cyc.from - DEF_FROM_YEAR), Math.min(deficitHistory.length, (cyc.to || calendarTodayY) - DEF_FROM_YEAR + 1) ] : null;
+        var from = idx ? idx[0] : defFrom(page.range[key]), to = idx ? idx[1] : void 0;
         return {
           geom: "deficitChart",
           wrap: "vh-host",
@@ -52341,9 +52361,9 @@
         openMetricPage(openTarget(btn), btn.getAttribute("data-title"), false, tab);
       });
     });
-    [ "analysis", "chart", "portfolio" ].forEach(function(key2) {
-      var panel2 = PAGE_HOME[key2].panel, go = function(el) {
-        openMetricPage(openTarget(el), el.getAttribute("data-title"), false, key2);
+    [ "analysis", "chart", "portfolio" ].forEach(function(key) {
+      var panel2 = PAGE_HOME[key].panel, go = function(el) {
+        openMetricPage(openTarget(el), el.getAttribute("data-title"), false, key);
       };
       panel2.addEventListener("click", function(e) {
         var btn = e.target.closest && e.target.closest("[data-open]");
