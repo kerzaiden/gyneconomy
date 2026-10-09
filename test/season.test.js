@@ -57,15 +57,14 @@ ok('expansion + cold prices heating = spring',        season(cpi(0.4, 0.05), up)
 ok('contraction + cold prices     = winter',          season(cpi(0.4, -0.05), down), 'winter');
 ok('contraction + cooling prices  = autumn',          season(cpi(2.0, -0.05), down), 'autumn');
 ok('contraction + steady prices   = autumn',          season(cpi(2.0, 0), down),     'autumn');
-ok('steady after cooling stays springdeflation', readSeason(cpi(2.0, 0), up, P, null, false, 'falling').season, 'springdeflation');
-ok('steady after heating stays lateautumn',      readSeason(cpi(2.0, 0), down, P, null, false, 'rising').season, 'lateautumn');
-ok('steady keeps its own word, heading the prior', readSeason(cpi(2.0, 0), up, P, null, false, 'falling').cpiDirection, 'steady');
-ok('a clear direction overrides the prior',      readSeason(cpi(2.0, 0.05), up, P, null, false, 'falling').season, 'spring');
+ok('steady after cooling stays springdeflation', readSeason(cpi(2.0, 0), up, P, null, 'falling').season, 'springdeflation');
+ok('steady after heating stays lateautumn',      readSeason(cpi(2.0, 0), down, P, null, 'rising').season, 'lateautumn');
+ok('steady keeps its own word, heading the prior', readSeason(cpi(2.0, 0), up, P, null, 'falling').cpiDirection, 'steady');
+ok('a clear direction overrides the prior',      readSeason(cpi(2.0, 0.05), up, P, null, 'falling').season, 'spring');
 ok('contraction + heating prices  = lateautumn',      season(cpi(2.0, 0.05), down),  'lateautumn');
 ok('contraction + hot prices heating = lateautumn',   season(cpi(4.2, 0.05), down),  'lateautumn');
 ok('a contraction held at potential is not spring',   season(cpi(2.0, 0), { q: 'x', v: P }, 'contraction'), 'autumn');
 ok('the reading carries its potential', readSeason(cpi(2.0, 0), up, 2.2).potential, 2.2);
-ok('an annual reading says so', readSeason(cpi(2.0, 0), up, P, null, true).annual, true);
 
 ok('prices exactly 3.0 are not hot',   readSeason(cpi(3.0, 0), up, P).cpiHot,  false);
 ok('prices just over 3.0 are hot',     readSeason(cpi(3.001, 0), up, P).cpiHot, true);

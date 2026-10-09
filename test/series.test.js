@@ -54,6 +54,7 @@ const KEYED = [
   ['fred.json',   'cpiYoYBefore',            'm', 730, [-15, 25]],
   ['fred.json',   'sp500ReturnsBefore',      'y',  62, [-60, 70]],
   ['fred.json',   'gdpGrowthBefore',         'y',  60, [-20, 25]],
+  ['fred.json',   'gnpQuarterlyBefore',      'q',  88, [150, 700]],
   ['series.json', 'buffettHistory',          'q', 220, [10, 400]],
   ['series.json', 'capeHistory',             'y',  55, [4, 60]],
   ['series.json', 'topTenQuarterly',         'q',  62, [10, 60]],

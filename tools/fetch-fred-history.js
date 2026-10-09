@@ -54,6 +54,7 @@ const RETURNS_FROM = 1928, RETURNS_JOIN = 1990, GROWTH_FROM = 1930, CPI_EARLY = 
 const DAMODARAN = 'https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html';
 const WORTH_FROM = 1926;
 const MEASURINGWORTH = 'https://www.measuringworth.com/datasets/usgdp/result.php?year_source=' + WORTH_FROM + '&year_result=' + GROWTH_FROM + '&use%5B%5D=REALGDP';
+const BALKE_GORDON = 'https://data.nber.org/data/abc/abcq.csv', GNP_FROM = 1927, GNP_TO = 1948;
 const { shillerSheet, shillerMonth, priceFromRows } = require('./fetch-live.js');
 const band = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
 
@@ -211,6 +212,21 @@ function worthLevels(html, from, to) {
   return out;
 }
 
+function gnpLevels(csv, from, to) {
+  const rows = csv.trim().split(/\r?\n/).map(r => r.split(',').map(c => c.replace(/"/g, '').trim()));
+  const head = rows[0].map(c => c.toLowerCase()), yc = head.indexOf('year'), qc = head.indexOf('quarter'), vc = head.indexOf('rgnp72');
+  if (yc < 0 || qc < 0 || vc < 0) throw new Error('Balke and Gordon: no year, quarter and RGNP72 columns in ' + rows[0].join(','));
+  const out = [];
+  for (const r of rows.slice(1)) {
+    const y = Number(r[yc]), qn = Number(r[qc]), v = Number(r[vc]);
+    if (y >= from && y <= to && qn >= 1 && qn <= 4 && r[vc] !== '' && band(v, 1, 1e5)) out.push({ q: y + ' Q' + qn, v });
+  }
+  out.sort((a, b) => (a.q < b.q ? -1 : 1));
+  for (let y = from; y <= to; y++) for (let n = 1; n <= 4; n++)
+    if (!out.some(d => d.q === y + ' Q' + n)) throw new Error('Balke and Gordon: no ' + y + ' Q' + n + ' in the real GNP table');
+  return out;
+}
+
 function worthGrowth(levels, from, to) {
   const out = {};
   for (let y = from; y <= to; y++) out[y] = Math.round((levels[y] / levels[y - 1] - 1) * 1000) / 10;
@@ -323,7 +339,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v } });
   if (activity) Object.assign(out, { payrollsHistory: m(activity.payrolls), retailHistory: m(activity.retail) });
   if (heavy) out.topTenRecent = heavy.map(r => ({ q: r.q, d: r.d, v: r.v }));
-  Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
+  Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {}, gnpQuarterlyBefore: q(e.gnp || []) });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
 
@@ -477,11 +493,15 @@ async function earlySeasons() {
   if (Math.abs(worth[GROWTH_FROM] - growth[GROWTH_FROM]) > 0.5) throw new Error('MeasuringWorth ' + GROWTH_FROM + ' growth ' + worth[GROWTH_FROM] + ' does not meet BEA ' + growth[GROWTH_FROM]);
   for (let y = WORTH_FROM + 1; y < GROWTH_FROM; y++) growth[y] = worth[y];
   say('Real GDP      ' + (WORTH_FROM + 1) + ' → ' + (GROWTH_FROM - 1) + ' (MeasuringWorth, ' + JSON.stringify(levels) + '; ' + GROWTH_FROM + ' meets BEA at ' + worth[GROWTH_FROM] + ')');
-  return { gdp, cpi, returns, growth };
+  const g = await fetch(BALKE_GORDON, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
+  if (!g.ok) throw new Error('Balke and Gordon: HTTP ' + g.status);
+  const gnp = gnpLevels(await g.text(), GNP_FROM, GNP_TO);
+  say('Real GNP      ' + gnp.length + ' quarters, ' + gnp[0].q + ' → ' + gnp[gnp.length - 1].q + ' (Balke and Gordon, NBER)');
+  return { gdp, cpi, returns, growth, gnp };
 }
 
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { topTen, spyDailyRows, keepQuarter, marginRows, pennyRow, fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, gnpLevels, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

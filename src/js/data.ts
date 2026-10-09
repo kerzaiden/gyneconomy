@@ -98,6 +98,7 @@ export var HOLD_BAND = 0.47;
 export var gdpSrc: Src[] = [{t:"World Bank — GDP growth, annual % (NY.GDP.MKTP.KD.ZG)", u:"https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG"},
   {t:"BEA via FRED — Real GDP, percent change from preceding period, annual, before 1990 (A191RL1A225NBEA)", u:"https://fred.stlouisfed.org/series/A191RL1A225NBEA"},
   {t:"MeasuringWorth (Johnston and Williamson) — What Was the U.S. GDP Then?, real GDP before 1930", u:"https://www.measuringworth.com/datasets/usgdp/"},
+  {t:"Balke and Gordon (1989), NBER — The American Business Cycle data, real GNP by quarter, the growth the season reads before 1948", u:"https://data.nber.org/data/abc/"},
   {t:"CBO via FRED — Real Potential Gross Domestic Product (GDPPOT), the potential growth the season reads from 1950", u:"https://fred.stlouisfed.org/series/GDPPOT"},
   {t:"Fixler, Greenaway-McGrevy, Grimm — Revisions to GDP, GDI, and Their Major Components, Survey of Current Business, January 2018 (Table 9, the 0.47-point margin)", u:"https://apps.bea.gov/scb/pdf/2018/01-January/0118-revisions-to-gdp-gdi-and-their-major-components.pdf"},
   {t:"NBER — US Business Cycle Expansions and Contractions, the 1929 and 1948 peaks behind potential before 1950", u:"https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions"}];
