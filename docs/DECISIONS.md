@@ -1595,8 +1595,9 @@ settles it; none is open after V668.
   the seasons for now; a Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Interest Rates card is a feel, not a measure, dressed as her Clair hormone chart: the Fed's rate as a
   soft yellow area behind and prices as an orange line with a translucent fill in front, on a white ground
-  inside a light grey border (`--border`) that contains the colours, tightening shaded in zebra bands of apricot
-  (`--normal`, as faint as still reads against white, fading downward) and easing left white, the bands behind the
+  inside a light grey border (`--border`) that contains the colours, tightening shaded in zebra bands of grey
+  (`--shade`: the app's one grey in light, as light as still reads against white; a lighter grey in dark, where the one
+  grey sat too close to the card to tell tightening from easing; fading downward) and easing left white, the bands behind the
   guide rules and the curves so they never cover a line; above it, only a thin 1Y · 5Y · Cycle bar, with the same space above it as below. The large figure of today's
   target range that once sat above the bar was removed: it did not say what it was (Keren, Oct 9, 2026).
   The chart is the app's one wave chart, a component any later chart of month series over bands reuses (Keren,
@@ -1612,8 +1613,8 @@ settles it; none is open after V668.
   market lives in and prices act in front of them, so the trend and the two lines' relation matter more than exact
   values (Keren, Oct 9, 2026). The phases went from pink and green grounds to dashed lines at each turn, to a single
   strip at the cycle's last hike before cuts, and back to bands: the strip told Keren nothing she could see in the
-  chart, and side by side the apricot bands read the Fed's moves against prices more plainly than the lines,
-  in the app's own colour (Oct 9, 2026). No phase line sits under the chart, since "easing since" misread a cycle the Fed reversed
+  chart, and side by side the bands read the Fed's moves against prices more plainly than the lines (Oct 9, 2026).
+  The bands were apricot first; Keren then chose the lightest grey (Oct 9, 2026). No phase line sits under the chart, since "easing since" misread a cycle the Fed reversed
   more than once. Growth is the other half of the season and the dial already shows it; the
   cost, accepted: a cut made to rescue growth while prices sit calm reads without its reason here. A phase is
   the direction of the Fed's last move (Jensen, Mercer & Johnson, 1996), so a pause stays on
@@ -1623,7 +1624,7 @@ settles it; none is open after V668.
   the inflation peak and then at the Fed's last hike before cuts, and both gave way to the bands; the peak stays in the cycle's rates
   story. The axis ends in Today, or the close's month, so no Current pill or end dot
   is needed. Under the axis, one centred grey legend on one line, read in this order: Easing (a blank square
-  in a light grey border, since easing is not always the default), Tightening (an apricot square), Rates, Prices
+  in a light grey border, since easing is not always the default), Tightening (a grey square in the same border), Rates, Prices
   (short lines in their colours). "Rates" stands for the federal funds rate and, before it, the discount rate, to
   save room. Under it, one explanation of tightening and easing on the app's one grey, the same on every
   cycle. Each cycle's rates story, one or two short lines on what the
