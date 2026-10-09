@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,824 lines** in 41 files, about 603 KB, roughly **171 thousand tokens**. No session can
+The source is **8,812 lines** in 41 files, about 603 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `a6087c2` on 2026-10-09.
+Generated from commit `ee65892` on 2026-10-09.
 
 ## The page
 
@@ -18,8 +18,8 @@ Generated from commit `a6087c2` on 2026-10-09.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,194 | the whole stylesheet, every token and rule |
-| `page-body.html` | 251 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
+| `styles.css` | 1,193 | the whole stylesheet, every token and rule |
+| `page-body.html` | 247 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 37 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
@@ -42,7 +42,7 @@ Counts: **37** modules, **763** top-level functions, **120** top-level vars, **3
 | `js/render-pages.ts` | 376 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
 | `js/diagnosis.ts` | 96 | 16 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
 | `js/dial-cycle.ts` | 385 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
-| `js/analysis.ts` | 89 | 6 | `data`, `dial-cycle`, `dom`, `format`, `history`, `live`, `model`, `render-core`, `render-pages` |
+| `js/analysis.ts` | 82 | 6 | `data`, `dial-cycle`, `dom`, `format`, `history`, `live`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 146 | 12 | `data`, `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `readings`, `render-core`, `render-pages` |
 | `js/tabs-menu.ts` | 228 | 10 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
@@ -90,7 +90,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 13 | `bootRenderPages` | `js/render-pages.ts:367`–372 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:92`–95 |
 | 15 | `bootDialCycle` | `js/dial-cycle.ts:363`–384 |
-| 16 | `bootAnalysis` | `js/analysis.ts:84`–88 |
+| 16 | `bootAnalysis` | `js/analysis.ts:77`–81 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:139`–145 |
 | 19 | `bootTabsMenu` | `js/tabs-menu.ts:216`–227 |
@@ -714,10 +714,10 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 65 | `parentOf` | `function parentOf(` |
-| 66 | `eraShow` | `function eraShow(` |
-| 71 | `enterEra` | `function enterEra(` |
-| 78 | `leaveEra` | `function leaveEra(` |
+| 58 | `parentOf` | `function parentOf(` |
+| 59 | `eraShow` | `function eraShow(` |
+| 64 | `enterEra` | `function enterEra(` |
+| 71 | `leaveEra` | `function leaveEra(` |
 
 ### `js/portfolio.ts`
 
@@ -1448,14 +1448,14 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 735 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 880 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
 | 889 | The symptoms: a cycle's years against today |
-| 1,035 | yield curve charts |
-| 1,059 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,078 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,091 | un-inversion-to-recession historical lag panel |
-| 1,100 | the reading's tag |
-| 1,108 | info icon + popover (progressive disclosure for longer notes) |
-| 1,122 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,185 | footer |
+| 1,034 | yield curve charts |
+| 1,058 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,077 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,090 | un-inversion-to-recession historical lag panel |
+| 1,099 | the reading's tag |
+| 1,107 | info icon + popover (progressive disclosure for longer notes) |
+| 1,121 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,184 | footer |
 
 ## Markup landmarks
 
@@ -1464,7 +1464,7 @@ Banner comments in `page-body.html`:
 | Line | Section |
 |---|---|
 
-Every `id` in the static DOM (58), which is what the renderers fill:
+Every `id` in the static DOM (56), which is what the renderers fill:
 
 | Line | id |
 |---|---|
@@ -1491,41 +1491,39 @@ Every `id` in the static DOM (58), which is what the renderers fill:
 | 55 | `panel-analysis` |
 | 56 | `calendar-list` |
 | 57 | `cycle-list` |
-| 58 | `cycle-more` |
-| 59 | `cycle-more-label` |
-| 63 | `calendar-cycle` |
-| 66 | `panel-portfolio` |
-| 68 | `panel-chart` |
-| 69 | `chart-home` |
-| 72 | `more-menu` |
-| 75 | `menu-back` |
-| 89 | `sources-open` |
-| 97 | `appearance-current` |
-| 100 | `app-version` |
-| 104 | `sheet-howto` |
-| 147 | `sheet-book` |
-| 157 | `idea-prose` |
-| 163 | `idea-more` |
-| 168 | `cycle-model-line` |
-| 176 | `seasons-kicker` |
-| 177 | `seasons-rows` |
-| 181 | `framework-kicker` |
-| 182 | `framework-rows` |
-| 192 | `sheet-appearance` |
-| 200 | `theme-toggle` |
-| 207 | `sheet-contact` |
-| 216 | `contact-form` |
-| 217 | `contact-title` |
-| 218 | `contact-message` |
-| 220 | `contact-hint` |
-| 221 | `contact-send` |
-| 227 | `sheet-sources` |
-| 230 | `sources-back` |
-| 235 | `asof-text` |
-| 236 | `sources-groups` |
-| 242 | `detail-backdrop` |
-| 244 | `detail-modal-close` |
-| 245 | `detail-modal-body` |
+| 59 | `calendar-cycle` |
+| 62 | `panel-portfolio` |
+| 64 | `panel-chart` |
+| 65 | `chart-home` |
+| 68 | `more-menu` |
+| 71 | `menu-back` |
+| 85 | `sources-open` |
+| 93 | `appearance-current` |
+| 96 | `app-version` |
+| 100 | `sheet-howto` |
+| 143 | `sheet-book` |
+| 153 | `idea-prose` |
+| 159 | `idea-more` |
+| 164 | `cycle-model-line` |
+| 172 | `seasons-kicker` |
+| 173 | `seasons-rows` |
+| 177 | `framework-kicker` |
+| 178 | `framework-rows` |
+| 188 | `sheet-appearance` |
+| 196 | `theme-toggle` |
+| 203 | `sheet-contact` |
+| 212 | `contact-form` |
+| 213 | `contact-title` |
+| 214 | `contact-message` |
+| 216 | `contact-hint` |
+| 217 | `contact-send` |
+| 223 | `sheet-sources` |
+| 226 | `sources-back` |
+| 231 | `asof-text` |
+| 232 | `sources-groups` |
+| 238 | `detail-backdrop` |
+| 240 | `detail-modal-close` |
+| 241 | `detail-modal-body` |
 
 ## Finding things fast
 

@@ -1,5 +1,5 @@
 import { CHEV } from "./format.ts";
-import { addSources, need, ui, viewMore } from "./dom.ts";
+import { addSources, need, ui } from "./dom.ts";
 import { GYN, repaintLive } from "./live.ts";
 import { marketCycles, sp500AnnualReturnSource, typicalCycleSrc } from "./data.ts";
 import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel } from "./model.ts";
@@ -28,13 +28,6 @@ function renderCycleList(){
   var list = need("cycle-list");
   list.innerHTML = cycleRowsHtml();
   settleStrips();
-  var PREVIEW_CYCLES = 99;
-  (function(){
-    var rows: HTMLElement[] = [].slice.call(list.querySelectorAll(".era-row"));
-    var btn = need("cycle-more");
-    if (!btn || rows.length <= PREVIEW_CYCLES){ if (btn) btn.hidden = true; return; }
-    viewMore(btn, rows.slice(PREVIEW_CYCLES));
-  })();
 
   var listWrap = need("calendar-list"), detail = need("calendar-cycle");
   function open(from: number, y?: number){

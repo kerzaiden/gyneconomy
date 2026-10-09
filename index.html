@@ -1017,7 +1017,6 @@
   .lab-res small{ padding-right:17px; }
   .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .lab-item.t-abnormal .lab-res b{ color:var(--critical-ink); }
-  .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }
   .era-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
@@ -1226,10 +1225,6 @@
   <div class="tab-panel" data-tab="analysis" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
     <div id="calendar-list">
       <div id="cycle-list"></div>
-      <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
-        <span id="cycle-more-label">View more</span>
-        <span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>
-      </button>
     </div>
     <div id="calendar-cycle" hidden></div>
   </div>
@@ -48300,16 +48295,6 @@
     var list = need("cycle-list");
     list.innerHTML = cycleRowsHtml();
     settleStrips();
-    var PREVIEW_CYCLES = 99;
-    (function() {
-      var rows = [].slice.call(list.querySelectorAll(".era-row"));
-      var btn = need("cycle-more");
-      if (!btn || rows.length <= PREVIEW_CYCLES) {
-        if (btn) btn.hidden = true;
-        return;
-      }
-      viewMore(btn, rows.slice(PREVIEW_CYCLES));
-    })();
     var listWrap = need("calendar-list"), detail = need("calendar-cycle");
     function open(from, y) {
       var era = marketCycles.filter(function(c) {
