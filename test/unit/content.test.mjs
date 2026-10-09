@@ -287,9 +287,12 @@ test('a past cycle shows its own record on the Diagnosis, and Back restores toda
   const heads = () => [...document.querySelectorAll('#diagnosis .trend-head')].map(h => h.textContent).join();
   const lede = () => document.querySelector('#diagnosis [data-open="sheet-ai-insights"] .ai-clamp').textContent;
   const head = lede();
+  const chevs = () => document.querySelectorAll('#diagnosis .trend-card .peek-chev').length;
+  assert.equal(chevs(), 0);
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
   assert.equal(heads(), 'AI Insights,Cycle Analysis');
+  assert.equal(chevs(), 0);
   assert.equal(lede(), ui.eraOpen.blurb);
   ui.eraPageBack();
   assert.equal(ui.eraOpen, null);

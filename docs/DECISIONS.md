@@ -103,7 +103,7 @@ settles it; none is open after V668.
   nowhere to be read together; a closed cycle's door and lede are its `blurb`, the longer narrative, so its two
   cards do not repeat the three-line story (Cycle Insights). Keren wanted a sophisticated analysis of the
   cycle's narrative, the economy and the market, not three pass scores, and named it "AI Insights". It is a door
-  like the story (three lines, maybe three dots, then a chevron) opening an AI Insights page with one container per
+  like the story (three lines, maybe three dots) opening an AI Insights page with one container per
   chapter. Claude writes it: Keren chose "Claude, dated" over a live Generate button, which would change the
   artifact's grant, and over rule-built sentences, which the name would oversell. It holds a lede, The economy and
   The market, dated "Written by Claude from the app's data of …", its figures read live and its words rewritten each
@@ -309,6 +309,9 @@ settles it; none is open after V668.
   card's text, on Analysis, where it lands on the cycle Analysis shows.** Reading is what makes one want
   to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished. (0.9.1,
   0.9.40, 0.9.43, 0.9.44, 0.9.46)
+- **A card that opens a page when tapped anywhere carries no chevron: AI Insights and Cycle Analysis on every
+  cycle page, and every other card built the same way.** The whole container is the door, so a chevron on its head
+  says nothing the card does not already do. (Chevronless Cards)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -706,7 +709,7 @@ settles it; none is open after V668.
   every tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the
   left.** One consistent design system: a dark purple headline with its icon inside a container, everything below
   it, tidy and evenly spaced, with the count shown once, not four times. (0.8.5, 0.8.6, 0.8.8, Oct 6, 2026)
-- **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
+- **Each cycle's Cycle analysis is a card under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
   four), worst first; each result's colour bar stops short of the next. The row opens on the cycle on screen. The row
