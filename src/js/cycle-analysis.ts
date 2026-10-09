@@ -381,7 +381,7 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  return statsHome(i) + fedEnvironment(marketCycles[i].ongoing ? nowModel : cycleModel(marketCycles[i])) +
+  return statsHome(i) + fedEnvironment(marketCycles[i].ongoing ? nowModel : cycleModel(marketCycles[i]), HOME_ID, page.range[HOME_ID]) +
     dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){
@@ -480,7 +480,7 @@ function rateCycle(e: Event){
   if (b && k){ page.mode[k] = "cycles"; page.cycles[k] = b.getAttribute("data-rate-cycle"); }
 }
 export function buildCycleChart(){
-  wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
+  page.range[HOME_ID] = "cycle"; wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
   document.addEventListener("click", function(e){
     var door = (e.target as Element).closest && (e.target as Element).closest("[data-chart-cycle]"); if (!door) return;
     crossToChart();
