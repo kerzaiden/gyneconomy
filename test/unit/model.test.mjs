@@ -113,6 +113,18 @@ test('the Fed\'s phases alternate, and today\'s move sets the open phase', () =>
   assert.deepEqual(p[p.length - 1], { m: '2026-09', s: 1 });
 });
 
+test('the wave chart draws any month series over any bands, clipped to its window, with its own legend', async () => {
+  const { waveChart, waveLegend, monthIdx } = await import('../../src/js/wave-chart.ts');
+  const list = Array.from({ length: 24 }, (_, k) => ({ m: '2020-' + String(k % 12 + 1).padStart(2, '0'), v: k % 7 })).slice(0, 12);
+  const host = document.createElement('div');
+  host.innerHTML = waveChart({ series: [{ list, color: 'gold', fill: 0.4 }], bands: [{ from: monthIdx('2019-06'), to: monthIdx('2020-03') }, { from: monthIdx('2021-01'), to: Infinity }], from: monthIdx('2020-01'), to: monthIdx('2020-12'), open: false })
+    + waveLegend([{ name: 'Up', kind: 'band' }, { name: 'Line', kind: 'line', color: 'gold' }]);
+  assert.equal(host.querySelectorAll('.wave-band').length, 1);
+  assert.equal(host.querySelectorAll('.wave-line').length, 1);
+  assert.equal(host.querySelector('.wave-end').textContent, 'Dec 2020');
+  assert.deepEqual([...host.querySelectorAll('.wave-legend li')].map(li => li.className), ['wave-key-band', 'wave-key-line']);
+});
+
 test('potential is the 1929–48 peak trend before CBO and CBO\'s last quarter after it, as the decisions say', () => {
   const first = potentialYoYHistory[0], last = potentialYoYHistory[potentialYoYHistory.length - 1];
   assert.equal(PEAK_TREND.toFixed(2), '3.46');
@@ -131,7 +143,7 @@ test('a reading past the band never prints as the band\'s edge', () => {
   assert.deepEqual([3.04, 2.96, 3.4, 0.96, 1.04, -0.04, -1.26].map(inflationFigure), ['3.04', '3.0', '3.4', '0.96', '1.0', '0.0', '\u22121.3']);
 });
 
-test('every cycle explains the phases under the chart and tells its rates story with its peak month read from the record, tightening shaded, no strip, the levels labelled and the rate named for its series', async () => {
+test('every cycle explains the phases under the chart and tells its rates story with its peak month read from the record, tightening shaded, the levels labelled and the rate named for its series', async () => {
   const { fedEnvironment, ratesStory } = await import('../../src/js/fed-phases.ts');
   const host = document.createElement('div');
   const notes = new Set();
@@ -143,11 +155,10 @@ test('every cycle explains the phases under the chart and tells its rates story 
     notes.add(note.textContent);
     const story = ratesStory(c);
     assert.ok(story.length > 40 && !/[{}]/.test(story), c.name + ' story');
-    assert.equal(host.querySelectorAll('.fp-plot .fp-strip').length, 0, c.name + ' no strip');
-    assert.ok(host.querySelectorAll('.fp-plot .fp-band').length <= fedPhases().filter(p => p.s > 0).length, c.name + ' bands');
-    const levels = [...host.querySelectorAll('.fp-plot .fp-level-tag')].map(t => t.textContent);
+    assert.ok(host.querySelectorAll('.wave-plot .wave-band').length <= fedPhases().filter(p => p.s > 0).length, c.name + ' bands');
+    const levels = [...host.querySelectorAll('.wave-plot .wave-level')].map(t => t.textContent);
     assert.ok(levels.length && levels.every(t => /^\u2212?\d+%$/.test(t)), c.name + ' level labels ' + levels);
-    const legend = [...host.querySelectorAll('.fp-legend li')].map(li => li.textContent).join('|');
+    const legend = [...host.querySelectorAll('.wave-legend li')].map(li => li.textContent).join('|');
     assert.equal(legend, 'Easing|Tightening|Rates|Prices', c.name + ' legend');
   }
   assert.equal(notes.size, 1);
