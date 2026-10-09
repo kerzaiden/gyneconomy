@@ -31,7 +31,7 @@ function stripQuarter(r: StripRow, q: number, x: number, limit: number){
   if (stroke == null) kind = kind || "blank";
   x = Math.max(x, xa);
   if (kind === "flat"){ d.push("M" + f1(xa) + "," + f1(cy) + "H" + f1(xb)); x = xb; }
-  while (kind !== "flat" && x < xb && x + p * 0.55 <= limit){ d.push(beatPath(x, x, cy, p, amp)); x += p; }
+  while (kind !== "flat" && x < xb && x + p * 0.55 <= limit){ d.push(beatPath(x, x, cy, p, amp) + "H" + f1(x + p)); x += p; }
   if (x < xb){ d.push("M" + f1(x) + "," + f1(cy) + "H" + f1(xb)); x = xb; }
   return { x:x, svg:'<path class="ps-beat hcol' + (kind ? " " + kind : "") + '" d="' + d.join("") + '"/>' };
 }
@@ -64,10 +64,10 @@ function stripPaper(L: number, R: number, T: number, B: number, h: number){
 }
 export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   from = from || 0;
-  var F = histFrame(Wpx), L = F.L, R = F.R - PULSE_VEL, T = F.T, B = F.B, end = to == null ? m2vHistory.length : to;
+  var F = histFrame(Wpx), L = F.L, R = F.R - PULSE_VEL, T = F.T - AXIS.LEG, B = F.B, end = to == null ? m2vHistory.length : to;
   var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1, h = (B - T) / rows;
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [];
-  out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B, fmt:String }));
+  out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String }));
   out.push(stripPaper(L, R, T, B, h));
   ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17)); });
   for (var y = y0; y <= y1; y++) out.push(stripRow({ y:y, top:T + h * (y - y0), h:h, from:from, end:end, X:X }));

@@ -202,7 +202,7 @@ function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: number){
   var fr = svg.querySelector(".bt-frame");
   var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
   var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
-  var plateTop = sb.top - cp.top + (frTop + AXIS.LEG + 10) * scale;
+  var plateTop = sb.top - cp.top + (frTop + (g.refs && g.refs.length ? AXIS.LEG : 0) + 10) * scale;
   var colX = sb.left - eb.left + geomX(g, i) * scale;
   plate.classList.remove("compact");
   var w = plate.offsetWidth;

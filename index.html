@@ -636,7 +636,7 @@
     stroke-linecap:round; stroke-linejoin:round; }
   .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
   .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
-  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
+  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
   .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .peek-chart{ width:100%; margin-top:12px; }
@@ -44759,7 +44759,7 @@
     var fr = svg.querySelector(".bt-frame");
     var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
-    var plateTop = sb.top - cp.top + (frTop + AXIS.LEG + 10) * scale;
+    var plateTop = sb.top - cp.top + (frTop + (g.refs && g.refs.length ? AXIS.LEG : 0) + 10) * scale;
     var colX = sb.left - eb.left + geomX(g, i) * scale;
     plate.classList.remove("compact");
     var w = plate.offsetWidth;
@@ -50685,7 +50685,7 @@
       x = xb;
     }
     while (kind !== "flat" && x < xb && x + p * .55 <= limit) {
-      d.push(beatPath(x, x, cy, p, amp));
+      d.push(beatPath(x, x, cy, p, amp) + "H" + f1(x + p));
       x += p;
     }
     if (x < xb) {
@@ -50732,7 +50732,7 @@
   }
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
-    var F = histFrame(Wpx), L = F.L, R = F.R - PULSE_VEL, T = F.T, B = F.B, end = to == null ? m2vHistory.length : to;
+    var F = histFrame(Wpx), L = F.L, R = F.R - PULSE_VEL, T = F.T - AXIS.LEG, B = F.B, end = to == null ? m2vHistory.length : to;
     var y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1, h = (B - T) / rows;
     var X = function(q) {
       return L + (R - L) * q / 4;
@@ -50745,7 +50745,7 @@
       x0: L,
       x1: F.R,
       base: B,
-      top: T - AXIS.LEG - AXIS.READ,
+      top: T - AXIS.READ,
       bot: B,
       fmt: String
     }));
