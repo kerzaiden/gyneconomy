@@ -306,7 +306,7 @@ settles it; none is open after V668.
 - **The door from Interest Rates Environment to the Federal funds rate page is an inline "Learn more ›" after the
   card's text, wherever the card stands:** Current Cycle, every past cycle and Analysis. Reading is what makes one want
   to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished. (0.9.1,
-  0.9.40, 0.9.43, Phases Explained)
+  0.9.40, 0.9.43, 0.9.44)
 - **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name filters Indicators to that category.** A
   reading tapped there lands on its own page, and the filter sits inside the search so it shows what can be
@@ -1595,7 +1595,7 @@ settles it; none is open after V668.
   tight gaps: Tightening, Easing, Rates, Prices. Under it, one explanation of the phases, the same on every cycle, as
   her tracker explains what each phase of a cycle does. Each cycle's rates story, one or two short lines on what the
   rates did (`rates` in `marketCycles`), is the first Insight on the Federal funds rate page for the cycle on screen,
-  so the card teaches the pattern and the page tells the cycle (Phases Explained); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
+  so the card teaches the pattern and the page tells the cycle (0.9.44); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
   discount rate; the phases follow the rate alone, so a tightening made another way (the doubling of reserve
   requirements in 1936–37) does not show. A low peak is still a peak: where prices topped in a calm cycle tells
