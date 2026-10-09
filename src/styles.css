@@ -565,7 +565,7 @@
   .fp-ease{ --wash:transparent; --key:var(--plot-wash); }
   .fp-tight{ --wash:var(--skin-tan); --key:var(--skin-tan); }
   .fp-years{ position:relative; height:16px; margin-top:4px; }
-  .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:color-mix(in srgb, var(--text-muted) 70%, transparent); }
+  .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-meta); color:var(--text-muted); }
   .fp-year.fp-end{ right:0; left:auto; margin:0; color:var(--text-primary); }
   .fp-area{ stroke:none; }
   .fp-fill-top{ stop-color:var(--line); stop-opacity:var(--fill); } .fp-fill-low{ stop-color:var(--line); stop-opacity:0.06; }
