@@ -61,18 +61,16 @@ test('Temperature’s Normal is the Season Model’s 1–3% band, its Risk the f
   assert.equal(tier, v >= 1 && v <= 3 ? 'optimal' : v > l.now.fence || v < l.now.floor ? 'abnormal' : 'borderline');
 });
 
-test('Cycle Statistics shows the averages of every closed cycle, and the cycle shown beside them', () => {
+test('Cycle Statistics shows the cycle’s own figures, each judged Typical or Atypical, and Period flow only once a cycle has closed', () => {
   const shown = name => {
     const d = document.createElement('button'); d.setAttribute('data-chart-cycle', name); document.body.appendChild(d); d.click(); d.remove();
-    return [...document.querySelectorAll('#chart-home .lab-score-box ~ .stat-row')].map(b => [b.querySelector('b').textContent, (b.querySelector('.stat-side') || {}).textContent]);
+    return [...document.querySelectorAll('#chart-home .lab-score-box ~ .stat-row')].map(b => [b.querySelector('small').textContent, b.querySelector('b').textContent, b.querySelector('.stat-side').textContent]);
   };
-  const L = lab('length').per.slice(0, marketCycles.length - 1), m = L.reduce((a, b) => a + b, 0) / L.length, sd = () => Math.sqrt(L.reduce((a, v) => a + (v - m) ** 2, 0) / (L.length - 1));
-  const closed = marketCycles.filter(c => !c.ongoing), mean = id => lab(id).per.slice(0, closed.length).reduce((a, b) => a + b, 0) / closed.length;
-  const dotCom = marketCycles.find(c => /Dot-Com/.test(c.name)), k = marketCycles.indexOf(dotCom), rows = shown(dotCom.name);
-  assert.deepEqual(rows.map(r => r[0]), [yearsWord(mean('length')) + ' years', '±' + yearsWord(sd()) + ' years', yearsWord(mean('bleed')) + ' years']);
-  assert.equal(rows[0][1], yearsWord(lab('length').per[k]) + ' yrs');
-  assert.deepEqual(shown(marketCycles[open].name).map(r => r[0]), rows.map(r => r[0]));
-  assert.equal(document.querySelector('#chart-home .stat-note').textContent, marketCycles[open].name + ', ' + marketCycles[open].from + '\u2013Today. Averages are based on 18 closed market cycles since 1928.');
+  const dotCom = marketCycles.find(c => /Dot-Com/.test(c.name)), k = marketCycles.indexOf(dotCom), L = lab('length').per;
+  assert.deepEqual(shown(dotCom.name), [['Cycle length', yearsWord(L[k]) + ' years', 'Atypical'], ['Cycle variation', '+6¾ years', 'Atypical'], ['Period flow', '3 years', 'Atypical']]);
+  assert.deepEqual(shown(marketCycles.find(c => /Housing/.test(c.name)).name).map(r => r[2]), ['Typical', 'Typical', 'Typical']);
+  assert.deepEqual(shown(marketCycles[open].name), [['Cycle length', yearsWord(L[open]) + ' years', 'Typical'], ['Cycle variation', '−1½ years', 'Typical']]);
+  assert.equal(document.querySelector('#chart-home .stat-note').textContent, marketCycles[open].name + ', ' + marketCycles[open].from + '\u2013Today. Typical is judged against 18 closed market cycles since 1928.');
   assert.match(document.querySelector('#chart-home .lab-score-box .stat-side').textContent, /^(Normal|Attention|Risk)$/);
 });
 
