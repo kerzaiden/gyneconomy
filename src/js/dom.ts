@@ -72,10 +72,10 @@ function trendCard(tag: string, cls: string, attrs: string, mark: string, head: 
   return '<' + tag + ' class="trend-card cat-mood' + cls + '"' + attrs + '>' + trendHead(mark, head, end) + body + '</' + tag + '>';
 }
 export function trendDoor(open: string, title: string, mark: string, head: string, body: string){
-  return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark, head, CHEV, body);
+  return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark, head, "", body);
 }
 export function trendJump(attrs: string, mark: string, head: string, body: string){
-  return trendCard("button", "", ' type="button"' + attrs, mark, head, CHEV, body);
+  return trendCard("button", "", ' type="button"' + attrs, mark, head, "", body);
 }
 export function trendBox(mark: string, head: string, body: string){ return trendCard("section", " is-box", "", mark, head, "", body); }
 export function trendSoon(mark: string, head: string, body: string){
