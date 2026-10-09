@@ -48634,7 +48634,7 @@
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
     var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-    var F = histFrame(Wpx), h = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, full = rows * h;
+    var F = histFrame(Wpx), h = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, full = rows * h, B = Math.min(F.B, T + full), H = F.H - F.B + B;
     var X = function(q) {
       return L + (R - L) * q / 4;
     }, out = [], body = [ stripPaper(L, R, T, T + full, h) ];
@@ -48696,7 +48696,7 @@
         };
       })
     });
-    return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + " " + f1(B - T) + " " + f1(full) + " " + f1(h) + '" aria-label="Money velocity’s heartbeat, one strip per year from ' + y0 + " to " + y1 + ", " + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; a quarter whose fall was far out of the record flatlines">' + out.join("") + "</svg>";
+    return vhOpen(F.W, H) + 'data-view="' + f1(T) + " " + f1(B - T) + " " + f1(full) + " " + f1(h) + '" aria-label="Money velocity’s heartbeat, one strip per year from ' + y0 + " to " + y1 + ", " + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; a quarter whose fall was far out of the record flatlines">' + out.join("") + "</svg>";
   }
   function stripView(svg) {
     var v = (svg.getAttribute("data-view") || "").split(" ").map(Number), k = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
