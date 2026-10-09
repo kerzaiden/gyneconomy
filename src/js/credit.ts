@@ -5,7 +5,7 @@ import { DSR_FROM_YEAR, DSR_MEAN, dsrHistory, SAV_FROM_YEAR, SAV_HIGH, SAV_LOW, 
 import { activitySpecs } from "./activity.ts";
 import { concentrationSpecs } from "./concentration.ts";
 
-// ---- Credit, households and debt: consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies ----
+// ---- Credit, households and debt: consumer credit, margin debt, the saving rate, debt payments and delinquencies ----
 export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
 export type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
 
@@ -22,7 +22,8 @@ export var SAVING_SRC: Src[] = [
   { t:"BEA via FRED \u2014 Personal Saving Rate, quarterly since 1947 (PSAVERT)", u:"https://fred.stlouisfed.org/series/PSAVERT" }
 ];
 export var DEBT_PAYMENTS_SRC: Src[] = [
-  { t:"Federal Reserve via FRED \u2014 Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)", u:"https://fred.stlouisfed.org/series/TDSP" }
+  { t:"Federal Reserve via FRED \u2014 Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)", u:"https://fred.stlouisfed.org/series/TDSP" },
+  { t:"Jord\u00e0, Schularick and Taylor \u2014 When Credit Bites Back: Leverage, Business Cycles, and Crises (NBER Working Paper 17621, 2011)", u:"https://www.nber.org/papers/w17621" }
 ];
 export var DELINQUENCY_SRC: Src[] = [
   { t:"Federal Reserve — Charge-Off and Delinquency Rates on Loans and Leases at Commercial Banks, all loans, seasonally adjusted", u:"https://www.federalreserve.gov/releases/chargeoff/" },
@@ -65,10 +66,10 @@ function householdSpecs(): CreditSpec[] {
       band:"<b>The band is computed, not chosen</b>: the tenth to ninetieth percentile of every quarter since " + SAV_FROM_YEAR + ", and the line is their median. " +
         "No convention sets a normal saving rate. Below the band households have little set aside for a month that goes wrong.",
       lede:"What households keep of what they earn: the cushion against a bad month." },
-    { id:"sheet-metric-debt-payments", term:"Debt-to-income ratio", econ:"Debt-to-income ratio", unit:"of income", series:debtPaymentPoints, mid:DSR_MEAN, line:"Average since " + DSR_FROM_YEAR,
+    { id:"sheet-metric-debt-payments", term:"Debt payments", econ:"Debt payments", unit:"of income", series:debtPaymentPoints, mid:DSR_MEAN, line:"Average since " + DSR_FROM_YEAR,
       optimal:{ lte:DSR_MEAN, label:"\u2264 " + DSR_MEAN.toFixed(1) + "%" }, ends:{ high:"Above average" }, fmt:pct, word:debtPaymentsWord, src:DEBT_PAYMENTS_SRC,
       about:"What households pay each quarter in required payments on mortgages, credit cards and loans, as a share of what they take home, " +
-        "as the Federal Reserve estimates it: the debt-to-income ratio a lender checks, taken across every household and measured against income after tax. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month.",
+        "as the Federal Reserve estimates it: its household debt service ratio, taken across every household and measured against income after tax. It counts the payments, not the debt owed: a larger debt at a lower rate can cost the same each month. Much of today\u2019s mortgage debt was fixed at the low rates of 2020\u201321, so the bill is light partly because that debt is cheap, not only because households owe less. When debt grows much faster than income, downturns run deeper and longer, as after 2007 (Jord\u00e0, Schularick and Taylor).",
       band:"<b>The line is the series\u2019 own average since " + DSR_FROM_YEAR + "</b>. No convention sets a band, so the line is derived from the record and " +
         "only above it is flagged: a light debt bill is not a condition.",
       lede:"The share of take-home pay that goes to paying debts: the load households carry each month." }
