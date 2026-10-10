@@ -72,6 +72,6 @@ function ratesCard(m: CycleModel, host: string, range: string){
   var series = [{ list: rateSeries(toM), color: "gold", fill: 0.45 }, { list: inflationHistory, color: "season-summer", fill: 0.32, bold: true }];
   return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + waveChart({ series: series, bands: tightBands(), from: from, to: to, open: !!m.ongoing }) + LEGEND + footnoteHtml(m);
 }
-export function fedEnvironment(m: CycleModel, host: string, range: string){
-  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m, host, range));
+export function fedEnvironment(m: CycleModel, host: string, range: string, pick?: string){
+  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + (pick || "") + ratesCard(m, host, range));
 }

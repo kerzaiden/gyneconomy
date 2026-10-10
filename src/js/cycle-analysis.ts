@@ -2,7 +2,7 @@ import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { setTopbar } from "./render-pages.ts";
-import { page, pageCycle, tabBar } from "./history.ts";
+import { cyclePicker, page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
@@ -301,7 +301,7 @@ function chartDetail(){
 export function chartDoor(m: CycleModel){
   return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
 }
-var HOME_ID = "chart-home";
+var HOME_ID = "chart-home", RATES_ID = "chart-rates";
 function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string, text?: string){
   var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), '<small>' + name + '</small><b>' + (text || yearsText(v)) + '</b>', page ? side : null);
   var c = " stat-row" + (cls ? " " + cls : "");
@@ -321,10 +321,12 @@ var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" 
 function tone(ok: boolean){ return ok ? "t-ok" : "t-odd"; }
 function mark(cls: string, name: string){ return '<span class="stat-tick' + cls + '">' + TICK + '</span>' + name; }
 var TYPICAL_KEY = '<p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>';
+var HEALTH_KEY = '<p class="len-key"><i class="ok"></i>Normal <i class="warn"></i>Attention <i class="odd"></i>Risk</p>';
 var RELATIVE = '<p>Typical is relative: it is read against the market’s own past cycles, not a fixed standard.</p>';
 function healthPage(i: number){
   var s = score(i), t = scoreTier(s.v), n = normOf(pastScores()) as Norm;
-  return '<h3>Health Score</h3><p>' + t + ': ' + s.v + ' out of 100, the share of the ' + s.of + ' results that are Normal. It is judged against the scores of the ' + closedCount() + ' closed cycles: Normal from ' + Math.ceil(n.lo) + ', Risk below ' + Math.max(0, Math.ceil(n.floor)) + ', past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>' + srcBlock([FENCE_SRC]);
+  return '<h3>Health Score</h3><p>' + t + ': ' + s.v + ' out of 100, the share of the ' + s.of + ' results that are Normal. It is judged against the scores of the ' + closedCount() + ' closed cycles: Normal from ' + Math.ceil(n.lo) + ', Risk below ' + Math.max(0, Math.ceil(n.floor)) + ', past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>' +
+    HEALTH_KEY + cycleBars(marketCycles.map(function(_, k){ return score(k).v; }), function(v){ return healthTone(v)[0]; }, [i], "Each cycle\u2019s health score out of 100") + srcBlock([FENCE_SRC]);
 }
 function healthTone(v: number){ return ({ Normal:["ok", "t-ok"], Attention:["warn", "t-warn"], Risk:["odd", "t-odd"] } as Record<string, string[]>)[scoreTier(v)]; }
 function healthRow(i: number){
@@ -377,8 +379,8 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
-  return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) +
+  var r = cycleByName(page.cycles[RATES_ID]) || marketCycles[i], m = r.ongoing ? nowModel : cycleModel(r);
+  return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID], cyclePicker(RATES_ID, r.name)) +
     dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){
@@ -479,13 +481,14 @@ function rateCycle(e: Event){
 }
 export function buildCycleChart(){
   page.range[HOME_ID] = "cycle"; wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
+  page.cycles[RATES_ID] = null; sheetRenderers[RATES_ID] = function(){ drawChart(HOME_ID); };
   document.addEventListener("click", function(e){
     var door = (e.target as Element).closest && (e.target as Element).closest("[data-chart-cycle]"); if (!door) return;
     crossToChart();
-    page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
+    page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle"); page.cycles[RATES_ID] = null;
     drawChart(HOME_ID);
   });
-  need("tab-chart").addEventListener("click", function(){ page.cycles[HOME_ID] = null; drawChart(HOME_ID); });
+  need("tab-chart").addEventListener("click", function(){ page.cycles[HOME_ID] = page.cycles[RATES_ID] = null; drawChart(HOME_ID); });
   document.addEventListener("click", rateCycle, true);
   drawChart(HOME_ID);
 }

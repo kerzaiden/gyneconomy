@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `9478a19` on 2026-10-10. **109 components**, **19 shared patterns**.
+Generated from commit `dde4423` on 2026-10-10. **109 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
@@ -54,7 +54,7 @@ Generated from commit `9478a19` on 2026-10-10. **109 components**, **19 shared p
 |---|---|---|
 | **`calOff`** | `.is-off` | `cycle-analysis.ts:calQuarter`, `cycle-analysis.ts:calYear` |
 | **`countTag`** | `.lab-n` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:insightSec` |
-| **`cycleBars`** | `.len-bars` `.this` | `cycle-analysis.ts:flowPage`, `cycle-analysis.ts:lengthPage`, `cycle-analysis.ts:variationPage` |
+| **`cycleBars`** | `.len-bars` `.this` | `cycle-analysis.ts:flowPage`, `cycle-analysis.ts:healthPage`, `cycle-analysis.ts:lengthPage`, `cycle-analysis.ts:variationPage` |
 | **`drawChart`** | `.home-secs` `.lab-box` `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:openWhen`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder`, `cycle-analysis.ts:wirePicks` |
 | **`filterSheet`** | `.ind-filter` `.ind-filter-head` `.ind-reset` `.ind-show` | `cycle-analysis.ts:drawChart` |
 | **`finder`** | `.lab-find` | `cycle-analysis.ts:drawChart` |
@@ -63,7 +63,7 @@ Generated from commit `9478a19` on 2026-10-10. **109 components**, **19 shared p
 | **`insightSec`** | `.insight-mark` | `cycle-analysis.ts:insightsHome` |
 | **`labItem`** | `.lab-item` `.lab-res` | `cycle-analysis.ts:foldSec` |
 | **`labSec`** | `.lab-cat` | `cycle-analysis.ts:bySystem` |
-| **`mark`** | `.len-key` `.odd` `.ok` | `cycle-analysis.ts:healthRow`, `dial-cycle.ts:renderCycleDial` |
+| **`mark`** | `.len-key` `.odd` `.ok` `.warn` | `cycle-analysis.ts:healthRow`, `dial-cycle.ts:renderCycleDial` |
 | **`markName`** | `.lab-mark` | `cycle-analysis.ts:subSec` |
 | **`periodCal`** | `.cal-key` `.period-cal` | `cycle-analysis.ts:filterSheet` |
 | **`ring`** | `.lab-ring` | — |
@@ -133,7 +133,7 @@ Generated from commit `9478a19` on 2026-10-10. **109 components**, **19 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`controlsBox`** | `.hist-controls` | `history.ts:histControls` |
-| **`cyclePicker`** | `.cycsel-btn` | `history.ts:histControls` |
+| **`cyclePicker`** | `.cycsel-btn` | `cycle-analysis.ts:homeSections`, `history.ts:histControls` |
 | **`headDots`** | `.bh-menu` | `history.ts:histHead` |
 | **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.ts:headDots`, `history.ts:paintHeadMenus` |
 | **`histHead`** | `.band-head` `.bh-mark` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `reading.ts:historyHtml` |
@@ -255,6 +255,7 @@ renderer speaks. Listed most-used first.
 | **`windowYears`** | charts.ts | 6 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`colScale`** | history-charts.ts | 5 places |
+| **`cycleByName`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`factsFrom`** | format.ts | 5 places |
 | **`keyed`** | roster.ts | 5 places |
@@ -273,7 +274,6 @@ renderer speaks. Listed most-used first.
 | **`bandEnds`** | format.ts | 4 places |
 | **`categoriesShown`** | roster.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
-| **`cycleByName`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
 | **`dollars`** | indicators.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |

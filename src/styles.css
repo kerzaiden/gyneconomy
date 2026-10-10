@@ -938,6 +938,7 @@
   .len-bars{ display:block; width:100%; margin:8px 0; }
   .len-bars rect.ok{ fill:var(--good); }
   .len-bars rect.odd{ fill:var(--critical); }
+  .len-bars rect.warn{ fill:var(--gold); }
   .len-bars rect.now{ fill:var(--good); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
   .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
@@ -945,6 +946,7 @@
   .len-key i:first-child{ margin-left:0; }
   .len-key i.ok{ background:var(--good); }
   .len-key i.odd{ background:var(--critical); }
+  .len-key i.warn{ background:var(--gold); }
   .insight-mark{ display:flex; flex:none; color:var(--cat); }
   .insight-mark svg{ width:18px; height:18px; }
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }

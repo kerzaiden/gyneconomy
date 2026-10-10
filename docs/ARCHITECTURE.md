@@ -614,7 +614,9 @@ of the open cycle's Herstory row, a width only the page knows, so they sit exact
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
-- **Interest Rates** (0.6.7, `fed-phases`): the card, for today and any closed cycle. `fedPhases` turns
+- **Interest Rates** (0.6.7, `fed-phases`): the card, for today and any closed cycle. On Analysis it carries the
+  histories' `cyclePicker` under its own key, `chart-rates`, whose renderer redraws the home; the key resets to null
+  (the cycle shown) whenever Analysis opens or a Cycle Analysis door sets its cycle. `fedPhases` turns
   `fedMoves` (the Backfill's
   months with a Fed move, netted: the New York Fed's discount rate `M13009USM156NNBR` before 1950, the discount rate
   `INTDSRUSM193N` to 1982-09-27, `DFEDTAR` to 2008-12-15, `DFEDTARU` since, each join a fresh walk so no move is

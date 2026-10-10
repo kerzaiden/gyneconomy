@@ -929,6 +929,7 @@
   .len-bars{ display:block; width:100%; margin:8px 0; }
   .len-bars rect.ok{ fill:var(--good); }
   .len-bars rect.odd{ fill:var(--critical); }
+  .len-bars rect.warn{ fill:var(--gold); }
   .len-bars rect.now{ fill:var(--good); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
   .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
@@ -936,6 +937,7 @@
   .len-key i:first-child{ margin-left:0; }
   .len-key i.ok{ background:var(--good); }
   .len-key i.odd{ background:var(--critical); }
+  .len-key i.warn{ background:var(--gold); }
   .insight-mark{ display:flex; flex:none; color:var(--cat); }
   .insight-mark svg{ width:18px; height:18px; }
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
@@ -48530,8 +48532,8 @@
       open: !!m.ongoing
     }) + LEGEND + footnoteHtml(m);
   }
-  function fedEnvironment(m, host, range) {
-    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m, host, range));
+  function fedEnvironment(m, host, range, pick2) {
+    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + (pick2 || "") + ratesCard(m, host, range));
   }
   function insightCirculation() {
     var vel = m2vHistory, n = vel.length;
@@ -49289,6 +49291,7 @@
     return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
   }
   var HOME_ID = "chart-home";
+  var RATES_ID = "chart-rates";
   function statRow(name, v, of, side2, page2, cls, text) {
     var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), "<small>" + name + "</small><b>" + (text || yearsText(v)) + "</b>", page2 ? side2 : null);
     var c = " stat-row" + (cls ? " " + cls : "");
@@ -49331,10 +49334,15 @@
     return '<span class="stat-tick' + cls + '">' + TICK + "</span>" + name;
   }
   var TYPICAL_KEY = '<p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>';
+  var HEALTH_KEY = '<p class="len-key"><i class="ok"></i>Normal <i class="warn"></i>Attention <i class="odd"></i>Risk</p>';
   var RELATIVE = "<p>Typical is relative: it is read against the market’s own past cycles, not a fixed standard.</p>";
   function healthPage(i) {
     var s = score(i), t = scoreTier(s.v), n = normOf(pastScores());
-    return "<h3>Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of the " + s.of + " results that are Normal. It is judged against the scores of the " + closedCount() + " closed cycles: Normal from " + Math.ceil(n.lo) + ", Risk below " + Math.max(0, Math.ceil(n.floor)) + ", past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>" + srcBlock([ FENCE_SRC ]);
+    return "<h3>Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of the " + s.of + " results that are Normal. It is judged against the scores of the " + closedCount() + " closed cycles: Normal from " + Math.ceil(n.lo) + ", Risk below " + Math.max(0, Math.ceil(n.floor)) + ", past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>" + HEALTH_KEY + cycleBars(marketCycles.map(function(_, k) {
+      return score(k).v;
+    }), function(v) {
+      return healthTone(v)[0];
+    }, [ i ], "Each cycle’s health score out of 100") + srcBlock([ FENCE_SRC ]);
   }
   function healthTone(v) {
     return {
@@ -49411,8 +49419,8 @@
     }).join("");
   }
   function homeSections(i) {
-    var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
-    return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
+    var r = cycleByName(page.cycles[RATES_ID]) || marketCycles[i], m = r.ongoing ? nowModel : cycleModel(r);
+    return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID], cyclePicker(RATES_ID, r.name)) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -49571,15 +49579,20 @@
     buildFind();
     wireCatDoors();
     wirePicks();
+    page.cycles[RATES_ID] = null;
+    sheetRenderers[RATES_ID] = function() {
+      drawChart(HOME_ID);
+    };
     document.addEventListener("click", function(e) {
       var door = e.target.closest && e.target.closest("[data-chart-cycle]");
       if (!door) return;
       crossToChart();
       page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
+      page.cycles[RATES_ID] = null;
       drawChart(HOME_ID);
     });
     need("tab-chart").addEventListener("click", function() {
-      page.cycles[HOME_ID] = null;
+      page.cycles[HOME_ID] = page.cycles[RATES_ID] = null;
       drawChart(HOME_ID);
     });
     document.addEventListener("click", rateCycle, true);

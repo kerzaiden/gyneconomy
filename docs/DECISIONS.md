@@ -612,6 +612,11 @@ settles it; none is open after V668.
   Elements.** A past cycle reaches Analysis only from its own cycle page (Cycle Analysis), which opens with that
   cycle's name and years, and Interest Rates follows the cycle shown. Keren chose current by default
   because a cycle picked on Elements had left Analysis showing it, unnamed, after Back. (0.9.31)
+- **Past cycles are reached on Analysis inside the components, not by a cycle header.** Interest Rates carries the
+  histories' own cycle picker and changes only itself, back to the cycle shown when Analysis reopens; the Health
+  Score's page shows every cycle's score as bars in its tier's colour, as Cycle length and Cycle variation do. Keren
+  rejected a header over the whole page as one more thing to read: a reader compares a cycle's rates or health
+  without leaving the page. (Rates Picker)
 - **Each cycle in Analysis shows its growth and its prices, totalled the same way over the same closed years,
   side by side on one line.** Keren found the comparison worth a place per cycle in Analysis. (V276)
 - **Each cycle carries her chart, read like a blood test: every reading averaged over the cycle and sorted into
@@ -685,7 +690,7 @@ settles it; none is open after V668.
   open cycle's length is Typical until it passes the fence. (0.8.3, 0.8.12, Oct 6–9, 2026)
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
-  against.** Only its colour sets it apart, and the detail of what it is judged against (18 closed cycles) need not
+  against, with every cycle's score beside it.** Only its colour sets it apart, and the detail of what it is judged against (18 closed cycles) need not
   show every time. The cycle pages show the same tile, ring, score and tier, inside their Cycle Analysis card
   only, so it looks as it does on Analysis; it opens nothing of its own there, since the card it sits in is the
   door. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
