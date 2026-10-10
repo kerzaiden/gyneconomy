@@ -638,15 +638,15 @@ emotion at the closing month, its years, and what followed a year later. Every l
   the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`, and the legend reads Easing, Tightening, Rates, Prices for every series. `rateSeries` is
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
   1914 to 1954-06) before. The note under the legend is the cycle's `rates`
-  story, with `{peak}` and `{month}` filled from `cyclePeak`, after the sparkle (`.ai-mark`).
+  story, with `{peak}` and `{month}` filled from `cyclePeak`.
 - **AI Insights** (0.6.5, AI Insights Everywhere, `ai-insights`): no page of its own. It lends three parts to
   Cycle analysis through `aiParts` (filled by `lendAiParts` at boot, since `ai-insights` sits a layer above
   `cycle-analysis` and may not be imported by it): `riskFactors` (every result Cycle Statistics reads as Risk,
   `riskLabs`, the one judgement, each placed against its own record by `rankToDate`: today's latest value against
   all of it on the open cycle, a closed cycle's value against the record to its end), `closestMoments` (the open
   cycle only, each moment with its two-year season strip then and now, and the method behind More details) and
-  `elementInsight` (the open cycle's reading of the element the filter picks, drawn inside `.labs` above the
-  results). The cycle page's first card is `storyCard`, the Cycle Story: the lede (Claude's on the open cycle, the
+  `elementInsight` (the open cycle's reading of the element the filter picks, drawn inside `.labs` below the
+  results and above More details). The cycle page's first card is `storyCard`, the Cycle Story: the lede (Claude's on the open cycle, the
   cycle's `blurb` on a closed one) clamped to three lines, and `wireStory` shows "Read more" only while the text
   overflows (measured when it has a height, and again through a `ResizeObserver`, since a past cycle's page is drawn
   hidden). Its words are data, `src/data/ai-insights.json` (`lede`, `elements`, `echoIntro`, `asOf`), and carry no

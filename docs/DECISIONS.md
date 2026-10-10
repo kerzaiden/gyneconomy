@@ -98,16 +98,16 @@ settles it; none is open after V668.
 - **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
   inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
 - **AI Insights is not a page but a kind of text: Claude's dated reading sits inside the component it is about,
-  marked with the sparkle, and is titled AI Insights where it is a container.** One page held the cycle's story,
+  titled AI Insights with the sparkle where it is a container.** One page held the cycle's story,
   rates, economy, market, risks and closest moments, while Analysis showed the same subjects without that reading,
   so the two collided. Each subject now lives in one place: the cycle's rates story closes Interest Rates on
   Analysis (the general account of tightening and easing went to the Federal funds rate page, where rates are
   explained), Risk Factors stands on Analysis above Elements, Closest Moments below it, and each element, picked
-  from the filter, opens on its own AI Insights under the filter, written about that element's readings. It
+  from the filter, carries its own AI Insights below its readings and above More details, written about them. It
   carries no figures, since the page beneath shows them: the page is part of the story. Claude writes it: Keren
   chose "Claude, dated" over a live Generate button, which would change the artifact's grant, and over rule-built
-  sentences, which the name would oversell. The element readings, the by-line ("Written by Claude from the app's
-  data of …") and Closest Moments are about today, so they stand on the open cycle only. Closest Moments is
+  sentences, which the name would oversell. The element readings, their date ("Updated 9 October 2026"; the
+  sparkle already says it is AI, and which AI does not matter) and Closest Moments are about today, so they stand on the open cycle only. Closest Moments is
   computed: the last two years of today's eight market and economy readings matched against every two-year run
   since 1970 (analog matching on a path; the readings, equal weights and window are Claude's), one moment per
   episode, with its season and mood then, what is alike and what is apart. Resemblance only, never what followed.
@@ -116,7 +116,7 @@ settles it; none is open after V668.
   Everywhere)
 - **Every cycle page opens on the Cycle Story, the book its mark: three lines, then "Read more" expands it in place
   to the whole story.** The narrative belongs to the cycle page and is short enough to read there, so it opens no
-  page. The open cycle's story is Claude's dated lede, its by-line shown when expanded; a closed cycle's is its
+  page. The open cycle's story is Claude's dated lede, its date shown when expanded; a closed cycle's is its
   `blurb`. The book, not the sparkle, because the story is the cycle's and the sparkle marks Claude's readings.
   "Read more" shows only when the text runs past three lines. (AI Insights Everywhere)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
@@ -1644,8 +1644,8 @@ settles it; none is open after V668.
   in a light grey border, since easing is not always the default), Tightening (a grey square in the same border), Rates, Prices
   (short lines in their colours). "Rates" stands for the federal funds rate and, before it, the discount rate, to
   save room. Under it, on the app's one grey, the cycle's own rates story, one or two short lines on what the
-  rates did (`rates` in `marketCycles`), marked as Claude's with the sparkle and ending in Learn more: a reader who
-  sees the cycle's rates expects its story beside them. The general account of tightening and easing is a card on
+  rates did (`rates` in `marketCycles`), ending in Learn more, with no sparkle, which beside it said nothing: a
+  reader who sees the cycle's rates expects its story beside them. The general account of tightening and easing is a card on
   the Federal funds rate page, which reads the rate across every cycle (0.9.44, Cycle Insights, AI Insights
   Everywhere); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's

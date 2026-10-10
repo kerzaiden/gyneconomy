@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f9be03e` on 2026-10-10. **108 components**, **18 shared patterns**.
+Generated from commit `f608105` on 2026-10-10. **108 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -102,7 +102,7 @@ Generated from commit `f9be03e` on 2026-10-10. **108 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`footnoteHtml`** | `.ai-mark` `.fp-note` | `fed-phases.ts:ratesCard` |
+| **`footnoteHtml`** | `.fp-note` | `fed-phases.ts:ratesCard` |
 
 ## format.ts
 

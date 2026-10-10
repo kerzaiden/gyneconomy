@@ -143,7 +143,7 @@ function pathStrip(label: string, end: number){
   return '<span class="ai-path"><small>' + label + '</small>' + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + '</span>';
 }
 function para(html: string){ return '<p class="ai-p">' + html + '</p>'; }
-function byLine(cls: string){ return '<p class="ai-by' + cls + '">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>'; }
+function byLine(cls: string){ return '<p class="ai-by' + cls + '">Updated ' + asOfWords() + '.</p>'; }
 function storyOf(m: CycleModel){ return m.ongoing ? AI.lede : m.era.blurb; }
 export function storyCard(m: CycleModel){
   return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(m), "ai-clamp") + (m.ongoing ? byLine(" story-by") : "") + learnMore(' data-story-more aria-expanded="false"', "Read more"));

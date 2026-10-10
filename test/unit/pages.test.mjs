@@ -153,7 +153,7 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
   const draw = c => { page.cycles['chart-home'] = c.name; sheetRenderers['chart-home'](); };
   assert.equal(story().querySelector('.trend-head').textContent, 'Cycle Story');
   assert.equal(story().querySelector('.ai-clamp').textContent, AI.lede);
-  assert.match(story().querySelector('.story-by').textContent, /^Written by Claude from the app’s data of \d+ \w+ 20\d\d\.$/);
+  assert.match(story().querySelector('.story-by').textContent, /^Updated \d+ \w+ 20\d\d\.$/);
   draw(nowModel.era);
   assert.deepEqual(heads(), ['Cycle Statistics', 'Interest Rates', 'Risk Factors', 'Elements', 'Closest Moments']);
   assert.equal(home.querySelectorAll('.ai-echo').length, 3);
@@ -164,7 +164,7 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
   assert.deepEqual(broken(home.innerHTML), []);
   for (const k of Object.keys(AI.elements)) {
     home.querySelector('.insight-row[data-ind-cat="' + k + '"]').click(); sheetRenderers['sheet-find']();
-    const box = document.querySelector('#sheet-find .labs > .trend-card');
+    const box = document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card');
     assert.ok(box, k);
     assert.equal(box.querySelector('.trend-head').textContent, 'AI Insights', k);
     assert.equal(box.querySelector('.ai-p').textContent, AI.elements[k], k);
@@ -180,7 +180,7 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
     assert.equal(home.querySelectorAll('.ai-rank').length, named.length, c.name + ' risks');
     assert.deepEqual(broken(home.innerHTML), [], c.name);
     home.querySelector('.insight-row[data-ind-cat="weather"]').click(); sheetRenderers['sheet-find']();
-    assert.equal(document.querySelector('#sheet-find .labs > .trend-card'), null, c.name + ' has no dated insight');
+    assert.equal(document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card'), null, c.name + ' has no dated insight');
   }
   renderDiagnosis(nowModel);
   page.cycles['chart-home'] = null; sheetRenderers['chart-home']();

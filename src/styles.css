@@ -618,8 +618,6 @@
   .ai-by.story-by{ display:none; margin:10px 0 6px; }
   .trend-card.is-open .story-by{ display:block; }
   .trend-card.is-open .trend-text.ai-clamp{ display:block; -webkit-line-clamp:unset; line-clamp:none; overflow:visible; }
-  .ai-mark{ display:inline-flex; width:16px; height:16px; margin-right:6px; vertical-align:-2px; color:var(--accent); }
-  .ai-mark svg{ width:100%; height:100%; }
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
