@@ -67,28 +67,14 @@ export function rovingKeys(box: Element, sel: string, onAttr: string, vertical?:
   sync();
 }
 export function trendText(t: string, cls?: string){ return '<span class="trend-text' + (cls ? " " + cls : "") + '">' + t + '</span>'; }
-function trendHead(mark: string, head: string, end: string){ return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(head) + end + '</span>'; }
+export function trendHead(mark: string, head: string, end: string){ return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(head) + end + '</span>'; }
 function trendCard(tag: string, cls: string, attrs: string, mark: string, head: string, end: string, body: string){
   return '<' + tag + ' class="trend-card cat-mood' + cls + '"' + attrs + '>' + trendHead(mark, head, end) + body + '</' + tag + '>';
 }
-export function trendDoor(open: string, title: string, mark: string, head: string, body: string){
-  return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark, head, "", body);
+export function trendDoor(open: string, title: string, mark: string, head: string, body: string, attrs?: string){
+  return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"' + (attrs || ""), mark, head, "", body);
 }
-export function learnMore(attrs?: string, label?: string){ return attrs ? '<button type="button" class="learn-more"' + attrs + '>' + (label || "Learn more") + '</button>' : '<span class="learn-more">Learn more</span>'; }
-export function wireClamps(host: HTMLElement){
-  host.querySelectorAll<HTMLElement>("[data-story-more]").forEach(function(btn){
-    var card = btn.closest<HTMLElement>(".trend-card"), text = card && card.querySelector<HTMLElement>(".ai-clamp");
-    if (!card || !text) return;
-    var c = card, t = text;
-    var fit = function(){ if (t.clientHeight) btn.hidden = !(t.scrollHeight > t.clientHeight + 1 || c.classList.contains("is-open") || !!c.querySelector(".story-by")); };
-    fit();
-    if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(t);
-    btn.addEventListener("click", function(){
-      var open = c.classList.toggle("is-open");
-      btn.textContent = open ? "Read less" : "Read more"; btn.setAttribute("aria-expanded", String(open));
-    });
-  });
-}
+export function learnMore(attrs?: string, label?: string){ return attrs ? '<button type="button" class="learn-more"' + attrs + '>' + (label || "Learn more") + '</button>' : '<span class="learn-more">' + (label || "Learn more") + '</span>'; }
 export function trendBox(mark: string, head: string, body: string){ return trendCard("section", " is-box", "", mark, head, "", body); }
 export function trendSoon(mark: string, head: string, body: string){
   return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);

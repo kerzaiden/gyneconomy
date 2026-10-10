@@ -142,13 +142,16 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
-test('the dial is titled by its cycle, its legend speaks in signs, and the Cycle Story under it tells the cycle', () => {
+test('the dial is titled by its cycle, its legend speaks in signs, and the Weather Report under it opens today\u2019s edition', () => {
   assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
   const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
   ['Prices &lt; 1%', 'Prices \u2264 3%', 'Prices &gt; 3%', 'Prices \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
   const first = document.querySelector('#diagnosis .trend-card');
-  assert.equal(first.querySelector('.trend-head').textContent, 'Cycle Story');
-  assert.match(first.textContent, /2022 correction.*priced for a boom/);
+  assert.equal(first.querySelector('.trend-head').textContent, 'Weather Report');
+  assert.equal(first.dataset.open, 'sheet-report');
+  assert.equal(first.querySelector('.wr-head').textContent, now.report.headline);
+  assert.equal(first.querySelector('.ai-clamp').textContent, now.report.lede);
+  assert.match(first.querySelector('.wr-by').textContent, /^Updated \d+ \w+ 20\d\d\.$/);
   assert.equal(document.querySelector('[data-open="sheet-ai-insights"]'), null);
 });
 
@@ -288,7 +291,7 @@ test('a past cycle shows its own record on the Diagnosis, and Back restores toda
   assert.equal(chevs(), 0);
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(heads(), 'Cycle Story');
+  assert.equal(heads(), 'Weather Report');
   assert.equal(document.querySelector('#diagnosis > .more-row[data-chart-cycle]').textContent, 'Cycle Analysis');
   assert.equal(chevs(), 0);
   assert.equal(lede(), ui.eraOpen.blurb);

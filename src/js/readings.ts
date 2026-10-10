@@ -3,9 +3,10 @@ import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, HOLD_BAND, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, REPORT_ASOF, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf } from "./data.ts";
 import { cpiNow, growthWord, inflationFigure, nowModel, potentialGap } from "./model.ts";
 import type { ModelReading } from "./model.ts";
+import type { Report } from "./data.ts";
 import { creditReadings } from "./credit.ts";
 
 type SeriesRecord<P> = { now: P; lo: P; hi: P };
@@ -636,9 +637,14 @@ function fieldsKept(v: object, target: object){
   var t = target as Record<string, unknown>;
   return Object.entries(v).every(function(e){ return e[0] === "rows" || (t[e[0]] === undefined ? typeof e[1] === "string" : typeof e[1] === typeof t[e[0]] && (typeof e[1] !== "object" || e[1] === null)); });
 }
+function proseOk(t: unknown){ return typeof t === "string" && t.length > 0 && (t.match(/\]\(([^)]*)\)/g) || []).every(function(m){ return /^\]\(sheet-[a-z0-9-]+\)$/.test(m); }); }
+function reportOk(v: Partial<Report>){
+  var e = (v.elements || null) as Record<string, unknown> | null;
+  return [v.headline, v.lede, v.story].every(proseOk) && e !== null && Object.keys(now.report.elements).every(function(k){ return proseOk((e as Record<string, unknown>)[k]); });
+}
 function vixAsOf(){ return String(now.sentiment.rows[0].sub || ""); }
 function coincidentAsOf(){ return coincident.map(function(c){ return periodIso(String(c.metricSub || "")); }).sort().pop() || ""; }
-function periodIso(sub: string){
+export function periodIso(sub: string){
   var q = /Q([1-4]) (\d{4})$/.exec(sub), m = /([A-Z][a-z]{2}) (\d{4})$/.exec(sub), i = m ? MONTHS_SHORT.indexOf(m[1]) : -1;
   return q ? q[2] + "-" + ("0" + ((+q[1] - 1) * 3 + 1)).slice(-2) + "-01" : m && i >= 0 ? m[2] + "-" + ("0" + (i + 1)).slice(-2) + "-01" : "";
 }
@@ -695,6 +701,7 @@ export function bootReadingRegistry(){
       }, onOpen: true
     },
     vix3mClose: { kind: "scalar", band: [5, 100], fileAsOf: vixAsOf, set: function(v: number){ now.vix3mClose = v; }, onOpen: true },
+    weatherReport: { kind: "object", words: true, fileAsOf: function(){ return REPORT_ASOF; }, ok: reportOk, set: function(v: Partial<Report>){ now.report = v as Report; } },
     capeValue: {
       kind: "scalar", band: [4, 60], fileAsOf: capeAsOf,
       set: function(v: number){

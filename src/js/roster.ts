@@ -1,5 +1,5 @@
 import { qAtIndex } from "./format.ts";
-import { GYN, LIVE_NAMES } from "./live.ts";
+import { GYN, LIVE_NAMES, READINGS } from "./live.ts";
 import { bagSvg, debtSvg, homeSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { confidenceHistory, payrollsHistory, retailHistory, consumerCreditHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
@@ -61,7 +61,7 @@ function checkRoster(){
     splitRun(R, prev, runs, bad);
     (R.live || []).forEach(function(n){ live[n] = 1; if (LIVE_NAMES.indexOf(n) === -1) bad.push(R.id + ": no live reading " + n); });
   });
-  LIVE_NAMES.forEach(function(n){ if (!live[n]) bad.push(n + ": arrives live and no reading shows it"); });
+  LIVE_NAMES.forEach(function(n){ if (!live[n] && !READINGS[n].words) bad.push(n + ": arrives live and no reading shows it"); });
   if (bad.length && window.console) console.warn("roster: " + bad.join(", "));
 }
 export function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b){ return a.shown - b.shown; }); }

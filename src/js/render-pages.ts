@@ -1,10 +1,10 @@
-import { atMonth, auxStat, factsFrom, hiCard, highlightsHtml, lede, metered, qLabel, srcBlock, stateOf } from "./format.ts";
+import { atMonth, auxStat, factsFrom, hiCard, highlightsHtml, isoDay, lede, metered, qLabel, srcBlock, stateOf } from "./format.ts";
 import { addSources, appendSvgMarkup, byId, expandBtn, need, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPath, colWidth, divergeChart, fitLine, histFrame, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { curveNoteFull, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { curveAsOf, curveNoteFull, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cycleQtrIdx, cycleSlice } from "./model.ts";
 import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, timelineWindow } from "./history.ts";
 import { curveVerdict, fearCurve, horizonInfoHtml, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
@@ -180,6 +180,7 @@ function defineSpreads(){
   addSources(series["3m"].sources); addSources(series["2y"].sources);
   defineReading("sheet-sign-spreads", {
     face:function(){ var s = horizonRead.spread; return [(s < 0 ? "\u2212" : "+") + Math.abs(s).toFixed(2), horizonRead.word]; },
+    asOf:curveAsOf,
     info:function(){ return horizonInfoHtml(spreadPick, spreadDetail(spreadPick)); },
     controls:function(){ return histControls(key, { depth:Math.floor(hznData().length / 4) }, hznY0); },
     history:function(){
@@ -306,6 +307,7 @@ function defineVolatility(){
   var key = "fear-range", VOL_Y0 = parseInt(volatilityHistory[0].m.slice(0, 4), 10);
   defineReading("sheet-sign-sentiment", {
     face:function(){ return [now.vixRow!.flagValue, volatilityTag().text]; },
+    asOf:function(){ return isoDay(String(now.vixRow!.sub || "")); },
     info:volatilityDetailHtml,
     controls:function(){ return histControls(key, { series:volatilityHistory }, VOL_Y0); },
     history:function(){

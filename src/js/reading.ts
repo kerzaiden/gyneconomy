@@ -15,6 +15,7 @@ export type Reading = {
   history: (W: number) => History;
   insight: () => string;
   aside?: () => string;
+  asOf?: () => string;
   src?: Src[];
 };
 export var READING: Record<string, Reading> = {};
