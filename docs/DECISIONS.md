@@ -691,9 +691,8 @@ settles it; none is open after V668.
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
   against, with every cycle's score beside it.** Only its colour sets it apart, and the detail of what it is judged against (18 closed cycles) need not
-  show every time. The cycle pages show the same tile, ring, score and tier, inside their Cycle Analysis card
-  only, so it looks as it does on Analysis; it opens nothing of its own there, since the card it sits in is the
-  door. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
+  show every time. It shows only in Cycle Statistics; a cycle page reaches it through the
+  Cycle Analysis row. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
 - **The interest-rate container is titled Interest Rates, on Analysis,** because most people recognize "interest
   rates"; "Environment" made the head too long. (0.8.12, Oct 7 and 9, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
