@@ -104,11 +104,13 @@ settles it; none is open after V668.
   Analysis (the general account of tightening and easing went to the Federal funds rate page, where rates are
   explained), Risk Factors stands on Analysis above Elements, Closest Moments below it, and each element, picked
   from the filter, carries its own AI Insights below its readings and above More details, written about them,
-  for the cycle on screen, its years and quarters included: the reading belongs to the cycle (Keren). It
+  for the cycle on screen, its years and quarters included: the reading belongs to the cycle (Keren), and every
+  cycle, open or closed, has one for each element it reads; an element with no reading in a cycle has none. It
   carries no figures, since the page beneath shows them: the page is part of the story. Claude writes it: Keren
   chose "Claude, dated" over a live Generate button, which would change the artifact's grant, and over rule-built
-  sentences, which the name would oversell. The element readings, their date ("Updated 9 October 2026"; the
-  sparkle already says it is AI, and which AI does not matter) and Closest Moments are about today, so they stand on the open cycle only. Closest Moments is
+  sentences, which the name would oversell. Each reading carries its date ("Updated 9 October 2026"; the
+  sparkle already says it is AI, and which AI does not matter); a closed cycle's is written in the past tense from
+  its averages and its own story. Closest Moments is about today, so it stands on the open cycle only. Closest Moments is
   computed: the last two years of today's eight market and economy readings matched against every two-year run
   since 1970 (analog matching on a path; the readings, equal weights and window are Claude's), one moment per
   episode, with its season and mood then, what is alike and what is apart. Resemblance only, never what followed.

@@ -140,7 +140,7 @@ test('every history chart is attached to its readout, so hover and keys reach it
   assert.deepEqual(loose, []);
 });
 
-test('the Cycle Story tells every cycle; Analysis ranks its risk factors above Elements, and on the open cycle adds Closest Moments below them and each element its own AI Insights', async () => {
+test('the Cycle Story tells every cycle; Analysis ranks its risk factors above Elements, on the open cycle adds Closest Moments below them, and every element of every cycle carries its own AI Insights', async () => {
   const { echoes } = await import('../../src/js/ai-insights.ts');
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   const { cycleModel, nowModel } = await import('../../src/js/model.ts');
@@ -162,14 +162,18 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
   assert.ok(risks.length > 0);
   assert.deepEqual([...home.querySelectorAll('.ai-rank span:first-child')].map(s => s.textContent).sort(), risks);
   assert.deepEqual(broken(home.innerHTML), []);
-  for (const k of Object.keys(AI.elements)) {
-    home.querySelector('.insight-row[data-ind-cat="' + k + '"]').click(); sheetRenderers['sheet-find']();
-    const box = document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card');
-    assert.ok(box, k);
-    assert.equal(box.querySelector('.trend-head').textContent, 'AI Insights', k);
-    assert.equal(box.querySelector('.ai-p').textContent, AI.elements[k], k);
-    assert.doesNotMatch(AI.elements[k], /\d+(\.\d+)?%|\d×/, k + ' carries no figure');
-  }
+  const insights = c => {
+    const rows = [...home.querySelectorAll('.insight-row')].map(r => r.dataset.indCat), mine = AI.elements[c.name];
+    assert.deepEqual(Object.keys(mine).sort(), rows.slice().sort(), c.name + ' writes one insight per element it reads');
+    for (const k of rows) {
+      home.querySelector('.insight-row[data-ind-cat="' + k + '"]').click(); sheetRenderers['sheet-find']();
+      const box = document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card');
+      assert.equal(box.querySelector('.trend-head').textContent, 'AI Insights', c.name + ' ' + k);
+      assert.equal(box.querySelector('.ai-p').textContent, mine[k], c.name + ' ' + k);
+      assert.doesNotMatch(mine[k], /\d+(\.\d+)?\s?(%|×|pt)|\d\.\d/, c.name + ' ' + k + ' carries no figure');
+    }
+  };
+  insights(nowModel.era);
   Object.assign(page.mode, { 'sheet-find': 'quarters' }); page.when['sheet-find'] = (nowModel.era.from + 1) + ' Q2'; page.cycles['sheet-find'] = nowModel.era.name;
   sheetRenderers['sheet-find']();
   assert.ok(document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card'), 'a quarter of the open cycle keeps its AI Insights');
@@ -183,8 +187,7 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
     const named = riskLabs(marketCycles.indexOf(c)).map(l => l.name).filter(n => home.querySelector('.ai-pic').textContent.includes(n));
     assert.equal(home.querySelectorAll('.ai-rank').length, named.length, c.name + ' risks');
     assert.deepEqual(broken(home.innerHTML), [], c.name);
-    home.querySelector('.insight-row[data-ind-cat="weather"]').click(); sheetRenderers['sheet-find']();
-    assert.equal(document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card'), null, c.name + ' has no dated insight');
+    insights(c);
   }
   renderDiagnosis(nowModel);
   page.cycles['chart-home'] = null; sheetRenderers['chart-home']();

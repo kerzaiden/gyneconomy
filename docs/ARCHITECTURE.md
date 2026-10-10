@@ -645,7 +645,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   `riskLabs`, the one judgement, each placed against its own record by `rankToDate`: today's latest value against
   all of it on the open cycle, a closed cycle's value against the record to its end), `closestMoments` (the open
   cycle only, each moment with its two-year season strip then and now, and the method behind More details) and
-  `elementInsight` (the open cycle's reading of the element the filter picks, on the cycle or any of its years and quarters, drawn inside `.labs` below the
+  `elementInsight` (the reading of the element the filter picks for the cycle on screen (`elements` is keyed by cycle, then element), on the cycle or any of its years and quarters, drawn inside `.labs` below the
   results and above More details). The cycle page's first card is `storyCard`, the Cycle Story: the lede (Claude's on the open cycle, the
   cycle's `blurb` on a closed one) clamped to three lines, and `wireStory` shows "Read more" only while the text
   overflows (measured when it has a height, and again through a `ResizeObserver`, since a past cycle's page is drawn

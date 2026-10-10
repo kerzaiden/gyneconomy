@@ -159,8 +159,8 @@ export function wireStory(host: HTMLElement){
     (btn as HTMLElement).textContent = open ? "Read less" : "Read more"; (btn as HTMLElement).setAttribute("aria-expanded", String(open));
   });
 }
-export function elementInsight(cat: string){
-  var t = (AI.elements as Record<string, string>)[cat];
+export function elementInsight(cat: string, cycle: string){
+  var t = ((AI.elements as Record<string, Record<string, string>>)[cycle] || {})[cat];
   return t ? trendBox(sparkleSvg(), "AI Insights", para(t) + byLine(" insight-by")) : "";
 }
 export function closestMoments(){
