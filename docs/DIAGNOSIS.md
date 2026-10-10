@@ -65,6 +65,23 @@ the lining is cut and shedding begins: write-offs, defaults, the season turning 
 shedding follows progesterone's fall, not its rise. The doctor's question at every visit is how much
 lining is held on borrowed terms, how much reserve is left, and whether anything is arriving to renew it.
 
+## How a cycle breaks
+
+Borrowed money is invested ahead of knowing whether it will pay, as the body spends blood and energy on a lining
+before knowing whether there will be a pregnancy. The loan has to earn more than it costs. While rates are low and
+credit is easy, more of it is taken on. Then the Fed tightens against rising prices, and every loan that is
+renewed costs more. The break does not come when debt exceeds income (a mortgage is many years of income) but
+when the payments outgrow what income can carry: money that went to spending goes to interest instead. One
+borrower's spending is another's income, so the squeeze spreads, spending slows (the premenstrual turn), the
+weakest borrowers default, lenders tighten, and the lining sheds. The doctor reads it in this order: Pressure
+(what money costs), Stress (what is owed against income), Desire (spending giving way), Default risk (the
+bleeding).
+
+**A government is not a household.** The US borrows in the currency it issues and the world holds as reserve, so
+it renews its debt rather than repaying it and does not default in its own currency; its strain shows instead as
+interest taking a larger share of the budget, and as the risk of inflating the debt away. The cycle's breaks are
+households' and companies'; the government's debt is the chronic strain under them.
+
 ## The rules
 
 1. **Open with what matters now, in one sentence.** Name the one or two readings that set the tone.
