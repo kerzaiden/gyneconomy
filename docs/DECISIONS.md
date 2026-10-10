@@ -97,30 +97,32 @@ settles it; none is open after V668.
   In the box's colour the rest of the ring could not be seen. (0.6.5)
 - **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
   inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
-- **AI Insights is not a page but a kind of text: Claude's dated reading sits inside the component it is about,
-  marked by the sparkle where it is a container.** One page held the cycle's story,
-  rates, economy, market, risks and closest moments, while Analysis showed the same subjects without that reading,
-  so the two collided. Each subject now lives in one place: the cycle's rates story closes Interest Rates on
-  Analysis (the general account of tightening and easing went to the Federal funds rate page, where rates are
-  explained), Risk Factors stands on Analysis above Elements, and each element, picked
-  from the filter, carries its own insights below its readings and above More details, titled by the element (Weather
-  Insights, Mood Insights: the sparkle already says it is AI, and one title on every element left the reader
-  unsure which they were reading), three lines with Read more like the Cycle Story, written about them,
-  for the cycle on screen, its years and quarters included: the reading belongs to the cycle (Keren), and every
-  cycle, open or closed, has one for each element it reads; an element with no reading in a cycle has none. It
-  carries no figures, since the page beneath shows them: the page is part of the story. Claude writes it: Keren
-  chose "Claude, dated" over a live Generate button, which would change the artifact's grant, and over rule-built
-  sentences, which the name would oversell. Each reading carries its date ("Updated 9 October 2026"; the
-  sparkle already says it is AI, and which AI does not matter); a closed cycle's is written in the past tense from
-  its averages and its own story. Closest Moments, today matched to past two-year paths, is retired: Keren
-  wants the moments that resemble today found by what needs attention, the way financial media say "highest
-  since", and Risk Factors' since-dates now say it without a second matching to explain. (0.6.5, 0.6.6, AI Insights
-  Everywhere, Element Insights)
-- **Every cycle page opens on the Cycle Story, the book its mark: three lines, then "Read more" expands it in place
-  to the whole story.** The narrative belongs to the cycle page and is short enough to read there, so it opens no
-  page. The open cycle's story is Claude's dated lede, its date shown when expanded; a closed cycle's is its
-  `blurb`. The book, not the sparkle, because the story is the cycle's and the sparkle marks Claude's readings.
-  "Read more" shows only when the text runs past three lines. (AI Insights Everywhere)
+- **Claude's reading of the market is one Weather Report, on every cycle page, and nowhere else.** People do not
+  read insights about a past cycle cut off from the present, and insights scattered one per element are not read at
+  all; what they come back for is today's story told like financial news, with a door into each reading that makes
+  them curious. So the report is one text across the six elements (Weather: the economy, the market and the season;
+  Activity, Mood, Desire, Circulation, Stress), with each reading it names linking to its page, and Risk Factors
+  inside it. The element insights of every cycle are gone, and so is the AI Insights sparkle. The cycle's story is
+  folded in rather than kept as a second card, so every cycle page keeps one layout: today's report is the dated
+  edition (headline, date and lede, then Risk Factors, the cycle's story and the six elements), and a closed cycle's is
+  the short version, its own Risk Factors and its story, from data the app already holds. Closest Moments stays
+  retired: the moments that resemble today are found by what needs attention, the way financial media say "highest
+  since", which Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report)
+- **The Weather Report card opens every cycle page, the weather its mark: its headline, its date under it, three lines
+  of its lede, then "Read the report", and the whole card opens the report's page.** A report is a page to read, not a
+  paragraph to unfold. The date stands alone, never "Updated": a report is plainly as of its date. On the card it is short, the way a
+  feed dates a post ("Oct 9", with the year only when it is not this one); the report's page gives it in full. Risk
+  Factors follow the lede, then the story sets the scene for the elements, and the lede carries only what moved and
+  never restates the story. On a closed cycle the headline is the cycle's name, the lines are its story and the date
+  its years, so the card is the same card. (Weather Report)
+- **A new edition is written only when there is news, checked every weekday evening, by a scheduled Claude routine
+  that publishes it without review.** Of the readings only the Treasury curve, Fear and CAPE move on an ordinary
+  weekday and the Fed eight times a year, so a daily rewrite would repeat itself; a monthly release landing, a
+  reading changing tier or word, a Fed decision or a new "highest since" makes news. Keren accepted that editions go
+  live unread, behind the routine's own check (`tools/report.mjs`): every figure the text quotes is one the app shows
+  that day, every link is a reading, and no sentence forecasts. The routine commits the edition to `main` as
+  `data/report.json`, which the site reads, and writes it to the artifact's database, which the artifact reads; the
+  copy in `src/data/weather-report.json` is the floor a release ships. (Weather Report)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)
@@ -585,20 +587,24 @@ settles it; none is open after V668.
   0.6.18, 0.8.8)
 - **The health score's title is set in Cormorant Garamond 500, the top bar's serif,** the app's feminine font.
   (0.6.6)
-- **Claude's readings never name a Fed direction as news that goes stale with the next meeting, and give no
-  figure the page beside them already shows** (the 0.6.12 review found "The Fed has eased" after the Sep 16 hike).
+- **The Weather Report quotes only figures the app shows that day, and names a Fed move only in the edition after
+  it** (the 0.6.12 review found "The Fed has eased" after the Sep 16 hike). A report reads like financial news, so it
+  may say the figure; the check holds it to the app's own, and a Fed decision is itself news that brings a new edition.
   The emotional reading of each cycle has not been worked out yet; the lede's opening, "Born out of the 2022
   correction", which Keren liked, stays. (0.6.6, 0.6.12, 0.6.13, AI Insights Everywhere)
 - **Risk Factors lists every result Cycle Statistics reads as Risk, each with its value and where it stands in
-  its own record, on Analysis above Elements.** A bar of the share of past readings below it said little about why
+  its own record, inside the cycle's Weather Report.** A bar of the share of past readings below it said little about why
   a reading is at risk; Keren wants where we are, the way financial media put it: the highest on record, or
   the highest since a date, and the record and when it was set. Each line names where its record starts, since
-  some records are short. The open cycle reads its latest value; a closed cycle its most extreme value inside the
-  cycle, against the record before it. It reads the Analysis judgement, never its own. Each row reads like an
+  some records are short. The open cycle reads today's figure, the one its card shows (one figure, one number: the
+  10-year's close, not its last quarter's average); where that figure is fresher than its record, the line says where
+  it stands against every reading of the record's own period ("above every quarterly reading since Q1 2005") and is
+  dated by the day it was taken. A closed cycle reads its most extreme value inside the cycle, against the record
+  before it. It reads the Analysis judgement, never its own. Each row reads like an
   Elements row, in market language: the name with its date, the value in red with its triangle, the record on a
   line below, and no footnote, since Elements already explains the judgement. Tapping it opens that cycle's
   Elements filtered to Risk; a last row counts the readings at Attention and opens Elements on them.
-  (0.6.13, AI Insights Everywhere, Element Insights)
+  (0.6.13, AI Insights Everywhere, Element Insights, Weather Report)
 
 ### Analysis
 
@@ -723,7 +729,7 @@ settles it; none is open after V668.
   every tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the
   left.** One consistent design system: a dark purple headline with its icon inside a container, everything below
   it, tidy and evenly spaced, with the count shown once, not four times. (0.8.5, 0.8.6, 0.8.8, Oct 6, 2026)
-- **Each cycle's Cycle analysis is a row under the Cycle Story, built as More details is (its mark, "Cycle
+- **Each cycle's Cycle analysis is a row under the Weather Report, built as More details is (its mark, "Cycle
   Analysis", a chevron), and opens its own page with the cycle picker every history page wears.** Keren likes the
   More details row; a card holding the cycle's story said it twice beside the Cycle Story, and a preview of the
   findings did not settle her, so the door is only a door. The page holds only that
@@ -1418,7 +1424,7 @@ settles it; none is open after V668.
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
   - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index, which the
     page no longer is. (V664)
-  - Risk: the dice, wherever risk is named (Desire's Risk group and Analysis' Risk Factors); Keren finds it says
+  - Risk: the dice, wherever risk is named (Desire's Risk group and the Weather Report's Risk Factors); Keren finds it says
     risk better than the umbrella, which stays only on the All Weather portfolio. (Oct 10, 2026)
   - The categories carry no mark in Search or on the Diagnosis headings; Keren chose to remove the Diagnosis
     headings' marks too. (V457, V490, V692)
@@ -1508,17 +1514,17 @@ settles it; none is open after V668.
   background should be organic, delicate and feminine, flowing like hormones or a flower, prominent without
   competing with the foreground. With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3, 0.6.13, 0.6.14)
-- **A cycle page is the Cycle Story, Cycle Analysis, Year by Year; Interest Rates stands on Analysis
+- **A cycle page is the Weather Report, Cycle Analysis, Year by Year; Interest Rates stands on Analysis
   only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis. Cycle Analysis
   is a row, a shortcut to the Analysis tab set to that cycle. The Health Score shows
   once, in Cycle Statistics, since the analysis is what explains it. (0.6.17, 0.9.46, Cycle Insights, AI Insights
   Everywhere)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   A change once reached only today's page, because the Diagnosis branched on whether the cycle was open and the
-  browser suite expected the past cycle's old layout. The page is one sequence (Cycle Story, Cycle Analysis, Year by
+  browser suite expected the past cycle's old layout. The page is one sequence (Weather Report, Cycle Analysis, Year by
   Year), and a unit test fails if any closed cycle's page differs in shape from today's. (0.6.13, 0.6.17, 0.9.46,
   Cycle Insights)
-- **Every container title on a cycle page reads like the Cycle Story's: bold, deep purple.** Titles were a mix of dark
+- **Every container title on a cycle page reads like the Weather Report's: bold, deep purple.** Titles were a mix of dark
   purple and black, and should be consistent; Interest Environment and Year by Year lost their small black
   capitals. (0.6.13)
 - **Every title is in title case: each word capitalised, short joining words (a, an, the, and, or, by, of, in,

@@ -178,13 +178,18 @@ export function fetchSiteData(){
     if (location.protocol !== "http:" && location.protocol !== "https:") return;
     if (typeof fetch !== "function") return;
   } catch (e) { return; }
-  fetch("data/live.json", { cache: "no-store" }).then(function(r){
+  siteFile("data/live.json", function(doc){
+    var next: Record<string, LiveDoc> = {};
+    for (var k in doc) if (k !== "_meta" && Object.prototype.hasOwnProperty.call(doc, k)) next[k] = doc[k] as LiveDoc;
+    return next;
+  });
+  siteFile("data/report.json", function(doc){ return { weatherReport:doc }; });
+}
+function siteFile(path: string, docs: (doc: Record<string, unknown>) => Record<string, LiveDoc>){
+  fetch(path, { cache: "no-store" }).then(function(r){
     return r.ok ? r.json() : null;
   }).then(function(doc){
-    if (!doc || typeof doc !== "object") return;
-    var next: Record<string, LiveDoc> = {};
-    for (var k in doc) if (k !== "_meta" && Object.prototype.hasOwnProperty.call(doc, k)) next[k] = doc[k];
-    receive(next, "merge");
+    if (doc && typeof doc === "object") receive(docs(doc), "merge");
   }).catch(function(){  });
 }
 

@@ -5,7 +5,7 @@ import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom,
 import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
 import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
-import { indOf, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, tendencyOf, volumeInfoHtml } from "./readings.ts";
+import { indOf, periodIso, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, tendencyOf, volumeInfoHtml } from "./readings.ts";
 import type { Tendency } from "./readings.ts";
 import { chartShell, defineReading, indicatorInsight, redrawReading } from "./reading.ts";
 import { ROSTER_BY } from "./roster.ts";
@@ -86,6 +86,7 @@ function defineFlow(){
   });
   defineReading("sheet-sign-volume", {
     face:function(){ var ind = flowRow("Volume"); return [ind.metric, ind.tag ? ind.tag.text : ""]; },
+    asOf:function(){ return periodIso(String(flowRow("Volume").metricSub || "")).slice(0, 7); },
     info:function(){ return volumeInfoHtml(flowRow("Volume")); },
     controls:function(){ return histControls("volume-range", { depth:Math.floor((m2Yoy.length - 4) / 4) }); },
     history:function(){
@@ -269,6 +270,7 @@ function definePressure(){
   var ylmY0 = ylmWindow();
   defineReading("sheet-sign-pressure", {
     face:function(){ var y = curveAt("10Y"); return [y == null ? "\u2014" : y.toFixed(2) + "%", pressureTendency.word]; },
+    asOf:curveAsOf,
     info:function(){ return '<h4>' + titleCase(matTitle()) + '</h4>' + factsFrom(matDetail()); },
     controls:function(){ return histControls("pressure-range", { depth:Math.floor(quarters.length / 4) }, ylmY0); },
     history:function(){
@@ -355,6 +357,7 @@ function defineMortgage(){
   addSources(MORTGAGE_SRC);
   defineReading("sheet-sign-mortgage", {
     face:function(){ return [mortgageLast().v.toFixed(2) + "%", mortgageTendency.word]; },
+    asOf:function(){ return mortgageLast().m; },
     info:mortgageInfo,
     controls:function(){ return histControls(key, { series:h }, Y0); },
     history:function(){

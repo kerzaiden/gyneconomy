@@ -1,18 +1,22 @@
 import SERIES from "../data/series.json" with { type: "json" };
+import REPORT from "../data/weather-report.json" with { type: "json" };
 import { bandEnds, mean, metered, pctl, round1 } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, dsrQuarterly, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
 
 export var BUFFETT_LINE = 80, DEBT_LINE = 70, DEFICIT_LINE = 3.8;
-type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number };
+export type Report = { asOf: string; headline: string; lede: string; story: string; elements: Record<string, string> };
+type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number; report: Report };
 type SeasonReading = { body: string; economy: string };
 type UninvLagCycle = { cycle: string; uninv: string; recession: string; lag: string };
 type FrameworkRow = { indicator: string; body: string; economy: string; category: string };
 
+export var REPORT_ASOF = REPORT.asOf;
 export var CAPE_FAIR = 17;
 export var VIX_CALM = 20, VIX_FEAR = 30;
 
 export var now: NowStore = {
+  report: REPORT,
   fedFunds: { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
     asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026", turnLabel:"First hike since", turnValue:"2023" },
   yieldCurve: [
@@ -490,6 +494,7 @@ export var t10y3mHistory: QuarterPoint[], t10y2yHistory: QuarterPoint[], t3mYiel
 
 export function bootData(){
   liveInto("yieldCurve");
+  liveInto("weatherReport");
   t10y3mHistory = treasuryQuarterly.s3m;
   t10y2yHistory = treasuryQuarterly.s2y;
   // ---- Yield LEVELS by maturity, quarterly from Q1 2005 — not spreads, the actual yields themselves, ----

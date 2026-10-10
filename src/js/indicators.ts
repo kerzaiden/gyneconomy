@@ -13,7 +13,7 @@ import { creditPages, creditReadings } from "./credit.ts";
 
 type SeriesPt = Point & { v: number };
 type SplitRow = { sub: string; note: string; meter: Meter; flagValue: string; flagState?: Tone; shortNote?: string };
-type SplitPage = { row: SplitRow; word: () => string; line: string; fmt: (v: number) => string; tick?: (v: number) => string; at?: (d: SeriesPt) => string;
+type SplitPage = { row: SplitRow; word: () => string; asOf?: () => string; line: string; fmt: (v: number) => string; tick?: (v: number) => string; at?: (d: SeriesPt) => string;
   src: Src[]; band?: string; goodAbove?: boolean; info?: () => string; insight: (s: SplitSpec) => string };
 type SplitSpec = SplitPage & { id: string; name: string; mid: number; timing: string; series: SeriesPt[]; midLabel: string };
 
@@ -60,7 +60,7 @@ function marketPage(){
 function withCredit(o: Record<string, SplitPage>){
   Object.keys(creditPages).forEach(function(id){
     var P = creditPages[id];
-    o[id] = readingPage(creditReadings[id], { goodAbove:!!P.goodAbove, line:P.line, fmt:P.fmt, tick:P.tick, src:P.src, insight:function(s){ return recordInsight(P.series, { lede:P.lede, fmt:P.fmt, mid:s.mid, state:s.row.flagState }); } });
+    o[id] = readingPage(creditReadings[id], { asOf:function(){ return P.series[P.series.length - 1].d || ""; }, goodAbove:!!P.goodAbove, line:P.line, fmt:P.fmt, tick:P.tick, src:P.src, insight:function(s){ return recordInsight(P.series, { lede:P.lede, fmt:P.fmt, mid:s.mid, state:s.row.flagState }); } });
   });
   return o;
 }
@@ -98,7 +98,7 @@ export function defineSplits(){
   var pages = splitPages();
   ROSTER.filter(function(R){ return pages[R.id]; }).forEach(function(R){
     var s = splitSpec(R, pages[R.id]);
-    defineReading(R.id, { face:function(){ var P = splitPages()[R.id]; return [P.row.flagValue, P.word()]; }, info:function(){ return splitInfo(s); },
+    defineReading(R.id, { face:function(){ var P = splitPages()[R.id]; return [P.row.flagValue, P.word()]; }, asOf:pages[R.id].asOf, info:function(){ return splitInfo(s); },
       controls:function(){ return histControls(R.id, { series:s.series }); }, history:function(){ return splitHistory(s); },
       insight:function(){ return s.insight(s); }, src:s.src });
   });

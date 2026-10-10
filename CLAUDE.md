@@ -18,6 +18,7 @@ rules below are the ones that matter most.
   before grepping; the source is ~7,000 lines of TypeScript and ~1,400 of CSS.
 - `docs/DESIGN-SYSTEM.md` — where the design system lives (the design-system artifact) and how it stays in step.
 - `docs/task.md` — the daily courier task's only instructions. Edit that file to change the task.
+- `docs/report-task.md` — the Weather Report routine's only instructions: when it writes an edition and how.
 - `git log` — every version is a commit `1.4.0 — Short Name` and an annotated tag `v1.4.0` (before 1.0.0:
   `V6NN — Short Name`, tag `v6NN-short-name`). The history lives here, not in the code. The code has no
   comments since V650 (the app) and V652 (tools, tests, workflows);
@@ -82,7 +83,8 @@ rules below are the ones that matter most.
   rule is in `docs/DECISIONS.md`, Versions) as the last commit, checks, and squash-merges. Parallel threads then
   never collide on a number. `git pull --rebase` before pushing — the Data workflow commits `data/live.json`
   to `main` on weekdays and the Backfill workflow commits the FRED histories on the 3rd of each month; those
-  two bots are the only things allowed to push there directly, and each starts the site deploy itself.
+  two bots, and the Weather Report routine committing `data/report.json` and `data/report-facts.json` (Keren,
+  Weather Report), are the only things allowed to push there directly, and each starts the site deploy.
 - **One version, one commit on `main`: squash-merge** (V647). Title the merge `1.4.0 — Short Name`, so
   `main` reads as one commit per version. Then move the working branch to the new `main` before the
   next change. **Tags are the Tag workflow's job** (`tag.yml`): cloud sessions cannot push tags, so the

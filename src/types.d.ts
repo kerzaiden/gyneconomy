@@ -86,7 +86,7 @@ type Indicator = {
   key?: string;
 };
 type LiveDoc = { kind?: unknown; asOf?: string; value?: unknown; rows?: unknown; [k: string]: unknown };
-type LiveReadingCommon = { onOpen?: boolean; fileAsOf?: () => string };
+type LiveReadingCommon = { onOpen?: boolean; fileAsOf?: () => string; words?: boolean };
 type LiveReading =
   | (LiveReadingCommon & { kind: "scalar"; band: [number, number]; set(v: number): void; ok?: undefined })
   | (LiveReadingCommon & { kind: "series"; band?: undefined; set(v: unknown[]): void; ok?(v: unknown[]): boolean })
