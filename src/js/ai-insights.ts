@@ -159,9 +159,9 @@ export function wireStory(host: HTMLElement){
     (btn as HTMLElement).textContent = open ? "Read less" : "Read more"; (btn as HTMLElement).setAttribute("aria-expanded", String(open));
   });
 }
-export function elementInsight(cat: string, cycle: string){
+export function elementInsight(cat: string, cycle: string, title: string){
   var t = ((AI.elements as Record<string, Record<string, string>>)[cycle] || {})[cat];
-  return t ? trendBox(sparkleSvg(), "AI Insights", para(t) + byLine(" insight-by")) : "";
+  return t ? trendBox(sparkleSvg(), title + " Insights", para(t) + byLine(" insight-by")) : "";
 }
 export function closestMoments(){
   return dxSys("", dxHead(clockSvg(), "Closest Moments") + para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') + moreRow(aiDetail());

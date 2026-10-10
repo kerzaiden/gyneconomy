@@ -49364,7 +49364,8 @@
     return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
   }
   function aiAt(id) {
-    return aiParts.insight(findOf(id).cat, (cycleByName(page.cycles[id]) || openCycle()).name);
+    var cat = findOf(id).cat;
+    return cat ? aiParts.insight(cat, (cycleByName(page.cycles[id]) || openCycle()).name, catTitle(cat)) : "";
   }
   var aiParts = {
     risks: function() {
@@ -49950,9 +49951,9 @@
       btn.setAttribute("aria-expanded", String(open));
     });
   }
-  function elementInsight(cat, cycle) {
+  function elementInsight(cat, cycle, title) {
     var t = (ai_insights_default.elements[cycle] || {})[cat];
-    return t ? trendBox(sparkleSvg(), "AI Insights", para(t) + byLine(" insight-by")) : "";
+    return t ? trendBox(sparkleSvg(), title + " Insights", para(t) + byLine(" insight-by")) : "";
   }
   function closestMoments() {
     return dxSys("", dxHead(clockSvg(), "Closest Moments") + para(ai_insights_default.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + moreRow(aiDetail());

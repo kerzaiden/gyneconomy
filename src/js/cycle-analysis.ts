@@ -381,8 +381,8 @@ function homeSections(i: number){
   return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) +
     dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
 }
-function aiAt(id: string){ return aiParts.insight(findOf(id).cat, (cycleByName(page.cycles[id]) || openCycle()).name); }
-export var aiParts: { risks: (m: CycleModel) => string; moments: () => string; insight: (cat: string, cycle: string) => string } = { risks:function(){ return ""; }, moments:function(){ return ""; }, insight:function(){ return ""; } };
+function aiAt(id: string){ var cat = findOf(id).cat; return cat ? aiParts.insight(cat, (cycleByName(page.cycles[id]) || openCycle()).name, catTitle(cat)) : ""; }
+export var aiParts: { risks: (m: CycleModel) => string; moments: () => string; insight: (cat: string, cycle: string, title: string) => string } = { risks:function(){ return ""; }, moments:function(){ return ""; }, insight:function(){ return ""; } };
 function whenPicked(id: string){
   var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
   return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";

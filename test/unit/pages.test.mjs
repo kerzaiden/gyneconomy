@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors, bootWarnings, window } from './dom.mjs';
 import { sheetRenderers } from '../../src/js/render-core.ts';
-import { ROSTER } from '../../src/js/roster.ts';
+import { CATEGORIES, ROSTER } from '../../src/js/roster.ts';
 import { page, pickerOpen } from '../../src/js/history.ts';
 import { cycleByName } from '../../src/js/model.ts';
 import { histFrame } from '../../src/js/charts.ts';
@@ -140,7 +140,7 @@ test('every history chart is attached to its readout, so hover and keys reach it
   assert.deepEqual(loose, []);
 });
 
-test('the Cycle Story tells every cycle; Analysis ranks its risk factors above Elements, on the open cycle adds Closest Moments below them, and every element of every cycle carries its own AI Insights', async () => {
+test('the Cycle Story tells every cycle; Analysis ranks its risk factors above Elements, on the open cycle adds Closest Moments below them, and every element of every cycle carries its own insights, titled by the element', async () => {
   const { echoes } = await import('../../src/js/ai-insights.ts');
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   const { cycleModel, nowModel } = await import('../../src/js/model.ts');
@@ -168,7 +168,7 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
     for (const k of rows) {
       home.querySelector('.insight-row[data-ind-cat="' + k + '"]').click(); sheetRenderers['sheet-find']();
       const box = document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card');
-      assert.equal(box.querySelector('.trend-head').textContent, 'AI Insights', c.name + ' ' + k);
+      assert.equal(box.querySelector('.trend-head').textContent, CATEGORIES.find(g => g.key === k).title + ' Insights', c.name + ' ' + k);
       assert.equal(box.querySelector('.ai-p').textContent, mine[k], c.name + ' ' + k);
       assert.doesNotMatch(mine[k], /\d+(\.\d+)?\s?(%|×|pt)|\d\.\d/, c.name + ' ' + k + ' carries no figure');
     }

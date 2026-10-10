@@ -98,12 +98,14 @@ settles it; none is open after V668.
 - **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
   inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
 - **AI Insights is not a page but a kind of text: Claude's dated reading sits inside the component it is about,
-  titled AI Insights with the sparkle where it is a container.** One page held the cycle's story,
+  marked by the sparkle where it is a container.** One page held the cycle's story,
   rates, economy, market, risks and closest moments, while Analysis showed the same subjects without that reading,
   so the two collided. Each subject now lives in one place: the cycle's rates story closes Interest Rates on
   Analysis (the general account of tightening and easing went to the Federal funds rate page, where rates are
   explained), Risk Factors stands on Analysis above Elements, Closest Moments below it, and each element, picked
-  from the filter, carries its own AI Insights below its readings and above More details, written about them,
+  from the filter, carries its own insights below its readings and above More details, titled by the element (Weather
+  Insights, Mood Insights: the sparkle already says it is AI, and one title on every element left the reader
+  unsure which they were reading), written about them,
   for the cycle on screen, its years and quarters included: the reading belongs to the cycle (Keren), and every
   cycle, open or closed, has one for each element it reads; an element with no reading in a cycle has none. It
   carries no figures, since the page beneath shows them: the page is part of the story. Claude writes it: Keren
