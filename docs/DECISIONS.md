@@ -95,8 +95,9 @@ settles it; none is open after V668.
   (V689, V690, V691, 0.4.1, 0.6.17)
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   In the box's colour the rest of the ring could not be seen. (0.6.5)
-- **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
-  inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
+- **A cycle page has no door to the Analysis tab; Cycle Statistics is the container inside Analysis.** Keren
+  dropped the Cycle Analysis row that led there; the tab bar opens Analysis. (0.6.6, 0.6.8, 0.9.46, Drop Cycle
+  Analysis, Oct 10, 2026)
 - **Claude's reading of the market is one Weather Report, on every cycle page, and nowhere else.** People do not
   read insights about a past cycle cut off from the present, and insights scattered one per element are not read at
   all; what they come back for is today's story told like financial news, with a door into each reading that makes
@@ -321,7 +322,7 @@ settles it; none is open after V668.
   one beside the words is redundant. (0.9.1, 0.9.40, 0.9.43, 0.9.44, 0.9.46, Learn More Links)
 - **A card that opens a page when tapped anywhere carries no chevron, and every card built the same way.** The
   whole container is the door, so a chevron on its head says nothing the card does not already do; a row built as
-  More details (Cycle Analysis) keeps its chevron. A card that ends with "Learn more" under its text has it
+  More details keeps its chevron. A card that ends with "Learn more" under its text has it
   without a chevron, the same words as Interest Rates, so the reading ends where the door is. Every "Learn more" is
   the size of "View more" whatever text it ends; at the caption's size it was too small to see (Keren). (Chevronless
   Cards, Learn More Links, Oct 10, 2026)
@@ -608,10 +609,10 @@ settles it; none is open after V668.
 
 ### Analysis
 
-- **Analysis opens on the current cycle and names the cycle it shows; a period picked on Elements stays on
-  Elements.** A past cycle reaches Analysis only from its own cycle page (Cycle Analysis), which opens with that
-  cycle's name and years, and Interest Rates follows the cycle shown. Keren chose current by default
-  because a cycle picked on Elements had left Analysis showing it, unnamed, after Back. (0.9.31)
+- **Analysis shows the current cycle and names it; a period picked on Elements stays on Elements.** Keren chose
+  the current cycle because a cycle picked on Elements had left Analysis showing it, unnamed, after Back; with the
+  cycle page's Cycle Analysis row gone, past cycles are compared inside Analysis's components. (0.9.31, Drop Cycle
+  Analysis)
 - **Past cycles are compared on Analysis inside the components, not by a cycle header.** The Health Score's page
   shows every cycle's score as bars in its tier's colour, as Cycle length and Cycle variation do. Interest Rates on
   Analysis shows the cycle shown and carries no controls: its Learn more opens the Federal funds rate page, which
@@ -691,8 +692,7 @@ settles it; none is open after V668.
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
   against, with every cycle's score beside it.** Only its colour sets it apart, and the detail of what it is judged against (18 closed cycles) need not
-  show every time. It shows only in Cycle Statistics; a cycle page reaches it through the
-  Cycle Analysis row. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
+  show every time. It shows only in Cycle Statistics. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
 - **The interest-rate container is titled Interest Rates, on Analysis,** because most people recognize "interest
   rates"; "Environment" made the head too long. (0.8.12, Oct 7 and 9, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
@@ -733,14 +733,9 @@ settles it; none is open after V668.
   every tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the
   left.** One consistent design system: a dark purple headline with its icon inside a container, everything below
   it, tidy and evenly spaced, with the count shown once, not four times. (0.8.5, 0.8.6, 0.8.8, Oct 6, 2026)
-- **Each cycle's Cycle analysis is a row under the Weather Report, built as More details is (its mark, "Cycle
-  Analysis", a chevron), and opens its own page with the cycle picker every history page wears.** Keren likes the
-  More details row; a card holding the cycle's story said it twice beside the Cycle Story, and a preview of the
-  findings did not settle her, so the door is only a door. The page holds only that
-  picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
-  four), worst first; each result's colour bar stops short of the next. The row opens on the cycle on screen. The row
-  keeps the current cycle short, the picker
-  matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart".
+- **Cycle analysis's page holds only the cycle picker every history page wears, the app's tab bar below it (All,
+  Risk, Attention, Normal) and the results by category (Cycle, then the four), worst first; each result's colour bar
+  stops short of the next.** The picker matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart".
   (0.3.0, 0.4.0, Learn More Links, AI Insights Everywhere)
 - **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped,**
   since nothing could be read from it. (V612, V656, 0.2.0)
@@ -1516,14 +1511,13 @@ settles it; none is open after V668.
   background should be organic, delicate and feminine, flowing like hormones or a flower, prominent without
   competing with the foreground. With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3, 0.6.13, 0.6.14)
-- **A cycle page is the Weather Report, Cycle Analysis, Year by Year; Interest Rates stands on Analysis
-  only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis. Cycle Analysis
-  is a row, a shortcut to the Analysis tab set to that cycle. The Health Score shows
-  once, in Cycle Statistics, since the analysis is what explains it. (0.6.17, 0.9.46, Cycle Insights, AI Insights
-  Everywhere)
+- **A cycle page is the Weather Report, then Year by Year; Interest Rates stands on Analysis
+  only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis through the tab
+  bar. The Health Score shows once, in Cycle Statistics, since the analysis is what explains it. (0.6.17, 0.9.46,
+  Cycle Insights, AI Insights Everywhere, Drop Cycle Analysis)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   A change once reached only today's page, because the Diagnosis branched on whether the cycle was open and the
-  browser suite expected the past cycle's old layout. The page is one sequence (Weather Report, Cycle Analysis, Year by
+  browser suite expected the past cycle's old layout. The page is one sequence (Weather Report, Year by
   Year), and a unit test fails if any closed cycle's page differs in shape from today's. (0.6.13, 0.6.17, 0.9.46,
   Cycle Insights)
 - **Every container title on a cycle page reads like the Weather Report's: bold, deep purple.** Titles were a mix of dark

@@ -471,8 +471,7 @@ Rules that shape the pages:
   category rows, 0.8.3), and `#sheet-find`, the Indicators page, built at boot by `buildFind` and redrawn when it opens
   or a live reading lands (`repaint`). Every Insights row and the home's search box open it, setting its category
   (`finds[IND].cat`, a `tabBar`); the two share one cycle through `page.cycles`. Cycle Statistics reads the cycle it shows
-  (`statsHome(i)`): each card is the average of every closed cycle beside the cycle shown; variation is `sdOf(lengths())`; every verdict is `typical()`, Tukey's fences on length. The Diagnosis's card (under the cycle story, previewing the visit note and score) is not a door to a
-  page: it carries `data-chart-cycle`, sets `page.cycles` for the tab and presses the Analysis tab (0.6.3).
+  (`statsHome(i)`): each card is the average of every closed cycle beside the cycle shown; variation is `sdOf(lengths())`; every verdict is `typical()`, Tukey's fences on length.
   `wireFinder` gives the host a `page.cycles` key and its own search state (`finds`). Every roster reading is
   averaged over the cycle's years; its range is the middle half of the closed cycles that reading covers, Tukey's
   fences beyond it mark Risk, and between is Attention, except that a result on the reading's `good` side is Normal.
@@ -707,9 +706,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
 - **One cycle, one card** (0.6.17, Cycle Insights): `diagnosisHtml` is one sequence for every cycle, open or closed,
   with no branch; the unit test "every cycle page, open or closed, is
   built in one shape" compares each closed cycle's containers and their children with today's (the peak mark and
-  the year rows, which vary with the data, aside). The Diagnosis is the Weather Report (`reportCard(m)`), Cycle Analysis
-  (`chartDoor`: a `moreDoor` row, the More details row with a mark, jumping to the
-  Analysis tab set to that cycle), then Year by Year. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
+  the year rows, which vary with the data, aside). The Diagnosis is the Weather Report (`reportCard(m)`), then Year by Year. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
   hub opens on Indicators (Weather).
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's button opens it (`hubOpen`'s `cat`, on the current quarter) while the dial shows today; a parked
@@ -809,9 +806,6 @@ with no reading, by Keren's decision.**
   `bar()` that returns the title and back action for its tab as it stands now: inside a past cycle the
   Analysis home is the cycle (its name and `eraPageBack`, the way back to the list), so backing out of a
   reading's page keeps the arrow. It used to restore the bare "Analysis" title, which dropped the arrow.
-  The Analysis home works the same way: Cycle Statistics on a past cycle switches tabs (`crossToChart`) and
-  leaves `ui.chartBack`, which the home's `bar()` returns until a tab switch clears it; Back fires `eraReturn`,
-  which reopens the cycle in Herstory at the scroll it left.
 - **The readout is a fixed block above the chart, never a tooltip on it.** No register under the chart.
 - **A panel built by a renderer is built once and placed, never rebuilt.** `detailTexts` is
   content-addressed (V532), so a note following a control is never frozen and never leaks.
