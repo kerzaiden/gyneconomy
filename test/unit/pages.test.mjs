@@ -140,54 +140,69 @@ test('every history chart is attached to its readout, so hover and keys reach it
   assert.deepEqual(loose, []);
 });
 
-test('AI Insights opens on every cycle with its story, rates and risks; the open cycle adds Claude\u2019s chapters, every figure filled, and moments from closed cycles', async () => {
+test('the Cycle Story tells every cycle; Analysis ranks its risk factors above Elements, on the open cycle adds Closest Moments below them, and every element of every cycle carries its own AI Insights', async () => {
   const { echoes } = await import('../../src/js/ai-insights.ts');
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   const { cycleModel, nowModel } = await import('../../src/js/model.ts');
-  assert.ok(document.querySelector('#diagnosis [data-open="sheet-ai-insights"] .ai-clamp'));
-  sheetRenderers['sheet-ai-insights']();
-  const page = document.getElementById('sheet-ai-insights');
-  assert.deepEqual(broken(page.innerHTML), []);
-  assert.ok(!/[{}]|—/.test([...page.querySelectorAll('.ai-p')].map(p => p.textContent).join('')));
-  assert.deepEqual([...page.querySelectorAll('.trend-card .trend-head')].map(h => h.textContent), [nowModel.era.name, 'Interest Rates', 'The Economy', 'The Market', 'Risk Factors', 'Closest Moments']);
-  assert.equal(page.querySelectorAll('.ai-echo').length, 3);
   const { riskLabs } = await import('../../src/js/cycle-analysis.ts');
   const { marketCycles } = await import('../../src/js/data.ts');
+  const AI = (await import('../../src/data/ai-insights.json', { with: { type: 'json' } })).default;
+  const story = () => document.querySelector('#diagnosis .trend-card');
+  const home = document.getElementById('chart-home');
+  const heads = () => [...home.querySelectorAll('.dx-sys-head')].map(h => h.textContent);
+  const draw = c => { page.cycles['chart-home'] = c.name; sheetRenderers['chart-home'](); };
+  assert.equal(story().querySelector('.trend-head').textContent, 'Cycle Story');
+  assert.equal(story().querySelector('.ai-clamp').textContent, AI.lede);
+  assert.match(story().querySelector('.story-by').textContent, /^Updated \d+ \w+ 20\d\d\.$/);
+  draw(nowModel.era);
+  assert.deepEqual(heads(), ['Cycle Statistics', 'Interest Rates', 'Risk Factors', 'Elements', 'Closest Moments']);
+  assert.equal(home.querySelectorAll('.ai-echo').length, 3);
+  assert.ok(echoes().every(e => !e.cycle.ongoing));
   const risks = riskLabs(marketCycles.indexOf(nowModel.era)).map(l => l.name).sort();
   assert.ok(risks.length > 0);
-  assert.deepEqual([...page.querySelectorAll('.ai-rank span:first-child')].map(s => s.textContent).sort(), risks);
-  assert.equal(page.querySelectorAll('.ai-tile').length, 6);
-  assert.ok(echoes().every(e => !e.cycle.ongoing));
-  const { ratesStory } = await import('../../src/js/fed-phases.ts');
-  const heads = () => [...page.querySelectorAll('.trend-card .trend-head')].map(h => h.textContent);
-  const rates = () => page.querySelectorAll('.trend-card')[1].querySelector('.ai-p').textContent;
-  assert.equal(rates(), ratesStory(nowModel.era));
+  assert.deepEqual([...home.querySelectorAll('.ai-rank span:first-child')].map(s => s.textContent).sort(), risks);
+  assert.deepEqual(broken(home.innerHTML), []);
+  const insights = c => {
+    const rows = [...home.querySelectorAll('.insight-row')].map(r => r.dataset.indCat), mine = AI.elements[c.name];
+    assert.deepEqual(Object.keys(mine).sort(), rows.slice().sort(), c.name + ' writes one insight per element it reads');
+    for (const k of rows) {
+      home.querySelector('.insight-row[data-ind-cat="' + k + '"]').click(); sheetRenderers['sheet-find']();
+      const box = document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card');
+      assert.equal(box.querySelector('.trend-head').textContent, 'AI Insights', c.name + ' ' + k);
+      assert.equal(box.querySelector('.ai-p').textContent, mine[k], c.name + ' ' + k);
+      assert.doesNotMatch(mine[k], /\d+(\.\d+)?\s?(%|×|pt)|\d\.\d/, c.name + ' ' + k + ' carries no figure');
+    }
+  };
+  insights(nowModel.era);
+  Object.assign(page.mode, { 'sheet-find': 'quarters' }); page.when['sheet-find'] = (nowModel.era.from + 1) + ' Q2'; page.cycles['sheet-find'] = nowModel.era.name;
+  sheetRenderers['sheet-find']();
+  assert.ok(document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card'), 'a quarter of the open cycle keeps its AI Insights');
+  page.mode['sheet-find'] = 'cycles'; page.when['sheet-find'] = undefined;
   for (const c of marketCycles.filter(c => !c.ongoing)) {
     renderDiagnosis(cycleModel(c));
-    assert.equal(document.querySelector('#diagnosis [data-open="sheet-ai-insights"] .ai-clamp').textContent, c.blurb, c.name);
-    sheetRenderers['sheet-ai-insights']();
-    assert.deepEqual(heads(), [c.name, 'Interest Rates', 'Risk Factors'], c.name);
-    assert.equal(rates(), ratesStory(c), c.name);
-    assert.equal(page.querySelector('.lab-score'), null, c.name + ' score');
-    const named = riskLabs(marketCycles.indexOf(c)).map(l => l.name).filter(n => page.textContent.includes(n));
-    assert.equal(page.querySelectorAll('.ai-rank').length, named.length, c.name + ' risks');
-    assert.deepEqual(broken(page.innerHTML), [], c.name);
+    assert.equal(story().querySelector('.ai-clamp').textContent, c.blurb, c.name);
+    assert.equal(story().querySelector('.story-by'), null, c.name);
+    draw(c);
+    assert.deepEqual(heads(), ['Cycle Statistics', 'Interest Rates', 'Risk Factors', 'Elements'], c.name);
+    const named = riskLabs(marketCycles.indexOf(c)).map(l => l.name).filter(n => home.querySelector('.ai-pic').textContent.includes(n));
+    assert.equal(home.querySelectorAll('.ai-rank').length, named.length, c.name + ' risks');
+    assert.deepEqual(broken(home.innerHTML), [], c.name);
+    insights(c);
   }
   renderDiagnosis(nowModel);
-  sheetRenderers['sheet-ai-insights']();
-  assert.equal(heads()[0], nowModel.era.name);
-  assert.equal(page.querySelector('.lab-score'), null);
+  page.cycles['chart-home'] = null; sheetRenderers['chart-home']();
+  assert.equal(story().querySelector('.ai-clamp').textContent, AI.lede);
 });
 
 test('every cycle page, open or closed, is built in one shape', async () => {
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   const { cycleModel, nowModel } = await import('../../src/js/model.ts');
   const { marketCycles } = await import('../../src/js/data.ts');
-  const shape = () => [...document.getElementById('diagnosis').children].filter(c => !c.matches('[data-open="sheet-ai-insights"]')).map(c => c.tagName + '.' + c.className + '>' +
-    [...c.children].filter(k => !k.matches('.dx-year, .fp-marks')).map(k => k.tagName + '.' + k.className).join(','));
+  const shape = () => [...document.getElementById('diagnosis').children].map(c => c.tagName + '.' + c.className + '>' +
+    [...c.children].filter(k => !k.matches('.dx-year, .fp-marks, .story-by')).map(k => k.tagName + '.' + k.className).join(','));
   const today = shape();
   const off = marketCycles.filter(c => !c.ongoing).filter(c => { renderDiagnosis(cycleModel(c)); return shape().join('|') !== today.join('|'); });
   renderDiagnosis(nowModel);
-  assert.equal(today.length, 2);
+  assert.equal(today.length, 3);
   assert.deepEqual(off.map(c => c.name), []);
 });

@@ -603,7 +603,6 @@
   .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-  .ai-page{ display:flex; flex-direction:column; gap:var(--gap); }
   .ai-pic{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
   .ai-pic .strip{ margin:0; }
   .ai-pic .strip + .strip{ margin-top:5px; }
@@ -611,13 +610,7 @@
   .ai-rank{ display:grid; grid-template-columns:9.5em 1fr 2.8em; align-items:center; column-gap:10px; padding:4px 0; font-size:var(--type-meta); color:var(--text-primary); }
   .ai-rank b{ text-align:right; font-variant-numeric:tabular-nums; }
   .ai-track{ position:relative; height:6px; border-radius:3px; background:var(--surface-2); }
-  .ai-track i{ position:absolute; top:50%; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--cat); }
-  .ai-tiles{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
-  .ai-tile{ display:flex; flex-direction:column; gap:2px; min-width:0; padding:9px 10px 8px; border-radius:calc(var(--radius) - 6px); background:var(--surface-2); }
-  .ai-tile small{ font-size:var(--type-label); line-height:1.3; color:var(--text-muted); }
-  .ai-tile b{ margin-bottom:6px; font-size:var(--type-reading); color:var(--text-primary); }
-  .ai-tile .peek-chart{ margin-top:auto; }
-  .peek-chart.heat .ai-col{ stroke:var(--cat); vector-effect:non-scaling-stroke; }
+  .ai-track i{ position:absolute; top:50%; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--accent); }
   .ai-path{ display:grid; grid-template-columns:2.6em 1fr; align-items:center; column-gap:8px; margin-top:6px; }
   .ai-path .strip{ margin:0; }
   .ai-p{ margin:8px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
@@ -626,6 +619,10 @@
   .ai-echo-when{ display:block; font-size:var(--type-reading); color:var(--text-primary); }
   .ai-echo small{ display:block; margin-top:3px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
   .ai-by{ margin:0; font-size:var(--type-meta); color:var(--text-muted); }
+  .ai-by.insight-by{ margin-top:10px; }
+  .ai-by.story-by{ display:none; margin:10px 0 6px; }
+  .trend-card.is-open .story-by{ display:block; }
+  .trend-card.is-open .trend-text.ai-clamp{ display:block; -webkit-line-clamp:unset; line-clamp:none; overflow:visible; }
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
@@ -890,7 +887,10 @@
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
   .aux-stat + .method-say{ margin-top:24px; }
   .method-card .more-row{ margin-top:20px; }
-  .labs .more-row{ margin-top:0; }
+  .labs .more-row, .dx > .more-row{ margin-top:0; }
+  .more-lead{ display:inline-flex; align-items:center; gap:10px; }
+  .more-mark{ display:inline-flex; width:18px; height:18px; }
+  .more-mark svg{ width:100%; height:100%; }
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
@@ -1263,7 +1263,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.58 (829)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.59 (830)</span></p>
     </div>
   </div>
 
@@ -1689,11 +1689,8 @@
   function trendDoor(open, title, mark2, head, body) {
     return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark2, head, "", body);
   }
-  function trendJump(attrs, mark2, head, body) {
-    return trendCard("button", "", ' type="button"' + attrs, mark2, head, "", body);
-  }
-  function learnMore(attrs) {
-    return attrs ? '<button type="button" class="learn-more"' + attrs + ">Learn more</button>" : '<span class="learn-more">Learn more</span>';
+  function learnMore(attrs, label) {
+    return attrs ? '<button type="button" class="learn-more"' + attrs + ">" + (label || "Learn more") + "</button>" : '<span class="learn-more">Learn more</span>';
   }
   function trendBox(mark2, head, body) {
     return trendCard("section", " is-box", "", mark2, head, "", body);
@@ -1703,8 +1700,10 @@
   }
   function moreRow(fullHtml, label) {
     if (!fullHtml) return "";
-    var idx = detailSlot(fullHtml);
-    return '<button type="button" class="more-row" data-detail-idx="' + idx + '"><span>' + (label || "More details") + "</span>" + CHEV + "</button>";
+    return moreDoor(' data-detail-idx="' + detailSlot(fullHtml) + '"', label || "More details");
+  }
+  function moreDoor(attrs, label, mark2) {
+    return '<button type="button" class="more-row"' + attrs + "><span" + (mark2 ? ' class="more-lead"><span class="more-mark" aria-hidden="true">' + mark2 + "</span>" : ">") + label + "</span>" + CHEV + "</button>";
   }
   function viewMore(btn, extra) {
     var label = btn.querySelector("span"), open = false;
@@ -42407,18 +42406,18 @@
     var ww2 = fiscalHistory.gross.filter(function(d) {
       return d.y === 1946;
     })[0].v, v = Math.round(last.v * 10) / 10;
-    var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill2 = {
+    var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill = {
       q: q,
       v: v.toFixed(1),
       ww2: ww2.toFixed(1),
       x: (v / bandEnds(row.meter.optimal, NaN, NaN)[1]).toFixed(2)
     };
     row.meter.value = v;
-    row.flagValue = fill2.v + "%";
-    row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill2.ww2 + "%.");
+    row.flagValue = fill.v + "%";
+    row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill.ww2 + "%.");
     row.noteTpl = row.noteTpl || row.note;
     row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m, k) {
-      return fill2[k] != null ? fill2[k] : m;
+      return fill[k] != null ? fill[k] : m;
     });
   }
   function syncFederal() {
@@ -42729,126 +42728,108 @@
     from: 1928,
     to: 1932,
     name: "Great Depression Cycle",
-    story: "The Roaring Twenties ended in the crash of October 1929, and bank failures, tight money and a tariff war turned it into the Great Depression. Mrs. Market fell from Euphoria into the deepest Despair in the record, four bear years in a row.",
     blurb: "The last boom year of the Twenties, then the crash of 1929 and three more years of falling prices, failing banks and lost jobs. It ends in 1932, at the bottom of the Great Depression.",
     rates: "The Fed tightened into the 1929 bubble, then again in 1931 to defend gold, turning a crash into deflation. Prices peaked in {month}."
   }, {
     from: 1933,
     to: 1934,
     name: "New Deal Cycle",
-    story: "Roosevelt closed the banks, took the dollar off gold and launched the New Deal, and 1933 became one of the best years in the record. Mrs. Market leapt from Depression to Hope in a few months, then lost her nerve in 1934 as the recovery came slowly.",
     blurb: "The New Deal: the bank holiday, the dollar off gold and the first relief programmes. It ends in 1934, a flat year after the leap of 1933.",
     rates: "Off gold, with the banks reopened, money was cheap again, and falling prices turned to rising, peaking in {month}."
   }, {
     from: 1935,
     to: 1937,
     name: "New Deal II Cycle",
-    story: "Output climbed back toward its 1929 level, until the Fed raised reserve requirements and Washington cut spending in 1937. Mrs. Market grew Optimistic too soon and fell back into Fear in the recession of 1937–38.",
     blurb: "Two strong years of recovery, then the policy turn of 1937 and a sharp recession inside the Depression. It ends in 1937, one of the worst years in the record.",
     rates: "With rates at the floor, the Fed tightened by doubling bank reserves, and the recovery broke into the 1937 recession. Prices peaked in {month}."
   }, {
     from: 1938,
     to: 1941,
     name: "Keynesian Cycle",
-    story: "The market bounced in 1938, but war in Europe, the fall of France and then Pearl Harbor kept it falling for three years. Mrs. Market lived in Anxiety and Fear, even as war orders put the factories back to work.",
     blurb: "A rebound year, then three bear years as the war in Europe spreads and America is drawn in. It ends in 1941, the year of Pearl Harbor.",
     rates: "Gold fleeing a Europe at war kept money cheap; only the war orders woke prices, peaking in {month}."
   }, {
     from: 1942,
     to: 1946,
     name: "WWII Cycle",
-    story: "After Midway the tide of WWII turned, and war production with price controls carried four rising years to victory in 1945. Mrs. Market went from Hope to Euphoria, until controls ended in 1946, prices jumped and she fell back into Anxiety.",
     blurb: "The WWII economy at full stretch, from the turn of 1942 to victory in 1945. It ends in 1946, when price controls lift and inflation surges.",
     rates: "Rates were pinned low to fund the war and controls held prices, until the controls came off and prices surged to {peak} in {month}."
   }, {
     from: 1947,
     to: 1953,
     name: "Baby Boom Cycle",
-    story: "Soldiers came home and started families in record numbers, while Marshall Plan exports and then the Korean War kept the factories busy. Mrs. Market climbed out of the postwar slump into a steady Optimism that held for six years, until the war’s end and the 1953 recession brought her first Anxiety.",
     blurb: "The baby boom begins: new households, years of pent-up demand, Marshall Plan exports and then the Korean War. It ends in 1953, the year the war ended and military spending was cut.",
     rates: "The Fed held rates down for the Treasury while the post-war surge burned out; then Korean War buying sent inflation to {peak} in {month}, just as the 1951 Accord set the Fed free."
   }, {
     from: 1954,
     to: 1957,
     name: "Suburban Cycle",
-    story: "Cars, highways and new suburbs carried the economy, and 1954 became the best year in the record. Mrs. Market went from Hope to Euphoria in a single year, then slid into Anxiety as rates rose and the 1957 recession arrived.",
     blurb: "Out of the 1953–54 recession comes the best year in the record, 1954, and a boom in cars, highways and new suburbs. It ends with the recession of 1957.",
     rates: "The Fed leaned against the boom from 1955, and prices peaked in {month}, just before the 1957 recession."
   }, {
     from: 1958,
     to: 1962,
     name: "Space Race Cycle",
-    story: "Sputnik set off a race in rockets and electronics, and almost any company with “tronics” in its name found buyers. Mrs. Market rode that Excitement into Thrill, until the slide of 1962 turned it to Fear.",
     blurb: "Sputnik sets off a race in rockets and electronics, and the market chases the new technology stocks of the day. It ends in the slide of 1962.",
     rates: "Prices peaked early, in {month}, then stayed calm: the Fed raised rates in 1959 against a boom and gold leaving the country, and the 1960 recession kept inflation low."
   }, {
     from: 1963,
     to: 1966,
     name: "Great Society Cycle",
-    story: "The 1964 tax cut and Johnson’s Great Society spending, then the build-up in Vietnam, stretched the long 1960s expansion. Mrs. Market was Thrilled and sure of herself, until inflation, rising rates and the credit crunch of 1966 left her Anxious.",
     blurb: "The 1964 tax cut, the Great Society programmes and a long expansion running hot. It ends in 1966 as rates climb and credit tightens.",
     rates: "War and welfare spending warmed prices to a peak in {month}, and the Fed's 1966 tightening brought a credit crunch."
   }, {
     from: 1967,
     to: 1969,
     name: "Go-Stop Cycle",
-    story: "Go-go fund managers traded growth stocks at speed, and conglomerates grew by buying everything in sight, their earnings flattered by the deals themselves. Mrs. Market was in Euphoria about them, and in Denial as inflation and the credit crunch of 1969 took them apart.",
     blurb: "The go-go funds and the conglomerates peak in 1968, with speculation running alongside. It ends in 1969 as inflation and rising rates catch up.",
     rates: "Vietnam spending on top of the Great Society, and easy money after the 1966 crunch, let inflation build until the Fed tightened hard in 1968 and 1969. Prices peaked at the close, in {month}."
   }, {
     from: 1970,
     to: 1974,
     name: "Nifty Fifty Cycle",
-    story: "Investors crowded into fifty blue chips they believed could be bought at any price and held forever. Mrs. Market’s Euphoria turned to Fear with the oil embargo of 1973, and to Panic and Despair in 1974, her worst year since 1937.",
     blurb: "Investors crowd into fifty blue-chip growth stocks they believe can be bought at any price. It ends in the bear market of 1973–74, with the oil embargo and a deep recession.",
     rates: "The end of gold, the oil shock and lifted price controls sent inflation to {peak} in {month}, even with rates in double digits."
   }, {
     from: 1975,
     to: 1977,
     name: "Bicentennial Cycle",
-    story: "Out of the 1974 collapse came one of the sharpest rebounds in the record, +37% in 1975, and the rally ran into the Bicentennial year before topping out late in 1976. Mrs. Market moved from Despair back to Hope and Optimism, but inflation never left, and by 1977 she was Anxious again.",
     blurb: "A sharp recovery out of the 1973–74 collapse that tops out in the Bicentennial year, with inflation never far behind. It ends in 1977 as prices start to run again.",
     rates: "The Fed cut through the 1975 recession, and with Arthur Burns slow to tighten and food prices jumping, inflation climbed again, peaking in {month}."
   }, {
     from: 1978,
     to: 1981,
     name: "Volcker Cycle",
-    story: "Prices ran into double digits, and money fled into oil, gold and anything real. Mrs. Market was Excited but uneasy throughout, and fell into Fear in 1981 when Volcker raised rates high enough to break inflation.",
     blurb: "Inflation runs into double digits and hard assets like oil and gold lead, until Paul Volcker takes the Fed in 1979. It ends in 1981, when his rates, near 20%, break it.",
     rates: "Inflation peaked at {peak} in {month} as Volcker drove rates toward 20% to break it. It broke, at the cost of two recessions."
   }, {
     from: 1982,
     to: 1990,
     name: "Buyout Cycle",
-    story: "With inflation beaten and rates falling, a long bull market ran on junk bonds and leveraged buyouts. Mrs. Market’s Euphoria broke in the one-day Panic of October 1987, came back, and ended in Fear in 1990 with the savings-and-loan collapse and the Gulf War.",
     blurb: "The defeat of inflation opens a long bull market, fuelled by falling rates, junk bonds and leveraged buyouts, through the crash of 1987. It ends in 1990 with the savings-and-loan collapse, the Gulf War oil shock and recession.",
     rates: "Small, steady moves after 1982 kept inflation low until the Gulf War oil spike lifted it to a peak in {month}."
   }, {
     from: 1991,
     to: 2002,
     name: "Dot-Com Cycle",
-    story: "The internet promised a new economy, and the market believed it for nine straight years. Mrs. Market climbed from Hope to full Euphoria in 1999, then spent three years in Denial, Fear and finally Despair as the bubble burst.",
     blurb: "Nine years of uninterrupted growth out of the 1990–91 recession — confidence building all decade and cresting into the internet mania that gives the cycle its name — then three straight losing years to unwind it, a run of consecutive declines the market had not seen since the 1930s. The mania and its undoing are one story, and the cycle holds both.",
     rates: "Cheap imports, a strong dollar and a productivity boom kept prices calm, peaking modestly in {month}; the Fed hiked into the stock bubble in 1999–2000, then cut hard when it burst."
   }, {
     from: 2003,
     to: 2008,
     name: "Housing Cycle",
-    story: "Cheap money and easy mortgages made houses the boom, and the banks built a tower of debt on top of them. Mrs. Market was Optimistic and then Thrilled, until Lehman’s collapse in 2008 sent her into Panic and Despair.",
     blurb: "A rebuild out of the dot-com wreckage, carried by a housing boom that was quietly becoming the next crisis the whole way up. It ends where the boom had been heading all along: the subprime collapse, and the worst year the market had seen since 1931.",
     rates: "Cheap money fed the housing boom, seventeen hikes followed, and prices peaked with oil in {month}, just before the crash."
   }, {
     from: 2009,
     to: 2018,
     name: "Big Tech Cycle",
-    story: "Out of the crisis, near-zero rates and a handful of technology giants carried one of the longest bull markets on record. Mrs. Market crept from Despair to Hope and stayed Optimistic for a decade, until the trade war and rising rates left her Anxious at the end of 2018.",
     blurb: "One of the longest, steadiest bull markets on record — a decade of rebuilding led by a handful of technology giants that ended it carrying more of the index than any five companies before them. It closes on the trade-war scare of late 2018, the mildest ending of any cycle here: a stumble rather than a bust.",
     rates: "A slow recovery and weak wages kept prices calm through seven years of rates near zero; they peaked modestly in {month}, when the Arab Spring lifted oil."
   }, {
     from: 2019,
     to: 2022,
     name: "COVID-19 Cycle",
-    story: "A strong 2019, then the pandemic brought the fastest crash on record and the largest rescue ever attempted. Mrs. Market went from Panic to Euphoria inside a year, and into Fear in 2022 as inflation returned and the Fed raised rates at its fastest pace in decades.",
     blurb: "A strong year, then the fastest bear market in history as COVID-19 arrives — and one of the fastest recoveries on record, bought with the largest fiscal and monetary transfusion ever attempted. The bill arrives at the end: inflation at a four-decade high, and a sharp correction to close the cycle. Worth knowing that the pandemic crash itself never appears as a losing year — it fell and recovered inside 2020 — so this cycle's bleed is the inflation bear, not the virus.",
     rates: "Rates went to zero, then reopening and stimulus brought the highest inflation in forty years, peaking in {month}, and the fastest hikes since the 1980s."
   }, {
@@ -42856,7 +42837,6 @@
     to: null,
     ongoing: true,
     name: "AI Cycle",
-    story: "Out of the 2022 correction, the build-out of artificial intelligence became the story everyone wanted to own. Mrs. Market has moved from Hope into Optimism and Excitement, and the cycle is still being written.",
     blurb: "Out of the 2022 correction, a bull run carried by the build-out of artificial intelligence. Three full years so far and the fourth under way, with no losing year in it yet. Still being written.",
     rates: "The Fed cut through 2024 and 2025, then tariffs and the oil shock of the Iran war turned prices up again, peaking so far in {month}. In September it raised rates for the first time since 2023."
   } ];
@@ -46245,6 +46225,9 @@
   function sparkleSvg() {
     return markSvg('<path d="M10 3.5l1.6 4.9 4.9 1.6-4.9 1.6L10 16.5l-1.6-4.9L3.5 10l4.9-1.6z" stroke-width="1.8"/><path d="M18 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" stroke-width="1.7"/>');
   }
+  function bookSvg() {
+    return markSvg('<path d="M12 6.6C10 5.1 7.3 4.6 3.8 5v13.6c3.5-.4 6.2.1 8.2 1.6 2-1.5 4.7-2 8.2-1.6V5c-3.5-.4-6.2.1-8.2 1.6z" stroke-width="1.8"/><path d="M12 6.6v13.6" stroke-width="1.8"/>');
+  }
   function umbrellaSvg() {
     return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17 0z" stroke-width="1.8"/><path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>');
   }
@@ -46911,7 +46894,7 @@
       }
     });
     document.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt");
+      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row[data-detail-idx], .bh-opt");
       if (btn) {
         if (btn.closest("summary")) e.preventDefault();
         openFrom(btn.getAttribute("data-detail-idx"), btn);
@@ -48052,6 +48035,7 @@
       return d.v > a.v ? d : a;
     }), run = lowerRun(pk, top), cards = [];
     cards.push(lede("The Federal funds rate is the hormone: one signal, secreted on purpose, that the whole body then runs at the tempo of. Nothing on this page is measured off the economy — this is the instruction it was given."));
+    cards.push(hiCard("Tightening and Easing", "", "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices."));
     cards.push(hiCard("Two Clocks", "", "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " + pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock — from the " + top.v.toFixed(2) + "% of " + yOf(top) + ", " + run + " peaks in a row came in lower than the one before, until " + yOf(last) + " broke the run at " + last.v.toFixed(2) + "% against " + prev.v.toFixed(2) + "%."));
     cards.push(hiCard("Rise, Peak, Withdraw", "", "That shape is progesterone’s: it rises through the second half of a cycle, peaks, and then falls — and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal rather than the level, because the cuts come after the top, never before it."));
     return highlightsHtml(cards, '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div>");
@@ -48458,10 +48442,9 @@
     kind: "line",
     color: "season-summer"
   } ]);
-  var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
   function footnoteHtml(m) {
     var rate = ROSTER_BY["sheet-sign-hormones"];
-    return '<p class="fp-note">' + PHASES + " " + learnMore(' data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '"') + "</p>";
+    return '<p class="fp-note">' + ratesStory(m.era) + " " + learnMore(' data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '"') + "</p>";
   }
   function ratesStory(c) {
     var m = c.ongoing ? nowModel : cycleModel(c), peak = cyclePeak(c.from + "-01", endMonthOf(m));
@@ -49252,8 +49235,7 @@
     return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, SD_SRC ]);
   }
   function chartDoor(m) {
-    var i = marketCycles.indexOf(m.era);
-    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(m.era.story, "ai-clamp") + learnMore());
+    return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
   }
   var HOME_ID = "chart-home";
   function statRow(name, v, of, side2, page2, cls, text) {
@@ -49378,8 +49360,23 @@
     }).join("");
   }
   function homeSections(i) {
-    return statsHome(i) + fedEnvironment(marketCycles[i].ongoing ? nowModel : cycleModel(marketCycles[i]), HOME_ID, page.range[HOME_ID]) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
+    var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
+    return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
   }
+  function aiAt(id) {
+    return aiParts.insight(findOf(id).cat, (cycleByName(page.cycles[id]) || openCycle()).name);
+  }
+  var aiParts = {
+    risks: function() {
+      return "";
+    },
+    moments: function() {
+      return "";
+    },
+    insight: function() {
+      return "";
+    }
+  };
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
     return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
@@ -49402,7 +49399,7 @@
     var j = judged(at).filter(function(l) {
       return l.cat !== "cycle";
     }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
-    host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
+    host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + aiAt(id) + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
     narrow(host, id);
   }
   var IND = "sheet-find";
@@ -49546,38 +49543,138 @@
     drawChart(HOME_ID);
   }
   var ai_insights_default = {
-    by: "Claude",
-    asOf: "2026-10-02",
+    asOf: "2026-10-09",
     lede: "Born out of the 2022 correction, the AI Cycle rode the build-out of artificial intelligence, the story everyone wanted to own. It is a market priced for a boom inside an economy that feels like a slowdown: her valuations sit at the top of the record while her people’s confidence sits at the bottom of it, and the distance between the two is the story of this cycle so far.",
-    sections: [ {
-      title: "The Economy",
-      text: "Prices run at {cpi}, well below where the cycle began but heating again, while real growth is {growth} and unemployment has drifted up to {unemployment}. The Fed’s rate stands at {fed}. Households keep spending, with consumer demand growing at {demand}, even as their confidence, at {confidence}, sits near the lowest the record holds since 1960. The strain has moved to the state: federal debt is {debt} of GDP and the budget runs at {deficit}."
-    }, {
-      title: "The Market",
-      text: "The S&P 500 has risen four years running and is up {sp} this year. Shiller CAPE stands at {cape}, a height the record reached only around 2000; the Buffett indicator, at {buffett}, is the highest it has ever been; and the equity risk premium has thinned to {premium}, so stocks now pay little more than bonds for their risk. Volatility is calm at {vix}. The market is not afraid; it is the economy beneath it that is tired."
-    } ],
+    elements: {
+      "AI Cycle": {
+        weather: "Autumn, and the stagflation kind: prices are running hot and heating again while growth sits just under its potential, the pairing this season is named for. The Fed has turned with it, from the cuts of 2024 and 2025 to its first hike since 2023, so policy is tightening again. The market has not flinched: the S&P 500 is having another bull year.",
+        activity: "The real economy is holding. Output is growing at a normal pace and productivity is running above its trend, so each worker is producing more. Hiring is the soft spot: jobs are still being added, but more slowly than her closed cycles usually managed, while unemployment stays low. The body is doing more with few new hands, which is efficient, and leaves little slack.",
+        mood: "The two halves of Mood point in opposite directions. Valuations are rich: the Buffett indicator is at Risk, past the fence of her closed cycles, and Shiller CAPE is well above their range. Sentiment splits the same way: the market itself is calm, with little fear priced in, while households read pessimistic and their confidence is at Risk. A market that pays up while the people beneath it feel poorer is the gap at the centre of this cycle.",
+        desire: "Spending holds up: discretionary spending and retail sales are both inside their normal ranges, and shoppers lean less on credit than they usually do. The strain sits in the market’s own appetite. Concentration is at Risk, the index resting on a few very large names, and the equity risk premium has thinned, so stocks pay little more than bonds for the risk they carry. Lenders, meanwhile, ask less than usual to take on default risk.",
+        circulation: "Money is moving slowly. The 10-year Treasury yield is rising and sits at Risk, well above the range of her closed cycles, while the spread between long and short rates is narrower than usual. The money supply grows at a steady pace, but each dollar changes hands less often than usual, so the pulse is weak even as the volume holds.",
+        stress: "Households carry little debt against their income, but they are saving very little, so the cushion against a bad month is thin. Investors are borrowing to buy stocks faster than her usual range. The heavier load sits with the state: federal debt is elevated, and the budget runs a large deficit while the economy is still growing."
+      },
+      "COVID-19 Cycle": {
+        weather: "Prices ran warm: Temperature averaged above the range of her closed cycles, at Attention, carrying the inflation that peaked in 2022. The Federal funds rate sat at Attention for the opposite reason, held far below her usual range by the years at zero, even after the fastest hikes since the 1980s. Growth ran at the top of its normal range, and the S&P 500 returned a Normal year on average despite the crash and the correction that closed the cycle.",
+        activity: "Output and hiring both fell short. GDP growth and job growth averaged below the range of her closed cycles, each at Attention, in a cycle that lost ground to the pandemic and spent much of its length winning it back. Unemployment stayed inside her normal range, and productivity growth held its usual pace.",
+        mood: "Every Mood reading sat at Attention. Valuations ran rich, with Shiller CAPE and the Buffett indicator both well above the range of her closed cycles. Fear ran higher than usual and confidence slipped just below her normal range, so the market paid up even while it felt uneasy.",
+        desire: "Shoppers spent freely: discretionary spending stayed inside her normal range and retail sales ran above it. Consumer credit grew more slowly than in her closed cycles, at Attention, so the spending leaned less on borrowing. Concentration risk was at Attention too, the index resting on fewer names than usual, while the equity risk premium held normal and lenders asked less than usual to take on default risk.",
+        circulation: "Money pooled rather than moved. The money supply grew faster than her normal range, at Attention, while each dollar changed hands so rarely that Pulse fell past the fence of her closed cycles, at Risk. The 10-year Treasury yield averaged below her range and the spread between long and short rates ran narrow, both at Attention, in a cycle that took rates to zero.",
+        stress: "Households came through in good shape: the savings rate stayed inside her normal range and debt against income ran lighter than usual. Margin debt grew more slowly than in her closed cycles, at Attention. The load fell on the state, with federal debt and the federal budget deficit both past the fence of her closed cycles, at Risk, the cost of the largest fiscal and monetary transfusion ever attempted."
+      },
+      "Big Tech Cycle": {
+        weather: "Prices stayed calm, with Temperature inside her normal range, and growth ran close to its potential. The Federal funds rate sat at Attention, well below the range of her closed cycles after seven years near zero. The S&P 500 still delivered a Normal return across one of the longest bull markets on record.",
+        activity: "The rebuilding was slow on every count. Unemployment averaged above the range of her closed cycles, while job growth, GDP growth and productivity growth all ran below it, each at Attention. It was a long recovery more than a strong one, with the weak wages of the decade showing in the real economy.",
+        mood: "Mood stayed largely settled. Shiller CAPE held inside her normal range, but the Buffett indicator ran above it, at Attention, as the market grew large against the economy beneath it. Fear sat below her usual range, a calm market, and confidence held normal.",
+        desire: "Households spent cautiously. Discretionary spending stayed inside her normal range, but retail sales and consumer credit both grew more slowly than in her closed cycles, at Attention. Concentration averaged below her usual range across the decade, even though the cycle ended with a handful of giants carrying the index, and the equity risk premium held normal. Lenders asked more than usual to take on default risk, at Attention.",
+        circulation: "Every Circulation reading sat at Attention. The 10-year Treasury yield averaged above the range of her closed cycles and the spread between long and short rates ran wide, a steep curve over short rates near zero. Money moved sluggishly: each dollar changed hands less often than usual, and the money supply grew a little more slowly than her normal range.",
+        stress: "Households saved very little: the savings rate fell past the fence of her closed cycles, at Risk, and debt against income ran above her normal range. Margin debt grew at its usual pace. The state carried a heavier load than usual, with federal debt above the range of her closed cycles and the budget in a deeper deficit, both at Attention."
+      },
+      "Housing Cycle": {
+        weather: "The weather itself was mild: Temperature stayed inside her normal range, growth ran at the top of its own, and the Federal funds rate sat inside her usual range across the cheap money and the seventeen hikes that followed. The S&P 500 was the weak reading, at Attention, its average return well below the range of her closed cycles once the worst year since 1931 closed the cycle.",
+        activity: "Unemployment stayed inside her normal range and productivity growth held its usual pace. Job growth and GDP growth both fell short of her closed cycles, each at Attention, a rebuild that never ran at full strength.",
+        mood: "Mood read Normal across the board. Shiller CAPE and the Buffett indicator sat near the top of her normal range, fear stayed low, and confidence held steady, with little in the sentiment to warn of the subprime collapse that ended the cycle.",
+        desire: "Spending was softer than usual: discretionary spending grew more slowly than in her closed cycles, at Attention, though retail sales stayed inside her normal range. Consumer credit also grew more slowly than her usual range, at Attention. Concentration and default risk held normal, and the equity risk premium sat at the very bottom of her range, so stocks paid little more than bonds.",
+        circulation: "Money moved fast but grew slowly. Each dollar changed hands more often than in her closed cycles, and the money supply grew more slowly than her normal range, both at Attention.",
+        stress: "Households saved very little: the savings rate fell past the fence of her closed cycles, at Risk, a thin cushion going into the crash. Investors borrowed to buy stocks faster than her usual range, at Attention. The state’s books stayed inside her normal range, with federal debt at its upper edge and a modest deficit."
+      },
+      "Dot-Com Cycle": {
+        weather: "Weather stayed Normal throughout. Prices were calm, held down by cheap imports, a strong dollar and a productivity boom, and growth ran close to its potential. The Federal funds rate sat inside her usual range through the hikes of 1999–2000 and the hard cuts after, and the S&P 500 returned a Normal year on average, the mania and its three losing years taken together.",
+        activity: "The real economy was healthy. Unemployment, job growth and GDP growth all stayed inside her normal range across nine years of uninterrupted growth, and productivity growth ran near the top of it, the productivity boom of the decade showing through.",
+        mood: "Shiller CAPE ran above the range of her closed cycles, at Attention, the price of the internet mania. The Buffett indicator, fear and confidence all read Normal, with confidence a touch above her usual range after a decade of building.",
+        desire: "Spending and borrowing were healthy, with discretionary spending at the top of her normal range and consumer credit inside it. The strain was in the market’s appetite: the equity risk premium fell below the range of her closed cycles, at Attention, so stocks paid little more than bonds. Lenders asked a normal price to take on default risk.",
+        circulation: "Money raced. Each dollar changed hands so often that Pulse went past the fence of her closed cycles, at Risk, while the money supply grew more slowly than her normal range, at Attention: a small stock of money worked very hard.",
+        stress: "Households saved less than in her closed cycles, at Attention. The state was in good shape: federal debt stayed inside her normal range and the budget ran only a small deficit."
+      },
+      "Buyout Cycle": {
+        weather: "Temperature ran warmer than in her closed cycles, at Attention, with the Gulf War oil spike lifting inflation at the end. The Federal funds rate was at Attention too, above her usual range in the years after the defeat of inflation. Growth ran above its potential and the S&P 500 returned more than her normal range on average, a long bull market that came through the crash of 1987.",
+        activity: "Output and hiring grew at a normal pace, with GDP growth and job growth inside her range. Unemployment still averaged above the range of her closed cycles, and productivity growth ran just below it, both at Attention.",
+        mood: "Mood read Normal. Shiller CAPE and the Buffett indicator sat near the bottom of her normal range, so stocks were cheap by her measure, and confidence held steady.",
+        desire: "Desire was Normal throughout. Discretionary spending and consumer credit both grew inside her usual range, and the equity risk premium was generous, so stocks paid well over bonds for the risk they carried.",
+        circulation: "Money moved at its usual pace: Pulse and Volume both stayed inside her normal range.",
+        stress: "Households saved at a normal rate and federal debt stayed inside her range. The federal budget ran a deeper deficit than in her closed cycles, at Attention."
+      },
+      "Volcker Cycle": {
+        weather: "The heat was extreme. Temperature went past the fence of her closed cycles, at Risk, with inflation in double digits, and the Federal funds rate followed it there as Volcker drove rates up to break it. Growth sat at the bottom of its normal range, and the S&P 500 still returned a Normal year on average.",
+        activity: "Jobs held up: unemployment stayed at the top of her normal range and job growth near the top of its own. GDP growth was normal too. Productivity growth was the casualty, falling past the fence of her closed cycles, at Risk.",
+        mood: "Stocks were cheap: Shiller CAPE and the Buffett indicator both sat below the range of her closed cycles, which counts as Normal on that side. Confidence was the weak reading, below her usual range, at Attention, in a cycle of high inflation and two recessions.",
+        desire: "Spending broke down. Discretionary spending shrank on average, past the fence of her closed cycles, at Risk, while consumer credit grew faster than her usual range, at Attention. The equity risk premium ran above her range, so stocks paid well over bonds for the risk they carried.",
+        circulation: "Each dollar changed hands a little faster than in her closed cycles, at Attention, in a cycle of double-digit inflation. Volume stayed inside her normal range, the money supply growing at its usual pace.",
+        stress: "Stress stayed low. Households saved at a healthy rate inside her normal range, federal debt sat below the range of her closed cycles, and the budget deficit was a normal size."
+      },
+      "Bicentennial Cycle": {
+        weather: "The recovery came with heat. Temperature sat at Attention, above the range of her closed cycles, as inflation stayed close behind and climbed again into 1977. Growth ran near its potential and the federal funds rate stayed inside her normal range, the Fed cutting through the 1975 recession and slow to tighten after it. The S&P 500 rose faster than her closed cycles usually managed, the sharp rebound out of the 1973–74 collapse.",
+        activity: "Unemployment was the scar of the recession, at Attention and above the range of her closed cycles. The rest of the real economy recovered well: job growth and GDP growth were inside her normal range, and productivity grew faster than usual.",
+        mood: "Valuations started the cycle low. Shiller CAPE and the Buffett indicator both sat below the range of her closed cycles, so stocks were cheap against earnings and against the economy. Confidence was inside her normal range.",
+        desire: "Appetite came back strongly. Discretionary spending grew faster than her closed cycles usually managed, consumer credit expanded at a normal pace, and the equity risk premium sat above its range, so stocks paid well over bonds for the risk they carried.",
+        circulation: "Money changed hands at a normal pace, with Pulse inside her normal range. Volume was at Attention, above the range of her closed cycles: the money supply grew fast, in step with the inflation that never fell far behind.",
+        stress: "The load was light. Households saved more than her closed cycles usually did, and federal debt sat below its range. The federal budget stayed inside her normal range, though at its deeper-deficit edge after the recession."
+      },
+      "Nifty Fifty Cycle": {
+        weather: "Every weather reading turned to Attention. Temperature ran above the range of her closed cycles as the end of gold, the oil shock and lifted price controls drove inflation up, and the federal funds rate sat above its range, in double digits by the close. Growth fell below its potential, and the S&P 500 went nowhere across the cycle, below the range of her closed cycles, as the bear market of 1973–74 undid the rally in the blue chips.",
+        activity: "The real economy held up better than the market. Unemployment, job growth, GDP growth and productivity growth all stayed inside her normal range, even though the cycle closed in a deep recession.",
+        mood: "Valuations sat inside her normal range: Shiller CAPE and the Buffett indicator were neither stretched nor cheap across the cycle as a whole. Confidence was the weak point, at Attention and below the range of her closed cycles, as the embargo and the recession weighed on households.",
+        desire: "Discretionary spending grew at the bottom of her normal range, slowly enough to count as Attention. Consumer credit expanded at the top of its range, so households leaned on borrowing more than on income. The equity risk premium stayed inside her normal range.",
+        circulation: "Money changed hands at a normal pace, with Pulse inside her normal range. Volume sat at Attention, just above the range of her closed cycles, as the money supply grew quickly alongside rising prices.",
+        stress: "Households saved more than her closed cycles usually did, a cushion that mattered as the recession arrived. Federal debt sat at the low end of its range and the federal budget ran only a small deficit, both inside her normal range."
+      },
+      "Go-Stop Cycle": {
+        weather: "Prices warmed through the cycle: Temperature sat at Attention, above the range of her closed cycles, as war spending and easy money let inflation build to its peak at the close. The federal funds rate stayed inside her normal range on average, though the Fed tightened hard in 1968 and 1969. Growth fell below its potential and the S&P 500 rose more slowly than her closed cycles usually managed, both at Attention.",
+        activity: "The labour market was tight. Unemployment sat below the range of her closed cycles and job growth and GDP growth ran above it, all Normal. Productivity growth was the soft spot, at the bottom of her normal range.",
+        mood: "Confidence ran above the range of her closed cycles, the optimism of the go-go years.",
+        desire: "Spending and borrowing kept a normal pace, with discretionary spending and consumer credit both inside her normal range. The equity risk premium was at Attention, below the range of her closed cycles, so stocks paid little more than bonds for the risk they carried while speculation ran.",
+        circulation: "Circulation was steady. Pulse and Volume both sat inside her normal range, money changing hands at its usual pace and the money supply growing at its usual rate.",
+        stress: "Stress stayed low. Households saved slightly more than her closed cycles usually did, federal debt sat inside its range, and the federal budget ran only a small deficit despite the spending on Vietnam and the Great Society."
+      },
+      "Great Society Cycle": {
+        weather: "The expansion ran hot without overheating prices. Growth sat above its potential, while Temperature stayed inside her normal range until war and welfare spending warmed prices toward their peak in 1966. The federal funds rate and the S&P 500 were both inside her normal range, before the Fed’s 1966 tightening.",
+        activity: "This was the real economy at full strength. Unemployment sat below the range of her closed cycles, and job growth, GDP growth and productivity growth all ran above it, every reading Normal.",
+        mood: "Confidence ran above the range of her closed cycles, carried by the 1964 tax cut and the long expansion.",
+        desire: "Appetite was strong, and partly borrowed. Discretionary spending grew faster than her closed cycles usually managed, while consumer credit expanded above its range, at Attention, before the 1966 credit crunch. The equity risk premium was also at Attention, below its range, so stocks paid little more than bonds for the risk they carried.",
+        circulation: "Pulse was at Attention, below the range of her closed cycles, so each dollar changed hands less often than usual. Volume stayed inside her normal range, the money supply growing at its usual rate.",
+        stress: "The load was light. Households saved at the top of her normal range, and the federal budget ran a smaller deficit than her closed cycles usually did, despite the spending on the Great Society."
+      },
+      "Space Race Cycle": {
+        weather: "Prices stayed calm after their early peak in 1958, with Temperature inside her normal range. The federal funds rate sat at the low end of its range, though the Fed raised rates in 1959 against the boom and the gold leaving the country. Growth fell below its potential, at Attention, through the 1960 recession, while the S&P 500 rose at a normal pace as the market chased the new technology stocks.",
+        activity: "Hiring was the weak spot: job growth sat at Attention, below the range of her closed cycles. Output still grew at the top of her normal range and productivity ran above it, so the economy did more with few new hands, while unemployment stayed inside its range.",
+        desire: "Consumer credit grew at the bottom of her normal range, and the equity risk premium sat inside its range, so stocks paid a usual margin over bonds.",
+        stress: "Stress was quiet. Households saved at a normal rate and the federal budget ran only a small deficit, both inside her normal range."
+      },
+      "Suburban Cycle": {
+        weather: "A bright season. The S&P 500 rose faster than her closed cycles usually managed, led by 1954, the best year in the record. Temperature sat at the cool end of her normal range and growth ran near its potential. The federal funds rate was at Attention, below the range of her closed cycles, as money stayed cheap even after the Fed began leaning against the boom in 1955.",
+        activity: "Work was plentiful. Unemployment sat below the range of her closed cycles, and job growth, GDP growth and productivity growth all stayed inside her normal range, the cars, highways and new suburbs keeping the body busy.",
+        desire: "Consumer credit expanded at the top of her normal range as households bought cars and homes. The equity risk premium sat above its range, so stocks paid well over bonds for the risk they carried.",
+        stress: "Stress was at its lightest. Households saved at a normal rate, and the federal budget ran in surplus on average, above the range of her closed cycles."
+      },
+      "Baby Boom Cycle": {
+        weather: "The baby boom ran warm. Temperature sat at Attention, above the range of her closed cycles, as pent-up demand and then Korean War buying pushed prices up. The S&P 500 stayed inside her normal range, a steady market beneath the heat.",
+        activity: "Hiring was strong: job growth ran above the range of her closed cycles, on its good side, so it reads Normal as new households and post-war demand put people to work.",
+        desire: "Appetite showed most in borrowing. Consumer credit was at Risk, growing so fast it passed the fence of her closed cycles, as households made up for the years they had gone without. The market itself was not stretched: the equity risk premium sat above her range, so stocks paid well over bonds for the risk they carried.",
+        stress: "The household cushion held, with the savings rate at the low edge of her normal range. The state carried little strain: the federal budget ran ahead of the range of her closed cycles, in surplus rather than deficit, which reads Normal."
+      },
+      "WWII Cycle": {
+        weather: "The war economy ran hot. Temperature was at Attention, above the range of her closed cycles, as controls gave way and prices surged at the end. The S&P 500 did well, running above her normal range on its good side, so it reads Normal.",
+        activity: "With the economy at full stretch, job growth ran above the range of her closed cycles, on its good side, and reads Normal.",
+        desire: "The equity risk premium sat above the range of her closed cycles, so stocks paid well over bonds held low to fund the war, a generous reward for owning them."
+      },
+      "Keynesian Cycle": {
+        weather: "The weather was cold. Temperature sat below the range of her closed cycles, at Attention, with prices barely moving until the war orders came. The S&P 500 was at Attention too, well below her normal range, as one rebound year gave way to three bear years.",
+        desire: "The equity risk premium stayed inside her normal range, so stocks paid a usual margin over bonds while money was kept cheap by gold fleeing Europe."
+      },
+      "New Deal II Cycle": {
+        weather: "The weather was mild. Temperature sat inside her normal range as prices rose into their peak of May 1937, and the S&P 500 was inside its normal range too, the strong years of recovery balancing the break of 1937.",
+        desire: "The strain sat in the market’s own appetite. The equity risk premium was at Attention, below the range of her closed cycles, so stocks paid little more than bonds just before the Fed’s tightening broke the recovery."
+      },
+      "New Deal Cycle": {
+        weather: "Prices were still cool. Temperature sat at Attention, below the range of her closed cycles, as falling prices only slowly turned to rising after the dollar left gold. The S&P 500 ran above its normal range, on its good side, so it reads Normal, carried by the leap of 1933.",
+        desire: "The equity risk premium stayed inside her normal range, so stocks paid a usual margin over bonds as the banks reopened and money grew cheap again."
+      },
+      "Great Depression Cycle": {
+        weather: "This was a deep winter. Temperature was at Risk, past the fence of her closed cycles, as the crash turned into deflation and prices fell year after year. The S&P 500 was at Risk as well, far below her normal range, with stocks losing ground on average across the cycle.",
+        desire: "The equity risk premium sat at Attention, just below the range of her closed cycles, so stocks paid little more than bonds even as the boom of the late Twenties gave way to the crash."
+      }
+    },
     echoIntro: "Matched on how the last two years of eight market and economy readings unfolded, against every two-year run since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
-    figures: {
-      age: "length",
-      bull: "bull",
-      cpi: "sheet-metric-temp",
-      growth: "sheet-metric-gdp",
-      unemployment: "sheet-sign-activity",
-      fed: "sheet-sign-hormones",
-      demand: "sheet-sign-desire",
-      confidence: "sheet-sign-confidence",
-      debt: "sheet-metric-debt",
-      deficit: "sheet-marker-deficit",
-      sp: "sheet-sign-market",
-      cape: "sheet-metric-valuation",
-      buffett: "sheet-metric-buffett",
-      premium: "sheet-sign-premium",
-      vix: "sheet-sign-sentiment"
-    },
-    tiles: {
-      economy: [ "sheet-metric-temp", "sheet-sign-activity", "sheet-sign-hormones" ],
-      market: [ "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-sentiment" ]
-    },
     echo: [ "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-market", "sheet-sign-hormones", "sheet-metric-temp", "sheet-sign-activity", "sheet-metric-gdp" ]
   };
   var ECHO_WINDOW = 8;
@@ -49595,16 +49692,6 @@
     return labs().filter(function(l) {
       return l.id === id;
     })[0];
-  }
-  function figure(id) {
-    var l = labOf(id), v = l && l.per[openIdx()];
-    return v == null ? "—" : l.cat === "cycle" ? yearsWord(v) : fmt(l, v);
-  }
-  function fill(text) {
-    var figs = ai_insights_default.figures;
-    return text.replace(/\{(\w+)\}/g, function(_, k) {
-      return figs[k] ? figure(figs[k]) : "{" + k + "}";
-    });
   }
   function quartersOf(k) {
     var y = k.slice(0, 4);
@@ -49775,14 +49862,12 @@
     var p = panel(), list = echoes().slice(0, 8), names = listWords(ai_insights_default.echo.map(function(id) {
       return labOf(id).name;
     }));
-    return "<p>" + ai_insights_default.by + " wrote this reading from the app’s own data of " + asOfWords() + ". Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p><p>A moment is matched by how it got here, not by one quarter alone: the last " + echoWindowWord() + " quarters of " + names + ", two years, against every run of " + echoWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
+    return "<p>A moment is matched by how it got here, not by one quarter alone: the last " + echoWindowWord() + " quarters of " + names + ", two years, against every run of " + echoWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
       return +k < p.open && pathGap(p, +k);
     }).length + " in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than " + echoWindowWord() + " quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p><p>" + list.map(function(e) {
       return e.q + " · " + e.cycle.name + ": gap " + e.gap.toFixed(2);
     }).join("<br>") + "</p>";
   }
-  var AI_PAGE = "sheet-ai-insights";
-  var CHAPTER_MARKS = [ weatherSvg, marketSvg ];
   function rankAt(R, i) {
     var c = marketCycles[i], end = c.ongoing ? Infinity : c.to;
     var h = keyed(R.hist).filter(function(d) {
@@ -49797,6 +49882,9 @@
   }
   function pic(inner, cap2) {
     return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap2 + "</small></div>";
+  }
+  function riskFactors(m) {
+    return dxSys("", dxHead(diceSvg(), "Risk Factors") + risksPic(m));
   }
   function risksPic(m) {
     var i = marketCycles.indexOf(m.era), when = m.ongoing ? "today" : "in this cycle";
@@ -49813,16 +49901,6 @@
     return !rows.length ? pic("", "Nothing in Cycle Statistics reads as Risk " + when + ".") : pic(rows.map(function(x) {
       return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + "%</b></div>";
     }).join(""), "Every result Cycle Statistics reads as Risk " + when + ", past a fence of her closed cycles, placed against " + (m.ongoing ? "its own whole record: the share of past readings below it." : "its record to the cycle’s end: the share of readings below it."));
-  }
-  function tilesPic(ids) {
-    var p = panel();
-    return pic('<div class="ai-tiles">' + ids.map(function(id) {
-      var s = carried(quarterly(id), p.nowI), vals = [];
-      for (var i = p.nowI - 11; i <= p.nowI; i++) if (s[i] != null) vals.push(s[i]);
-      return '<div class="ai-tile"><small>' + ROSTER_BY[id].name + "</small><b>" + figure(id) + "</b>" + colPeek(vals, function() {
-        return "ai-col";
-      }) + "</div>";
-    }).join("") + "</div>", "The last three years, quarter by quarter.");
   }
   var trackCache = null;
   function segAt(q) {
@@ -49846,45 +49924,43 @@
     var runs = seasonRuns(segs);
     return '<span class="ai-path"><small>' + label + "</small>" + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + "</span>";
   }
-  var CHAPTER_PICS = [ function() {
-    return tilesPic(ai_insights_default.tiles.economy);
-  }, function() {
-    return tilesPic(ai_insights_default.tiles.market);
-  } ];
   function para(html) {
     return '<p class="ai-p">' + html + "</p>";
   }
-  var shownModel = null;
-  function aiModel() {
-    return shownModel || nowModel;
+  function byLine(cls) {
+    return '<p class="ai-by' + cls + '">Updated ' + asOfWords() + ".</p>";
   }
   function storyOf(m) {
-    return m.ongoing ? fill(ai_insights_default.lede) : m.era.blurb;
+    return m.ongoing ? ai_insights_default.lede : m.era.blurb;
   }
-  function leadBoxes(m) {
-    return trendBox(sparkleSvg(), m.era.name, para(storyOf(m))) + trendBox(orbitSvg(), "Interest Rates", para(ratesStory(m.era)));
+  function storyCard(m) {
+    return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(m), "ai-clamp") + (m.ongoing ? byLine(" story-by") : "") + learnMore(' data-story-more aria-expanded="false"', "Read more"));
   }
-  function chapters() {
-    return ai_insights_default.sections.map(function(s, i) {
-      return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]());
-    }).join("");
-  }
-  function todayBoxes() {
-    return trendBox(clockSvg(), "Closest Moments", para(ai_insights_default.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + '<p class="ai-by">Written by ' + ai_insights_default.by + " from the app’s data of " + asOfWords() + ".</p>" + moreRow(aiDetail());
-  }
-  function aiPage(m) {
-    return '<div class="ai-page">' + leadBoxes(m) + (m.ongoing ? chapters() : "") + trendBox(diceSvg(), "Risk Factors", risksPic(m)) + (m.ongoing ? todayBoxes() : "") + "</div>";
-  }
-  function buildAiPage(home) {
-    var sheet = metricSheet(AI_PAGE);
-    home.appendChild(sheet);
-    sheetRenderers[AI_PAGE] = function() {
-      sheet.innerHTML = aiPage(aiModel());
+  function wireStory(host) {
+    var btn = host.querySelector("[data-story-more]"), text = host.querySelector(".ai-clamp"), card = btn && btn.closest(".trend-card");
+    if (!btn || !text || !card) return;
+    var fit = function() {
+      if (text.clientHeight) btn.hidden = !(text.scrollHeight > text.clientHeight + 1 || card.classList.contains("is-open") || !!card.querySelector(".story-by"));
     };
+    fit();
+    if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(text);
+    btn.addEventListener("click", function() {
+      var open = card.classList.toggle("is-open");
+      btn.textContent = open ? "Read less" : "Read more";
+      btn.setAttribute("aria-expanded", String(open));
+    });
   }
-  function aiInsights(m) {
-    shownModel = m;
-    return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp") + learnMore());
+  function elementInsight(cat, cycle) {
+    var t = (ai_insights_default.elements[cycle] || {})[cat];
+    return t ? trendBox(sparkleSvg(), "AI Insights", para(t) + byLine(" insight-by")) : "";
+  }
+  function closestMoments() {
+    return dxSys("", dxHead(clockSvg(), "Closest Moments") + para(ai_insights_default.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + moreRow(aiDetail());
+  }
+  function lendAiParts() {
+    aiParts.risks = riskFactors;
+    aiParts.moments = closestMoments;
+    aiParts.insight = elementInsight;
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -49901,7 +49977,7 @@
   } ];
   function diagnosisHtml(m) {
     if (m.ongoing && !diagnoseToday()) return "";
-    return aiInsights(m) + chartDoor(m) + yearByYear(m);
+    return storyCard(m) + chartDoor(m) + yearByYear(m);
   }
   function yearByYear(m) {
     var _a;
@@ -49931,8 +50007,8 @@
     var runs = seasonRuns(inYear);
     return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) + yearMarket(y, ytd, ytd ? Math.max(1, Math.round(cycleYtdFraction * 4)) : 4);
   }
-  function stripGap(n, ytd, fill2) {
-    return n <= 0 ? "" : ytd ? fill2(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
+  function stripGap(n, ytd, fill) {
+    return n <= 0 ? "" : ytd ? fill(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
   }
   function yearMarket(y, ytd, q) {
     var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
@@ -49948,6 +50024,7 @@
     var host = document.getElementById("diagnosis");
     if (host && m) {
       host.innerHTML = diagnosisHtml(m);
+      wireStory(host);
       wireYearsMore(host);
       fitYearDots();
     }
@@ -49970,10 +50047,7 @@
     host.className = "dx";
     host.id = "diagnosis";
     home.insertBefore(host, home.firstChild);
-    buildDoors(home);
-  }
-  function buildDoors(home) {
-    buildAiPage(home);
+    lendAiParts();
     buildCycleChart();
   }
   function buildDiagnosis() {
@@ -50643,7 +50717,7 @@
       return r.heading === "falling";
     }
   } ];
-  var PHASES2 = [ {
+  var PHASES = [ {
     key: "reflation",
     name: "Reflation",
     growth: "slowing",
@@ -50707,7 +50781,7 @@
   }
   function phaseOf(r) {
     var up = r.regime === "expansion", cooling = r.heading === "falling";
-    return PHASES2[up ? cooling ? 1 : 2 : cooling ? 0 : 3];
+    return PHASES[up ? cooling ? 1 : 2 : cooling ? 0 : 3];
   }
   function arc(a0, a1) {
     var p = function(a) {
@@ -50716,7 +50790,7 @@
     return "M150,130L" + p(a1) + "A96,96 0 0 1 " + p(a0) + "Z";
   }
   function clockFace(now2) {
-    var parts = PHASES2.map(function(p) {
+    var parts = PHASES.map(function(p) {
       var m = (p.at[0] + p.at[1]) / 2 * Math.PI, x = 150 + 56 * Math.cos(m), y = 130 - 56 * Math.sin(m), cur = p === now2 ? " now" : "";
       return '<path class="clock-q' + cur + '" d="' + arc(p.at[0], p.at[1]) + '"/><text class="clock-name' + cur + '" x="' + x.toFixed(1) + '" y="' + (y - 3).toFixed(1) + '" text-anchor="middle">' + p.name + '</text><text class="clock-asset' + cur + '" x="' + x.toFixed(1) + '" y="' + (y + 13).toFixed(1) + '" text-anchor="middle">' + p.holds + "</text>";
     });
@@ -50728,7 +50802,7 @@
   }
   function drawClock() {
     var now2 = phaseOf(nowModel.reading);
-    var rows = PHASES2.map(function(p) {
+    var rows = PHASES.map(function(p) {
       return auxStat({
         label: p.name + (p === now2 ? " · today" : "") + "<small>Growth " + p.growth + ", prices " + p.prices + "</small>",
         value: p.holds,
@@ -52905,7 +52979,7 @@
     forgetLabs();
     forgetEchoes();
     repaintDiagnosis();
-    [ "chart-home", "sheet-find", "sheet-ai-insights" ].forEach(function(id) {
+    [ "chart-home", "sheet-find" ].forEach(function(id) {
       var el = byIdMaybe(id);
       if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id]();
     });

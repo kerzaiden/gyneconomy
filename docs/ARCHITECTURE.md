@@ -27,7 +27,7 @@ described under "How the live layer works" below; the decisions are these:
 - **A number outside its band is refused, never clamped.** A `set` that cannot place its value throws,
   and a throw is a refusal.
 - **Today's figure is computed, never painted (0.8.6).** A reading's figure, unit and word come from
-  `todayFace` (`era.ts`), read from the model whenever Indicators, Cycle Statistics or AI Insights draws, so a
+  `todayFace` (`era.ts`), read from the model whenever Indicators or Cycle Statistics draws, so a
   live document needs no painter to reach them and no repaint has to walk every door.
 - **A cached figure contradicting a load-time assertion warns**, and the suite turns the warning into a
   failing check. That is the design working. Since V698 the unit tests fail on a warning at boot too, so
@@ -123,7 +123,7 @@ the literal's own field names, so there is one schema and the fallback cannot dr
 #### The repaint layer
 
 ```text
-Nothing on screen holds today's figure for a repaint to edit. Indicators, Cycle Statistics and AI Insights
+Nothing on screen holds today's figure for a repaint to edit. Indicators and Cycle Statistics
 compute it from the model when they draw (`todayFace`, `todayValue`), and the inner pages draw on open
 through `sheetRenderers`. A live document changes the model; `repaintDerived` (on every reading) forgets the
 cached results and redraws whichever of those is open. The named painters left redraw what is visible
@@ -375,7 +375,7 @@ manifest's.
   `data` (the figures, their constants and sources), `activity` (the growth gap, job growth (nonfarm payrolls) and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `pulse-strips` (the Pulse history: one EKG strip per year, 0.9.25), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers), `fed-phases` (the Fed's phases on Analysis, and each cycle's rates story),
   `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
-  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: every cycle's narrative, rates and risks; on the open cycle, Claude's dated reading and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
+  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (the Cycle Story, Risk Factors, and on the open cycle Claude's reading of each element and Closest Moments, lent to `cycle-analysis` through `aiParts`), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -637,28 +637,27 @@ emotion at the closing month, its years, and what followed a year later. Every l
   slope is zero at every turn, so no curve overshoots a reading. The level figures all sit at the plot's left edge, and one that would cross the top is left out. The 1Y · 5Y · Cycle bar is
   the shared `.range-seg` toggle on `page.range["chart-home"]` (default Cycle) and redraws through `redrawSheet`, and the legend reads Easing, Tightening, Rates, Prices for every series. `rateSeries` is
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
-  1914 to 1954-06) before. The note under the legend is one explanation of tightening and easing, the same on every cycle; the cycle's `rates`
-  story, with `{peak}` and `{month}` filled from `cyclePeak`, is read in its AI Insights.
-- **AI Insights** (0.6.5, Cycle Insights, `ai-insights`): every cycle page's first door (`aiInsights(m)`), its lede
-  clamped to three lines (Claude's on the open cycle, the cycle's `blurb` on a closed one), with no health score
-  (Cycle Analysis carries it, 0.9.46), opening the page `sheet-ai-insights` (built by `buildAiPage`, drawn on open). Rendering
-  the door records its cycle (`shownModel`) and the page draws that cycle: one `trendBox` per chapter (the cycle's
-  name, holding the summary, then Interest Rates with the cycle's `ratesStory`, then on the open cycle only The
-  economy and The market, then Risk factors, then on the open cycle only Closest moments, the byline and More
-  details, all of which are about today). The chapters after the summary carry a
-  picture drawn from the readings: Risk factors takes every result Cycle Statistics reads as Risk (`riskLabs`, the one
-  judgement) and places each against its own record (`rankToDate`): today's latest value against all of it on the open cycle, a closed cycle's value against the record to its end; The economy and The market draw
-  `colPeek` tiles of the last twelve quarters for the readings in `tiles`; each closest moment draws its two-year season
-  strip then and now. Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
-  them is a `{token}` that `figures` maps to a Cycle analysis lab, so the card prints the open cycle's figure from
-  `labs()`, the same number the health chart shows. Rewrite the words and `asOf` when the data have moved enough
+  1914 to 1954-06) before. The note under the legend is the cycle's `rates`
+  story, with `{peak}` and `{month}` filled from `cyclePeak`.
+- **AI Insights** (0.6.5, AI Insights Everywhere, `ai-insights`): no page of its own. It lends three parts to
+  Cycle analysis through `aiParts` (filled by `lendAiParts` at boot, since `ai-insights` sits a layer above
+  `cycle-analysis` and may not be imported by it): `riskFactors` (every result Cycle Statistics reads as Risk,
+  `riskLabs`, the one judgement, each placed against its own record by `rankToDate`: today's latest value against
+  all of it on the open cycle, a closed cycle's value against the record to its end), `closestMoments` (the open
+  cycle only, each moment with its two-year season strip then and now, and the method behind More details) and
+  `elementInsight` (the reading of the element the filter picks for the cycle on screen (`elements` is keyed by cycle, then element), on the cycle or any of its years and quarters, drawn inside `.labs` below the
+  results and above More details). The cycle page's first card is `storyCard`, the Cycle Story: the lede (Claude's on the open cycle, the
+  cycle's `blurb` on a closed one) clamped to three lines, and `wireStory` shows "Read more" only while the text
+  overflows (measured when it has a height, and again through a `ResizeObserver`, since a past cycle's page is drawn
+  hidden). Its words are data, `src/data/ai-insights.json` (`lede`, `elements`, `echoIntro`, `asOf`), and carry no
+  figures, since the page under them shows them. Rewrite the words and `asOf` when the data have moved enough
   to change a sentence. `echoes()` builds a quarterly panel of the `echo` readings (monthly readings averaged into
   quarters, annual ones held across their year, each carried to the newest quarter, which takes the labs' own figures),
   scales each by its spread since 1970, and matches a path, not a point: the last `ECHO_WINDOW` quarters (two
   years) against every run of as many quarters that ends before the open cycle, by root-mean-square gap.
   A single quarter matched COVID-19's 2021 Q1, which shared today's levels after a crash and a rescue but is not
   the same moment; the path separates them and keeps the 1999 and 2018 matches. Matches closer together than the window
-  are one episode, shown once by its closest quarter. The card shows the top
+  are one episode, shown once by its closest quarter. Closest Moments shows the top
   three; More details holds the method and the top eight.
 - **One vocabulary** (V686, Keren's "Switch"): the Diagnosis names the Mood page's emotion, the cycle of market
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
@@ -699,8 +698,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
 - **One cycle, one card** (0.6.17, Cycle Insights): `diagnosisHtml` is one sequence for every cycle, open or closed,
   with no branch; the unit test "every cycle page, open or closed, is
   built in one shape" compares each closed cycle's containers and their children with today's (the peak mark and
-  the year rows, which vary with the data, aside). The Diagnosis is AI Insights (`aiInsights(m)`), Cycle Analysis
-  (`chartDoor`: the cycle's `story` from `marketCycles`, clamped to three lines, and its health score, jumping to the
+  the year rows, which vary with the data, aside). The Diagnosis is the Cycle Story (`storyCard(m)`), Cycle Analysis
+  (`chartDoor`: a `moreDoor` row, the More details row with a mark, jumping to the
   Analysis tab set to that cycle), then Year by Year. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
   hub opens on Indicators (Weather).
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.

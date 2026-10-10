@@ -74,19 +74,17 @@ function trendCard(tag: string, cls: string, attrs: string, mark: string, head: 
 export function trendDoor(open: string, title: string, mark: string, head: string, body: string){
   return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark, head, "", body);
 }
-export function trendJump(attrs: string, mark: string, head: string, body: string){
-  return trendCard("button", "", ' type="button"' + attrs, mark, head, "", body);
-}
-export function learnMore(attrs?: string){ return attrs ? '<button type="button" class="learn-more"' + attrs + '>Learn more</button>' : '<span class="learn-more">Learn more</span>'; }
+export function learnMore(attrs?: string, label?: string){ return attrs ? '<button type="button" class="learn-more"' + attrs + '>' + (label || "Learn more") + '</button>' : '<span class="learn-more">Learn more</span>'; }
 export function trendBox(mark: string, head: string, body: string){ return trendCard("section", " is-box", "", mark, head, "", body); }
 export function trendSoon(mark: string, head: string, body: string){
   return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);
 }
 export function moreRow(fullHtml: string | null | undefined, label?: string){
   if (!fullHtml) return "";
-  var idx = detailSlot(fullHtml);
-  return '<button type="button" class="more-row" data-detail-idx="' + idx + '">' +
-    '<span>' + (label || "More details") + '</span>' + CHEV + '</button>';
+  return moreDoor(' data-detail-idx="' + detailSlot(fullHtml) + '"', label || "More details");
+}
+export function moreDoor(attrs: string, label: string, mark?: string){
+  return '<button type="button" class="more-row"' + attrs + '><span' + (mark ? ' class="more-lead"><span class="more-mark" aria-hidden="true">' + mark + '</span>' : '>') + label + '</span>' + CHEV + '</button>';
 }
 export function viewMore(btn: HTMLElement, extra: HTMLElement[]){
   var label = btn.querySelector("span"), open = false;

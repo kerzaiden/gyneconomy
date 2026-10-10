@@ -7,7 +7,7 @@ import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor, IND } from "./cycle-analysis.ts";
-import { aiInsights, buildAiPage } from "./ai-insights.ts";
+import { lendAiParts, storyCard, wireStory } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
@@ -18,7 +18,7 @@ var DIAG_SRC = [
 ];
 function diagnosisHtml(m: CycleModel){
   if (m.ongoing && !diagnoseToday()) return "";
-  return aiInsights(m) + chartDoor(m) + yearByYear(m);
+  return storyCard(m) + chartDoor(m) + yearByYear(m);
 }
 function yearByYear(m: CycleModel){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
@@ -56,7 +56,7 @@ function yearMarket(y: number, ytd: boolean, q: number){
 }
 export function renderDiagnosis(m: CycleModel){
   var host = document.getElementById("diagnosis");
-  if (host && m){ host.innerHTML = diagnosisHtml(m); wireYearsMore(host); fitYearDots(); }
+  if (host && m){ host.innerHTML = diagnosisHtml(m); wireStory(host); wireYearsMore(host); fitYearDots(); }
 }
 export function fitYearDots(){
   var host = document.getElementById("diagnosis"), span = Math.max(typicalCycleYears * 4, Math.ceil(nowModel.elapsedYears * 4));
@@ -74,10 +74,7 @@ export function fitYearDots(){
 function diagnosisHost(home: HTMLElement){
   var host = document.createElement("article"); host.className = "dx"; host.id = "diagnosis";
   home.insertBefore(host, home.firstChild);
-  buildDoors(home);
-}
-function buildDoors(home: HTMLElement){
-  buildAiPage(home);
+  lendAiParts();
   buildCycleChart();
 }
 function buildDiagnosis(){

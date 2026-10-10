@@ -271,6 +271,9 @@ function hormonesInsight(){
   cards.push(lede('The Federal funds rate is the hormone: one signal, secreted on purpose, that the ' +
     'whole body then runs at the tempo of. Nothing on this page is measured off the economy \u2014 this is the ' +
     'instruction it was given.'));
+  cards.push(hiCard("Tightening and Easing", "",
+    "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. " +
+    "When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices."));
   cards.push(hiCard("Two Clocks", "",
     "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " +
     pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock \u2014 from the " +

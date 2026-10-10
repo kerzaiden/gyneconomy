@@ -97,22 +97,31 @@ settles it; none is open after V668.
   In the box's colour the rest of the ring could not be seen. (0.6.5)
 - **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
   inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
-- **Every cycle page carries AI Insights above Cycle Analysis, the open cycle and every closed one, and the cycle's
-  story is told inside the AI Insights page's first container.** The narrative belongs to AI Insights. A closed
-  cycle once had none, which left what the app knows about a past cycle (its narrative, its rates, its risks) with
-  nowhere to be read together; a closed cycle's door and lede are its `blurb`, the longer narrative, so its two
-  cards do not repeat the three-line story (Cycle Insights). Keren wanted a sophisticated analysis of the
-  cycle's narrative, the economy and the market, not three pass scores, and named it "AI Insights". It is a door
-  like the story (three lines, maybe three dots) opening an AI Insights page with one container per
-  chapter. Claude writes it: Keren chose "Claude, dated" over a live Generate button, which would change the
-  artifact's grant, and over rule-built sentences, which the name would oversell. It holds a lede, The economy and
-  The market, dated "Written by Claude from the app's data of …", its figures read live and its words rewritten each
-  release; those two chapters, the by-line and Closest moments are about today, so they stand on the open cycle only,
-  and a closed cycle's page is its narrative, its rates and its risks. Its Closest moments are computed: the last two years of today's eight market and economy readings matched
-  against every two-year run since 1970 (analog matching on a path; the readings, equal weights and window are
-  Claude's), one moment per episode, with its season and mood then, what is alike and what is apart. Resemblance
-  only, never what followed. The match reads the path that led there because one quarter alone put COVID-19's 2021
-  Q1 first, which Keren judged not the same, while she found the 1999 and 2018 matches good. (0.6.5, 0.6.6)
+- **AI Insights is not a page but a kind of text: Claude's dated reading sits inside the component it is about,
+  titled AI Insights with the sparkle where it is a container.** One page held the cycle's story,
+  rates, economy, market, risks and closest moments, while Analysis showed the same subjects without that reading,
+  so the two collided. Each subject now lives in one place: the cycle's rates story closes Interest Rates on
+  Analysis (the general account of tightening and easing went to the Federal funds rate page, where rates are
+  explained), Risk Factors stands on Analysis above Elements, Closest Moments below it, and each element, picked
+  from the filter, carries its own AI Insights below its readings and above More details, written about them,
+  for the cycle on screen, its years and quarters included: the reading belongs to the cycle (Keren), and every
+  cycle, open or closed, has one for each element it reads; an element with no reading in a cycle has none. It
+  carries no figures, since the page beneath shows them: the page is part of the story. Claude writes it: Keren
+  chose "Claude, dated" over a live Generate button, which would change the artifact's grant, and over rule-built
+  sentences, which the name would oversell. Each reading carries its date ("Updated 9 October 2026"; the
+  sparkle already says it is AI, and which AI does not matter); a closed cycle's is written in the past tense from
+  its averages and its own story. Closest Moments is about today, so it stands on the open cycle only. Closest Moments is
+  computed: the last two years of today's eight market and economy readings matched against every two-year run
+  since 1970 (analog matching on a path; the readings, equal weights and window are Claude's), one moment per
+  episode, with its season and mood then, what is alike and what is apart. Resemblance only, never what followed.
+  The match reads the path that led there because one quarter alone put COVID-19's 2021 Q1 first, which Keren
+  judged not the same; she keeps it while doubting it is sophisticated enough. (0.6.5, 0.6.6, AI Insights
+  Everywhere)
+- **Every cycle page opens on the Cycle Story, the book its mark: three lines, then "Read more" expands it in place
+  to the whole story.** The narrative belongs to the cycle page and is short enough to read there, so it opens no
+  page. The open cycle's story is Claude's dated lede, its date shown when expanded; a closed cycle's is its
+  `blurb`. The book, not the sparkle, because the story is the cycle's and the sparkle marks Claude's readings.
+  "Read more" shows only when the text runs past three lines. (AI Insights Everywhere)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)
@@ -309,9 +318,9 @@ settles it; none is open after V668.
   card's text, on Analysis, where it lands on the cycle Analysis shows.** Reading is what makes one want
   to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished, and
   one beside the words is redundant. (0.9.1, 0.9.40, 0.9.43, 0.9.44, 0.9.46, Learn More Links)
-- **A card that opens a page when tapped anywhere carries no chevron: AI Insights and Cycle Analysis on every
-  cycle page, and every other card built the same way.** The whole container is the door, so a chevron on its head
-  says nothing the card does not already do. AI Insights and Cycle Analysis end with "Learn more" under their text,
+- **A card that opens a page when tapped anywhere carries no chevron, and every card built the same way.** The
+  whole container is the door, so a chevron on its head says nothing the card does not already do; a row built as
+  More details (Cycle Analysis) keeps its chevron. A card that ends with "Learn more" under its text has it
   without a chevron, the same words as Interest Rates, so the reading ends where the door is. Every "Learn more" is
   the size of "View more" whatever text it ends; at the caption's size it was too small to see (Keren). (Chevronless
   Cards, Learn More Links, Oct 10, 2026)
@@ -577,17 +586,14 @@ settles it; none is open after V668.
   0.6.18, 0.8.8)
 - **The health score's title is set in Cormorant Garamond 500, the top bar's serif,** the app's feminine font.
   (0.6.6)
-- **The AI Insights page opens on one container titled by the cycle's name ("AI Cycle"), the cycle's story merged
-  into its summary; there is no separate story card and no door to Mood on the page.** A separate story container and
-  a "TL;DR" title were redundant beside it. Its text never names a Fed direction, which goes stale with the next
-  meeting; it gives the rate as it stands (the 0.6.12 review found "The Fed has eased" after the Sep 16 hike). The
-  cycle chapter is gone, because the emotional reading of each cycle has not been worked out yet; its opening, "Born
-  out of the 2022 correction", which Keren liked, now opens the summary. (0.6.6, 0.6.12, 0.6.13)
-- **After The market, a "Risk factors" container lists every result Cycle Statistics reads as Risk today,
-  each as a bar placing its latest value against its own record.** Keren liked the readings (the Buffett indicator
-  and the rest) as bars, and wanted them gathered as the risk factors the analysis detected. It
-  replaces the summary's three highest and three lowest readings, and reads the Analysis judgement, never its own.
-  (0.6.13)
+- **Claude's readings never name a Fed direction as news that goes stale with the next meeting, and give no
+  figure the page beside them already shows** (the 0.6.12 review found "The Fed has eased" after the Sep 16 hike).
+  The emotional reading of each cycle has not been worked out yet; the lede's opening, "Born out of the 2022
+  correction", which Keren liked, stays. (0.6.6, 0.6.12, 0.6.13, AI Insights Everywhere)
+- **Risk Factors lists every result Cycle Statistics reads as Risk, each as a bar placing its value against its
+  own record, on Analysis above Elements.** Keren liked the readings as bars, gathered as the risk factors the
+  analysis detected; it reads the Analysis judgement, never its own, and sits with the analysis that finds them.
+  (0.6.13, AI Insights Everywhere)
 
 ### Analysis
 
@@ -712,13 +718,15 @@ settles it; none is open after V668.
   every tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the
   left.** One consistent design system: a dark purple headline with its icon inside a container, everything below
   it, tidy and evenly spaced, with the count shown once, not four times. (0.8.5, 0.8.6, 0.8.8, Oct 6, 2026)
-- **Each cycle's Cycle analysis is a card under the cycle story that previews the visit note, and opens its own page with the cycle picker every history page wears.** The page holds only that
+- **Each cycle's Cycle analysis is a row under the Cycle Story, built as More details is (its mark, "Cycle
+  Analysis", a chevron), and opens its own page with the cycle picker every history page wears.** Keren likes the
+  More details row; a card holding the cycle's story said it twice beside the Cycle Story, and a preview of the
+  findings did not settle her, so the door is only a door. The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
   four), worst first; each result's colour bar stops short of the next. The row opens on the cycle on screen. The row
-  keeps the current cycle short, the preview carries the text so the page need not, the picker
-  matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart". The
-  health score left the preview: it is read in Cycle Statistics, so the card is the story and its door.
-  (0.3.0, 0.4.0, Learn More Links)
+  keeps the current cycle short, the picker
+  matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart".
+  (0.3.0, 0.4.0, Learn More Links, AI Insights Everywhere)
 - **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped,**
   since nothing could be read from it. (V612, V656, 0.2.0)
 - **Rhymes is retired, and the proposed weather analysis was declined as not informative; don't bring either
@@ -1397,7 +1405,7 @@ settles it; none is open after V668.
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
   - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index, which the
     page no longer is. (V664)
-  - Risk: the dice, wherever risk is named (Desire's Risk group and AI Insights' Risk Factors); Keren finds it says
+  - Risk: the dice, wherever risk is named (Desire's Risk group and Analysis' Risk Factors); Keren finds it says
     risk better than the umbrella, which stays only on the All Weather portfolio. (Oct 10, 2026)
   - The categories carry no mark in Search or on the Diagnosis headings; Keren chose to remove the Diagnosis
     headings' marks too. (V457, V490, V692)
@@ -1487,17 +1495,17 @@ settles it; none is open after V668.
   background should be organic, delicate and feminine, flowing like hormones or a flower, prominent without
   competing with the foreground. With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3, 0.6.13, 0.6.14)
-- **A cycle page is AI Insights, Cycle Analysis, Year by Year; Interest Rates stands on Analysis
+- **A cycle page is the Cycle Story, Cycle Analysis, Year by Year; Interest Rates stands on Analysis
   only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis. Cycle Analysis
-  is the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that cycle, and
-  its Learn more opens the Federal funds rate on that same cycle. The Health Score shows once, in Cycle Analysis, since the analysis is
-  what explains it; the AI Insights card and page carry none. (0.6.17, 0.9.46, Cycle Insights)
+  is a row, a shortcut to the Analysis tab set to that cycle. The Health Score shows
+  once, in Cycle Statistics, since the analysis is what explains it. (0.6.17, 0.9.46, Cycle Insights, AI Insights
+  Everywhere)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   A change once reached only today's page, because the Diagnosis branched on whether the cycle was open and the
-  browser suite expected the past cycle's old layout. The page is one sequence (AI Insights, Cycle Analysis, Year by
+  browser suite expected the past cycle's old layout. The page is one sequence (Cycle Story, Cycle Analysis, Year by
   Year), and a unit test fails if any closed cycle's page differs in shape from today's. (0.6.13, 0.6.17, 0.9.46,
   Cycle Insights)
-- **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Titles were a mix of dark
+- **Every container title on a cycle page reads like the Cycle Story's: bold, deep purple.** Titles were a mix of dark
   purple and black, and should be consistent; Interest Environment and Year by Year lost their small black
   capitals. (0.6.13)
 - **Every title is in title case: each word capitalised, short joining words (a, an, the, and, or, by, of, in,
@@ -1643,11 +1651,11 @@ settles it; none is open after V668.
   is needed. Under the axis, one centred grey legend on one line, read in this order: Easing (a blank square
   in a light grey border, since easing is not always the default), Tightening (a grey square in the same border), Rates, Prices
   (short lines in their colours). "Rates" stands for the federal funds rate and, before it, the discount rate, to
-  save room. Under it, one explanation of tightening and easing on the app's one grey, the same on every
-  cycle. Each cycle's rates story, one or two short lines on what the
-  rates did (`rates` in `marketCycles`), is the Interest Rates container in that cycle's AI Insights, after its
-  narrative: the card teaches the pattern and AI Insights tells the cycle, beside the rest of the cycle's reading,
-  while the Federal funds rate page reads the rate across every cycle (0.9.44, Cycle Insights); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
+  save room. Under it, on the app's one grey, the cycle's own rates story, one or two short lines on what the
+  rates did (`rates` in `marketCycles`), ending in Learn more, with no sparkle, which beside it said nothing: a
+  reader who sees the cycle's rates expects its story beside them. The general account of tightening and easing is a card on
+  the Federal funds rate page, which reads the rate across every cycle (0.9.44, Cycle Insights, AI Insights
+  Everywhere); its peak month, and its peak figure only where the figure is the story (the post-war surges, 1974,
   1980), are read from the record. Before the federal funds rate begins (July 1954) the line is the New York Fed's
   discount rate, so a tightening made another way (the doubling of reserve requirements in 1936–37) does
   not show. A low peak is still a peak: where prices topped in a calm cycle tells

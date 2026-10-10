@@ -142,17 +142,14 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
-test('the dial is titled by its cycle, its legend speaks in signs, and AI Insights opens on the cycle’s name, its story in it', () => {
+test('the dial is titled by its cycle, its legend speaks in signs, and the Cycle Story under it tells the cycle', () => {
   assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
   const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
   ['Prices &lt; 1%', 'Prices \u2264 3%', 'Prices &gt; 3%', 'Prices \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
-  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'AI Insights');
-  sheetRenderers['sheet-ai-insights']();
-  assert.equal(document.querySelector('#sheet-ai-insights [data-open="sheet-cat-mood"]'), null);
-  const first = document.querySelector('#sheet-ai-insights .trend-card');
-  assert.equal(first.querySelector('.trend-head').textContent, nowModel.era.name);
+  const first = document.querySelector('#diagnosis .trend-card');
+  assert.equal(first.querySelector('.trend-head').textContent, 'Cycle Story');
   assert.match(first.textContent, /2022 correction.*priced for a boom/);
-  assert.doesNotMatch(document.getElementById('sheet-ai-insights').textContent, /has eased/);
+  assert.equal(document.querySelector('[data-open="sheet-ai-insights"]'), null);
 });
 
 test('a live Fed cut reaches the figure, its word and the policy facts', async () => {
@@ -285,13 +282,14 @@ test('a boot failure with no stored documents is not swallowed', () => {
 
 test('a past cycle shows its own record on the Diagnosis, and Back restores today', () => {
   const heads = () => [...document.querySelectorAll('#diagnosis .trend-head')].map(h => h.textContent).join();
-  const lede = () => document.querySelector('#diagnosis [data-open="sheet-ai-insights"] .ai-clamp').textContent;
+  const lede = () => document.querySelector('#diagnosis .ai-clamp').textContent;
   const head = lede();
   const chevs = () => document.querySelectorAll('#diagnosis .trend-card .peek-chev').length;
   assert.equal(chevs(), 0);
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(heads(), 'AI Insights,Cycle Analysis');
+  assert.equal(heads(), 'Cycle Story');
+  assert.equal(document.querySelector('#diagnosis > .more-row[data-chart-cycle]').textContent, 'Cycle Analysis');
   assert.equal(chevs(), 0);
   assert.equal(lede(), ui.eraOpen.blurb);
   ui.eraPageBack();
@@ -356,7 +354,7 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
     assert.equal(li.querySelector('.lab-where').textContent.split(' \u00b7 ').pop(), word, R.name);
   });
   assert.equal(document.querySelector('#diagnosis .lab-score'), null);
-  assert.equal(document.querySelector('#diagnosis [data-chart-cycle] .learn-more').textContent, 'Learn more');
+  assert.equal(document.querySelector('#diagnosis [data-chart-cycle] .learn-more'), null);
   assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });

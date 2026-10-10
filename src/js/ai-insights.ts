@@ -1,18 +1,16 @@
 import AI from "../data/ai-insights.json" with { type: "json" };
-import { learnMore, moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
-import { metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
-import { clockSvg, diceSvg, orbitSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
+import { learnMore, moreRow, trendBox, trendText } from "./dom.ts";
+import { dxHead, dxSys, seasonPills, seasonRuns, seasonRunsLabel, strip } from "./render-core.ts";
+import { bookSvg, clockSvg, diceSvg, sparkleSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
-import { cycleModel, cycleOfYear, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
+import { cycleModel, cycleOfYear, moodTrack, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
 import type { CycleModel, TrackSeg } from "./model.ts";
-import { colPeek } from "./charts.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { keyed, ROSTER_BY } from "./roster.ts";
-import { fmt, labs, listWords, riskLabs, yearsWord } from "./cycle-analysis.ts";
-import { ratesStory } from "./fed-phases.ts";
+import { aiParts, fmt, labs, listWords, riskLabs } from "./cycle-analysis.ts";
 import type { Lab } from "./cycle-analysis.ts";
 
-// ---- AI Insights: every cycle's story, rates and risks; on the open cycle, Claude's dated reading and today's closest past moments ----
+// ---- AI Insights: every cycle's story, its risk factors, and on the open cycle Claude's dated reading of each element and today's closest past moments ----
 var ECHO_WINDOW = 8;
 function echoWindowWord(){ return ["four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][ECHO_WINDOW - 4] || String(ECHO_WINDOW); }
 type Echo = { q: string; i: number; cycle: Cycle; gap: number; per: number[]; then: number[] };
@@ -22,14 +20,6 @@ var ECHO_FROM = 1970;
 
 function openIdx(){ return marketCycles.findIndex(function(c){ return !!c.ongoing; }); }
 function labOf(id: string){ return labs().filter(function(l){ return l.id === id; })[0]; }
-function figure(id: string){
-  var l = labOf(id), v = l && l.per[openIdx()];
-  return v == null ? "—" : l.cat === "cycle" ? yearsWord(v) : fmt(l, v);
-}
-function fill(text: string){
-  var figs = AI.figures as Record<string, string>;
-  return text.replace(/\{(\w+)\}/g, function(_, k: string){ return figs[k] ? figure(figs[k]) : "{" + k + "}"; });
-}
 function quartersOf(k: string){
   var y = k.slice(0, 4);
   if (/ Q\d$/.test(k)) return [k];
@@ -119,18 +109,16 @@ function asOfWords(){
 }
 function aiDetail(){
   var p = panel(), list = echoes().slice(0, 8), names = listWords(AI.echo.map(function(id){ return labOf(id).name; }));
-  return '<p>' + AI.by + ' wrote this reading from the app’s own data of ' + asOfWords() + '. Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p>' +
-    '<p>A moment is matched by how it got here, not by one quarter alone: the last ' + echoWindowWord() + ' quarters of ' + names + ', two years, against every run of ' + echoWindowWord() + ' quarters since ' + ECHO_FROM + ' that ends before this cycle began, ' + Object.keys(p.rows).filter(function(k){ return +k < p.open && pathGap(p, +k); }).length + ' in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than ' + echoWindowWord() + ' quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p>' +
+  return '<p>A moment is matched by how it got here, not by one quarter alone: the last ' + echoWindowWord() + ' quarters of ' + names + ', two years, against every run of ' + echoWindowWord() + ' quarters since ' + ECHO_FROM + ' that ends before this cycle began, ' + Object.keys(p.rows).filter(function(k){ return +k < p.open && pathGap(p, +k); }).length + ' in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than ' + echoWindowWord() + ' quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p>' +
     '<p>' + list.map(function(e){ return e.q + ' · ' + e.cycle.name + ': gap ' + e.gap.toFixed(2); }).join('<br>') + '</p>';
 }
-var AI_PAGE = "sheet-ai-insights";
-var CHAPTER_MARKS = [weatherSvg, marketSvg];
 function rankAt(R: RosterRow, i: number){
   var c = marketCycles[i], end = c.ongoing ? Infinity : c.to;
   var h = keyed(R.hist).filter(function(d){ return d.v != null && +d.k.slice(0, 4) <= end; }).map(function(d){ return d.v as number; });
   return { R:R, pct:c.ongoing ? rankToDate(h.slice(0, -1), h[h.length - 1]) : rankToDate(h, labOf(R.id).per[i]) };
 }
 function pic(inner: string, cap: string){ return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap + '</small></div>'; }
+export function riskFactors(m: CycleModel){ return dxSys("", dxHead(diceSvg(), "Risk Factors") + risksPic(m)); }
 function risksPic(m: CycleModel){
   var i = marketCycles.indexOf(m.era), when = m.ongoing ? "today" : "in this cycle";
   var risks = riskLabs(i).map(function(l){ return ROSTER_BY[l.id]; }).filter(Boolean);
@@ -138,14 +126,6 @@ function risksPic(m: CycleModel){
   return !rows.length ? pic("", "Nothing in Cycle Statistics reads as Risk " + when + ".") : pic(rows.map(function(x){
     return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + '%</b></div>';
   }).join(""), "Every result Cycle Statistics reads as Risk " + when + ", past a fence of her closed cycles, placed against " + (m.ongoing ? "its own whole record: the share of past readings below it." : "its record to the cycle’s end: the share of readings below it."));
-}
-function tilesPic(ids: string[]){
-  var p = panel();
-  return pic('<div class="ai-tiles">' + ids.map(function(id){
-    var s = carried(quarterly(id), p.nowI), vals: number[] = [];
-    for (var i = p.nowI - 11; i <= p.nowI; i++) if (s[i] != null) vals.push(s[i]);
-    return '<div class="ai-tile"><small>' + ROSTER_BY[id].name + '</small><b>' + figure(id) + '</b>' + colPeek(vals, function(){ return "ai-col"; }) + '</div>';
-  }).join("") + '</div>', "The last three years, quarter by quarter.");
 }
 var trackCache: Record<string, TrackSeg> | null = null;
 function segAt(q: string){
@@ -162,29 +142,28 @@ function pathStrip(label: string, end: number){
   var runs = seasonRuns(segs);
   return '<span class="ai-path"><small>' + label + '</small>' + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + '</span>';
 }
-var CHAPTER_PICS = [function(){ return tilesPic(AI.tiles.economy); }, function(){ return tilesPic(AI.tiles.market); }];
 function para(html: string){ return '<p class="ai-p">' + html + '</p>'; }
-var shownModel: CycleModel | null = null;
-function aiModel(){ return shownModel || nowModel; }
-function storyOf(m: CycleModel){ return m.ongoing ? fill(AI.lede) : m.era.blurb; }
-function leadBoxes(m: CycleModel){
-  return trendBox(sparkleSvg(), m.era.name, para(storyOf(m))) +
-    trendBox(orbitSvg(), "Interest Rates", para(ratesStory(m.era)));
+function byLine(cls: string){ return '<p class="ai-by' + cls + '">Updated ' + asOfWords() + '.</p>'; }
+function storyOf(m: CycleModel){ return m.ongoing ? AI.lede : m.era.blurb; }
+export function storyCard(m: CycleModel){
+  return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(m), "ai-clamp") + (m.ongoing ? byLine(" story-by") : "") + learnMore(' data-story-more aria-expanded="false"', "Read more"));
 }
-function chapters(){ return AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join(""); }
-function todayBoxes(){
-  return trendBox(clockSvg(), "Closest Moments", para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
-    '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail());
+export function wireStory(host: HTMLElement){
+  var btn = host.querySelector<HTMLElement>("[data-story-more]"), text = host.querySelector<HTMLElement>(".ai-clamp"), card = btn && btn.closest<HTMLElement>(".trend-card");
+  if (!btn || !text || !card) return;
+  var fit = function(){ if ((text as HTMLElement).clientHeight) (btn as HTMLElement).hidden = !((text as HTMLElement).scrollHeight > (text as HTMLElement).clientHeight + 1 || (card as HTMLElement).classList.contains("is-open") || !!(card as HTMLElement).querySelector(".story-by")); };
+  fit();
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(text);
+  btn.addEventListener("click", function(){
+    var open = (card as HTMLElement).classList.toggle("is-open");
+    (btn as HTMLElement).textContent = open ? "Read less" : "Read more"; (btn as HTMLElement).setAttribute("aria-expanded", String(open));
+  });
 }
-function aiPage(m: CycleModel){
-  return '<div class="ai-page">' + leadBoxes(m) + (m.ongoing ? chapters() : "") + trendBox(diceSvg(), "Risk Factors", risksPic(m)) + (m.ongoing ? todayBoxes() : "") + '</div>';
+export function elementInsight(cat: string, cycle: string){
+  var t = ((AI.elements as Record<string, Record<string, string>>)[cycle] || {})[cat];
+  return t ? trendBox(sparkleSvg(), "AI Insights", para(t) + byLine(" insight-by")) : "";
 }
-export function buildAiPage(home: HTMLElement){
-  var sheet = metricSheet(AI_PAGE);
-  home.appendChild(sheet);
-  sheetRenderers[AI_PAGE] = function(){ sheet.innerHTML = aiPage(aiModel()); };
+export function closestMoments(){
+  return dxSys("", dxHead(clockSvg(), "Closest Moments") + para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') + moreRow(aiDetail());
 }
-export function aiInsights(m: CycleModel){
-  shownModel = m;
-  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp") + learnMore());
-}
+export function lendAiParts(){ aiParts.risks = riskFactors; aiParts.moments = closestMoments; aiParts.insight = elementInsight; }

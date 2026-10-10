@@ -52,10 +52,9 @@ function tightBands(): WaveBand[] {
 }
 function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
 var LEGEND = waveLegend([{ name: "Easing", kind: "blank" }, { name: "Tightening", kind: "band" }, { name: "Rates", kind: "line", color: "gold" }, { name: "Prices", kind: "line", color: "season-summer" }]);
-var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
 function footnoteHtml(m: CycleModel){
   var rate = ROSTER_BY["sheet-sign-hormones"];
-  return '<p class="fp-note">' + PHASES + ' ' + learnMore(' data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '"') + '</p>';
+  return '<p class="fp-note">' + ratesStory(m.era) + ' ' + learnMore(' data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '"') + '</p>';
 }
 export function ratesStory(c: Cycle){
   var m = c.ongoing ? nowModel : cycleModel(c), peak = cyclePeak(c.from + "-01", endMonthOf(m));

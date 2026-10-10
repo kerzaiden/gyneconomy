@@ -143,23 +143,21 @@ test('a reading past the band never prints as the band\'s edge', () => {
   assert.deepEqual([3.04, 2.96, 3.4, 0.96, 1.04, -0.04, -1.26].map(inflationFigure), ['3.04', '3.0', '3.4', '0.96', '1.0', '0.0', '\u22121.3']);
 });
 
-test('every cycle explains the phases under the chart and tells its rates story with its peak month read from the record, tightening shaded, the levels labelled and the rate named for its series', async () => {
+test('every cycle tells its own rates story under the chart, with its peak month read from the record, tightening shaded, the levels labelled and the rate named for its series', async () => {
   const { fedEnvironment, ratesStory } = await import('../../src/js/fed-phases.ts');
   const host = document.createElement('div');
-  const notes = new Set();
   for (const c of marketCycles) {
     assert.match(c.rates, /\{month\}/, c.name);
     host.innerHTML = fedEnvironment(cycleModel(c));
     const note = host.querySelector('.fp-note');
     assert.ok(note && /Learn more$/.test(note.textContent.trim()), c.name);
-    notes.add(note.textContent);
     const story = ratesStory(c);
     assert.ok(story.length > 40 && !/[{}]/.test(story), c.name + ' story');
+    assert.ok(note.textContent.startsWith(story), c.name + ' note');
     assert.ok(host.querySelectorAll('.wave-plot .wave-band').length <= fedPhases().filter(p => p.s > 0).length, c.name + ' bands');
     const levels = [...host.querySelectorAll('.wave-plot .wave-level')].map(t => t.textContent);
     assert.ok(levels.length && levels.every(t => /^\u2212?\d+%$/.test(t)), c.name + ' level labels ' + levels);
     const legend = [...host.querySelectorAll('.wave-legend li')].map(li => li.textContent).join('|');
     assert.equal(legend, 'Easing|Tightening|Rates|Prices', c.name + ' legend');
   }
-  assert.equal(notes.size, 1);
 });

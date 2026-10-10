@@ -33,6 +33,7 @@ export function personSvg(){ return markSvg(
 export function calendarSvg(){ return markSvg('<rect x="4" y="5.5" width="16" height="14.5" rx="2" stroke-width="1.8"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" stroke-width="1.8"/>'); }
 export function sparkleSvg(){ return markSvg('<path d="M10 3.5l1.6 4.9 4.9 1.6-4.9 1.6L10 16.5l-1.6-4.9L3.5 10l4.9-1.6z" stroke-width="1.8"/>' +
   '<path d="M18 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" stroke-width="1.7"/>'); }
+export function bookSvg(){ return markSvg('<path d="M12 6.6C10 5.1 7.3 4.6 3.8 5v13.6c3.5-.4 6.2.1 8.2 1.6 2-1.5 4.7-2 8.2-1.6V5c-3.5-.4-6.2.1-8.2 1.6z" stroke-width="1.8"/><path d="M12 6.6v13.6" stroke-width="1.8"/>'); }
 export function umbrellaSvg(){ return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17 0z" stroke-width="1.8"/>' +
   '<path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>'); }
 export function slidersSvg(){ return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/>' +
