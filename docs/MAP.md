@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,936 lines** in 42 files, about 610 KB, roughly **173 thousand tokens**. No session can
+The source is **8,817 lines** in 42 files, about 603 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `924bded` on 2026-10-10.
+Generated from commit `cf4b7ff` on 2026-10-10.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `924bded` on 2026-10-10.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,193 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,188 | the whole stylesheet, every token and rule |
 | `page-body.html` | 247 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **790** top-level functions, **121** top-level vars, **380** exported names, **20** boots.
+Counts: **38** modules, **770** top-level functions, **119** top-level vars, **377** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -46,9 +46,9 @@ Counts: **38** modules, **790** top-level functions, **121** top-level vars, **3
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 146 | 12 | `data`, `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `readings`, `render-core`, `render-pages` |
 | `js/tabs-menu.ts` | 228 | 10 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
-| `js/repaint.ts` | 38 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
+| `js/repaint.ts` | 37 | 5 | `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 62 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
-| `js/ai-insights.ts` | 169 | 38 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/ai-insights.ts` | 56 | 16 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `render-core`, `roster` |
 | `js/charts.ts` | 239 | 32 | — |
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 493 | 135 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `live`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `render-pages`, `roster` |
@@ -95,7 +95,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:139`–145 |
 | 19 | `bootTabsMenu` | `js/tabs-menu.ts:216`–227 |
-| 20 | `bootRepaint` | `js/repaint.ts:25`–37 |
+| 20 | `bootRepaint` | `js/repaint.ts:24`–36 |
 
 ## Script, module by module
 
@@ -812,11 +812,11 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 11 | `repaintPressureChart` | `function repaintPressureChart(` |
-| 14 | `syncCape` | `function syncCape(` |
-| 15 | `repaintPolicy` | `function repaintPolicy(` |
-| 16 | `repaintDiagnosis` | `function repaintDiagnosis(` |
-| 19 | `repaintDerived` | `function repaintDerived(` |
+| 10 | `repaintPressureChart` | `function repaintPressureChart(` |
+| 13 | `syncCape` | `function syncCape(` |
+| 14 | `repaintPolicy` | `function repaintPolicy(` |
+| 15 | `repaintDiagnosis` | `function repaintDiagnosis(` |
+| 18 | `repaintDerived` | `function repaintDerived(` |
 
 ### `js/activity.ts`
 
@@ -832,48 +832,26 @@ falls in. **export** marks a name other modules import.
 
 ### `js/ai-insights.ts`
 
-#### AI Insights: every cycle's story, its risk factors, and on the open cycle Claude's dated reading of each element and today's closest past moments
+#### AI Insights: every cycle's story, its risk factors against their own record, and Claude's dated reading of each element
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14 | `ECHO_WINDOW` | `var ECHO_WINDOW =` |
-| 15 | `echoWindowWord` | `function echoWindowWord(` |
-| 18 | `MONTH_NAMES` | `var MONTH_NAMES =` |
-| 19 | `ECHO_FROM` | `var ECHO_FROM =` |
-| 21 | `openIdx` | `function openIdx(` |
-| 22 | `labOf` | `function labOf(` |
-| 23 | `quartersOf` | `function quartersOf(` |
-| 29 | `quarterly` | `function quarterly(` |
-| 39 | `lastQuarter` | `function lastQuarter(` |
-| 42 | `qIdx` | `function qIdx(` |
-| 43 | `qName` | `function qName(` |
-| 44 | `carried` | `function carried(` |
-| 51 | `panel` | `function panel(` |
-| 52 | `buildPanel` | `function buildPanel(` |
-| 67 | `pathGap` | `function pathGap(` |
-| 77 | `forgetEchoes` · export | `function forgetEchoes(` |
-| 78 | `echoes` · export | `function echoes(` |
-| 90 | `thenWords` | `function thenWords(` |
-| 97 | `pairWords` | `function pairWords(` |
-| 98 | `echoLine` | `function echoLine(` |
-| 106 | `asOfWords` | `function asOfWords(` |
-| 110 | `aiDetail` | `function aiDetail(` |
-| 115 | `keyWords` | `function keyWords(` |
-| 116 | `keyYear` | `function keyYear(` |
-| 117 | `standing` | `function standing(` |
-| 131 | `pic` | `function pic(` |
-| 132 | `riskFactors` · export | `function riskFactors(` |
-| 133 | `risksPic` | `function risksPic(` |
-| 142 | `segAt` | `function segAt(` |
-| 150 | `pathStrip` | `function pathStrip(` |
-| 156 | `para` | `function para(` |
-| 157 | `byLine` | `function byLine(` |
-| 158 | `storyOf` | `function storyOf(` |
-| 159 | `clampBody` | `function clampBody(` |
-| 160 | `storyCard` · export | `function storyCard(` |
-| 161 | `elementInsight` · export | `function elementInsight(` |
-| 165 | `closestMoments` · export | `function closestMoments(` |
-| 168 | `lendAiParts` · export | `function lendAiParts(` |
+| 11 | `MONTH_NAMES` | `var MONTH_NAMES =` |
+| 12 | `labOf` | `function labOf(` |
+| 13 | `asOfWords` | `function asOfWords(` |
+| 17 | `keyWords` | `function keyWords(` |
+| 18 | `keyYear` | `function keyYear(` |
+| 19 | `standing` | `function standing(` |
+| 33 | `riskDoor` | `function riskDoor(` |
+| 34 | `riskFactors` · export | `function riskFactors(` |
+| 35 | `riskRows` | `function riskRows(` |
+| 42 | `risksPic` | `function risksPic(` |
+| 47 | `byLine` | `function byLine(` |
+| 48 | `storyOf` | `function storyOf(` |
+| 49 | `clampBody` | `function clampBody(` |
+| 50 | `storyCard` · export | `function storyCard(` |
+| 51 | `elementInsight` · export | `function elementInsight(` |
+| 55 | `lendAiParts` · export | `function lendAiParts(` |
 
 ### `js/charts.ts`
 
@@ -1479,19 +1457,19 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 399 | tab bar (app-style segmented navigation) |
 | 430 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
 | 518 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 661 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 686 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 737 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 879 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 891 | The symptoms: a cycle's years against today |
-| 1,038 | yield curve charts |
-| 1,062 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,081 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,094 | un-inversion-to-recession historical lag panel |
-| 1,103 | the reading's tag |
-| 1,107 | info icon + popover (progressive disclosure for longer notes) |
-| 1,121 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,184 | footer |
+| 656 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 681 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 732 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 874 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 886 | The symptoms: a cycle's years against today |
+| 1,033 | yield curve charts |
+| 1,057 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,076 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,089 | un-inversion-to-recession historical lag panel |
+| 1,098 | the reading's tag |
+| 1,102 | info icon + popover (progressive disclosure for longer notes) |
+| 1,116 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,179 | footer |
 
 ## Markup landmarks
 

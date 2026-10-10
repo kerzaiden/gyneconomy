@@ -102,7 +102,7 @@ settles it; none is open after V668.
   rates, economy, market, risks and closest moments, while Analysis showed the same subjects without that reading,
   so the two collided. Each subject now lives in one place: the cycle's rates story closes Interest Rates on
   Analysis (the general account of tightening and easing went to the Federal funds rate page, where rates are
-  explained), Risk Factors stands on Analysis above Elements, Closest Moments below it, and each element, picked
+  explained), Risk Factors stands on Analysis above Elements, and each element, picked
   from the filter, carries its own insights below its readings and above More details, titled by the element (Weather
   Insights, Mood Insights: the sparkle already says it is AI, and one title on every element left the reader
   unsure which they were reading), three lines with Read more like the Cycle Story, written about them,
@@ -112,13 +112,10 @@ settles it; none is open after V668.
   chose "Claude, dated" over a live Generate button, which would change the artifact's grant, and over rule-built
   sentences, which the name would oversell. Each reading carries its date ("Updated 9 October 2026"; the
   sparkle already says it is AI, and which AI does not matter); a closed cycle's is written in the past tense from
-  its averages and its own story. Closest Moments is about today, so it stands on the open cycle only. Closest Moments is
-  computed: the last two years of today's eight market and economy readings matched against every two-year run
-  since 1970 (analog matching on a path; the readings, equal weights and window are Claude's), one moment per
-  episode, with its season and mood then, what is alike and what is apart. Resemblance only, never what followed.
-  The match reads the path that led there because one quarter alone put COVID-19's 2021 Q1 first, which Keren
-  judged not the same; she keeps it while doubting it is sophisticated enough. (0.6.5, 0.6.6, AI Insights
-  Everywhere)
+  its averages and its own story. Closest Moments, today matched to past two-year paths, is retired: Keren
+  wants the moments that resemble today found by what needs attention, the way financial media say "highest
+  since", and Risk Factors' since-dates now say it without a second matching to explain. (0.6.5, 0.6.6, AI Insights
+  Everywhere, Element Insights)
 - **Every cycle page opens on the Cycle Story, the book its mark: three lines, then "Read more" expands it in place
   to the whole story.** The narrative belongs to the cycle page and is short enough to read there, so it opens no
   page. The open cycle's story is Claude's dated lede, its date shown when expanded; a closed cycle's is its
@@ -597,7 +594,10 @@ settles it; none is open after V668.
   a reading is at risk; Keren wants where we are, the way financial media put it: the highest on record, or
   the highest since a date, and the record and when it was set. Each line names where its record starts, since
   some records are short. The open cycle reads its latest value; a closed cycle its most extreme value inside the
-  cycle, against the record before it. It reads the Analysis judgement, never its own.
+  cycle, against the record before it. It reads the Analysis judgement, never its own. Each row reads like an
+  Elements row, in market language: the name with its date, the value in red with its triangle, the record on a
+  line below, and no footnote, since Elements already explains the judgement. Tapping it opens that cycle's
+  Elements filtered to Risk; a last row counts the readings at Attention and opens Elements on them.
   (0.6.13, AI Insights Everywhere, Element Insights)
 
 ### Analysis

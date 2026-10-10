@@ -43,7 +43,7 @@ const watch = (pg, tag) => {
   });
   return mine;
 };
-const openFind = async p => { await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p); };
+const openFind = async p => { await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]:not([data-ind-tier])'); await settle(p); };
 const filt = async (p, sel) => {
   if (!await p.evaluate(() => !!document.querySelector('#detail-modal-body .ind-filter'))) await click(p, '#sheet-find .lab-filter');
   await click(p, '#detail-modal-body ' + sel); await settle(p);
@@ -533,7 +533,7 @@ async function openPage(p, url, sheet) {
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const door = await p.evaluate(() => ({ first: document.getElementById('chart-home').firstElementChild.className,
       rows: [...document.querySelectorAll('#chart-home .insight-row')].map(b => b.dataset.indCat).join() }));
-    await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p);
+    await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]:not([data-ind-tier])'); await settle(p);
     const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
     (all.title === 'Elements' && all.shown === 'weather,activity,mood,desire,circulation,stress')
@@ -808,7 +808,7 @@ async function openPage(p, url, sheet) {
   await p.close();
 
   const readLive = () => {
-    document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home button.dx-sys-head[data-open="sheet-find"]').click();
+    document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home button.dx-sys-head[data-open="sheet-find"]:not([data-ind-tier])').click();
     const fig = id => { const b = document.querySelector('#sheet-find .lab-row[data-open="' + id + '"] .lab-res b'); return b ? b.textContent.trim() : null; };
     return { fgNum: fig('sheet-sign-sentiment'), yld: fig('sheet-sign-pressure') };
   };
@@ -865,7 +865,7 @@ async function openPage(p, url, sheet) {
     const roster = await g.evaluate(() => {
       const G = window.__GYN, R = G.ROSTER, step = G.steps.filter(s => s.name === 'checkRoster')[0];
       if (!R || !step) return null;
-      document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home button.dx-sys-head[data-open="sheet-find"]').click();
+      document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home button.dx-sys-head[data-open="sheet-find"]:not([data-ind-tier])').click();
       const cards = [...document.querySelectorAll('#sheet-find .lab-row[data-open]')].map(c => c.dataset.open).sort();
       const warned = [], warn = console.warn;
       console.warn = m => warned.push(String(m));

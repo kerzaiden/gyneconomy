@@ -375,7 +375,7 @@ manifest's.
   `data` (the figures, their constants and sources), `activity` (the growth gap, job growth (nonfarm payrolls) and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `pulse-strips` (the Pulse history: one EKG strip per year, 0.9.25), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers), `fed-phases` (the Fed's phases on Analysis, and each cycle's rates story),
   `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
-  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (the Cycle Story, Risk Factors, and on the open cycle Claude's reading of each element and Closest Moments, lent to `cycle-analysis` through `aiParts`), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
+  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (the Cycle Story, Risk Factors and Claude's reading of each element, lent to `cycle-analysis` through `aiParts`), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -639,26 +639,23 @@ emotion at the closing month, its years, and what followed a year later. Every l
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
   1914 to 1954-06) before. The note under the legend is the cycle's `rates`
   story, with `{peak}` and `{month}` filled from `cyclePeak`.
-- **AI Insights** (0.6.5, AI Insights Everywhere, `ai-insights`): no page of its own. It lends three parts to
-  Cycle analysis through `aiParts` (filled by `lendAiParts` at boot, since `ai-insights` sits a layer above
+- **AI Insights** (0.6.5, AI Insights Everywhere, Element Insights, `ai-insights`): no page of its own. It lends two
+  parts to Cycle analysis through `aiParts` (filled by `lendAiParts` at boot, since `ai-insights` sits a layer above
   `cycle-analysis` and may not be imported by it): `riskFactors` (every result Cycle Statistics reads as Risk,
-  `riskLabs`, the one judgement, each placed against its own record by `rankToDate`: today's latest value against
-  all of it on the open cycle, a closed cycle's value against the record to its end), `closestMoments` (the open
-  cycle only, each moment with its two-year season strip then and now, and the method behind More details) and
-  `elementInsight` (the reading of the element the filter picks for the cycle on screen (`elements` is keyed by cycle, then element), on the cycle or any of its years and quarters, drawn inside `.labs` below the
-  results and above More details). The cycle page's first card is `storyCard`, the Cycle Story: the lede (Claude's on the open cycle, the
-  cycle's `blurb` on a closed one) clamped to three lines, and `wireStory` shows "Read more" only while the text
-  overflows (measured when it has a height, and again through a `ResizeObserver`, since a past cycle's page is drawn
-  hidden). Its words are data, `src/data/ai-insights.json` (`lede`, `elements`, `echoIntro`, `asOf`), and carry no
-  figures, since the page under them shows them. Rewrite the words and `asOf` when the data have moved enough
-  to change a sentence. `echoes()` builds a quarterly panel of the `echo` readings (monthly readings averaged into
-  quarters, annual ones held across their year, each carried to the newest quarter, which takes the labs' own figures),
-  scales each by its spread since 1970, and matches a path, not a point: the last `ECHO_WINDOW` quarters (two
-  years) against every run of as many quarters that ends before the open cycle, by root-mean-square gap.
-  A single quarter matched COVID-19's 2021 Q1, which shared today's levels after a crash and a rescue but is not
-  the same moment; the path separates them and keeps the 1999 and 2018 matches. Matches closer together than the window
-  are one episode, shown once by its closest quarter. Closest Moments shows the top
-  three; More details holds the method and the top eight.
+  `riskLabs`, the one judgement, each placed in its own record by `standing`: the open cycle's latest value, a closed
+  cycle's most extreme value inside the cycle, against the record before it; the side is the side of her range the
+  cycle's average falls past; "since" is the last earlier reading at least as far out, said only when it is two years
+  or more back, and every line names where its record starts; each row and the head carry `data-ind-tier`, which
+  `pickCat` reads to open Elements on that tier) and `elementInsight` (the reading of the element the
+  filter picks for the cycle on screen (`elements` is keyed by cycle, then element), on the cycle or any of its years
+  and quarters, drawn inside `.labs` below the results and above More details, titled by its element). The cycle
+  page's first card is `storyCard`, the Cycle Story: the lede (Claude's on the open cycle, the cycle's `blurb` on a
+  closed one) clamped to three lines. The element insights are clamped the same way, and `dom.wireClamps` wires
+  every "Read more" in a host: it shows while the text overflows or a dated line waits behind it (measured when it
+  has a height, and again through a `ResizeObserver`, since a past cycle's page is drawn hidden). The words are
+  data, `src/data/ai-insights.json` (`lede`, `elements`, `asOf`), and carry no figures, since the page under them
+  shows them. Rewrite the words and `asOf` when the data have moved enough to change a sentence. Closest Moments
+  (0.6.5 to Element Insights) is retired; `v0.9.59` is the last copy with its path matching.
 - **One vocabulary** (V686, Keren's "Switch"): the Diagnosis names the Mood page's emotion, the cycle of market
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
   `moodTrack` month at the close. The V664 seven price-and-VIX feelings (`readFeeling`, `marketFacts`, their
