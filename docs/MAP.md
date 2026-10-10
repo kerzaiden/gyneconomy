@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,955 lines** in 42 files, about 613 KB, roughly **174 thousand tokens**. No session can
+The source is **8,959 lines** in 42 files, about 613 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `371c1c3` on 2026-10-10.
+Generated from commit `ae94308` on 2026-10-10.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `371c1c3` on 2026-10-10.
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **789** top-level functions, **125** top-level vars, **375** exported names, **20** boots.
+Counts: **38** modules, **790** top-level functions, **125** top-level vars, **375** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -45,7 +45,7 @@ Counts: **38** modules, **789** top-level functions, **125** top-level vars, **3
 | `js/analysis.ts` | 82 | 6 | `data`, `dial-cycle`, `dom`, `format`, `history`, `live`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 146 | 12 | `data`, `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `readings`, `render-core`, `render-pages` |
-| `js/tabs-menu.ts` | 228 | 10 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
+| `js/tabs-menu.ts` | 232 | 11 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 38 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 62 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 191 | 42 | `charts`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
@@ -94,7 +94,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 16 | `bootAnalysis` | `js/analysis.ts:77`–81 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:139`–145 |
-| 19 | `bootTabsMenu` | `js/tabs-menu.ts:216`–227 |
+| 19 | `bootTabsMenu` | `js/tabs-menu.ts:220`–231 |
 | 20 | `bootRepaint` | `js/repaint.ts:25`–37 |
 
 ## Script, module by module
@@ -787,24 +787,25 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 13 | `seasonGrid` | `function seasonGrid(` |
 | 23 | `recessionLine` | `function recessionLine(` |
-| 27 | `seasonModelNote` | `function seasonModelNote(` |
-| 37 | `rangePos` | `function rangePos(` |
-| 42 | `cycleModelLine` | `function cycleModelLine(` |
-| 46 | `wireIdea` | `function wireIdea(` |
-| 49 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 27 | `seasonFacts` | `function seasonFacts(` |
+| 38 | `seasonModelNote` | `function seasonModelNote(` |
+| 41 | `rangePos` | `function rangePos(` |
+| 46 | `cycleModelLine` | `function cycleModelLine(` |
+| 50 | `wireIdea` | `function wireIdea(` |
+| 53 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 #### TAB NAVIGATION (Cycle / Analysis / Herstory / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 95 | `renderTopbar` | `function renderTopbar(` |
-| 124 | `wireTabKeys` | `function wireTabKeys(` |
+| 99 | `renderTopbar` | `function renderTopbar(` |
+| 128 | `wireTabKeys` | `function wireTabKeys(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 126 | `wireMenu` | `function wireMenu(` |
+| 130 | `wireMenu` | `function wireMenu(` |
 
 ### `js/repaint.ts`
 

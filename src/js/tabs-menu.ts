@@ -24,15 +24,19 @@ function recessionLine(){
   var r = recessionRecord();
   return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of the " + r.total + " quarters of the " + r.recessions + " NBER recessions fell in Autumn or Winter (" + r.autumn + " Autumn, " + r.winter + " Winter), seasons that hold " + r.share + "% of all quarters.";
 }
-function seasonModelNote(){
-  return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([
+function seasonFacts(){
+  return [
     "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock\u2019s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 growth is Balke and Gordon\u2019s quarterly real GNP, read against its own trend over the same peaks (" + GNP_TREND.toFixed(1) + "% a year).",
     "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
     "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model\u2019s 1\u20133% band, a point either side of the Fed\u2019s 2% target.",
     "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn. A trend that moves less than about a quarter point over the year is steady and keeps the prior direction.",
+    "<b>Disinflation and stagflation</b>: both are Autumn, growth below potential. Disinflation is inflation slowing while still positive, a word about prices alone; stagflation joins stagnation and inflation, prices heating while growth stalls.",
     recessionLine(),
     seasonWhy
-  ]) + srcBlock([CLOCK_SRC[0]]);
+  ];
+}
+function seasonModelNote(){
+  return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts(seasonFacts()) + srcBlock([CLOCK_SRC[0]]);
 }
 function rangePos(v: number){
   if (v < 1) return 0.28 * Math.max(0, Math.min(1, (v + 1) / 2));
