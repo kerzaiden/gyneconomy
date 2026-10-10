@@ -1,5 +1,5 @@
 import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
-import { byId, detailSlot, focusQuiet, learnMore, moreRow, need, trendJump, trendText, ui } from "./dom.ts";
+import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { setTopbar } from "./render-pages.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
@@ -299,12 +299,7 @@ function chartDetail(){
   ].concat(methodFacts(), ["<b>History, not forecast:</b> it describes her past, not what comes next."])) + srcBlock([FENCE_SRC, SD_SRC]);
 }
 export function chartDoor(m: CycleModel){
-  var i = marketCycles.indexOf(m.era);
-  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(standOut(i), "ai-clamp") + learnMore());
-}
-function standOut(i: number){
-  var at = atCycle(i), j = judged(at), named = function(t: string){ return j.filter(function(l){ return tier(l, at) === t; }).map(function(l){ return l.name; }); }, r = named("abnormal"), a = named("borderline");
-  return r.length ? "<b>Risk:</b> " + listWords(r) + "." : a.length ? "<b>Attention:</b> " + listWords(a) + "." : "Every reading is Normal.";
+  return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
 }
 var HOME_ID = "chart-home";
 function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string, text?: string){
@@ -386,7 +381,7 @@ function homeSections(i: number){
   return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) +
     dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
 }
-function aiAt(id: string){ var c = pageCycle(id); return page.mode[id] === "cycles" && c && c.ongoing ? aiParts.insight(findOf(id).cat) : ""; }
+function aiAt(id: string){ var c = cycleByName(page.cycles[id]) || openCycle(); return c.ongoing ? aiParts.insight(findOf(id).cat) : ""; }
 export var aiParts: { risks: (m: CycleModel) => string; moments: () => string; insight: (cat: string) => string } = { risks:function(){ return ""; }, moments:function(){ return ""; }, insight:function(){ return ""; } };
 function whenPicked(id: string){
   var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;

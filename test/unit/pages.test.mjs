@@ -170,6 +170,10 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
     assert.equal(box.querySelector('.ai-p').textContent, AI.elements[k], k);
     assert.doesNotMatch(AI.elements[k], /\d+(\.\d+)?%|\d×/, k + ' carries no figure');
   }
+  Object.assign(page.mode, { 'sheet-find': 'quarters' }); page.when['sheet-find'] = (nowModel.era.from + 1) + ' Q2'; page.cycles['sheet-find'] = nowModel.era.name;
+  sheetRenderers['sheet-find']();
+  assert.ok(document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card'), 'a quarter of the open cycle keeps its AI Insights');
+  page.mode['sheet-find'] = 'cycles'; page.when['sheet-find'] = undefined;
   for (const c of marketCycles.filter(c => !c.ongoing)) {
     renderDiagnosis(cycleModel(c));
     assert.equal(story().querySelector('.ai-clamp').textContent, c.blurb, c.name);

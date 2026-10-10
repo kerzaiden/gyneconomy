@@ -888,7 +888,10 @@
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
   .aux-stat + .method-say{ margin-top:24px; }
   .method-card .more-row{ margin-top:20px; }
-  .labs .more-row{ margin-top:0; }
+  .labs .more-row, .dx > .more-row{ margin-top:0; }
+  .more-lead{ display:inline-flex; align-items:center; gap:10px; }
+  .more-mark{ display:inline-flex; width:18px; height:18px; }
+  .more-mark svg{ width:100%; height:100%; }
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }

@@ -879,7 +879,10 @@
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
   .aux-stat + .method-say{ margin-top:24px; }
   .method-card .more-row{ margin-top:20px; }
-  .labs .more-row{ margin-top:0; }
+  .labs .more-row, .dx > .more-row{ margin-top:0; }
+  .more-lead{ display:inline-flex; align-items:center; gap:10px; }
+  .more-mark{ display:inline-flex; width:18px; height:18px; }
+  .more-mark svg{ width:100%; height:100%; }
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
@@ -1678,9 +1681,6 @@
   function trendDoor(open, title, mark2, head, body) {
     return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark2, head, "", body);
   }
-  function trendJump(attrs, mark2, head, body) {
-    return trendCard("button", "", ' type="button"' + attrs, mark2, head, "", body);
-  }
   function learnMore(attrs, label) {
     return attrs ? '<button type="button" class="learn-more"' + attrs + ">" + (label || "Learn more") + "</button>" : '<span class="learn-more">Learn more</span>';
   }
@@ -1692,8 +1692,10 @@
   }
   function moreRow(fullHtml, label) {
     if (!fullHtml) return "";
-    var idx = detailSlot(fullHtml);
-    return '<button type="button" class="more-row" data-detail-idx="' + idx + '"><span>' + (label || "More details") + "</span>" + CHEV + "</button>";
+    return moreDoor(' data-detail-idx="' + detailSlot(fullHtml) + '"', label || "More details");
+  }
+  function moreDoor(attrs, label, mark2) {
+    return '<button type="button" class="more-row"' + attrs + "><span" + (mark2 ? ' class="more-lead"><span class="more-mark" aria-hidden="true">' + mark2 + "</span>" : ">") + label + "</span>" + CHEV + "</button>";
   }
   function viewMore(btn, extra) {
     var label = btn.querySelector("span"), open = false;
@@ -46884,7 +46886,7 @@
       }
     });
     document.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt");
+      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row[data-detail-idx], .bh-opt");
       if (btn) {
         if (btn.closest("summary")) e.preventDefault();
         openFrom(btn.getAttribute("data-detail-idx"), btn);
@@ -49225,18 +49227,7 @@
     return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, SD_SRC ]);
   }
   function chartDoor(m) {
-    var i = marketCycles.indexOf(m.era);
-    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(standOut(i), "ai-clamp") + learnMore());
-  }
-  function standOut(i) {
-    var at = atCycle(i), j = judged(at), named = function(t) {
-      return j.filter(function(l) {
-        return tier(l, at) === t;
-      }).map(function(l) {
-        return l.name;
-      });
-    }, r = named("abnormal"), a = named("borderline");
-    return r.length ? "<b>Risk:</b> " + listWords(r) + "." : a.length ? "<b>Attention:</b> " + listWords(a) + "." : "Every reading is Normal.";
+    return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
   }
   var HOME_ID = "chart-home";
   function statRow(name, v, of, side2, page2, cls, text) {
@@ -49365,8 +49356,8 @@
     return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
   }
   function aiAt(id) {
-    var c = pageCycle(id);
-    return page.mode[id] === "cycles" && c && c.ongoing ? aiParts.insight(findOf(id).cat) : "";
+    var c = cycleByName(page.cycles[id]) || openCycle();
+    return c.ongoing ? aiParts.insight(findOf(id).cat) : "";
   }
   var aiParts = {
     risks: function() {

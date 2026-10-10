@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f608105` on 2026-10-10. **108 components**, **18 shared patterns**.
+Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -92,9 +92,9 @@ Generated from commit `f608105` on 2026-10-10. **108 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `cycle-analysis.ts:chartDoor`, `fed-phases.ts:footnoteHtml` |
-| **`moreRow`** | `.more-row` | `ai-insights.ts:closestMoments`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights` |
-| **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendJump`, `dom.ts:trendSoon` |
+| **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `fed-phases.ts:footnoteHtml` |
+| **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `cycle-analysis.ts:chartDoor`, `dom.ts:moreRow` |
+| **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
 
@@ -261,8 +261,8 @@ renderer speaks. Listed most-used first.
 | **`isoDay`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
-| **`listWords`** | cycle-analysis.ts | 5 places |
 | **`meanOf`** | cycle-analysis.ts | 5 places |
+| **`moreRow`** | dom.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
 | **`pct`** | wave-chart.ts | 5 places |
 | **`pctl`** | format.ts | 5 places |
@@ -281,6 +281,7 @@ renderer speaks. Listed most-used first.
 | **`inflationFigure`** | model.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
+| **`listWords`** | cycle-analysis.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
@@ -288,7 +289,6 @@ renderer speaks. Listed most-used first.
 | **`recordInsight`** | reading.ts | 4 places |
 | **`tabBar`** | history.ts | 4 places |
 | **`yearsWord`** | cycle-analysis.ts | 4 places |
-| **`atCycle`** | cycle-analysis.ts | 3 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`barClass`** | cycle-analysis.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
@@ -304,7 +304,6 @@ renderer speaks. Listed most-used first.
 | **`fmtAsOf`** | format.ts | 3 places |
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
-| **`judged`** | cycle-analysis.ts | 3 places |
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
@@ -329,9 +328,7 @@ renderer speaks. Listed most-used first.
 | **`spreadSeries`** | render-pages.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tagFor`** | format.ts | 3 places |
-| **`tier`** | cycle-analysis.ts | 3 places |
 | **`todayFace`** | reading.ts | 3 places |
-| **`trendText`** | dom.ts | 3 places |
 | **`typical`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`word`** | cycle-analysis.ts | 3 places |

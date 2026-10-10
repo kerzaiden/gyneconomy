@@ -304,22 +304,22 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
-      return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('[data-chart-cycle] .trend-text').length,
-                   story: [...d.querySelectorAll('[data-chart-cycle] .trend-text')].map(x => /^(Risk|Attention): .+\.$|^Every reading is Normal\.$/.test(x.textContent)).join() === 'true',
+      return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('.more-row[data-chart-cycle] .more-mark svg').length,
+                   story: [...d.querySelectorAll('[data-chart-cycle]')].map(x => x.textContent.trim()).join() === 'Cycle Analysis',
                    doors: d.querySelectorAll('[data-open]:not([data-ind-when]), [data-chart-cycle]').length,
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-open="sheet-find"][data-ind-when]').length : 0,
-                   score: !d.querySelector('.trend-card .lab-score') && d.querySelectorAll('.trend-card .learn-more').length === 2,
+                   score: !d.querySelector('.trend-card .lab-score') && d.querySelectorAll('.trend-card .learn-more').length === 1,
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
-                   boxes: [...d.children].map(c => c.matches('.trend-card') && c.querySelector('[data-story-more]') ? 'story' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
+                   boxes: [...d.children].map(c => c.matches('.trend-card') && c.querySelector('[data-story-more]') ? 'story' : c.matches('.more-row[data-chart-cycle]') ? 'door' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
     const today = await read();
     await sweep(p);
     (today && today.visible && today.title === 'Cycle Story' && today.lead === 1 && today.story && today.cards === 0 &&
-     today.boxes === 'story,trend,sys' && today.doors === 1 && today.score && today.kicker === 'AI Cycle')
-      ? ok('the dial reads its cycle, and under it the Cycle Story, Cycle Analysis naming what it found, then the cycle year by year', today.title)
-      : bad('the dial reads its cycle, and under it the Cycle Story, Cycle Analysis naming what it found, then the cycle year by year', JSON.stringify(today));
+     today.boxes === 'story,door,sys' && today.doors === 1 && today.score && today.kicker === 'AI Cycle')
+      ? ok('the dial reads its cycle, and under it the Cycle Story, the Cycle Analysis row, then the cycle year by year', today.title)
+      : bad('the dial reads its cycle, and under it the Cycle Story, the Cycle Analysis row, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
@@ -330,7 +330,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'story,trend,sys' && past.doors === 1 && !past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'story,door,sys' && past.doors === 1 && !past.after &&
      yearRun(past.years) && past.opens === past.years.length)
       ? ok('the cycle reads year by year, newest first, each year opening Elements, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening Elements, today and at a close', JSON.stringify([today, past]));

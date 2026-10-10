@@ -645,7 +645,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   `riskLabs`, the one judgement, each placed against its own record by `rankToDate`: today's latest value against
   all of it on the open cycle, a closed cycle's value against the record to its end), `closestMoments` (the open
   cycle only, each moment with its two-year season strip then and now, and the method behind More details) and
-  `elementInsight` (the open cycle's reading of the element the filter picks, drawn inside `.labs` below the
+  `elementInsight` (the open cycle's reading of the element the filter picks, on the cycle or any of its years and quarters, drawn inside `.labs` below the
   results and above More details). The cycle page's first card is `storyCard`, the Cycle Story: the lede (Claude's on the open cycle, the
   cycle's `blurb` on a closed one) clamped to three lines, and `wireStory` shows "Read more" only while the text
   overflows (measured when it has a height, and again through a `ResizeObserver`, since a past cycle's page is drawn
@@ -699,7 +699,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   with no branch; the unit test "every cycle page, open or closed, is
   built in one shape" compares each closed cycle's containers and their children with today's (the peak mark and
   the year rows, which vary with the data, aside). The Diagnosis is the Cycle Story (`storyCard(m)`), Cycle Analysis
-  (`chartDoor`: the readings the analysis puts at Risk, or at Attention when none is, jumping to the
+  (`chartDoor`: a `moreDoor` row, the More details row with a mark, jumping to the
   Analysis tab set to that cycle), then Year by Year. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
   hub opens on Indicators (Weather).
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.

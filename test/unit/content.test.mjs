@@ -288,7 +288,8 @@ test('a past cycle shows its own record on the Diagnosis, and Back restores toda
   assert.equal(chevs(), 0);
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(heads(), 'Cycle Story,Cycle Analysis');
+  assert.equal(heads(), 'Cycle Story');
+  assert.equal(document.querySelector('#diagnosis > .more-row[data-chart-cycle]').textContent, 'Cycle Analysis');
   assert.equal(chevs(), 0);
   assert.equal(lede(), ui.eraOpen.blurb);
   ui.eraPageBack();
@@ -353,7 +354,7 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
     assert.equal(li.querySelector('.lab-where').textContent.split(' \u00b7 ').pop(), word, R.name);
   });
   assert.equal(document.querySelector('#diagnosis .lab-score'), null);
-  assert.equal(document.querySelector('#diagnosis [data-chart-cycle] .learn-more').textContent, 'Learn more');
+  assert.equal(document.querySelector('#diagnosis [data-chart-cycle] .learn-more'), null);
   assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });

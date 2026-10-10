@@ -103,7 +103,8 @@ settles it; none is open after V668.
   so the two collided. Each subject now lives in one place: the cycle's rates story closes Interest Rates on
   Analysis (the general account of tightening and easing went to the Federal funds rate page, where rates are
   explained), Risk Factors stands on Analysis above Elements, Closest Moments below it, and each element, picked
-  from the filter, carries its own AI Insights below its readings and above More details, written about them. It
+  from the filter, carries its own AI Insights below its readings and above More details, written about them,
+  for the cycle on screen, its years and quarters included: the reading belongs to the cycle (Keren). It
   carries no figures, since the page beneath shows them: the page is part of the story. Claude writes it: Keren
   chose "Claude, dated" over a live Generate button, which would change the artifact's grant, and over rule-built
   sentences, which the name would oversell. The element readings, their date ("Updated 9 October 2026"; the
@@ -315,9 +316,9 @@ settles it; none is open after V668.
   card's text, on Analysis, where it lands on the cycle Analysis shows.** Reading is what makes one want
   to learn more, so the door sits where the reading ends, not on the head; a chevron alone looked unfinished, and
   one beside the words is redundant. (0.9.1, 0.9.40, 0.9.43, 0.9.44, 0.9.46, Learn More Links)
-- **A card that opens a page when tapped anywhere carries no chevron: Cycle Analysis on every
-  cycle page, and every other card built the same way.** The whole container is the door, so a chevron on its head
-  says nothing the card does not already do. Cycle Analysis ends with "Learn more" under its text,
+- **A card that opens a page when tapped anywhere carries no chevron, and every card built the same way.** The
+  whole container is the door, so a chevron on its head says nothing the card does not already do; a row built as
+  More details (Cycle Analysis) keeps its chevron. A card that ends with "Learn more" under its text has it
   without a chevron, the same words as Interest Rates, so the reading ends where the door is. Every "Learn more" is
   the size of "View more" whatever text it ends; at the caption's size it was too small to see (Keren). (Chevronless
   Cards, Learn More Links, Oct 10, 2026)
@@ -715,15 +716,15 @@ settles it; none is open after V668.
   every tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the
   left.** One consistent design system: a dark purple headline with its icon inside a container, everything below
   it, tidy and evenly spaced, with the count shown once, not four times. (0.8.5, 0.8.6, 0.8.8, Oct 6, 2026)
-- **Each cycle's Cycle analysis is a card under the Cycle Story that previews what the analysis found: the readings at
-  Risk, by name, or those at Attention when none is at Risk, or that every reading is Normal.** It opens its own page with the cycle picker every history page wears. The page holds only that
+- **Each cycle's Cycle analysis is a row under the Cycle Story, built as More details is (its mark, "Cycle
+  Analysis", a chevron), and opens its own page with the cycle picker every history page wears.** Keren likes the
+  More details row; a card holding the cycle's story said it twice beside the Cycle Story, and a preview of the
+  findings did not settle her, so the door is only a door. The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
   four), worst first; each result's colour bar stops short of the next. The row opens on the cycle on screen. The row
   keeps the current cycle short, the picker
-  matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart". The
-  health score left the preview: it is read in Cycle Statistics. The cycle's story left it too: the narrative is
-  the Cycle Story's, and two cards telling it read as one said twice; a named finding is what makes one open the
-  analysis. (0.3.0, 0.4.0, Learn More Links, AI Insights Everywhere)
+  matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart".
+  (0.3.0, 0.4.0, Learn More Links, AI Insights Everywhere)
 - **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped,**
   since nothing could be read from it. (V612, V656, 0.2.0)
 - **Rhymes is retired, and the proposed weather analysis was declined as not informative; don't bring either
@@ -1494,7 +1495,7 @@ settles it; none is open after V668.
   animation keeps the slow breathing only. (0.6.3, 0.6.13, 0.6.14)
 - **A cycle page is the Cycle Story, Cycle Analysis, Year by Year; Interest Rates stands on Analysis
   only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis. Cycle Analysis
-  names what the analysis found and is a shortcut to the Analysis tab set to that cycle. The Health Score shows
+  is a row, a shortcut to the Analysis tab set to that cycle. The Health Score shows
   once, in Cycle Statistics, since the analysis is what explains it. (0.6.17, 0.9.46, Cycle Insights, AI Insights
   Everywhere)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
