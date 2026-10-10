@@ -1548,9 +1548,10 @@ settles it; none is open after V668.
   up its rule, and the last fact row keeps 10px under it.** Double lines broke the consistency of spacing and
   dividers across pages. (V282, V604)
 - **The app is one column, at most `--page-w` (590px) wide, centred; every page, the menu and the floating
-  buttons read it, and a phone never reaches it; from 1160px the tab bar becomes a sidebar on the left.** At
-  1180px the desktop view was too wide; Keren halved it and asked for Facebook's shape, a narrow feed beside a
-  sidebar. (— Narrower Desktop)
+  buttons read it, and a phone never reaches it. From 1100px the tab bar becomes a sidebar beside the column,
+  a solid container like the cycle cards, one gap from the feed.** At 1180px the desktop view was too wide;
+  Keren halved it and asked for Facebook's shape, a narrow feed with a sidebar in the same design language.
+  (— Narrower Desktop)
 
 ### Shape and size
 
