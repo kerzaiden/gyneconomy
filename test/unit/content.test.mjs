@@ -151,7 +151,7 @@ test('the dial is titled by its cycle, its legend speaks in signs, and the Weath
   assert.equal(first.dataset.open, 'sheet-report');
   assert.equal(first.querySelector('.wr-head').textContent, now.report.headline);
   assert.equal(first.querySelector('.ai-clamp').textContent, now.report.lede);
-  assert.match(first.querySelector('.wr-by').textContent, /^Updated \d+ \w+ 20\d\d\.$/);
+  assert.match(first.querySelector('.wr-by').textContent, /^\d+ \w+ 20\d\d$/);
   assert.equal(document.querySelector('[data-open="sheet-ai-insights"]'), null);
 });
 

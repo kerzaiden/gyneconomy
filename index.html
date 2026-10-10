@@ -42015,8 +42015,8 @@
   }
   var weather_report_default = {
     asOf: "2026-10-09",
-    headline: "A hot autumn, a calm market and an uneasy household",
-    lede: "Mrs. Market is in Autumn, the stagflation kind: prices running hot and growth just under its potential, with a Fed that has started raising rates again. The market has not flinched, up 14.4% this year, while consumer confidence sits a tenth of a point above its lowest since 1960.",
+    headline: "The 10-year climbs past every quarter since 2005",
+    lede: "The bond market moved first: the 10-year Treasury closed at 5.24% on 9 October, above every quarterly reading since 2005, a month after the Fed’s first hike since 2023. Prices are still heating, and the S&P 500 is up 14.4% this year.",
     story: "Born out of the 2022 correction, the AI Cycle rode the build-out of artificial intelligence, the story everyone wanted to own. It is a market priced for a boom inside an economy that feels like a slowdown: her valuations sit at the top of the record while her people’s confidence sits at the bottom of it, and the distance between the two is the story of this cycle so far.",
     elements: {
       weather: "Autumn, the stagflation kind. [Temperature](sheet-metric-temp) reads hot at 3.4% and is still heating, while the [Growth gap](sheet-sign-growth-gap) puts output a shade under its potential. The Fed has turned with it: the [Federal funds rate](sheet-sign-hormones) rose a quarter point in September, to 3.75–4.00%, its first hike since 2023. The [S&P 500](sheet-sign-market) has not flinched, up 14.4% this year.",
@@ -49696,12 +49696,12 @@
       return R ? '<button type="button" class="wr-link" data-open="' + id + '" data-title="' + R.name + '">' + label + "</button>" : label;
     });
   }
-  function updated() {
-    return "Updated " + dateWords(now.report.asOf);
+  function edition() {
+    return dateWords(now.report.asOf);
   }
   function reportCard(m) {
     var r = now.report, open = !!m.ongoing;
-    return trendDoor(REPORT_ID, "Weather Report", weatherSvg(), "Weather Report", '<span class="wr-head">' + (open ? r.headline : m.era.name) + "</span>" + trendText(plain(open ? r.lede : m.era.blurb), "ai-clamp") + '<span class="wr-by">' + (open ? updated() + "." : cycLabel(m.era).years) + "</span>" + learnMore(void 0, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
+    return trendDoor(REPORT_ID, "Weather Report", weatherSvg(), "Weather Report", '<span class="wr-head">' + (open ? r.headline : m.era.name) + "</span>" + trendText(plain(open ? r.lede : m.era.blurb), "ai-clamp") + '<span class="wr-by">' + (open ? edition() : cycLabel(m.era).years) + "</span>" + learnMore(void 0, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
   }
   function elements() {
     return dxSys(" wr-els", categoriesShown().map(function(c) {
@@ -49711,8 +49711,8 @@
   }
   function reportHtml(c) {
     var r = now.report, story = trendBox(bookSvg(), "Cycle Story", trendText(c.ongoing ? r.story : c.blurb));
-    var head = '<h2 class="wr-title">' + (c.ongoing ? r.headline : c.name) + '</h2><p class="wr-date">' + (c.ongoing ? c.name + " · " + updated() : cycLabel(c).years) + "</p>";
-    return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + riskFactors(c) + elements() + story : dxSys(" wr-top", head) + story + riskFactors(c);
+    var head = '<h2 class="wr-title">' + (c.ongoing ? r.headline : c.name) + '</h2><p class="wr-date">' + (c.ongoing ? c.name + " · " + edition() : cycLabel(c).years) + "</p>";
+    return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + story + riskFactors(c) + elements() : dxSys(" wr-top", head) + story + riskFactors(c);
   }
   function drawReport() {
     put(REPORT_ID + "-body", reportHtml(cycleByName(shown2.cycle) || openCycle()));

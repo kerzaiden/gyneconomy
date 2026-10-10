@@ -642,7 +642,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
 - **The Weather Report** (Weather Report, `ai-insights`): `reportCard(m)` opens every cycle page, a `trendDoor` to
   `sheet-report` carrying `data-report-cycle`, which a capturing click listener reads before the page opens, so
   `drawReport` draws the cycle the card was on. The open cycle's page is the edition in `now.report` (headline and
-  date, lede, Risk Factors, one `.wr-el` per category in `categoriesShown` order, the cycle's `story`); a closed
+  date, lede, the cycle's `story`, Risk Factors, one `.wr-el` per category in `categoriesShown` order); a closed
   cycle's is its name and years, its `blurb` and its Risk Factors. The words are data: `src/data/weather-report.json`
   (`asOf`, `headline`, `lede`, `story`, `elements` keyed by category), written with `[label](sheet-id)` links that
   `prose` turns into buttons opening that reading's page (`plain` strips them for the card). The edition is also

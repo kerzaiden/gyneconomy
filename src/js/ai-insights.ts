@@ -68,12 +68,12 @@ function prose(t: string){
     return R ? '<button type="button" class="wr-link" data-open="' + id + '" data-title="' + R.name + '">' + label + '</button>' : label;
   });
 }
-function updated(){ return "Updated " + dateWords(now.report.asOf); }
+function edition(){ return dateWords(now.report.asOf); }
 export function reportCard(m: CycleModel){
   var r = now.report, open = !!m.ongoing;
   return trendDoor(REPORT_ID, "Weather Report", weatherSvg(), "Weather Report",
     '<span class="wr-head">' + (open ? r.headline : m.era.name) + '</span>' + trendText(plain(open ? r.lede : m.era.blurb), "ai-clamp") +
-    '<span class="wr-by">' + (open ? updated() + "." : cycLabel(m.era).years) + '</span>' + learnMore(undefined, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
+    '<span class="wr-by">' + (open ? edition() : cycLabel(m.era).years) + '</span>' + learnMore(undefined, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
 }
 function elements(){
   return dxSys(" wr-els", categoriesShown().map(function(c){
@@ -83,8 +83,8 @@ function elements(){
 }
 function reportHtml(c: Cycle){
   var r = now.report, story = trendBox(bookSvg(), "Cycle Story", trendText(c.ongoing ? r.story : c.blurb));
-  var head = '<h2 class="wr-title">' + (c.ongoing ? r.headline : c.name) + '</h2><p class="wr-date">' + (c.ongoing ? c.name + " \u00b7 " + updated() : cycLabel(c).years) + '</p>';
-  return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + riskFactors(c) + elements() + story : dxSys(" wr-top", head) + story + riskFactors(c);
+  var head = '<h2 class="wr-title">' + (c.ongoing ? r.headline : c.name) + '</h2><p class="wr-date">' + (c.ongoing ? c.name + " \u00b7 " + edition() : cycLabel(c).years) + '</p>';
+  return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + story + riskFactors(c) + elements() : dxSys(" wr-top", head) + story + riskFactors(c);
 }
 function drawReport(){ put(REPORT_ID + "-body", reportHtml(cycleByName(shown.cycle) || openCycle())); }
 export function redrawReport(){ var s = byIdMaybe(REPORT_ID); if (s && !s.hidden) drawReport(); }

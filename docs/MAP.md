@@ -8,7 +8,7 @@ read it whole, so this file exists to get you to the right two hundred lines.
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `9478a19` on 2026-10-10.
+Generated from commit `c1cb2fe` on 2026-10-10.
 
 ## The page
 
@@ -855,7 +855,7 @@ falls in. **export** marks a name other modules import.
 | 58 | `riskFactors` | `function riskFactors(` |
 | 64 | `plain` | `function plain(` |
 | 65 | `prose` | `function prose(` |
-| 71 | `updated` | `function updated(` |
+| 71 | `edition` | `function edition(` |
 | 72 | `reportCard` · export | `function reportCard(` |
 | 78 | `elements` | `function elements(` |
 | 84 | `reportHtml` | `function reportHtml(` |

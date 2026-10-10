@@ -104,13 +104,15 @@ settles it; none is open after V668.
   Activity, Mood, Desire, Circulation, Stress), with each reading it names linking to its page, and Risk Factors
   inside it. The element insights of every cycle are gone, and so is the AI Insights sparkle. The cycle's story is
   folded in rather than kept as a second card, so every cycle page keeps one layout: today's report is the dated
-  edition (headline, lede, Risk Factors, the six elements, the cycle's story to close), and a closed cycle's is
+  edition (headline, date and lede, then the cycle's story, Risk Factors and the six elements), and a closed cycle's is
   the short version, its story and its own Risk Factors, from data the app already holds. Closest Moments stays
   retired: the moments that resemble today are found by what needs attention, the way financial media say "highest
   since", which Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report)
 - **The Weather Report card opens every cycle page, the weather its mark: its headline, three lines of its lede,
   its date, then "Read the report", and the whole card opens the report's page.** A report is a page to read, not a
-  paragraph to unfold. On a closed cycle the headline is the cycle's name, the lines are its story and the date
+  paragraph to unfold. The date stands alone ("9 October 2026", never "Updated 9 October 2026"): a report is
+  plainly as of its date. The story comes straight after the headline, since it sets the scene the news is read
+  in, and so the lede carries only what moved and never restates the story. On a closed cycle the headline is the cycle's name, the lines are its story and the date
   its years, so the card is the same card. (Weather Report)
 - **A new edition is written only when there is news, checked every weekday evening, by a scheduled Claude routine
   that publishes it without review.** Of the readings only the Treasury curve, Fear and CAPE move on an ordinary

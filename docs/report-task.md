@@ -37,8 +37,9 @@ news. If there is no news, stop here and say so in one line.
 in the facts, `YYYY-MM-DD`), `headline`, `lede`, `story`, and `elements` with one text for each of `weather`,
 `activity`, `mood`, `desire`, `circulation`, `stress`.
 
-- **Lead with what changed.** The headline names today's story in sentence case, in at most 80 characters. The
-  lede is two sentences: where Mrs. Market stands and what moved.
+- **Lead with what changed.** The headline names today's news in sentence case, in at most 80 characters. The
+  lede is two sentences on what moved. The cycle's story sits right under it and already tells where she stands
+  and the shape of the cycle, so the headline and lede never restate it.
 - **Each element is two to four sentences**, read across its readings: what they say together, and the one
   that stands out. Weather covers the season, the economy, the Fed and the market.
 - **Link each reading the first time it is named**: `[US 10-year Treasury](sheet-sign-pressure)`, with the ids
