@@ -329,7 +329,7 @@ function mortgageInfo(){
   var T = mortgageTendency, last = mortgageLast(), pt = function(v: number){ return v.toFixed(2); };
   return '<h4>30-Year Mortgage Rate</h4>' + factsFrom(
     "The average rate on a new 30-year fixed-rate mortgage, as Freddie Mac surveys lenders each week; the chart is the monthly " +
-    "average of the weeks, " + last.v.toFixed(2) + "% in " + atMonth(last) + ". It is the price of money where most households meet it: lenders " +
+    "average of the weeks surveyed, " + last.v.toFixed(2) + "% in " + atMonth(last) + ", whose last month holds only the weeks published so far. It is the price of money where most households meet it: lenders " +
     "price it off the 10-year Treasury and add a spread for their risk and costs. It is what a new loan costs, not what households pay: " +
     "most mortgages are fixed, so a higher rate reaches the Debt-to-income ratio only as people move or refinance. " +
     "The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) +
