@@ -612,6 +612,11 @@ settles it; none is open after V668.
   Elements.** A past cycle reaches Analysis only from its own cycle page (Cycle Analysis), which opens with that
   cycle's name and years, and Interest Rates follows the cycle shown. Keren chose current by default
   because a cycle picked on Elements had left Analysis showing it, unnamed, after Back. (0.9.31)
+- **Past cycles are compared on Analysis inside the components, not by a cycle header.** The Health Score's page
+  shows every cycle's score as bars in its tier's colour, as Cycle length and Cycle variation do. Interest Rates on
+  Analysis shows the cycle shown and carries no controls: its Learn more opens the Federal funds rate page, which
+  already picks cycles and windows, so a picker or a 1Y/5Y bar on the card said it twice. Keren rejected a header over
+  the whole page as one more thing to read. (Cycles on Analysis)
 - **Each cycle in Analysis shows its growth and its prices, totalled the same way over the same closed years,
   side by side on one line.** Keren found the comparison worth a place per cycle in Analysis. (V276)
 - **Each cycle carries her chart, read like a blood test: every reading averaged over the cycle and sorted into
@@ -685,10 +690,9 @@ settles it; none is open after V668.
   open cycle's length is Typical until it passes the fence. (0.8.3, 0.8.12, Oct 6–9, 2026)
 - **The Health Score is the first card inside Cycle Statistics, built like the others (ring on the left, the same
   height and text), white with a grey border; its side says its tier and opens a page that says what it is judged
-  against.** Only its colour sets it apart, and the detail of what it is judged against (18 closed cycles) need not
-  show every time. The cycle pages show the same tile, ring, score and tier, inside their Cycle Analysis card
-  only, so it looks as it does on Analysis; it opens nothing of its own there, since the card it sits in is the
-  door. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
+  against, with every cycle's score beside it.** Only its colour sets it apart, and the detail of what it is judged against (18 closed cycles) need not
+  show every time. It shows only in Cycle Statistics; a cycle page reaches it through the
+  Cycle Analysis row. (0.8.12, 0.9.4, Oct 7, 2026, 0.9.46)
 - **The interest-rate container is titled Interest Rates, on Analysis,** because most people recognize "interest
   rates"; "Environment" made the head too long. (0.8.12, Oct 7 and 9, 2026)
 - **Cycle Statistics says Typical or Atypical; Normal stays the word for readings and the Health Score; every page
@@ -1498,10 +1502,8 @@ settles it; none is open after V668.
   touch bolder on a softly lifted pill.** Taken from Clair's grey-and-white selection bar and a hormone-app
   reference Keren found prettier. It is the one grey in the app, and every grey ground uses it: the selection
   bars, the Cycle Statistics rows and the Interest Rates explanation panel are one shade, since more greys were more
-  colours to manage. Containers stay white, as grey read too grey. The Interest Rates card's range bar is the thin
-  form (`rangebar thin`), closer to Clair's proportions: a shorter, narrower white pill with no shadow, lighter
-  labels. The history rows keep the 40px bar, since they sit at one height beside the cycle picker. (V579, 0.6.2,
-  0.8.5, Oct 9, 2026)
+  colours to manage. Containers stay white, as grey read too grey. Every selection bar is the 40px bar; the thin form went with the
+  Interest Rates card's range bar (Cycles on Analysis). (V579, 0.6.2, 0.8.5, Oct 9, 2026)
 - **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a
   white page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer
   salmon-orange, Spring marigold, Winter periwinkle and Autumn its light tint.** The dark purple, the light

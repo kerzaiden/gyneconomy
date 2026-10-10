@@ -90,6 +90,15 @@ test('a period picked on Elements stays there: Analysis reopens on the open cycl
   assert.equal(document.querySelector('#sheet-find .period-now b').textContent, housing.name);
 });
 
+test('the Health Score opens every cycle’s score, and Interest Rates on Analysis carries no controls of its own', () => {
+  document.getElementById('tab-chart').click();
+  assert.equal(document.querySelector('#chart-home .fp .rangebar, #chart-home .fp .cycsel'), null);
+  const page = detailTexts[+document.querySelector('#chart-home .lab-score-box .details-link').dataset.detailIdx];
+  const bars = page.match(/<rect class="(ok|warn|odd)"/g) || [];
+  assert.equal(bars.length, marketCycles.length, 'one bar per cycle');
+  assert.ok(page.includes('<i class="warn"></i>Attention'));
+});
+
 test('every cycle lists its readings in the roster’s order, whatever their results', () => {
   const order = categoriesShown().flatMap(c => ROSTER.filter(R => R.cat === c.key)).map(R => R.id), mode = page.mode['sheet-find'], was = page.cycles['sheet-find'];
   marketCycles.forEach(c => {

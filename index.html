@@ -541,7 +541,6 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp .rangebar{ margin:14px 0 4px; }
   .wave-plot, .wave-legend{ --band:var(--shade); }
   .wave-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); }
   .wave-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 11px); }
@@ -693,9 +692,6 @@
   .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--round); padding:8px 10px; cursor:pointer; white-space:nowrap;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:500; color:var(--text-primary); }
   .range-seg.on{ background:var(--seg-on); color:var(--text-primary); font-weight:600; box-shadow:0 1px 3px rgba(124,40,68,0.10); }
-  .rangebar.thin{ min-height:0; justify-content:space-around; padding:5px 6px; }
-  .rangebar.thin .range-seg{ flex:0 0 24%; padding:3px 10px; font-weight:400; }
-  .rangebar.thin .range-seg.on{ font-weight:500; box-shadow:none; }
   .range-seg:hover:not(.on){ color:var(--text-primary); }
   .fit-line{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; fill:none; }
   .fit-lab{ font-size:var(--type-meta); font-weight:700; fill:var(--accent-ink); }
@@ -929,6 +925,7 @@
   .len-bars{ display:block; width:100%; margin:8px 0; }
   .len-bars rect.ok{ fill:var(--good); }
   .len-bars rect.odd{ fill:var(--critical); }
+  .len-bars rect.warn{ fill:var(--gold); }
   .len-bars rect.now{ fill:var(--good); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
   .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
@@ -936,6 +933,7 @@
   .len-key i:first-child{ margin-left:0; }
   .len-key i.ok{ background:var(--good); }
   .len-key i.odd{ background:var(--critical); }
+  .len-key i.warn{ background:var(--gold); }
   .insight-mark{ display:flex; flex:none; color:var(--cat); }
   .insight-mark svg{ width:18px; height:18px; }
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
@@ -1265,7 +1263,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.62 (833)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.63 (834)</span></p>
     </div>
   </div>
 
@@ -50531,12 +50529,8 @@
     var ff = fedFundsHistory[fedFundsHistory.length - 1];
     return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
   }
-  var RANGES = [ [ "1y", "1Y" ], [ "5y", "5Y" ], [ "cycle", "Cycle" ] ];
-  function windowFrom(range, cycleFrom, to) {
-    return range === "1y" ? to - 11 : range === "5y" ? to - 59 : cycleFrom;
-  }
-  function ratesCard(m, host, range) {
-    var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
+  function ratesCard(m) {
+    var toM = endMonthOf(m), to = monthIdx(toM), from = monthIdx(m.era.from + "-01");
     var series = [ {
       list: rateSeries(toM),
       color: "gold",
@@ -50547,7 +50541,7 @@
       fill: .32,
       bold: true
     } ];
-    return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + waveChart({
+    return waveChart({
       series: series,
       bands: tightBands(),
       from: from,
@@ -50555,8 +50549,8 @@
       open: !!m.ongoing
     }) + LEGEND + footnoteHtml(m);
   }
-  function fedEnvironment(m, host, range) {
-    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m, host, range));
+  function fedEnvironment(m) {
+    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m));
   }
   function insightCirculation() {
     var vel = m2vHistory, n = vel.length;
@@ -51356,10 +51350,15 @@
     return '<span class="stat-tick' + cls + '">' + TICK + "</span>" + name;
   }
   var TYPICAL_KEY = '<p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>';
+  var HEALTH_KEY = '<p class="len-key"><i class="ok"></i>Normal <i class="warn"></i>Attention <i class="odd"></i>Risk</p>';
   var RELATIVE = "<p>Typical is relative: it is read against the market’s own past cycles, not a fixed standard.</p>";
   function healthPage(i) {
     var s = score(i), t = scoreTier(s.v), n = normOf(pastScores());
-    return "<h3>Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of the " + s.of + " results that are Normal. It is judged against the scores of the " + closedCount() + " closed cycles: Normal from " + Math.ceil(n.lo) + ", Risk below " + Math.max(0, Math.ceil(n.floor)) + ", past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>" + srcBlock([ FENCE_SRC ]);
+    return "<h3>Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of the " + s.of + " results that are Normal. It is judged against the scores of the " + closedCount() + " closed cycles: Normal from " + Math.ceil(n.lo) + ", Risk below " + Math.max(0, Math.ceil(n.floor)) + ", past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>" + HEALTH_KEY + cycleBars(marketCycles.map(function(_, k) {
+      return score(k).v;
+    }), function(v) {
+      return healthTone(v)[0];
+    }, [ i ], "Each cycle’s health score out of 100") + srcBlock([ FENCE_SRC ]);
   }
   function healthTone(v) {
     return {
@@ -51437,7 +51436,7 @@
   }
   function homeSections(i) {
     var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
-    return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
+    return statsHome(i) + fedEnvironment(m) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -51591,7 +51590,6 @@
     }
   }
   function buildCycleChart() {
-    page.range[HOME_ID] = "cycle";
     wireFinder(need(HOME_ID), HOME_ID);
     buildFind();
     wireCatDoors();
