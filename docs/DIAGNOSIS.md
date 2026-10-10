@@ -74,7 +74,11 @@ renewed costs more. The tipping point is not when debt exceeds income (a mortgag
 when the payments outgrow what income can carry: money that went to spending goes to interest instead. On the
 way up, households and companies spend more than they earn, the gap paid with credit; past the tipping point they
 must spend less than they earn, to pay it back, while those with cash are paid to wait: high rates reward
-saving over spending. Both pull the same way. One
+saving over spending. Both pull the same way. Rates reach the body through every vessel at once: housing (new
+loans dearer, owners locked in), companies (projects that paid at low rates no longer do; debt renewed dearer),
+consumer credit (cars, cards), wealth (stocks and bonds worth less, so people feel poorer), banks (lending
+tightened), the dollar (exports dearer) and expectations (prices and wages set lower). It works with long and
+variable lags (Friedman), so the strain arrives after the hikes. One
 borrower's spending is another's income, so the squeeze spreads, spending slows (the premenstrual turn), the
 weakest borrowers default, lenders tighten, and the lining sheds. The doctor reads it in this order: Pressure
 (what money costs), Stress (what is owed against income), Desire (spending giving way), Default risk (the
