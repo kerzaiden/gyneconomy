@@ -1547,6 +1547,9 @@ settles it; none is open after V668.
 - **One hairline per seam, never two, and a list ends with air: where a card meets a fact row the card gives
   up its rule, and the last fact row keeps 10px under it.** Double lines broke the consistency of spacing and
   dividers across pages. (V282, V604)
+- **The app is one column, at most `--page-w` (590px) wide, centred; every page, the menu and the floating
+  buttons read it, and a phone never reaches it.** At 1180px the desktop view was too wide; Keren halved it.
+  (— Narrower Desktop)
 
 ### Shape and size
 
