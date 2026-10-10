@@ -308,6 +308,26 @@ function geomPick(g: ChartGeom, x: number, y: number){
   if (x < g.L - hPad || x > g.R + hPad) return null;
   return Math.max(0, Math.min(g.n - 1, Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1))));
 }
+var TOUCH_HOLD = 180, TOUCH_SLOP = 8;
+function touchGate(host: HTMLElement, at: (e: { clientX: number; clientY: number }) => void){
+  var down: { clientX: number; clientY: number } | null = null, timer = 0, live = false;
+  function drop(){ clearTimeout(timer); down = null; }
+  function pick(e: { clientX: number; clientY: number }){ drop(); live = true; at(e); }
+  host.addEventListener("pointerdown", function(e){
+    if (e.pointerType !== "touch"){ at(e); return; }
+    drop(); live = false;
+    var p = down = { clientX:e.clientX, clientY:e.clientY };
+    timer = window.setTimeout(function(){ if (down === p) pick(p); }, TOUCH_HOLD);
+  });
+  host.addEventListener("pointermove", function(e){
+    if (e.pointerType !== "touch" || live){ at(e); return; }
+    if (!down) return;
+    var dx = Math.abs(e.clientX - down.clientX), dy = Math.abs(e.clientY - down.clientY);
+    if (dy > TOUCH_SLOP && dy >= dx) drop(); else if (dx > TOUCH_SLOP) pick(e);
+  });
+  host.addEventListener("pointerup", function(){ if (down) pick(down); live = false; });
+  host.addEventListener("pointercancel", function(){ drop(); live = false; });
+}
 function wireHistHover(host: HTMLElement, tipId: string){
   if (!host) return;
   histReadEnsure(host);
@@ -323,7 +343,7 @@ function wireHistHover(host: HTMLElement, tipId: string){
     if (host.__onCol){ host.__onCol.classList.remove("on"); host.__onCol = null; }
     histReadFill(host, null);
   }
-  function at(e: PointerEvent){
+  function at(e: { clientX: number; clientY: number }){
     var col0 = host.querySelector<SVGElement>(".hcol");
     var g = host.__geom;
     var svg = (col0 && col0.ownerSVGElement) || host.querySelector("svg.hist-svg") || host.querySelector("svg");
@@ -334,8 +354,7 @@ function wireHistHover(host: HTMLElement, tipId: string){
     var i = geomPick(g, x, (e.clientY - box.top) / scale);
     if (i == null) hide(); else histShow(host, svg, i);
   }
-  host.addEventListener("pointermove", at);
-  host.addEventListener("pointerdown", at);
+  touchGate(host, at);
   host.addEventListener("pointerleave", function(e){ if (e.pointerType !== "touch") hide(); });
   histKeysWire(host, hide);
 }

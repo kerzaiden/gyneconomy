@@ -1,7 +1,7 @@
 import AI from "../data/ai-insights.json" with { type: "json" };
 import { learnMore, moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
 import { metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
-import { clockSvg, orbitSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
+import { clockSvg, diceSvg, orbitSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
 import { cycleModel, cycleOfYear, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
 import type { CycleModel, TrackSeg } from "./model.ts";
@@ -177,7 +177,7 @@ function todayBoxes(){
     '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail());
 }
 function aiPage(m: CycleModel){
-  return '<div class="ai-page">' + leadBoxes(m) + (m.ongoing ? chapters() : "") + trendBox(umbrellaSvg(), "Risk Factors", risksPic(m)) + (m.ongoing ? todayBoxes() : "") + '</div>';
+  return '<div class="ai-page">' + leadBoxes(m) + (m.ongoing ? chapters() : "") + trendBox(diceSvg(), "Risk Factors", risksPic(m)) + (m.ongoing ? todayBoxes() : "") + '</div>';
 }
 export function buildAiPage(home: HTMLElement){
   var sheet = metricSheet(AI_PAGE);

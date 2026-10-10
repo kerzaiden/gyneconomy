@@ -216,6 +216,33 @@ async function openPage(p, url, sheet) {
       : bad('the card\u2019s figure is the page\u2019s figure', JSON.stringify(onPage));
   }
   {
+    const tp = await b.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true });
+    watch(tp, 'pulse scroll');
+    await tp.goto('file://' + url); await ready(tp);
+    if (await openPage(tp, url, 'sheet-sign-pulse')) {
+      for (const t of ['Years', '25Y']) { await tp.evaluate(t => [...document.querySelectorAll('.range-seg')].find(e => e.offsetParent && e.textContent.trim() === t).click(), t); await settle(tp); }
+      const r = await tp.evaluate(async () => {
+        const wait = ms => new Promise(done => setTimeout(done, ms)), lit = () => !!document.querySelector('.hovering');
+        const s = [...document.querySelectorAll('.ps-scroll')].find(e => e.offsetParent), bar = s && s.parentElement.querySelector('.ps-bar');
+        if (!s || !bar) return { bar: !!bar };
+        const b = s.getBoundingClientRect(), x = b.left + b.width * 0.6, y = b.top + 60;
+        const ev = (el, t, X, Y) => el.dispatchEvent(new PointerEvent(t, { bubbles: true, pointerType: 'touch', pointerId: 7, clientX: X, clientY: Y }));
+        const out = { bar: true };
+        ev(s, 'pointerdown', x, y); out.down = lit(); ev(s, 'pointermove', x, y + 30); await wait(300); out.scroll = lit(); ev(s, 'pointercancel', x, y + 30);
+        ev(s, 'pointerdown', x, y); await wait(300); out.hold = lit(); ev(s, 'pointerup', x, y);
+        const th = bar.firstElementChild, tb = th.getBoundingClientRect();
+        out.thumb = tb.width >= 32 && tb.height >= 44;
+        ev(th, 'pointerdown', tb.left + 16, tb.top + 10); ev(th, 'pointermove', tb.left + 16, tb.top + 5000); ev(th, 'pointerup', tb.left + 16, tb.top + 5000);
+        out.end = s.scrollTop >= s.scrollHeight - s.clientHeight - 1;
+        return out;
+      });
+      (r.bar && !r.down && !r.scroll && r.hold && r.thumb && r.end)
+        ? ok('pulse: a finger scrolls without lighting a quarter, and the bar drags to the end')
+        : bad('pulse: a finger scrolls without lighting a quarter, and the bar drags to the end', JSON.stringify(r));
+    } else bad('pulse: a finger scrolls without lighting a quarter, and the bar drags to the end', 'no door');
+    await tp.close();
+  }
+  {
     const gp = await b.newPage({ viewport: { width: 414, height: 1000 } });
     watch(gp, 'head menu');
     await gp.goto('file://' + url); await ready(gp);

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `700542a` on 2026-10-09. **110 components**, **18 shared patterns**.
+Generated from commit `371c1c3` on 2026-10-10. **110 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -163,7 +163,7 @@ Generated from commit `700542a` on 2026-10-09. **110 components**, **18 shared p
 |---|---|---|
 | **`stripPaper`** | `.ekg-major` `.ekg-minor` | `pulse-strips.ts:pulseStripsChart` |
 | **`stripQuarter`** | `.ps-beat` | `pulse-strips.ts:stripRow` |
-| **`stripScroller`** | `.ps-fade` `.ps-scroll` | `pressure.ts:pulseHistory` |
+| **`stripScroller`** | `.ps-thumb` | `pressure.ts:pulseHistory` |
 
 ## reading.ts
 
@@ -231,6 +231,7 @@ renderer speaks. Listed most-used first.
 | **`histControls`** | history.ts | 11 places |
 | **`histFrame`** | charts.ts | 11 places |
 | **`metered`** | format.ts | 11 places |
+| **`f1`** | pulse-strips.ts | 10 places |
 | **`publishGeom`** | charts.ts | 10 places |
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
@@ -240,7 +241,6 @@ renderer speaks. Listed most-used first.
 | **`colPath`** | charts.ts | 8 places |
 | **`colWidth`** | charts.ts | 8 places |
 | **`cycleSlice`** | model.ts | 8 places |
-| **`f1`** | pulse-strips.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`keyed`** | roster.ts | 7 places |

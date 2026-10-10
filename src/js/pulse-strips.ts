@@ -3,7 +3,7 @@ import { AXIS, beatPath, chartAxes, histFrame, publishGeom, vGrid, vhOpen, xLabe
 import { M2_FLOOD, M2V_FROM_YEAR, m2vHistory, m2Yoy } from "./data.ts";
 import { fmtSigned, qAtIndex, quartile } from "./format.ts";
 
-export var PULSE_BEATS = 5, PULSE_VIEW = 4, PULSE_PEEK = 0.4, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10;
+export var PULSE_BEATS = 5, PULSE_VIEW = 4, PULSE_PEEK = 0.4, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10, PULSE_BAR = 14, PULSE_THUMB = 44;
 var fences: number[] | null = null;
 function pulseMove(i: number){ return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100; }
 export function pulseFences(){
@@ -66,7 +66,7 @@ export var strips = { off:0 };
 export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   from = from || 0;
   var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-  var F = histFrame(Wpx), sq = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / (rows > PULSE_VIEW ? PULSE_VIEW + PULSE_PEEK : rows)), full = rows * h;
+  var F = histFrame(Wpx), R = F.R - (rows > PULSE_VIEW ? PULSE_BAR : 0), sq = (R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / (rows > PULSE_VIEW ? PULSE_VIEW + PULSE_PEEK : rows)), full = rows * h;
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [], body: string[] = [stripPaper(L, R, T, T + full, h)];
   strips.off = 0;
   out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));
@@ -83,18 +83,44 @@ export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
       return yy < T || yy > B || row < 0 || row >= rows || q < 0 || q > 3 || i < 0 || i >= end - from ? null : i;
     },
     vals:m2vHistory.slice(from, end).map(function(v: number){ return { v:v }; }) });
-  return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + ' ' + f1(B - T) + ' ' + f1(full) + ' ' + f1(h) + '" aria-label="Money velocity\u2019s heartbeat, one strip per year from ' + y0 + ' to ' + y1 +
+  return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + ' ' + f1(B - T) + ' ' + f1(full) + ' ' + f1(h) + ' ' + f1(R + PULSE_BAR / 2) + '" aria-label="Money velocity\u2019s heartbeat, one strip per year from ' + y0 + ' to ' + y1 +
     ', ' + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; ' +
     'a quarter whose fall was far out of the record flatlines">' + out.join("") + '</svg>';
 }
 function stripView(svg: SVGSVGElement){
   var v = (svg.getAttribute("data-view") || "").split(" ").map(Number), k = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
-  return { top:v[0], view:v[1], full:v[2], h:v[3], k:k };
+  return { top:v[0], view:v[1], full:v[2], h:v[3], bar:v[4], k:k };
 }
-function stripScrolled(el: HTMLElement, rows: Element, V: ReturnType<typeof stripView>){
+function thumbTravel(el: HTMLElement, bar: HTMLElement){
+  var thumb = bar.firstElementChild as HTMLElement;
+  return { thumb:thumb, room:Math.max(1, bar.clientHeight - thumb.offsetHeight), span:Math.max(1, el.scrollHeight - el.clientHeight) };
+}
+function thumbAt(el: HTMLElement, bar: HTMLElement){
+  var t = thumbTravel(el, bar);
+  t.thumb.style.transform = "translateY(" + f1(el.scrollTop / t.span * t.room) + "px)";
+}
+function stripScrolled(el: HTMLElement, bar: HTMLElement, rows: Element, V: ReturnType<typeof stripView>){
   strips.off = el.scrollTop / V.k;
   rows.setAttribute("transform", "translate(0 " + f1(-strips.off) + ")");
-  el.classList.toggle("at-end", el.scrollTop + el.clientHeight >= el.scrollHeight - 1);
+  thumbAt(el, bar);
+}
+function stripBar(el: HTMLElement, bar: HTMLElement){
+  var grab: { y: number; top: number } | null = null;
+  ["pointerdown", "pointermove", "pointerup", "click"].forEach(function(k){ bar.addEventListener(k, function(e){ e.stopPropagation(); }); });
+  bar.addEventListener("pointerdown", function(e){
+    var t = thumbTravel(el, bar), r = bar.getBoundingClientRect();
+    e.preventDefault();
+    if (e.target !== t.thumb){ el.scrollTo({ top:(e.clientY - r.top - t.thumb.offsetHeight / 2) / t.room * t.span, behavior:"smooth" }); return; }
+    grab = { y:e.clientY, top:el.scrollTop };
+    try { t.thumb.setPointerCapture(e.pointerId); } catch (x) {}
+    bar.classList.add("drag");
+  });
+  bar.addEventListener("pointermove", function(e){
+    if (!grab) return;
+    var t = thumbTravel(el, bar);
+    el.scrollTop = grab.top + (e.clientY - grab.y) * t.span / t.room;
+  });
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(function(k){ bar.addEventListener(k, function(){ grab = null; bar.classList.remove("drag"); }); });
 }
 function stripFollow(el: HTMLElement, svg: SVGSVGElement, V: ReturnType<typeof stripView>){
   var on = svg.querySelector(".hcol.on") as SVGGraphicsElement | null;
@@ -102,19 +128,27 @@ function stripFollow(el: HTMLElement, svg: SVGSVGElement, V: ReturnType<typeof s
   var b = on.getBBox(), top = V.top + Math.floor((b.y + b.height / 2 - V.top) / V.h) * V.h - V.top;
   if (top < strips.off) el.scrollTop = top * V.k; else if (top + V.h > strips.off + V.view) el.scrollTop = (top + V.h - V.view) * V.k;
 }
+function stripBox(svg: SVGSVGElement, V: ReturnType<typeof stripView>, cls: string, html: string, x?: number){
+  var el = document.createElement("div"), host = svg.parentElement as HTMLElement, at = svg.getBoundingClientRect(), hb = host.getBoundingClientRect();
+  el.className = cls;
+  el.style.top = f1(at.top - hb.top - host.clientTop + V.top * V.k) + "px";
+  if (x != null) el.style.left = f1(at.left - hb.left - host.clientLeft + x * V.k) + "px";
+  el.style.height = f1(V.view * V.k) + "px";
+  el.innerHTML = html;
+  host.appendChild(el);
+  return el;
+}
 export function stripScroller(box: HTMLElement){
-  var svg = box.querySelector("svg.vh-svg") as SVGSVGElement | null, rows = svg && svg.querySelector(".ps-rows"), old = box.querySelector(".ps-scroll");
-  if (old) old.remove();
+  var svg = box.querySelector("svg.vh-svg") as SVGSVGElement | null, rows = svg && svg.querySelector(".ps-rows");
+  box.querySelectorAll(".ps-scroll, .ps-bar").forEach(function(n){ n.remove(); });
   strips.off = 0;
   if (!svg || !rows) return;
-  var V = stripView(svg), el = document.createElement("div"), host = svg.parentElement as HTMLElement;
+  var V = stripView(svg);
   if (!(V.full > V.view + 1) || !V.k) return;
-  el.className = "ps-scroll";
-  el.style.top = f1(svg.getBoundingClientRect().top - host.getBoundingClientRect().top - host.clientTop + V.top * V.k) + "px";
-  el.style.height = f1(V.view * V.k) + "px";
-  el.innerHTML = '<div style="height:' + f1(V.full * V.k) + 'px"></div><div class="ps-fade"></div>';
-  host.appendChild(el);
-  el.addEventListener("scroll", function(){ stripScrolled(el, rows as Element, V); });
+  var el = stripBox(svg, V, "ps-scroll", '<div style="height:' + f1(V.full * V.k) + 'px"></div>');
+  var bar = stripBox(svg, V, "ps-bar", '<div class="ps-thumb" style="height:' + f1(Math.max(PULSE_THUMB, V.view / V.full * V.view * V.k)) + 'px"></div>', V.bar);
+  el.addEventListener("scroll", function(){ stripScrolled(el, bar, rows as Element, V); });
+  stripBar(el, bar);
   box.addEventListener("keydown", function(){ setTimeout(function(){ if (el.isConnected) stripFollow(el, svg as SVGSVGElement, V); }, 0); });
 }
 export function stripsInfo(){

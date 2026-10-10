@@ -556,7 +556,7 @@
   .wave-key-band::before{ border:1px solid var(--border-strong); background:var(--band); }
   .wave-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
   .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
-  .learn-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
+  .learn-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-size:var(--type-interface); font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
@@ -632,9 +632,14 @@
   .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
   .ps-scroll{ position:absolute; left:0; right:0; overflow-y:auto; scrollbar-width:none; }
   .ps-scroll::-webkit-scrollbar{ display:none; }
-  .ps-fade{ position:sticky; bottom:0; height:32px; margin-top:-32px; pointer-events:none;
-    background:linear-gradient(to bottom, transparent, var(--surface)); transition:opacity 0.2s; }
-  .ps-scroll.at-end .ps-fade{ opacity:0; }
+  .ps-bar{ position:absolute; width:32px; margin-left:-16px; touch-action:none; cursor:pointer; }
+  .ps-bar::before{ content:""; position:absolute; left:15px; top:0; bottom:0; width:2px; border-radius:1px;
+    background:color-mix(in srgb, var(--bleed-mid) 14%, transparent); }
+  .ps-thumb{ position:absolute; left:0; top:0; width:100%; cursor:grab; touch-action:none; }
+  .ps-thumb::after{ content:""; position:absolute; left:13px; top:2px; bottom:2px; width:6px; border-radius:3px;
+    background:color-mix(in srgb, var(--accent) 42%, transparent); transition:left 0.15s, width 0.15s, background 0.15s; }
+  .ps-bar:hover .ps-thumb::after, .ps-bar.drag .ps-thumb::after{ left:12px; width:8px; background:color-mix(in srgb, var(--accent) 72%, transparent); }
+  .ps-bar.drag .ps-thumb{ cursor:grabbing; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -910,7 +915,7 @@
   .stat-row.t-odd .lab-ring circle.on{ stroke:var(--critical); }
   .stat-tick.odd{ color:var(--critical); }
   .stat-tick.warn{ color:var(--gold); }
-  .stat-note{ margin:-4px 0 10px; font-size:var(--type-meta); color:var(--text-muted); }
+  .stat-note{ margin:10px 0 10px; font-size:var(--type-meta); color:var(--text-muted); }
   .len-bars{ display:block; width:100%; margin:8px 0; }
   .len-bars rect.ok{ fill:var(--good); }
   .len-bars rect.odd{ fill:var(--critical); }
@@ -44871,6 +44876,52 @@
     if (x < g.L - hPad || x > g.R + hPad) return null;
     return Math.max(0, Math.min(g.n - 1, Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1))));
   }
+  var TOUCH_HOLD = 180;
+  var TOUCH_SLOP = 8;
+  function touchGate(host, at) {
+    var down = null, timer = 0, live = false;
+    function drop() {
+      clearTimeout(timer);
+      down = null;
+    }
+    function pick2(e) {
+      drop();
+      live = true;
+      at(e);
+    }
+    host.addEventListener("pointerdown", function(e) {
+      if (e.pointerType !== "touch") {
+        at(e);
+        return;
+      }
+      drop();
+      live = false;
+      var p = down = {
+        clientX: e.clientX,
+        clientY: e.clientY
+      };
+      timer = window.setTimeout(function() {
+        if (down === p) pick2(p);
+      }, TOUCH_HOLD);
+    });
+    host.addEventListener("pointermove", function(e) {
+      if (e.pointerType !== "touch" || live) {
+        at(e);
+        return;
+      }
+      if (!down) return;
+      var dx = Math.abs(e.clientX - down.clientX), dy = Math.abs(e.clientY - down.clientY);
+      if (dy > TOUCH_SLOP && dy >= dx) drop(); else if (dx > TOUCH_SLOP) pick2(e);
+    });
+    host.addEventListener("pointerup", function() {
+      if (down) pick2(down);
+      live = false;
+    });
+    host.addEventListener("pointercancel", function() {
+      drop();
+      live = false;
+    });
+  }
   function wireHistHover(host, tipId) {
     if (!host) return;
     histReadEnsure(host);
@@ -44903,8 +44954,7 @@
       var i = geomPick(g, x, (e.clientY - box.top) / scale);
       if (i == null) hide(); else histShow(host, svg, i);
     }
-    host.addEventListener("pointermove", at);
-    host.addEventListener("pointerdown", at);
+    touchGate(host, at);
     host.addEventListener("pointerleave", function(e) {
       if (e.pointerType !== "touch") hide();
     });
@@ -49815,7 +49865,7 @@
     return trendBox(clockSvg(), "Closest Moments", para(ai_insights_default.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + '<p class="ai-by">Written by ' + ai_insights_default.by + " from the app’s data of " + asOfWords() + ".</p>" + moreRow(aiDetail());
   }
   function aiPage(m) {
-    return '<div class="ai-page">' + leadBoxes(m) + (m.ongoing ? chapters() : "") + trendBox(umbrellaSvg(), "Risk Factors", risksPic(m)) + (m.ongoing ? todayBoxes() : "") + "</div>";
+    return '<div class="ai-page">' + leadBoxes(m) + (m.ongoing ? chapters() : "") + trendBox(diceSvg(), "Risk Factors", risksPic(m)) + (m.ongoing ? todayBoxes() : "") + "</div>";
   }
   function buildAiPage(home) {
     var sheet = metricSheet(AI_PAGE);
@@ -50704,6 +50754,8 @@
   var PULSE_FENCE = 1.5;
   var PULSE_FAR = 3;
   var PULSE_GUTTER = 10;
+  var PULSE_BAR = 14;
+  var PULSE_THUMB = 44;
   var fences = null;
   function pulseMove(i) {
     return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100;
@@ -50789,7 +50841,7 @@
   function pulseStripsChart(Wpx, from, to) {
     from = from || 0;
     var end = to == null ? m2vHistory.length : to, y0 = M2V_FROM_YEAR + Math.floor(from / 4), y1 = M2V_FROM_YEAR + Math.floor((end - 1) / 4), rows = y1 - y0 + 1;
-    var F = histFrame(Wpx), sq = (F.R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, R = F.R, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / (rows > PULSE_VIEW ? PULSE_VIEW + PULSE_PEEK : rows)), full = rows * h;
+    var F = histFrame(Wpx), R = F.R - (rows > PULSE_VIEW ? PULSE_BAR : 0), sq = (R - F.L - PULSE_GUTTER) * 3 / 20, L = F.L + PULSE_GUTTER, T = F.T - AXIS.LEG, B = F.B, h = Math.max(sq, (B - T) / (rows > PULSE_VIEW ? PULSE_VIEW + PULSE_PEEK : rows)), full = rows * h;
     var X = function(q) {
       return L + (R - L) * q / 4;
     }, out = [], body = [ stripPaper(L, R, T, T + full, h) ];
@@ -50852,7 +50904,7 @@
         };
       })
     });
-    return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + " " + f1(B - T) + " " + f1(full) + " " + f1(h) + '" aria-label="Money velocity’s heartbeat, one strip per year from ' + y0 + " to " + y1 + ", " + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; a quarter whose fall was far out of the record flatlines">' + out.join("") + "</svg>";
+    return vhOpen(F.W, F.H) + 'data-view="' + f1(T) + " " + f1(B - T) + " " + f1(full) + " " + f1(h) + " " + f1(R + PULSE_BAR / 2) + '" aria-label="Money velocity’s heartbeat, one strip per year from ' + y0 + " to " + y1 + ", " + PULSE_BEATS + ' beats for each turnover of the money stock, so the beats sit further apart in slower years, each as tall as the money stock grew and upside down when it shrank; a quarter whose fall was far out of the record flatlines">' + out.join("") + "</svg>";
   }
   function stripView(svg) {
     var v = (svg.getAttribute("data-view") || "").split(" ").map(Number), k = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
@@ -50861,13 +50913,64 @@
       view: v[1],
       full: v[2],
       h: v[3],
+      bar: v[4],
       k: k
     };
   }
-  function stripScrolled(el, rows, V) {
+  function thumbTravel(el, bar) {
+    var thumb = bar.firstElementChild;
+    return {
+      thumb: thumb,
+      room: Math.max(1, bar.clientHeight - thumb.offsetHeight),
+      span: Math.max(1, el.scrollHeight - el.clientHeight)
+    };
+  }
+  function thumbAt(el, bar) {
+    var t = thumbTravel(el, bar);
+    t.thumb.style.transform = "translateY(" + f1(el.scrollTop / t.span * t.room) + "px)";
+  }
+  function stripScrolled(el, bar, rows, V) {
     strips.off = el.scrollTop / V.k;
     rows.setAttribute("transform", "translate(0 " + f1(-strips.off) + ")");
-    el.classList.toggle("at-end", el.scrollTop + el.clientHeight >= el.scrollHeight - 1);
+    thumbAt(el, bar);
+  }
+  function stripBar(el, bar) {
+    var grab = null;
+    [ "pointerdown", "pointermove", "pointerup", "click" ].forEach(function(k) {
+      bar.addEventListener(k, function(e) {
+        e.stopPropagation();
+      });
+    });
+    bar.addEventListener("pointerdown", function(e) {
+      var t = thumbTravel(el, bar), r = bar.getBoundingClientRect();
+      e.preventDefault();
+      if (e.target !== t.thumb) {
+        el.scrollTo({
+          top: (e.clientY - r.top - t.thumb.offsetHeight / 2) / t.room * t.span,
+          behavior: "smooth"
+        });
+        return;
+      }
+      grab = {
+        y: e.clientY,
+        top: el.scrollTop
+      };
+      try {
+        t.thumb.setPointerCapture(e.pointerId);
+      } catch (x) {}
+      bar.classList.add("drag");
+    });
+    bar.addEventListener("pointermove", function(e) {
+      if (!grab) return;
+      var t = thumbTravel(el, bar);
+      el.scrollTop = grab.top + (e.clientY - grab.y) * t.span / t.room;
+    });
+    [ "pointerup", "pointercancel", "lostpointercapture" ].forEach(function(k) {
+      bar.addEventListener(k, function() {
+        grab = null;
+        bar.classList.remove("drag");
+      });
+    });
   }
   function stripFollow(el, svg, V) {
     var on = svg.querySelector(".hcol.on");
@@ -50875,21 +50978,31 @@
     var b = on.getBBox(), top = V.top + Math.floor((b.y + b.height / 2 - V.top) / V.h) * V.h - V.top;
     if (top < strips.off) el.scrollTop = top * V.k; else if (top + V.h > strips.off + V.view) el.scrollTop = (top + V.h - V.view) * V.k;
   }
+  function stripBox(svg, V, cls, html, x) {
+    var el = document.createElement("div"), host = svg.parentElement, at = svg.getBoundingClientRect(), hb = host.getBoundingClientRect();
+    el.className = cls;
+    el.style.top = f1(at.top - hb.top - host.clientTop + V.top * V.k) + "px";
+    if (x != null) el.style.left = f1(at.left - hb.left - host.clientLeft + x * V.k) + "px";
+    el.style.height = f1(V.view * V.k) + "px";
+    el.innerHTML = html;
+    host.appendChild(el);
+    return el;
+  }
   function stripScroller(box) {
-    var svg = box.querySelector("svg.vh-svg"), rows = svg && svg.querySelector(".ps-rows"), old = box.querySelector(".ps-scroll");
-    if (old) old.remove();
+    var svg = box.querySelector("svg.vh-svg"), rows = svg && svg.querySelector(".ps-rows");
+    box.querySelectorAll(".ps-scroll, .ps-bar").forEach(function(n) {
+      n.remove();
+    });
     strips.off = 0;
     if (!svg || !rows) return;
-    var V = stripView(svg), el = document.createElement("div"), host = svg.parentElement;
+    var V = stripView(svg);
     if (!(V.full > V.view + 1) || !V.k) return;
-    el.className = "ps-scroll";
-    el.style.top = f1(svg.getBoundingClientRect().top - host.getBoundingClientRect().top - host.clientTop + V.top * V.k) + "px";
-    el.style.height = f1(V.view * V.k) + "px";
-    el.innerHTML = '<div style="height:' + f1(V.full * V.k) + 'px"></div><div class="ps-fade"></div>';
-    host.appendChild(el);
+    var el = stripBox(svg, V, "ps-scroll", '<div style="height:' + f1(V.full * V.k) + 'px"></div>');
+    var bar = stripBox(svg, V, "ps-bar", '<div class="ps-thumb" style="height:' + f1(Math.max(PULSE_THUMB, V.view / V.full * V.view * V.k)) + 'px"></div>', V.bar);
     el.addEventListener("scroll", function() {
-      stripScrolled(el, rows, V);
+      stripScrolled(el, bar, rows, V);
     });
+    stripBar(el, bar);
     box.addEventListener("keydown", function() {
       setTimeout(function() {
         if (el.isConnected) stripFollow(el, svg, V);
