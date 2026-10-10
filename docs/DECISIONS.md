@@ -36,7 +36,7 @@ settles it; none is open after V668.
   context of fertility better; the other subcategory names and marks, and Activity's olive, are Claude's picks for
   Keren to change. The season is shown by the Growth gap, not pure GDP growth, because that is the figure the season
   actually reads (Keren). Only the Growth gap says expansion or contraction. GDP growth reads its own sign against
-  zero, Growing or Shrinking, and its trend accelerating or slowing, like Nonfarm payrolls and Retail sales
+  zero, Growing or Shrinking, and its trend accelerating or slowing, like Job growth and Retail sales
   (Claude's call: with the season's word it read "Contraction" at +2.1%). (V457, 0.8.5, 0.9.0, 0.9.3, 0.9.4, 0.9.8,
   0.9.11, 0.9.13, 0.9.15)
 - **The Federal funds rate is read as the environment the season grows in, like hormones, not as a pressure.** Keren
@@ -847,7 +847,7 @@ settles it; none is open after V668.
 - **Unemployment rate and Productivity growth (its history is OPHNFB, through the Backfill) each have their own
   page; there is no Activity page or group.** Keren wanted each as its own page and the Activity page gone. (V661,
   V688)
-- **Nonfarm payrolls and Retail sales are readings of their own, year over year against zero only.** Keren saw both
+- **Job growth and Retail sales are readings of their own, year over year against zero only.** Keren saw both
   as good additions, retail sales because people now talk about inflation raising the prices of gas and groceries.
   Payrolls are the BLS employer survey (FRED PAYEMS, monthly from 1939, so growth from 1940); retail sales are the
   Census figure the news quotes (FRED RSAFS, from 1992), in dollars before inflation on purpose, and the page says
@@ -855,7 +855,9 @@ settles it; none is open after V668.
   fact, not a band, and the words (Adding jobs / Losing jobs, Spending more / Spending less) are Claude's, for Keren
   to rename. Both come through the Backfill. Retail sales is read as desire at Keren's choice ("Retail only" on
   Claude's card): it is spending, as the durables card is; payrolls are the means to pay and stay beside the
-  Unemployment rate from the same jobs report. Desire stays out of the mood score. (0.9.7)
+  Unemployment rate from the same jobs report. Desire stays out of the mood score. The payrolls reading is named Job
+  growth (Keren): what it plots is the yearly change in payrolls, not their level, so "growth" is true; its chart head
+  and details name the data, nonfarm payrolls. (0.9.7, Oct 10, 2026)
 - **Productivity growth is read as activity, not stress or economic power, and its range is the annual
   year-over-year one it plots.** Output per hour measures what the body is doing. (V395)
 - **Institutional trust (Gallup's confidence survey) is not a Stress reading; don't re-add it.** For Keren, trust

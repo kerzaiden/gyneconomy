@@ -8,7 +8,7 @@ read it whole, so this file exists to get you to the right two hundred lines.
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `4a88fc3` on 2026-10-09.
+Generated from commit `2f658b4` on 2026-10-10.
 
 ## The page
 
@@ -818,7 +818,7 @@ falls in. **export** marks a name other modules import.
 
 ### `js/activity.ts`
 
-#### Activity: nonfarm payrolls and retail sales, each against a year earlier
+#### Activity: job growth and retail sales, each against a year earlier
 
 | Line | Name | Anchor |
 |---|---|---|
