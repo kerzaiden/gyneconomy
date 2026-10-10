@@ -1040,7 +1040,7 @@ settles it; none is open after V668.
   year reads as its own row; a strip is three squares of the paper tall, since two left no air; each strip's baseline sits exactly in the middle of its three squares, and its tallest beat reaches the strip's edge without crossing it; the chart is never taller than
   every history's height (Keren: Max ran too long to see the reading when a year was tapped), so four years and a sliver of the fifth show at a
   time (the sliver says there is more, Keren) and the strips scroll under the pinned reading and quarter axis, with a scroll bar on the right in place of the
-  earlier bottom fade, which did not read as more below: slim and plum-tinted, its thumb as big as a fingertip so it can
+  earlier bottom fade, which did not read as more below: slim and grey (Keren), its thumb as big as a fingertip so it can
   be dragged to the end, and a tap on its track jumps there (Keren, Oct 10, 2026); every
   window spaces its strips as the current cycle's four fill the frame, each beat centred on its strip and grown in
   proportion to it, and a window of fewer years stretches them further to fill the height, since a chart cut short to
