@@ -382,9 +382,12 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  return statsHome(i) + fedEnvironment(marketCycles[i].ongoing ? nowModel : cycleModel(marketCycles[i]), HOME_ID, page.range[HOME_ID]) +
-    dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
+  var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
+  return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) +
+    dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
 }
+function aiAt(id: string){ var c = pageCycle(id); return page.mode[id] === "cycles" && c && c.ongoing ? aiParts.insight(findOf(id).cat) : ""; }
+export var aiParts: { risks: (m: CycleModel) => string; moments: () => string; insight: (cat: string) => string } = { risks:function(){ return ""; }, moments:function(){ return ""; }, insight:function(){ return ""; } };
 function whenPicked(id: string){
   var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
   return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
@@ -399,7 +402,7 @@ function drawChart(id: string){
   if (host && c && id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(marketCycles.indexOf(c)) + '</div>'; return; }
   if (!host || !at) return;
   var j = judged(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
-  host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
+  host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs">' + aiAt(id) + '<div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
 export var IND = "sheet-find";

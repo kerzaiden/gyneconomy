@@ -8,20 +8,18 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `c6e0523` on 2026-10-10. **110 components**, **18 shared patterns**.
+Generated from commit `f9be03e` on 2026-10-10. **108 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`aiPage`** | `.ai-page` | `ai-insights.ts:buildAiPage` |
+| **`closestMoments`** | `.ai-echoes` | — |
 | **`echoLine`** | `.ai-echo` `.ai-echo-when` | — |
-| **`para`** | `.ai-p` | `ai-insights.ts:leadBoxes`, `ai-insights.ts:todayBoxes` |
+| **`para`** | `.ai-p` | `ai-insights.ts:closestMoments`, `ai-insights.ts:elementInsight` |
 | **`pathStrip`** | `.ai-path` | `ai-insights.ts:echoLine` |
-| **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:risksPic`, `ai-insights.ts:tilesPic` |
-| **`risksPic`** | `.ai-rank` `.ai-track` | `ai-insights.ts:aiPage` |
-| **`tilesPic`** | `.ai-tile` `.ai-tiles` | `ai-insights.ts:pathStrip` |
-| **`todayBoxes`** | `.ai-by` `.ai-echoes` | `ai-insights.ts:aiPage` |
+| **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:risksPic` |
+| **`risksPic`** | `.ai-rank` `.ai-track` | — |
 
 ## analysis.ts
 
@@ -35,7 +33,7 @@ Generated from commit `c6e0523` on 2026-10-10. **110 components**, **18 shared p
 |---|---|---|
 | **`avgRule`** | `.temp-avg` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart` |
 | **`chartAxes`** | `.bt-axis` `.bt-frame` `.bt-grid` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `pressure.ts:definePressure`, `pulse-strips.ts:pulseStripsChart`, `render-pages.ts:paintSpreads` |
-| **`colPeek`** | `.heat` `.peek-base` `.peek-chart` | `ai-insights.ts:tilesPic`, `credit.ts:readingOf`, `readings.ts:deriveFeelingReadings`, `readings.ts:derivePulseTag`, `readings.ts:yearReading` |
+| **`colPeek`** | `.heat` `.peek-base` `.peek-chart` | `credit.ts:readingOf`, `readings.ts:deriveFeelingReadings`, `readings.ts:derivePulseTag`, `readings.ts:yearReading` |
 | **`crossLine`** | `.hist-cross` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `pressure.ts:definePressure` |
 | **`divergeChart`** | `.dchart` `.dv-bar` `.dv-mid` | `indicators.ts:splitHistory`, `inner-pages.ts:defineValuation`, `render-pages.ts:defineVolatility` |
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.ts:divergeChart`, `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `pressure.ts:ylmFitLine` |
@@ -94,8 +92,8 @@ Generated from commit `c6e0523` on 2026-10-10. **110 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`learnMore`** | `.learn-more` | `ai-insights.ts:aiInsights`, `cycle-analysis.ts:chartDoor`, `fed-phases.ts:footnoteHtml` |
-| **`moreRow`** | `.more-row` | `ai-insights.ts:todayBoxes`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights` |
+| **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `cycle-analysis.ts:chartDoor`, `fed-phases.ts:footnoteHtml` |
+| **`moreRow`** | `.more-row` | `ai-insights.ts:closestMoments`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendJump`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
@@ -104,7 +102,7 @@ Generated from commit `c6e0523` on 2026-10-10. **110 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`footnoteHtml`** | `.fp-note` | `fed-phases.ts:ratesCard` |
+| **`footnoteHtml`** | `.ai-mark` `.fp-note` | `fed-phases.ts:ratesCard` |
 
 ## format.ts
 
@@ -177,9 +175,9 @@ Generated from commit `c6e0523` on 2026-10-10. **110 components**, **18 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:foldSec` |
-| **`dxHead`** | `.dx-sys-head` | `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
+| **`dxHead`** | `.dx-sys-head` | `ai-insights.ts:closestMoments`, `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
 | **`econChips`** | `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
-| **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:buildAiPage`, `portfolio.ts:portfolioSheets`, `reading.ts:mountReadings` |
+| **`metricSheet`** | `.metric-sheet` | `portfolio.ts:portfolioSheets`, `reading.ts:mountReadings` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
 | **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml` |
 | **`stripTrack`** | `.strip-track` | `dial-cycle.ts:seasonStripHtml` |
@@ -258,9 +256,9 @@ renderer speaks. Listed most-used first.
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`colScale`** | history-charts.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
+| **`dxSys`** | render-core.ts | 5 places |
 | **`factsFrom`** | format.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
-| **`labOf`** | ai-insights.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`listWords`** | cycle-analysis.ts | 5 places |
@@ -272,26 +270,24 @@ renderer speaks. Listed most-used first.
 | **`timelineSpan`** | history.ts | 5 places |
 | **`visits`** | cycle-analysis.ts | 5 places |
 | **`windowScale`** | history.ts | 5 places |
-| **`yearsWord`** | cycle-analysis.ts | 5 places |
 | **`atMonth`** | format.ts | 4 places |
 | **`bandEnds`** | format.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
 | **`cycleByName`** | model.ts | 4 places |
 | **`cycleOfYear`** | model.ts | 4 places |
 | **`dollars`** | indicators.ts | 4 places |
-| **`dxSys`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
-| **`fmt`** | cycle-analysis.ts | 4 places |
 | **`growthWord`** | model.ts | 4 places |
 | **`inflationFigure`** | model.ts | 4 places |
+| **`labOf`** | ai-insights.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
-| **`panel`** | ai-insights.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
 | **`tabBar`** | history.ts | 4 places |
+| **`yearsWord`** | cycle-analysis.ts | 4 places |
 | **`atCycle`** | cycle-analysis.ts | 3 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`barClass`** | cycle-analysis.ts | 3 places |
@@ -304,6 +300,7 @@ renderer speaks. Listed most-used first.
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
+| **`fmt`** | cycle-analysis.ts | 3 places |
 | **`fmtAsOf`** | format.ts | 3 places |
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
@@ -315,6 +312,7 @@ renderer speaks. Listed most-used first.
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
+| **`panel`** | ai-insights.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
 | **`quartile`** | format.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
@@ -333,7 +331,6 @@ renderer speaks. Listed most-used first.
 | **`tagFor`** | format.ts | 3 places |
 | **`tier`** | cycle-analysis.ts | 3 places |
 | **`todayFace`** | reading.ts | 3 places |
-| **`trendBox`** | dom.ts | 3 places |
 | **`trendText`** | dom.ts | 3 places |
 | **`typical`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |

@@ -77,7 +77,7 @@ export function trendDoor(open: string, title: string, mark: string, head: strin
 export function trendJump(attrs: string, mark: string, head: string, body: string){
   return trendCard("button", "", ' type="button"' + attrs, mark, head, "", body);
 }
-export function learnMore(attrs?: string){ return attrs ? '<button type="button" class="learn-more"' + attrs + '>Learn more</button>' : '<span class="learn-more">Learn more</span>'; }
+export function learnMore(attrs?: string, label?: string){ return attrs ? '<button type="button" class="learn-more"' + attrs + '>' + (label || "Learn more") + '</button>' : '<span class="learn-more">Learn more</span>'; }
 export function trendBox(mark: string, head: string, body: string){ return trendCard("section", " is-box", "", mark, head, "", body); }
 export function trendSoon(mark: string, head: string, body: string){
   return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);

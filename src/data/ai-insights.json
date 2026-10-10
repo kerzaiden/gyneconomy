@@ -1,34 +1,24 @@
 {
   "by": "Claude",
-  "asOf": "2026-10-02",
+  "asOf": "2026-10-09",
   "lede": "Born out of the 2022 correction, the AI Cycle rode the build-out of artificial intelligence, the story everyone wanted to own. It is a market priced for a boom inside an economy that feels like a slowdown: her valuations sit at the top of the record while her people’s confidence sits at the bottom of it, and the distance between the two is the story of this cycle so far.",
-  "sections": [
-    { "title": "The Economy",
-      "text": "Prices run at {cpi}, well below where the cycle began but heating again, while real growth is {growth} and unemployment has drifted up to {unemployment}. The Fed’s rate stands at {fed}. Households keep spending, with consumer demand growing at {demand}, even as their confidence, at {confidence}, sits near the lowest the record holds since 1960. The strain has moved to the state: federal debt is {debt} of GDP and the budget runs at {deficit}." },
-    { "title": "The Market",
-      "text": "The S&P 500 has risen four years running and is up {sp} this year. Shiller CAPE stands at {cape}, a height the record reached only around 2000; the Buffett indicator, at {buffett}, is the highest it has ever been; and the equity risk premium has thinned to {premium}, so stocks now pay little more than bonds for their risk. Volatility is calm at {vix}. The market is not afraid; it is the economy beneath it that is tired." }
-  ],
+  "elements": {
+    "weather": "Autumn, and the stagflation kind: prices are running hot and heating again while growth sits just under its potential, the pairing this season is named for. The Fed has turned with it, from the cuts of 2024 and 2025 to its first hike since 2023, so policy is tightening again. The market has not flinched: the S&P 500 is having another bull year.",
+    "activity": "The real economy is holding. Output is growing at a normal pace and productivity is running above its trend, so each worker is producing more. Hiring is the soft spot: jobs are still being added, but more slowly than her closed cycles usually managed, while unemployment stays low. The body is doing more with few new hands, which is efficient, and leaves little slack.",
+    "mood": "The two halves of Mood point in opposite directions. Valuations are rich: the Buffett indicator is at Risk, past the fence of her closed cycles, and Shiller CAPE is well above their range. Sentiment splits the same way: the market itself is calm, with little fear priced in, while households read pessimistic and their confidence is at Risk. A market that pays up while the people beneath it feel poorer is the gap at the centre of this cycle.",
+    "desire": "Spending holds up: discretionary spending and retail sales are both inside their normal ranges, and shoppers lean less on credit than they usually do. The strain sits in the market’s own appetite. Concentration is at Risk, the index resting on a few very large names, and the equity risk premium has thinned, so stocks pay little more than bonds for the risk they carry. Lenders, meanwhile, ask less than usual to take on default risk.",
+    "circulation": "Money is moving slowly. The 10-year Treasury yield is rising and sits at Risk, well above the range of her closed cycles, while the spread between long and short rates is narrower than usual. The money supply grows at a steady pace, but each dollar changes hands less often than usual, so the pulse is weak even as the volume holds.",
+    "stress": "Households carry little debt against their income, but they are saving very little, so the cushion against a bad month is thin. Investors are borrowing to buy stocks faster than her usual range. The heavier load sits with the state: federal debt is elevated, and the budget runs a large deficit while the economy is still growing."
+  },
   "echoIntro": "Matched on how the last two years of eight market and economy readings unfolded, against every two-year run since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
-  "figures": {
-    "age": "length",
-    "bull": "bull",
-    "cpi": "sheet-metric-temp",
-    "growth": "sheet-metric-gdp",
-    "unemployment": "sheet-sign-activity",
-    "fed": "sheet-sign-hormones",
-    "demand": "sheet-sign-desire",
-    "confidence": "sheet-sign-confidence",
-    "debt": "sheet-metric-debt",
-    "deficit": "sheet-marker-deficit",
-    "sp": "sheet-sign-market",
-    "cape": "sheet-metric-valuation",
-    "buffett": "sheet-metric-buffett",
-    "premium": "sheet-sign-premium",
-    "vix": "sheet-sign-sentiment"
-  },
-  "tiles": {
-    "economy": ["sheet-metric-temp", "sheet-sign-activity", "sheet-sign-hormones"],
-    "market": ["sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-sentiment"]
-  },
-  "echo": ["sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-market", "sheet-sign-hormones", "sheet-metric-temp", "sheet-sign-activity", "sheet-metric-gdp"]
+  "echo": [
+    "sheet-metric-valuation",
+    "sheet-metric-buffett",
+    "sheet-sign-premium",
+    "sheet-sign-market",
+    "sheet-sign-hormones",
+    "sheet-metric-temp",
+    "sheet-sign-activity",
+    "sheet-metric-gdp"
+  ]
 }

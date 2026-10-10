@@ -595,7 +595,6 @@
   .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-  .ai-page{ display:flex; flex-direction:column; gap:var(--gap); }
   .ai-pic{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
   .ai-pic .strip{ margin:0; }
   .ai-pic .strip + .strip{ margin-top:5px; }
@@ -603,13 +602,7 @@
   .ai-rank{ display:grid; grid-template-columns:9.5em 1fr 2.8em; align-items:center; column-gap:10px; padding:4px 0; font-size:var(--type-meta); color:var(--text-primary); }
   .ai-rank b{ text-align:right; font-variant-numeric:tabular-nums; }
   .ai-track{ position:relative; height:6px; border-radius:3px; background:var(--surface-2); }
-  .ai-track i{ position:absolute; top:50%; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--cat); }
-  .ai-tiles{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
-  .ai-tile{ display:flex; flex-direction:column; gap:2px; min-width:0; padding:9px 10px 8px; border-radius:calc(var(--radius) - 6px); background:var(--surface-2); }
-  .ai-tile small{ font-size:var(--type-label); line-height:1.3; color:var(--text-muted); }
-  .ai-tile b{ margin-bottom:6px; font-size:var(--type-reading); color:var(--text-primary); }
-  .ai-tile .peek-chart{ margin-top:auto; }
-  .peek-chart.heat .ai-col{ stroke:var(--cat); vector-effect:non-scaling-stroke; }
+  .ai-track i{ position:absolute; top:50%; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--accent); }
   .ai-path{ display:grid; grid-template-columns:2.6em 1fr; align-items:center; column-gap:8px; margin-top:6px; }
   .ai-path .strip{ margin:0; }
   .ai-p{ margin:8px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
@@ -618,6 +611,12 @@
   .ai-echo-when{ display:block; font-size:var(--type-reading); color:var(--text-primary); }
   .ai-echo small{ display:block; margin-top:3px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
   .ai-by{ margin:0; font-size:var(--type-meta); color:var(--text-muted); }
+  .ai-by.insight-by{ margin-top:10px; }
+  .ai-by.story-by{ display:none; margin:10px 0 6px; }
+  .trend-card.is-open .story-by{ display:block; }
+  .trend-card.is-open .trend-text.ai-clamp{ display:block; -webkit-line-clamp:unset; line-clamp:none; overflow:visible; }
+  .ai-mark{ display:inline-flex; width:16px; height:16px; margin-right:6px; vertical-align:-2px; color:var(--accent); }
+  .ai-mark svg{ width:100%; height:100%; }
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
@@ -1684,8 +1683,8 @@
   function trendJump(attrs, mark2, head, body) {
     return trendCard("button", "", ' type="button"' + attrs, mark2, head, "", body);
   }
-  function learnMore(attrs) {
-    return attrs ? '<button type="button" class="learn-more"' + attrs + ">Learn more</button>" : '<span class="learn-more">Learn more</span>';
+  function learnMore(attrs, label) {
+    return attrs ? '<button type="button" class="learn-more"' + attrs + ">" + (label || "Learn more") + "</button>" : '<span class="learn-more">Learn more</span>';
   }
   function trendBox(mark2, head, body) {
     return trendCard("section", " is-box", "", mark2, head, "", body);
@@ -42399,18 +42398,18 @@
     var ww2 = fiscalHistory.gross.filter(function(d) {
       return d.y === 1946;
     })[0].v, v = Math.round(last.v * 10) / 10;
-    var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill2 = {
+    var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill = {
       q: q,
       v: v.toFixed(1),
       ww2: ww2.toFixed(1),
       x: (v / bandEnds(row.meter.optimal, NaN, NaN)[1]).toFixed(2)
     };
     row.meter.value = v;
-    row.flagValue = fill2.v + "%";
-    row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill2.ww2 + "%.");
+    row.flagValue = fill.v + "%";
+    row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill.ww2 + "%.");
     row.noteTpl = row.noteTpl || row.note;
     row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m, k) {
-      return fill2[k] != null ? fill2[k] : m;
+      return fill[k] != null ? fill[k] : m;
     });
   }
   function syncFederal() {
@@ -46218,6 +46217,9 @@
   function sparkleSvg() {
     return markSvg('<path d="M10 3.5l1.6 4.9 4.9 1.6-4.9 1.6L10 16.5l-1.6-4.9L3.5 10l4.9-1.6z" stroke-width="1.8"/><path d="M18 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" stroke-width="1.7"/>');
   }
+  function bookSvg() {
+    return markSvg('<path d="M12 6.6C10 5.1 7.3 4.6 3.8 5v13.6c3.5-.4 6.2.1 8.2 1.6 2-1.5 4.7-2 8.2-1.6V5c-3.5-.4-6.2.1-8.2 1.6z" stroke-width="1.8"/><path d="M12 6.6v13.6" stroke-width="1.8"/>');
+  }
   function umbrellaSvg() {
     return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17 0z" stroke-width="1.8"/><path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>');
   }
@@ -48025,6 +48027,7 @@
       return d.v > a.v ? d : a;
     }), run = lowerRun(pk, top), cards = [];
     cards.push(lede("The Federal funds rate is the hormone: one signal, secreted on purpose, that the whole body then runs at the tempo of. Nothing on this page is measured off the economy — this is the instruction it was given."));
+    cards.push(hiCard("Tightening and Easing", "", "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices."));
     cards.push(hiCard("Two Clocks", "", "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " + pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock — from the " + top.v.toFixed(2) + "% of " + yOf(top) + ", " + run + " peaks in a row came in lower than the one before, until " + yOf(last) + " broke the run at " + last.v.toFixed(2) + "% against " + prev.v.toFixed(2) + "%."));
     cards.push(hiCard("Rise, Peak, Withdraw", "", "That shape is progesterone’s: it rises through the second half of a cycle, peaks, and then falls — and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal rather than the level, because the cuts come after the top, never before it."));
     return highlightsHtml(cards, '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div>");
@@ -48431,10 +48434,9 @@
     kind: "line",
     color: "season-summer"
   } ]);
-  var PHASES = "When the Fed tightens, it raises rates to cool borrowing and spending, and prices often keep rising until shortly before the last hike. When it eases, it cuts rates to make credit cheap again. Money is only tight while the rate runs above prices.";
   function footnoteHtml(m) {
     var rate = ROSTER_BY["sheet-sign-hormones"];
-    return '<p class="fp-note">' + PHASES + " " + learnMore(' data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '"') + "</p>";
+    return '<p class="fp-note"><span class="ai-mark">' + sparkleSvg() + "</span>" + ratesStory(m.era) + " " + learnMore(' data-open="' + rate.id + '" data-title="' + rate.name + '" data-rate-cycle="' + m.era.name + '"') + "</p>";
   }
   function ratesStory(c) {
     var m = c.ongoing ? nowModel : cycleModel(c), peak = cyclePeak(c.from + "-01", endMonthOf(m));
@@ -49361,8 +49363,24 @@
     }).join("");
   }
   function homeSections(i) {
-    return statsHome(i) + fedEnvironment(marketCycles[i].ongoing ? nowModel : cycleModel(marketCycles[i]), HOME_ID, page.range[HOME_ID]) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
+    var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
+    return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
   }
+  function aiAt(id) {
+    var c = pageCycle(id);
+    return page.mode[id] === "cycles" && c && c.ongoing ? aiParts.insight(findOf(id).cat) : "";
+  }
+  var aiParts = {
+    risks: function() {
+      return "";
+    },
+    moments: function() {
+      return "";
+    },
+    insight: function() {
+      return "";
+    }
+  };
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
     return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
@@ -49385,7 +49403,7 @@
     var j = judged(at).filter(function(l) {
       return l.cat !== "cycle";
     }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
-    host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
+    host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs">' + aiAt(id) + '<div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
     narrow(host, id);
   }
   var IND = "sheet-find";
@@ -49530,37 +49548,17 @@
   }
   var ai_insights_default = {
     by: "Claude",
-    asOf: "2026-10-02",
+    asOf: "2026-10-09",
     lede: "Born out of the 2022 correction, the AI Cycle rode the build-out of artificial intelligence, the story everyone wanted to own. It is a market priced for a boom inside an economy that feels like a slowdown: her valuations sit at the top of the record while her people’s confidence sits at the bottom of it, and the distance between the two is the story of this cycle so far.",
-    sections: [ {
-      title: "The Economy",
-      text: "Prices run at {cpi}, well below where the cycle began but heating again, while real growth is {growth} and unemployment has drifted up to {unemployment}. The Fed’s rate stands at {fed}. Households keep spending, with consumer demand growing at {demand}, even as their confidence, at {confidence}, sits near the lowest the record holds since 1960. The strain has moved to the state: federal debt is {debt} of GDP and the budget runs at {deficit}."
-    }, {
-      title: "The Market",
-      text: "The S&P 500 has risen four years running and is up {sp} this year. Shiller CAPE stands at {cape}, a height the record reached only around 2000; the Buffett indicator, at {buffett}, is the highest it has ever been; and the equity risk premium has thinned to {premium}, so stocks now pay little more than bonds for their risk. Volatility is calm at {vix}. The market is not afraid; it is the economy beneath it that is tired."
-    } ],
+    elements: {
+      weather: "Autumn, and the stagflation kind: prices are running hot and heating again while growth sits just under its potential, the pairing this season is named for. The Fed has turned with it, from the cuts of 2024 and 2025 to its first hike since 2023, so policy is tightening again. The market has not flinched: the S&P 500 is having another bull year.",
+      activity: "The real economy is holding. Output is growing at a normal pace and productivity is running above its trend, so each worker is producing more. Hiring is the soft spot: jobs are still being added, but more slowly than her closed cycles usually managed, while unemployment stays low. The body is doing more with few new hands, which is efficient, and leaves little slack.",
+      mood: "The two halves of Mood point in opposite directions. Valuations are rich: the Buffett indicator is at Risk, past the fence of her closed cycles, and Shiller CAPE is well above their range. Sentiment splits the same way: the market itself is calm, with little fear priced in, while households read pessimistic and their confidence is at Risk. A market that pays up while the people beneath it feel poorer is the gap at the centre of this cycle.",
+      desire: "Spending holds up: discretionary spending and retail sales are both inside their normal ranges, and shoppers lean less on credit than they usually do. The strain sits in the market’s own appetite. Concentration is at Risk, the index resting on a few very large names, and the equity risk premium has thinned, so stocks pay little more than bonds for the risk they carry. Lenders, meanwhile, ask less than usual to take on default risk.",
+      circulation: "Money is moving slowly. The 10-year Treasury yield is rising and sits at Risk, well above the range of her closed cycles, while the spread between long and short rates is narrower than usual. The money supply grows at a steady pace, but each dollar changes hands less often than usual, so the pulse is weak even as the volume holds.",
+      stress: "Households carry little debt against their income, but they are saving very little, so the cushion against a bad month is thin. Investors are borrowing to buy stocks faster than her usual range. The heavier load sits with the state: federal debt is elevated, and the budget runs a large deficit while the economy is still growing."
+    },
     echoIntro: "Matched on how the last two years of eight market and economy readings unfolded, against every two-year run since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
-    figures: {
-      age: "length",
-      bull: "bull",
-      cpi: "sheet-metric-temp",
-      growth: "sheet-metric-gdp",
-      unemployment: "sheet-sign-activity",
-      fed: "sheet-sign-hormones",
-      demand: "sheet-sign-desire",
-      confidence: "sheet-sign-confidence",
-      debt: "sheet-metric-debt",
-      deficit: "sheet-marker-deficit",
-      sp: "sheet-sign-market",
-      cape: "sheet-metric-valuation",
-      buffett: "sheet-metric-buffett",
-      premium: "sheet-sign-premium",
-      vix: "sheet-sign-sentiment"
-    },
-    tiles: {
-      economy: [ "sheet-metric-temp", "sheet-sign-activity", "sheet-sign-hormones" ],
-      market: [ "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-sentiment" ]
-    },
     echo: [ "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-market", "sheet-sign-hormones", "sheet-metric-temp", "sheet-sign-activity", "sheet-metric-gdp" ]
   };
   var ECHO_WINDOW = 8;
@@ -49578,16 +49576,6 @@
     return labs().filter(function(l) {
       return l.id === id;
     })[0];
-  }
-  function figure(id) {
-    var l = labOf(id), v = l && l.per[openIdx()];
-    return v == null ? "—" : l.cat === "cycle" ? yearsWord(v) : fmt(l, v);
-  }
-  function fill(text) {
-    var figs = ai_insights_default.figures;
-    return text.replace(/\{(\w+)\}/g, function(_, k) {
-      return figs[k] ? figure(figs[k]) : "{" + k + "}";
-    });
   }
   function quartersOf(k) {
     var y = k.slice(0, 4);
@@ -49758,14 +49746,12 @@
     var p = panel(), list = echoes().slice(0, 8), names = listWords(ai_insights_default.echo.map(function(id) {
       return labOf(id).name;
     }));
-    return "<p>" + ai_insights_default.by + " wrote this reading from the app’s own data of " + asOfWords() + ". Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p><p>A moment is matched by how it got here, not by one quarter alone: the last " + echoWindowWord() + " quarters of " + names + ", two years, against every run of " + echoWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
+    return "<p>A moment is matched by how it got here, not by one quarter alone: the last " + echoWindowWord() + " quarters of " + names + ", two years, against every run of " + echoWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
       return +k < p.open && pathGap(p, +k);
     }).length + " in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than " + echoWindowWord() + " quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p><p>" + list.map(function(e) {
       return e.q + " · " + e.cycle.name + ": gap " + e.gap.toFixed(2);
     }).join("<br>") + "</p>";
   }
-  var AI_PAGE = "sheet-ai-insights";
-  var CHAPTER_MARKS = [ weatherSvg, marketSvg ];
   function rankAt(R, i) {
     var c = marketCycles[i], end = c.ongoing ? Infinity : c.to;
     var h = keyed(R.hist).filter(function(d) {
@@ -49780,6 +49766,9 @@
   }
   function pic(inner, cap2) {
     return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap2 + "</small></div>";
+  }
+  function riskFactors(m) {
+    return dxSys("", dxHead(diceSvg(), "Risk Factors") + risksPic(m));
   }
   function risksPic(m) {
     var i = marketCycles.indexOf(m.era), when = m.ongoing ? "today" : "in this cycle";
@@ -49796,16 +49785,6 @@
     return !rows.length ? pic("", "Nothing in Cycle Statistics reads as Risk " + when + ".") : pic(rows.map(function(x) {
       return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + "%</b></div>";
     }).join(""), "Every result Cycle Statistics reads as Risk " + when + ", past a fence of her closed cycles, placed against " + (m.ongoing ? "its own whole record: the share of past readings below it." : "its record to the cycle’s end: the share of readings below it."));
-  }
-  function tilesPic(ids) {
-    var p = panel();
-    return pic('<div class="ai-tiles">' + ids.map(function(id) {
-      var s = carried(quarterly(id), p.nowI), vals = [];
-      for (var i = p.nowI - 11; i <= p.nowI; i++) if (s[i] != null) vals.push(s[i]);
-      return '<div class="ai-tile"><small>' + ROSTER_BY[id].name + "</small><b>" + figure(id) + "</b>" + colPeek(vals, function() {
-        return "ai-col";
-      }) + "</div>";
-    }).join("") + "</div>", "The last three years, quarter by quarter.");
   }
   var trackCache = null;
   function segAt(q) {
@@ -49829,45 +49808,43 @@
     var runs = seasonRuns(segs);
     return '<span class="ai-path"><small>' + label + "</small>" + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + "</span>";
   }
-  var CHAPTER_PICS = [ function() {
-    return tilesPic(ai_insights_default.tiles.economy);
-  }, function() {
-    return tilesPic(ai_insights_default.tiles.market);
-  } ];
   function para(html) {
     return '<p class="ai-p">' + html + "</p>";
   }
-  var shownModel = null;
-  function aiModel() {
-    return shownModel || nowModel;
+  function byLine(cls) {
+    return '<p class="ai-by' + cls + '">Written by ' + ai_insights_default.by + " from the app’s data of " + asOfWords() + ".</p>";
   }
   function storyOf(m) {
-    return m.ongoing ? fill(ai_insights_default.lede) : m.era.blurb;
+    return m.ongoing ? ai_insights_default.lede : m.era.blurb;
   }
-  function leadBoxes(m) {
-    return trendBox(sparkleSvg(), m.era.name, para(storyOf(m))) + trendBox(orbitSvg(), "Interest Rates", para(ratesStory(m.era)));
+  function storyCard(m) {
+    return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(m), "ai-clamp") + (m.ongoing ? byLine(" story-by") : "") + learnMore(' data-story-more aria-expanded="false"', "Read more"));
   }
-  function chapters() {
-    return ai_insights_default.sections.map(function(s, i) {
-      return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]());
-    }).join("");
-  }
-  function todayBoxes() {
-    return trendBox(clockSvg(), "Closest Moments", para(ai_insights_default.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + '<p class="ai-by">Written by ' + ai_insights_default.by + " from the app’s data of " + asOfWords() + ".</p>" + moreRow(aiDetail());
-  }
-  function aiPage(m) {
-    return '<div class="ai-page">' + leadBoxes(m) + (m.ongoing ? chapters() : "") + trendBox(diceSvg(), "Risk Factors", risksPic(m)) + (m.ongoing ? todayBoxes() : "") + "</div>";
-  }
-  function buildAiPage(home) {
-    var sheet = metricSheet(AI_PAGE);
-    home.appendChild(sheet);
-    sheetRenderers[AI_PAGE] = function() {
-      sheet.innerHTML = aiPage(aiModel());
+  function wireStory(host) {
+    var btn = host.querySelector("[data-story-more]"), text = host.querySelector(".ai-clamp"), card = btn && btn.closest(".trend-card");
+    if (!btn || !text || !card) return;
+    var fit = function() {
+      if (text.clientHeight) btn.hidden = !(text.scrollHeight > text.clientHeight + 1 || card.classList.contains("is-open") || !!card.querySelector(".story-by"));
     };
+    fit();
+    if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(text);
+    btn.addEventListener("click", function() {
+      var open = card.classList.toggle("is-open");
+      btn.textContent = open ? "Read less" : "Read more";
+      btn.setAttribute("aria-expanded", String(open));
+    });
   }
-  function aiInsights(m) {
-    shownModel = m;
-    return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(storyOf(m), "ai-clamp") + learnMore());
+  function elementInsight(cat) {
+    var t = ai_insights_default.elements[cat];
+    return t ? trendBox(sparkleSvg(), "AI Insights", para(t) + byLine(" insight-by")) : "";
+  }
+  function closestMoments() {
+    return dxSys("", dxHead(clockSvg(), "Closest Moments") + para(ai_insights_default.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + moreRow(aiDetail());
+  }
+  function lendAiParts() {
+    aiParts.risks = riskFactors;
+    aiParts.moments = closestMoments;
+    aiParts.insight = elementInsight;
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -49884,7 +49861,7 @@
   } ];
   function diagnosisHtml(m) {
     if (m.ongoing && !diagnoseToday()) return "";
-    return aiInsights(m) + chartDoor(m) + yearByYear(m);
+    return storyCard(m) + chartDoor(m) + yearByYear(m);
   }
   function yearByYear(m) {
     var _a;
@@ -49914,8 +49891,8 @@
     var runs = seasonRuns(inYear);
     return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) + yearMarket(y, ytd, ytd ? Math.max(1, Math.round(cycleYtdFraction * 4)) : 4);
   }
-  function stripGap(n, ytd, fill2) {
-    return n <= 0 ? "" : ytd ? fill2(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
+  function stripGap(n, ytd, fill) {
+    return n <= 0 ? "" : ytd ? fill(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
   }
   function yearMarket(y, ytd, q) {
     var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
@@ -49931,6 +49908,7 @@
     var host = document.getElementById("diagnosis");
     if (host && m) {
       host.innerHTML = diagnosisHtml(m);
+      wireStory(host);
       wireYearsMore(host);
       fitYearDots();
     }
@@ -49953,10 +49931,7 @@
     host.className = "dx";
     host.id = "diagnosis";
     home.insertBefore(host, home.firstChild);
-    buildDoors(home);
-  }
-  function buildDoors(home) {
-    buildAiPage(home);
+    lendAiParts();
     buildCycleChart();
   }
   function buildDiagnosis() {
@@ -50626,7 +50601,7 @@
       return r.heading === "falling";
     }
   } ];
-  var PHASES2 = [ {
+  var PHASES = [ {
     key: "reflation",
     name: "Reflation",
     growth: "slowing",
@@ -50690,7 +50665,7 @@
   }
   function phaseOf(r) {
     var up = r.regime === "expansion", cooling = r.heading === "falling";
-    return PHASES2[up ? cooling ? 1 : 2 : cooling ? 0 : 3];
+    return PHASES[up ? cooling ? 1 : 2 : cooling ? 0 : 3];
   }
   function arc(a0, a1) {
     var p = function(a) {
@@ -50699,7 +50674,7 @@
     return "M150,130L" + p(a1) + "A96,96 0 0 1 " + p(a0) + "Z";
   }
   function clockFace(now2) {
-    var parts = PHASES2.map(function(p) {
+    var parts = PHASES.map(function(p) {
       var m = (p.at[0] + p.at[1]) / 2 * Math.PI, x = 150 + 56 * Math.cos(m), y = 130 - 56 * Math.sin(m), cur = p === now2 ? " now" : "";
       return '<path class="clock-q' + cur + '" d="' + arc(p.at[0], p.at[1]) + '"/><text class="clock-name' + cur + '" x="' + x.toFixed(1) + '" y="' + (y - 3).toFixed(1) + '" text-anchor="middle">' + p.name + '</text><text class="clock-asset' + cur + '" x="' + x.toFixed(1) + '" y="' + (y + 13).toFixed(1) + '" text-anchor="middle">' + p.holds + "</text>";
     });
@@ -50711,7 +50686,7 @@
   }
   function drawClock() {
     var now2 = phaseOf(nowModel.reading);
-    var rows = PHASES2.map(function(p) {
+    var rows = PHASES.map(function(p) {
       return auxStat({
         label: p.name + (p === now2 ? " · today" : "") + "<small>Growth " + p.growth + ", prices " + p.prices + "</small>",
         value: p.holds,
@@ -52888,7 +52863,7 @@
     forgetLabs();
     forgetEchoes();
     repaintDiagnosis();
-    [ "chart-home", "sheet-find", "sheet-ai-insights" ].forEach(function(id) {
+    [ "chart-home", "sheet-find" ].forEach(function(id) {
       var el = byIdMaybe(id);
       if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id]();
     });

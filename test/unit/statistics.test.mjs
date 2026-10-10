@@ -41,7 +41,7 @@ test('the (i) says how many closed cycles each short range rests on', () => {
   assert.match(all, /Depth: a range rests[^.]*\. US 10-year Treasury[^;]* on two; [^;]*Concentration risk on three/);
 });
 
-test('a live reading moves Cycle Statistics and AI Insights with its figure', async () => {
+test('a live reading moves Cycle Statistics with its figure', async () => {
   const docs = { capeValue: { kind: 'scalar', value: 33.3, asOf: '2026-10-03' } };
   window.claude = { use: () => Promise.resolve({ doc: path => ({ get: () => docs[path.slice(5)] ? Promise.resolve({ data: docs[path.slice(5)] }) : Promise.reject(new Error('none')) }) }) };
   refreshLiveData();
@@ -50,8 +50,6 @@ test('a live reading moves Cycle Statistics and AI Insights with its figure', as
   assert.equal(cardText('sheet-metric-valuation'), '33.3×');
   sheetRenderers['sheet-find']();
   assert.equal(row('sheet-metric-valuation').querySelector('.lab-res b').textContent, '33.3×');
-  sheetRenderers['sheet-ai-insights']();
-  assert.match(document.getElementById('sheet-ai-insights').textContent, /CAPE stands at 33\.3×/);
 });
 
 test('Temperature’s Normal is the Season Model’s 1–3% band, its Risk the fence of its own record', () => {
