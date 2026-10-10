@@ -415,6 +415,11 @@
   .tab-btn:hover:not(.active){ color:var(--text-primary); }
   .wrap{ --tabbar-lift:max(10px, calc(env(safe-area-inset-bottom, 0px) - 12px)); padding-bottom:calc(62px + var(--tabbar-lift) + var(--gap-top)); }
   .tabnav{ margin-bottom:0; }
+  @media (min-width:1160px){
+    .tabbar{ top:74px; bottom:auto; left:16px; right:auto; margin:0; width:240px; flex-direction:column; gap:4px; padding:8px; border-radius:var(--radius); }
+    .tab-btn{ flex:none; flex-direction:row; justify-content:flex-start; gap:12px; padding:10px 14px; font-size:var(--type-interface); border-radius:calc(var(--radius) - 6px); }
+    .wrap{ padding-bottom:var(--gap-top); }
+  }
   .tab-panel, #calendar-cycle{ display:flex; flex-direction:column; gap:var(--gap); }
   .tab-panel{ padding-top:2px; }
   #signs-list:not(:has(> :not([hidden]))){ display:none; }
