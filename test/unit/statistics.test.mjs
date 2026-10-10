@@ -90,18 +90,9 @@ test('a period picked on Elements stays there: Analysis reopens on the open cycl
   assert.equal(document.querySelector('#sheet-find .period-now b').textContent, housing.name);
 });
 
-test('Interest Rates picks its own cycle on Analysis, and the Health Score opens every cycle’s score', () => {
-  const dotCom = marketCycles.find(c => /Dot-Com/.test(c.name)), name = () => document.querySelector('#chart-home .stat-note b').textContent;
-  const picked = () => document.querySelector('#chart-home .fp .cycsel-nm').textContent;
+test('the Health Score opens every cycle’s score, and Interest Rates on Analysis carries no controls of its own', () => {
   document.getElementById('tab-chart').click();
-  assert.equal(picked(), 'Current cycle');
-  document.querySelector('[data-cycles-for="chart-rates"] [data-picker-toggle]').click();
-  [...document.querySelectorAll('[data-cycles-for="chart-rates"] .cycsel-opt')].find(o => o.dataset.cycle === dotCom.name).click();
-  assert.equal(picked(), dotCom.name.replace(' Cycle', ''));
-  assert.match(document.querySelector('#chart-home .fp').textContent, /Dec 2002/);
-  assert.equal(name(), marketCycles[open].name, 'the rest of Analysis stays on its cycle');
-  document.getElementById('tab-chart').click();
-  assert.equal(picked(), 'Current cycle');
+  assert.equal(document.querySelector('#chart-home .fp .rangebar, #chart-home .fp .cycsel'), null);
   const page = detailTexts[+document.querySelector('#chart-home .lab-score-box .details-link').dataset.detailIdx];
   const bars = page.match(/<rect class="(ok|warn|odd)"/g) || [];
   assert.equal(bars.length, marketCycles.length, 'one bar per cycle');

@@ -6,7 +6,6 @@ import { isoDay, monthLabel } from "./format.ts";
 import { learnMore } from "./dom.ts";
 import { orbitSvg } from "./marks.ts";
 import { dxHead, dxSys } from "./render-core.ts";
-import { tabBar } from "./history.ts";
 import { ROSTER_BY } from "./roster.ts";
 import { monthIdx, waveChart, waveLegend } from "./wave-chart.ts";
 import type { CycleModel } from "./model.ts";
@@ -65,13 +64,11 @@ function endMonthOf(m: CycleModel){
   var ff = fedFundsHistory[fedFundsHistory.length - 1];
   return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
 }
-var RANGES = [["1y", "1Y"], ["5y", "5Y"], ["cycle", "Cycle"]];
-function windowFrom(range: string, cycleFrom: number, to: number){ return range === "1y" ? to - 11 : range === "5y" ? to - 59 : cycleFrom; }
-function ratesCard(m: CycleModel, host: string, range: string){
-  var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
+function ratesCard(m: CycleModel){
+  var toM = endMonthOf(m), to = monthIdx(toM), from = monthIdx(m.era.from + "-01");
   var series = [{ list: rateSeries(toM), color: "gold", fill: 0.45 }, { list: inflationHistory, color: "season-summer", fill: 0.32, bold: true }];
-  return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + waveChart({ series: series, bands: tightBands(), from: from, to: to, open: !!m.ongoing }) + LEGEND + footnoteHtml(m);
+  return waveChart({ series: series, bands: tightBands(), from: from, to: to, open: !!m.ongoing }) + LEGEND + footnoteHtml(m);
 }
-export function fedEnvironment(m: CycleModel, host: string, range: string, pick?: string){
-  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + (pick || "") + ratesCard(m, host, range));
+export function fedEnvironment(m: CycleModel){
+  return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m));
 }

@@ -541,7 +541,6 @@
   .dx-mark{ display:inline-flex; color:var(--cat); }
   button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
   button.dx-sys-head .peek-chev{ margin-left:auto; }
-  .fp .rangebar{ margin:14px 0 4px; }
   .wave-plot, .wave-legend{ --band:var(--shade); }
   .wave-plot{ position:relative; height:170px; margin-top:14px; border-radius:12px; border:1px solid var(--border); background:var(--surface); }
   .wave-plot svg{ position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 round 11px); }
@@ -693,9 +692,6 @@
   .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--round); padding:8px 10px; cursor:pointer; white-space:nowrap;
     font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:500; color:var(--text-primary); }
   .range-seg.on{ background:var(--seg-on); color:var(--text-primary); font-weight:600; box-shadow:0 1px 3px rgba(124,40,68,0.10); }
-  .rangebar.thin{ min-height:0; justify-content:space-around; padding:5px 6px; }
-  .rangebar.thin .range-seg{ flex:0 0 24%; padding:3px 10px; font-weight:400; }
-  .rangebar.thin .range-seg.on{ font-weight:500; box-shadow:none; }
   .range-seg:hover:not(.on){ color:var(--text-primary); }
   .fit-line{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; fill:none; }
   .fit-lab{ font-size:var(--type-meta); font-weight:700; fill:var(--accent-ink); }
@@ -48508,12 +48504,8 @@
     var ff = fedFundsHistory[fedFundsHistory.length - 1];
     return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
   }
-  var RANGES = [ [ "1y", "1Y" ], [ "5y", "5Y" ], [ "cycle", "Cycle" ] ];
-  function windowFrom(range, cycleFrom, to) {
-    return range === "1y" ? to - 11 : range === "5y" ? to - 59 : cycleFrom;
-  }
-  function ratesCard(m, host, range) {
-    var toM = endMonthOf(m), to = monthIdx(toM), cycleFrom = monthIdx(m.era.from + "-01"), from = windowFrom(range, cycleFrom, to);
+  function ratesCard(m) {
+    var toM = endMonthOf(m), to = monthIdx(toM), from = monthIdx(m.era.from + "-01");
     var series = [ {
       list: rateSeries(toM),
       color: "gold",
@@ -48524,7 +48516,7 @@
       fill: .32,
       bold: true
     } ];
-    return tabBar('data-range-for="' + host + '"', RANGES, range, "data-range", "thin") + waveChart({
+    return waveChart({
       series: series,
       bands: tightBands(),
       from: from,
@@ -48532,8 +48524,8 @@
       open: !!m.ongoing
     }) + LEGEND + footnoteHtml(m);
   }
-  function fedEnvironment(m, host, range, pick2) {
-    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + (pick2 || "") + ratesCard(m, host, range));
+  function fedEnvironment(m) {
+    return dxSys(" fp", dxHead(orbitSvg(), "Interest Rates") + ratesCard(m));
   }
   function insightCirculation() {
     var vel = m2vHistory, n = vel.length;
@@ -49291,7 +49283,6 @@
     return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
   }
   var HOME_ID = "chart-home";
-  var RATES_ID = "chart-rates";
   function statRow(name, v, of, side2, page2, cls, text) {
     var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), "<small>" + name + "</small><b>" + (text || yearsText(v)) + "</b>", page2 ? side2 : null);
     var c = " stat-row" + (cls ? " " + cls : "");
@@ -49419,8 +49410,8 @@
     }).join("");
   }
   function homeSections(i) {
-    var r = cycleByName(page.cycles[RATES_ID]) || marketCycles[i], m = r.ongoing ? nowModel : cycleModel(r);
-    return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID], cyclePicker(RATES_ID, r.name)) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
+    var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
+    return statsHome(i) + fedEnvironment(m) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
   }
   function whenPicked(id) {
     var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
@@ -49574,25 +49565,19 @@
     }
   }
   function buildCycleChart() {
-    page.range[HOME_ID] = "cycle";
     wireFinder(need(HOME_ID), HOME_ID);
     buildFind();
     wireCatDoors();
     wirePicks();
-    page.cycles[RATES_ID] = null;
-    sheetRenderers[RATES_ID] = function() {
-      drawChart(HOME_ID);
-    };
     document.addEventListener("click", function(e) {
       var door = e.target.closest && e.target.closest("[data-chart-cycle]");
       if (!door) return;
       crossToChart();
       page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
-      page.cycles[RATES_ID] = null;
       drawChart(HOME_ID);
     });
     need("tab-chart").addEventListener("click", function() {
-      page.cycles[HOME_ID] = page.cycles[RATES_ID] = null;
+      page.cycles[HOME_ID] = null;
       drawChart(HOME_ID);
     });
     document.addEventListener("click", rateCycle, true);

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `dde4423` on 2026-10-10. **109 components**, **19 shared patterns**.
+Generated from commit `e8d3ac8` on 2026-10-10. **109 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
@@ -133,7 +133,7 @@ Generated from commit `dde4423` on 2026-10-10. **109 components**, **19 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`controlsBox`** | `.hist-controls` | `history.ts:histControls` |
-| **`cyclePicker`** | `.cycsel-btn` | `cycle-analysis.ts:homeSections`, `history.ts:histControls` |
+| **`cyclePicker`** | `.cycsel-btn` | `history.ts:histControls` |
 | **`headDots`** | `.bh-menu` | `history.ts:histHead` |
 | **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.ts:headDots`, `history.ts:paintHeadMenus` |
 | **`histHead`** | `.band-head` `.bh-mark` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `reading.ts:historyHtml` |
@@ -255,7 +255,6 @@ renderer speaks. Listed most-used first.
 | **`windowYears`** | charts.ts | 6 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`colScale`** | history-charts.ts | 5 places |
-| **`cycleByName`** | model.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
 | **`factsFrom`** | format.ts | 5 places |
 | **`keyed`** | roster.ts | 5 places |
@@ -274,6 +273,7 @@ renderer speaks. Listed most-used first.
 | **`bandEnds`** | format.ts | 4 places |
 | **`categoriesShown`** | roster.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
+| **`cycleByName`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
 | **`dollars`** | indicators.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
@@ -286,7 +286,6 @@ renderer speaks. Listed most-used first.
 | **`readingFor`** | reading.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
-| **`tabBar`** | history.ts | 4 places |
 | **`trendText`** | dom.ts | 4 places |
 | **`yearsWord`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
@@ -322,6 +321,7 @@ renderer speaks. Listed most-used first.
 | **`side`** | cycle-analysis.ts | 3 places |
 | **`spreadSeries`** | render-pages.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
+| **`tabBar`** | history.ts | 3 places |
 | **`tagFor`** | format.ts | 3 places |
 | **`todayFace`** | reading.ts | 3 places |
 | **`todayValue`** | era.ts | 3 places |

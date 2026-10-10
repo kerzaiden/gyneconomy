@@ -439,7 +439,7 @@ export function pageCycle(id: string, y0?: number | null){
   if (y0 == null) y0 = page.y0[id];
   return c && y0 != null && c.from < y0 ? openCycle() : c;
 }
-export function cyclePicker(id: string, picked: string | null | undefined, minYear?: number | null){
+function cyclePicker(id: string, picked: string | null | undefined, minYear?: number | null){
   var rows = marketCycles.slice().reverse()
     .filter(function(c){ return minYear == null || c.from >= minYear; });
   var cur = cycleByName(picked) || openCycle();

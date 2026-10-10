@@ -2,7 +2,7 @@ import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { setTopbar } from "./render-pages.ts";
-import { cyclePicker, page, pageCycle, tabBar } from "./history.ts";
+import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
@@ -301,7 +301,7 @@ function chartDetail(){
 export function chartDoor(m: CycleModel){
   return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
 }
-var HOME_ID = "chart-home", RATES_ID = "chart-rates";
+var HOME_ID = "chart-home";
 function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string, text?: string){
   var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), '<small>' + name + '</small><b>' + (text || yearsText(v)) + '</b>', page ? side : null);
   var c = " stat-row" + (cls ? " " + cls : "");
@@ -379,8 +379,8 @@ function insightsHome(i: number){
   }).join("");
 }
 function homeSections(i: number){
-  var r = cycleByName(page.cycles[RATES_ID]) || marketCycles[i], m = r.ongoing ? nowModel : cycleModel(r);
-  return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID], cyclePicker(RATES_ID, r.name)) +
+  var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
+  return statsHome(i) + fedEnvironment(m) +
     dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
 }
 function whenPicked(id: string){
@@ -480,15 +480,14 @@ function rateCycle(e: Event){
   if (b && k){ page.mode[k] = "cycles"; page.cycles[k] = b.getAttribute("data-rate-cycle"); }
 }
 export function buildCycleChart(){
-  page.range[HOME_ID] = "cycle"; wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
-  page.cycles[RATES_ID] = null; sheetRenderers[RATES_ID] = function(){ drawChart(HOME_ID); };
+  wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
   document.addEventListener("click", function(e){
     var door = (e.target as Element).closest && (e.target as Element).closest("[data-chart-cycle]"); if (!door) return;
     crossToChart();
-    page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle"); page.cycles[RATES_ID] = null;
+    page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
     drawChart(HOME_ID);
   });
-  need("tab-chart").addEventListener("click", function(){ page.cycles[HOME_ID] = page.cycles[RATES_ID] = null; drawChart(HOME_ID); });
+  need("tab-chart").addEventListener("click", function(){ page.cycles[HOME_ID] = null; drawChart(HOME_ID); });
   document.addEventListener("click", rateCycle, true);
   drawChart(HOME_ID);
 }
