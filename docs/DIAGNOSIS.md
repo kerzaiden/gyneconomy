@@ -73,7 +73,8 @@ credit is easy, more of it is taken on. Then the Fed tightens against rising pri
 renewed costs more. The tipping point is not when debt exceeds income (a mortgage is many years of income) but
 when the payments outgrow what income can carry: money that went to spending goes to interest instead. On the
 way up, households and companies spend more than they earn, the gap paid with credit; past the tipping point they
-must spend less than they earn, to pay it back. One
+must spend less than they earn, to pay it back, while those with cash are paid to wait: high rates reward
+saving over spending. Both pull the same way. One
 borrower's spending is another's income, so the squeeze spreads, spending slows (the premenstrual turn), the
 weakest borrowers default, lenders tighten, and the lining sheds. The doctor reads it in this order: Pressure
 (what money costs), Stress (what is owed against income), Desire (spending giving way), Default risk (the
