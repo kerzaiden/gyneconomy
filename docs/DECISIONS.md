@@ -105,7 +105,7 @@ settles it; none is open after V668.
   explained), Risk Factors stands on Analysis above Elements, Closest Moments below it, and each element, picked
   from the filter, carries its own insights below its readings and above More details, titled by the element (Weather
   Insights, Mood Insights: the sparkle already says it is AI, and one title on every element left the reader
-  unsure which they were reading), written about them,
+  unsure which they were reading), three lines with Read more like the Cycle Story, written about them,
   for the cycle on screen, its years and quarters included: the reading belongs to the cycle (Keren), and every
   cycle, open or closed, has one for each element it reads; an element with no reading in a cycle has none. It
   carries no figures, since the page beneath shows them: the page is part of the story. Claude writes it: Keren
@@ -592,10 +592,13 @@ settles it; none is open after V668.
   figure the page beside them already shows** (the 0.6.12 review found "The Fed has eased" after the Sep 16 hike).
   The emotional reading of each cycle has not been worked out yet; the lede's opening, "Born out of the 2022
   correction", which Keren liked, stays. (0.6.6, 0.6.12, 0.6.13, AI Insights Everywhere)
-- **Risk Factors lists every result Cycle Statistics reads as Risk, each as a bar placing its value against its
-  own record, on Analysis above Elements.** Keren liked the readings as bars, gathered as the risk factors the
-  analysis detected; it reads the Analysis judgement, never its own, and sits with the analysis that finds them.
-  (0.6.13, AI Insights Everywhere)
+- **Risk Factors lists every result Cycle Statistics reads as Risk, each with its value and where it stands in
+  its own record, on Analysis above Elements.** A bar of the share of past readings below it said little about why
+  a reading is at risk; Keren wants where we are, the way financial media put it: the highest on record, or
+  the highest since a date, and the record and when it was set. Each line names where its record starts, since
+  some records are short. The open cycle reads its latest value; a closed cycle its most extreme value inside the
+  cycle, against the record before it. It reads the Analysis judgement, never its own.
+  (0.6.13, AI Insights Everywhere, Element Insights)
 
 ### Analysis
 

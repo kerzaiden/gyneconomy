@@ -3,7 +3,7 @@ import { learnMore, moreRow, trendBox, trendText } from "./dom.ts";
 import { dxHead, dxSys, seasonPills, seasonRuns, seasonRunsLabel, strip } from "./render-core.ts";
 import { bookSvg, clockSvg, diceSvg, sparkleSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
-import { cycleModel, cycleOfYear, moodTrack, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
+import { cycleModel, cycleOfYear, moodTrack, QUARTER_END_MONTH, seasonTitle } from "./model.ts";
 import type { CycleModel, TrackSeg } from "./model.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { keyed, ROSTER_BY } from "./roster.ts";
@@ -112,20 +112,31 @@ function aiDetail(){
   return '<p>A moment is matched by how it got here, not by one quarter alone: the last ' + echoWindowWord() + ' quarters of ' + names + ', two years, against every run of ' + echoWindowWord() + ' quarters since ' + ECHO_FROM + ' that ends before this cycle began, ' + Object.keys(p.rows).filter(function(k){ return +k < p.open && pathGap(p, +k); }).length + ' in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than ' + echoWindowWord() + ' quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p>' +
     '<p>' + list.map(function(e){ return e.q + ' · ' + e.cycle.name + ': gap ' + e.gap.toFixed(2); }).join('<br>') + '</p>';
 }
-function rankAt(R: RosterRow, i: number){
-  var c = marketCycles[i], end = c.ongoing ? Infinity : c.to;
-  var h = keyed(R.hist).filter(function(d){ return d.v != null && +d.k.slice(0, 4) <= end; }).map(function(d){ return d.v as number; });
-  return { R:R, pct:c.ongoing ? rankToDate(h.slice(0, -1), h[h.length - 1]) : rankToDate(h, labOf(R.id).per[i]) };
+function keyWords(k: string){ var m = /^(\d{4})-(\d{2})/.exec(k); return m ? MONTH_NAMES[+m[2] - 1] + " " + m[1] : /^\d{4} Q\d$/.test(k) ? k.slice(5) + " " + k.slice(0, 4) : k; }
+function keyYear(k: string){ return +k.slice(0, 4); }
+function standing(R: RosterRow, i: number){
+  var c = marketCycles[i], l = labOf(R.id), end = c.ongoing ? Infinity : c.to, up = (l.per[i] as number) > (l.norm as { hi: number }).hi;
+  var past = function(a: number, b: number){ return up ? a >= b : a <= b; };
+  var h = keyed(R.hist).filter(function(d){ return d.v != null && keyYear(d.k) <= end; }) as { k: string; v: number }[];
+  var mine = h.filter(function(d){ return keyYear(d.k) >= c.from; });
+  var at = c.ongoing ? mine[mine.length - 1] : mine.reduce(function(a, d){ return a && past(a.v, d.v) ? a : d; }, mine[0]);
+  var prior = at ? h.slice(0, h.indexOf(at)) : [];
+  if (!at || prior.length < 12) return null;
+  var beyond = prior.filter(function(d){ return past(d.v, at.v); }), last = beyond[beyond.length - 1];
+  var rec = prior.reduce(function(a, d){ return past(a.v, d.v) ? a : d; }), most = up ? "Highest" : "Lowest";
+  var words = !last ? most + " on record, which starts in " + keyWords(h[0].k)
+    : (keyYear(last.k) <= keyYear(at.k) - 2 ? most + " since " + keyWords(last.k) + "; its" : "Its") + " " + (up ? "high" : "low") + " since " + keyWords(h[0].k) + " is " + l.print(rec.v) + ", in " + keyWords(rec.k);
+  return { R:R, v:l.print(at.v), when:keyWords(at.k), words:words, record:!last };
 }
 function pic(inner: string, cap: string){ return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap + '</small></div>'; }
 export function riskFactors(m: CycleModel){ return dxSys("", dxHead(diceSvg(), "Risk Factors") + risksPic(m)); }
 function risksPic(m: CycleModel){
   var i = marketCycles.indexOf(m.era), when = m.ongoing ? "today" : "in this cycle";
-  var risks = riskLabs(i).map(function(l){ return ROSTER_BY[l.id]; }).filter(Boolean);
-  var rows = risks.map(function(R){ return rankAt(R, i); }).filter(function(x): x is { R: RosterRow; pct: number } { return x.pct != null; }).sort(function(a, b){ return b.pct - a.pct; });
+  var rows = riskLabs(i).map(function(l){ return ROSTER_BY[l.id]; }).filter(Boolean).map(function(R){ return standing(R, i); })
+    .filter(function(x): x is NonNullable<ReturnType<typeof standing>> { return x != null; }).sort(function(a, b){ return Number(b.record) - Number(a.record); });
   return !rows.length ? pic("", "Nothing in Cycle Statistics reads as Risk " + when + ".") : pic(rows.map(function(x){
-    return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + '%</b></div>';
-  }).join(""), "Every result Cycle Statistics reads as Risk " + when + ", past a fence of her closed cycles, placed against " + (m.ongoing ? "its own whole record: the share of past readings below it." : "its record to the cycle’s end: the share of readings below it."));
+    return '<div class="ai-rank"><span>' + x.R.name + '</span><b>' + x.v + '</b><small>' + x.when + '. ' + x.words + '.</small></div>';
+  }).join(""), "Every result Cycle Statistics reads as Risk " + when + ", past a fence of her closed cycles, set against its own record in the app" + (m.ongoing ? ", at its latest reading." : ", at its most extreme in the cycle."));
 }
 var trackCache: Record<string, TrackSeg> | null = null;
 function segAt(q: string){
