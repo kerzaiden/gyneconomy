@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,877 lines** in 42 files, about 607 KB, roughly **172 thousand tokens**. No session can
+The source is **8,939 lines** in 42 files, about 612 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `dcb09d4` on 2026-10-10.
+Generated from commit `6330ed7` on 2026-10-10.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `dcb09d4` on 2026-10-10.
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **776** top-level functions, **122** top-level vars, **378** exported names, **20** boots.
+Counts: **38** modules, **783** top-level functions, **123** top-level vars, **380** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -36,8 +36,8 @@ Counts: **38** modules, **776** top-level functions, **122** top-level vars, **3
 | `js/credit.ts` | 139 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
 | `js/model.ts` | 396 | 59 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 502 | 50 | `charts`, `data`, `dom`, `format`, `live`, `model` |
-| `js/readings.ts` | 718 | 65 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 151 | 6 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
+| `js/readings.ts` | 719 | 66 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
+| `js/roster.ts` | 153 | 6 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 383 | 20 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
 | `js/diagnosis.ts` | 92 | 14 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
@@ -55,13 +55,13 @@ Counts: **38** modules, **776** top-level functions, **122** top-level vars, **3
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 78 | 15 | `data`, `dom`, `format`, `history`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster`, `wave-chart` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 316 | 11 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
-| `js/history-fred.ts` | 31 | 14 | — |
+| `js/history-charts.ts` | 322 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
+| `js/history-fred.ts` | 32 | 14 | — |
 | `js/indicators.ts` | 170 | 29 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/insights.ts` | 185 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/marks.ts` | 59 | 27 | — |
-| `js/pressure.ts` | 323 | 14 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `pulse-strips`, `reading`, `readings`, `rhythm`, `roster` |
+| `js/pressure.ts` | 375 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `pulse-strips`, `reading`, `readings`, `rhythm`, `roster` |
 | `js/pulse-strips.ts` | 168 | 20 | `charts`, `data`, `format` |
 | `js/reading.ts` | 95 | 12 | `charts`, `dom`, `format`, `history`, `render-core`, `roster` |
 | `js/rhythm.ts` | 47 | 8 | `data`, `format` |
@@ -84,9 +84,9 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 6 | `bootCredit` | `js/credit.ts:131`–138 |
 | 7 | `bootModel` | `js/model.ts:371`–395 |
 | 8 | `bootHistory` | `js/history.ts:478`–501 |
-| 9 | `bootReadings` | `js/readings.ts:536`–584 |
-| 10 | `bootReadingRegistry` | `js/readings.ts:651`–717 |
-| 11 | `bootRoster` | `js/roster.ts:138`–150 |
+| 9 | `bootReadings` | `js/readings.ts:537`–585 |
+| 10 | `bootReadingRegistry` | `js/readings.ts:652`–718 |
+| 11 | `bootRoster` | `js/roster.ts:140`–152 |
 | 12 | `bootRenderCore` | `js/render-core.ts:150`–155 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:374`–379 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:88`–91 |
@@ -505,38 +505,39 @@ falls in. **export** marks a name other modules import.
 | 370 | `hznRecord` | `function hznRecord(` |
 | 374 | `hznBack` | `function hznBack(` |
 | 375 | `horizonWord` | `function horizonWord(` |
-| 380 | `derivePressureTendency` | `function derivePressureTendency(` |
-| 392 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
-| 413 | `pulseCard` · export | `function pulseCard(` |
-| 418 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
-| 432 | `marketWord` | `function marketWord(` |
-| 436 | `marketCol` | `function marketCol(` |
-| 437 | `yearLead` | `function yearLead(` |
-| 442 | `marketInfoHtml` | `function marketInfoHtml(` |
-| 449 | `rowReadings` · export | `function rowReadings(` |
-| 450 | `indOf` · export | `function indOf(` |
-| 451 | `policyFacts` | `function policyFacts(` |
-| 458 | `policyFactRows` · export | `function policyFactRows(` |
-| 461 | `gdpWord` · export | `function gdpWord(` |
-| 462 | `phaseClass` · export | `function phaseClass(` |
-| 467 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
+| 380 | `tendencyOf` · export | `function tendencyOf(` |
+| 392 | `derivePressureTendency` | `function derivePressureTendency(` |
+| 393 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
+| 414 | `pulseCard` · export | `function pulseCard(` |
+| 419 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
+| 433 | `marketWord` | `function marketWord(` |
+| 437 | `marketCol` | `function marketCol(` |
+| 438 | `yearLead` | `function yearLead(` |
+| 443 | `marketInfoHtml` | `function marketInfoHtml(` |
+| 450 | `rowReadings` · export | `function rowReadings(` |
+| 451 | `indOf` · export | `function indOf(` |
+| 452 | `policyFacts` | `function policyFacts(` |
+| 459 | `policyFactRows` · export | `function policyFactRows(` |
+| 462 | `gdpWord` · export | `function gdpWord(` |
+| 463 | `phaseClass` · export | `function phaseClass(` |
+| 468 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
 
 #### Temperature's notes
 
 | Line | Name | Anchor |
 |---|---|---|
-| 585 | `yearReading` | `function yearReading(` |
-| 603 | `isNum` | `function isNum(` |
-| 605 | `rowId` | `function rowId(` |
-| 606 | `rowLike` | `function rowLike(` |
-| 619 | `rowsOk` | `function rowsOk(` |
-| 622 | `deriveHorizon` | `function deriveHorizon(` |
-| 636 | `fieldsKept` | `function fieldsKept(` |
-| 640 | `proseOk` | `function proseOk(` |
-| 641 | `reportOk` | `function reportOk(` |
-| 645 | `vixAsOf` | `function vixAsOf(` |
-| 646 | `coincidentAsOf` | `function coincidentAsOf(` |
-| 647 | `periodIso` · export | `function periodIso(` |
+| 586 | `yearReading` | `function yearReading(` |
+| 604 | `isNum` | `function isNum(` |
+| 606 | `rowId` | `function rowId(` |
+| 607 | `rowLike` | `function rowLike(` |
+| 620 | `rowsOk` | `function rowsOk(` |
+| 623 | `deriveHorizon` | `function deriveHorizon(` |
+| 637 | `fieldsKept` | `function fieldsKept(` |
+| 641 | `proseOk` | `function proseOk(` |
+| 642 | `reportOk` | `function reportOk(` |
+| 646 | `vixAsOf` | `function vixAsOf(` |
+| 647 | `coincidentAsOf` | `function coincidentAsOf(` |
+| 648 | `periodIso` · export | `function periodIso(` |
 
 ### `js/roster.ts`
 
@@ -1162,12 +1163,14 @@ falls in. **export** marks a name other modules import.
 | 83 | `yearTicks` | `function yearTicks(` |
 | 98 | `unempHistoryChart` · export | `function unempHistoryChart(` |
 | 136 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 178 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 216 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 263 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 304 | `m2Step` | `function m2Step(` |
-| 308 | `heatEdges` | `function heatEdges(` |
-| 312 | `heatStep` | `function heatStep(` |
+| 139 | `mortgageHistoryChart` · export | `function mortgageHistoryChart(` |
+| 142 | `rateColumnsChart` | `function rateColumnsChart(` |
+| 184 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 222 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 269 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 310 | `m2Step` | `function m2Step(` |
+| 314 | `heatEdges` | `function heatEdges(` |
+| 318 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 
@@ -1321,25 +1324,35 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 20 | `latestYieldPoint` | `function latestYieldPoint(` |
-| 27 | `withLatestPoint` | `function withLatestPoint(` |
-| 32 | `tendencyNote` | `function tendencyNote(` |
-| 42 | `pressureMaturities` | `function pressureMaturities(` |
-| 68 | `flowRow` | `function flowRow(` |
-| 69 | `pulseHistory` | `function pulseHistory(` |
-| 76 | `defineFlow` | `function defineFlow(` |
-| 102 | `ylmYearMarks` | `function ylmYearMarks(` |
-| 121 | `ylmColumns` | `function ylmColumns(` |
-| 141 | `ylmFitLine` | `function ylmFitLine(` |
-| 153 | `pressureHead` | `function pressureHead(` |
-| 165 | `definePressure` | `function definePressure(` |
+| 22 | `latestYieldPoint` | `function latestYieldPoint(` |
+| 29 | `withLatestPoint` | `function withLatestPoint(` |
+| 34 | `tendencyNote` | `function tendencyNote(` |
+| 44 | `pressureMaturities` | `function pressureMaturities(` |
+| 70 | `flowRow` | `function flowRow(` |
+| 71 | `pulseHistory` | `function pulseHistory(` |
+| 78 | `defineFlow` | `function defineFlow(` |
+| 104 | `ylmYearMarks` | `function ylmYearMarks(` |
+| 123 | `ylmColumns` | `function ylmColumns(` |
+| 143 | `ylmFitLine` | `function ylmFitLine(` |
+| 155 | `pressureHead` | `function pressureHead(` |
+| 167 | `definePressure` | `function definePressure(` |
 
 #### Pressure's Insights
 
 | Line | Name | Anchor |
 |---|---|---|
-| 287 | `pressureInsights` | `function pressureInsights(` |
-| 320 | `defineMarketReadings` · export | `function defineMarketReadings(` |
+| 289 | `pressureInsights` | `function pressureInsights(` |
+
+#### RENDER: the 30-year mortgage rate — what a household pays for money, monthly since 1971
+
+| Line | Name | Anchor |
+|---|---|---|
+| 323 | `MORTGAGE_BACK` | `var MORTGAGE_BACK =` |
+| 329 | `mortgageLast` | `function mortgageLast(` |
+| 330 | `mortgageInfo` | `function mortgageInfo(` |
+| 342 | `mortgageInsight` | `function mortgageInsight(` |
+| 354 | `defineMortgage` | `function defineMortgage(` |
+| 372 | `defineMarketReadings` · export | `function defineMarketReadings(` |
 
 ### `js/pulse-strips.ts`
 

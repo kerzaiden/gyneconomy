@@ -43,6 +43,7 @@ const KEYED = [
   ['fred.json',   'delinquencyHistory',      'q', 165, [0, 20], 3],
   ['fred.json',   'marginHistory',           'm', 340, [-80, 200], 6],
   ['fred.json',   'consumerCreditHistory',   'm', 980, [-40, 80], 6],
+  ['fred.json',   'mortgageHistory',         'm', 660, [0, 25], 6],
   ['fred.json',   'dsrQuarterly',            'q', 86, [5, 25], 3],
   ['fred.json',   'payrollsHistory',         'm', 1000, [-20, 20], 6],
   ['fred.json',   'retailHistory',           'm', 400, [-30, 60], 6],

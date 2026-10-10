@@ -374,10 +374,10 @@ test('Concentration’s history holds only quarter ends: the open State Street q
   assert.ok(topTenHistory.every(h => h.v == null || topTenReadings.some(r => r.q === h.q && r.v === h.v)));
 });
 
-test('Stress has its insight, naming credit and debt, and Circulation no longer claims credit', () => {
+test('Pressure is what money costs and Stress is what is owed, said in both insights', () => {
   ['weather', 'circulation', 'mood', 'stress'].forEach(k => assert.ok(catInsight(k).length > 0, k));
-  assert.match(catInsight('stress'), /Credit[^<]*debt/);
-  assert.doesNotMatch(catInsight('circulation'), /Credit is the money lent/);
+  assert.match(catInsight('stress'), /Stress is what is owed[^<]*Pressure[^<]*is what money costs/);
+  assert.match(catInsight('circulation'), /Pressure is what money costs[^<]*What is owed is read under Stress/);
 });
 
 test('the Pulse page reads its rhythm: two years of quarterly changes, cut at the pre-2008 ninetieth percentile', () => {

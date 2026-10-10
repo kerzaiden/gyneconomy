@@ -31,8 +31,8 @@ function insightCirculation(){
                         : "Draining and slowing";
   var f1 = function(v: number){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
   var circLede = lede('Volume is the blood and Pulse is the heart rate; multiplied they ' +
-    'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
-    'resistance that flow meets, and the Federal funds rate is the signal that sets all three. The money lent into the flow and what it leaves owing are read under Stress.');
+    'are cardiac output — how much money there is times how hard each unit works. Pressure is what money ' +
+    'costs, the resistance that flow meets, and the Federal funds rate is the signal that sets all three. What is owed is read under Stress.');
   var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " +
     f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " +
     (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
@@ -178,7 +178,7 @@ function storyText(s: Story, open: boolean | undefined){
     s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
 }
 function insightStress(){
-  return lede("Credit is the money lent into the flow, and debt is what it leaves owing. Credit’s readings lead the cycle; Debt’s lag it or move slowly, by design. In the body, stress that never lifts spends the reserve until fatigue is what remains.");
+  return lede("Stress is what is owed; Pressure, under Circulation, is what money costs. A rise in what money costs reaches what is owed only as debts are taken on or refinanced, so Stress mostly moves slowly, by design. In the body, stress that never lifts spends the reserve until fatigue is what remains.");
 }
 var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood, stress:insightStress };
 export function catInsight(key: string){ return INSIGHT[key] ? INSIGHT[key]() : ""; }
