@@ -36,8 +36,6 @@ export function umbrellaSvg(){ return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17
   '<path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>'); }
 export function slidersSvg(){ return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/>' +
   '<circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>'); }
-export function chartSvg(){ return markSvg('<rect x="3.5" y="4" width="17" height="16" rx="2.5" stroke-width="1.8"/>' +
-  '<path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5M14.5 9H17v2.5" stroke-width="1.8"/>'); }
 export function heartSvg(){ return markSvg(
   '<path d="M12 20.2C7.4 16.9 3.6 13.6 3.6 9.4A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 8.4 1.8c0 4.2-3.8 7.5-8.4 10.8z" stroke-width="1.9"/>'); }
 export function weatherSvg(){ return markSvg('<path d="M15.8 3.4v1.3M19.3 5.1l-.95.95M20.9 8.6h-1.3M19.3 12.1l-.95-.95M12.3 5.1l.95.95" stroke-width="1.9"/>' +

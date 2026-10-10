@@ -208,6 +208,6 @@ test('every cycle page, open or closed, is built in one shape', async () => {
   const today = shape();
   const off = marketCycles.filter(c => !c.ongoing).filter(c => { renderDiagnosis(cycleModel(c)); return shape().join('|') !== today.join('|'); });
   renderDiagnosis(nowModel);
-  assert.equal(today.length, 3);
+  assert.equal(today.length, 2);
   assert.deepEqual(off.map(c => c.name), []);
 });

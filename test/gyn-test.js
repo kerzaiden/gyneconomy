@@ -304,22 +304,21 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
-      return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('.more-row[data-chart-cycle] .more-mark svg').length,
-                   story: [...d.querySelectorAll('[data-chart-cycle]')].map(x => x.textContent.trim()).join() === 'Cycle Analysis',
-                   doors: d.querySelectorAll('[data-open]:not([data-ind-when]), [data-chart-cycle]').length,
+      return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(),
+                   doors: d.querySelectorAll('[data-open]:not([data-ind-when])').length,
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-open="sheet-find"][data-ind-when]').length : 0,
                    score: !d.querySelector('.trend-card .lab-score') && d.querySelectorAll('.trend-card .learn-more').length === 1,
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
-                   boxes: [...d.children].map(c => c.matches('.trend-card[data-open="sheet-report"]') ? 'report' : c.matches('.more-row[data-chart-cycle]') ? 'door' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
+                   boxes: [...d.children].map(c => c.matches('.trend-card[data-open="sheet-report"]') ? 'report' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
     const today = await read();
     await sweep(p);
-    (today && today.visible && today.title === 'Weather Report' && today.lead === 1 && today.story && today.cards === 0 &&
-     today.boxes === 'report,door,sys' && today.doors === 2 && today.score && today.kicker === 'AI Cycle')
-      ? ok('the dial reads its cycle, and under it the Weather Report, the Cycle Analysis row, then the cycle year by year', today.title)
-      : bad('the dial reads its cycle, and under it the Weather Report, the Cycle Analysis row, then the cycle year by year', JSON.stringify(today));
+    (today && today.visible && today.title === 'Weather Report' && today.cards === 0 &&
+     today.boxes === 'report,sys' && today.doors === 1 && today.score && today.kicker === 'AI Cycle')
+      ? ok('the dial reads its cycle, and under it the Weather Report, then the cycle year by year', today.title)
+      : bad('the dial reads its cycle, and under it the Weather Report, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
@@ -330,7 +329,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'report,door,sys' && past.doors === 2 && !past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'report,sys' && past.doors === 1 && !past.after &&
      yearRun(past.years) && past.opens === past.years.length)
       ? ok('the cycle reads year by year, newest first, each year opening Elements, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening Elements, today and at a close', JSON.stringify([today, past]));
@@ -354,7 +353,7 @@ async function openPage(p, url, sheet) {
     await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
-    (past && past.visible && past.title === 'Weather Report' && past.lead === 1 && past.story && past.kicker === 'Big Tech Cycle')
+    (past && past.visible && past.title === 'Weather Report' && past.kicker === 'Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -394,52 +393,6 @@ async function openPage(p, url, sheet) {
   spans.some(s => /–Today/.test(s)) ? ok('cycle span says Today') : bad('cycle span says Today', spans.join(' | '));
 
   {
-    await p.evaluate(() => [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click());
-    await settle(p);
-    await p.evaluate(() => document.querySelector('#calendar-cycle [data-chart-cycle]').click());
-    await settle(p); await openFind(p);
-    const chartOf = () => p.evaluate(() => {
-      const s = document.getElementById('sheet-find'), c = s && s.querySelector('.labs');
-      return c ? { open: !document.getElementById('panel-chart').hidden, picked: s.querySelector('.period-now b').textContent,
-        items: c.querySelectorAll('.lab-item').length, risk: c.querySelectorAll('.lab-item.t-abnormal').length,
-        seen: [...c.querySelectorAll('.lab-item')].filter(e => e.offsetParent).length } : null;
-    });
-    const chart = await chartOf();
-    await filt(p, '[data-pick-tier="abnormal"]');
-    const risky = await chartOf();
-    await filt(p, '[data-pick-tier="all"]'); await filt(p, '[data-pick-period="Nifty Fifty Cycle"]'); await shut(p);
-    const picked = await chartOf();
-    (chart && chart.open && chart.picked === 'Dot-Com Cycle' && chart.items > 10 && chart.risk > 0 && chart.seen === chart.items &&
-     risky.seen === chart.risk && picked && picked.picked === 'Nifty Fifty Cycle')
-      ? ok('Cycle Analysis on a past cycle opens the Analysis tab on that cycle', chart.items + ' readings, ' + chart.risk + ' at risk')
-      : bad('Cycle Analysis on a past cycle opens the Analysis tab on that cycle', JSON.stringify(chart));
-  }
-
-  {
-    await p.goto('file://' + url); await ready(p);
-    const bar = () => p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent, back: !document.getElementById('topbar-back').hidden,
-      tabs: getComputedStyle(document.querySelector('.tabnav')).display === 'none', chart: !document.getElementById('panel-chart').hidden,
-      era: !document.getElementById('calendar-cycle').hidden, y: Math.round(window.scrollY) }));
-    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
-    await p.evaluate(() => [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click()); await settle(p);
-    await p.evaluate(() => { const d = document.querySelector('#calendar-cycle [data-chart-cycle]'); window.scrollTo(0, d.getBoundingClientRect().top + window.scrollY - 200); });
-    await p.waitForTimeout(400); const from = await bar();
-    await p.evaluate(() => document.querySelector('#calendar-cycle [data-chart-cycle]').click()); await settle(p);
-    const crossed = await bar();
-    await p.evaluate(() => document.querySelector('#chart-home .fp [data-open]').click()); await settle(p);
-    const rates = await bar();
-    await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p);
-    const home = await bar();
-    await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); await p.waitForTimeout(400);
-    const back = await bar();
-    const inner = b => b.back && b.tabs;
-    (inner(crossed) && crossed.chart && inner(rates) && rates.title !== 'Analysis' && inner(home) && home.title === 'Analysis' &&
-     inner(back) && !back.chart && back.era && back.title === 'Dot-Com Cycle' && Math.abs(back.y - from.y) < 4)
-      ? ok('a crossover from a past cycle stays an inner page, and Back retraces each step to the cycle', 'returned at ' + back.y + 'px')
-      : bad('a crossover from a past cycle stays an inner page, and Back retraces each step to the cycle', JSON.stringify({ from, crossed, rates, home, back }));
-  }
-
-  {
     const rateFrom = async (past) => {
       await p.goto('file://' + url); await ready(p);
       return p.evaluate(async (past) => {
@@ -449,7 +402,7 @@ async function openPage(p, url, sheet) {
           [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click(); await frame();
         }
         if (document.querySelector('#diagnosis .fp')) return 'rates card on a cycle page';
-        if (past) document.querySelector('#diagnosis [data-chart-cycle]').click(); else document.querySelector('.tab-btn[data-tab="chart"]').click();
+        document.querySelector('.tab-btn[data-tab="chart"]').click();
         await frame();
         const head = [...document.querySelectorAll('.fp-note .learn-more[data-open="sheet-sign-hormones"]')].find(e => e.offsetParent);
         if (!head || head.querySelector('.peek-chev') || head.textContent.trim() !== 'Learn more') return 'no Learn more';
@@ -460,8 +413,8 @@ async function openPage(p, url, sheet) {
     };
     const got = [await rateFrom(false), await rateFrom(true)];
     got.every(t => t === 'Federal funds rate')
-      ? ok('the rates card stands on Analysis alone, and Learn more opens the Federal funds rate, today and for a past cycle')
-      : bad('the rates card stands on Analysis alone, and Learn more opens the Federal funds rate, today and for a past cycle', JSON.stringify(got));
+      ? ok('the rates card stands on Analysis alone, not on a cycle page, and Learn more opens the Federal funds rate')
+      : bad('the rates card stands on Analysis alone, not on a cycle page, and Learn more opens the Federal funds rate', JSON.stringify(got));
   }
 
   {

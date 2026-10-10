@@ -1263,7 +1263,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.64 (835)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.65 (836)</span></p>
     </div>
   </div>
 
@@ -1587,7 +1587,6 @@
     shownEra: null,
     topbarBack: null,
     eraPageBack: null,
-    chartBack: null,
     uninvDetail: ""
   };
   function byId(id) {
@@ -48285,9 +48284,6 @@
   function slidersSvg() {
     return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/><circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>');
   }
-  function chartSvg() {
-    return markSvg('<rect x="3.5" y="4" width="17" height="16" rx="2.5" stroke-width="1.8"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5M14.5 9H17v2.5" stroke-width="1.8"/>');
-  }
   function heartSvg() {
     return markSvg('<path d="M12 20.2C7.4 16.9 3.6 13.6 3.6 9.4A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 8.4 1.8c0 4.2-3.8 7.5-8.4 10.8z" stroke-width="1.9"/>');
   }
@@ -51304,9 +51300,6 @@
   function chartDetail() {
     return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, SD_SRC ]);
   }
-  function chartDoor(m) {
-    return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
-  }
   var HOME_ID = "chart-home";
   function statRow(name, v, of, side2, page2, cls, text) {
     var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), "<small>" + name + "</small><b>" + (text || yearsText(v)) + "</b>", page2 ? side2 : null);
@@ -51575,13 +51568,6 @@
       if (at) openWhen(at.getAttribute("data-ind-when") || "", at.getAttribute("data-ind-cat") || ""); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
     });
   }
-  function crossToChart() {
-    var era = ui.eraOpen, y = window.scrollY || 0;
-    need("tab-chart").click();
-    if (era) setTopbar("Analysis", ui.chartBack = function() {
-      GYN.fire("eraReturn", era.from, y);
-    });
-  }
   function rateCycle(e) {
     var b = e.target.closest && e.target.closest("[data-rate-cycle]"), k = b && ROSTER_BY[b.getAttribute("data-open") || ""].hk;
     if (b && k) {
@@ -51594,13 +51580,6 @@
     buildFind();
     wireCatDoors();
     wirePicks();
-    document.addEventListener("click", function(e) {
-      var door = e.target.closest && e.target.closest("[data-chart-cycle]");
-      if (!door) return;
-      crossToChart();
-      page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
-      drawChart(HOME_ID);
-    });
     need("tab-chart").addEventListener("click", function() {
       page.cycles[HOME_ID] = null;
       drawChart(HOME_ID);
@@ -51773,7 +51752,7 @@
   } ];
   function diagnosisHtml(m) {
     if (m.ongoing && !diagnoseToday()) return "";
-    return reportCard(m) + chartDoor(m) + yearByYear(m);
+    return reportCard(m) + yearByYear(m);
   }
   function yearByYear(m) {
     var _a;
@@ -52394,10 +52373,6 @@
         e.preventDefault();
         open(parseInt(e.target.getAttribute("data-era") || "", 10));
       }
-    });
-    GYN.on("eraReturn", function(from, y) {
-      need("tab-analysis").click();
-      open(from, y);
     });
     GYN.on("calendarReset", function() {
       leaveEra();
@@ -54332,7 +54307,7 @@
       chart: {
         panel: tabPanel("chart"),
         bar: function() {
-          return [ "Analysis", ui.chartBack ];
+          return [ "Analysis", null ];
         },
         hide: function() {
           return [ byId("chart-home") ];
@@ -54641,7 +54616,7 @@
         GYN.fire("metricPageReset");
         GYN.fire("calendarReset");
         topTitle.textContent = tabTitles[tab] || "Gyneconomy";
-        ui.topbarBack = ui.chartBack = null;
+        ui.topbarBack = null;
         need("topbar-back").hidden = true;
         if (tab === "cycle" && target) {
           target.insertBefore(cycleView(), byId("today-analysis"));

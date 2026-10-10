@@ -6,7 +6,7 @@ import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
-import { buildCycleChart, chartDoor, IND } from "./cycle-analysis.ts";
+import { buildCycleChart, IND } from "./cycle-analysis.ts";
 import { mountReport, reportCard } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
 
@@ -18,7 +18,7 @@ var DIAG_SRC = [
 ];
 function diagnosisHtml(m: CycleModel){
   if (m.ongoing && !diagnoseToday()) return "";
-  return reportCard(m) + chartDoor(m) + yearByYear(m);
+  return reportCard(m) + yearByYear(m);
 }
 function yearByYear(m: CycleModel){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];

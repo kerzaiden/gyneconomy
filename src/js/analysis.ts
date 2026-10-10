@@ -49,7 +49,6 @@ function renderCycleList(){
   }
   list.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest(".era-row"); if (row) open(parseInt(row.getAttribute("data-era") || "", 10)); });
   list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && (e.target as Element).classList.contains("era-row")){ e.preventDefault(); open(parseInt((e.target as Element).getAttribute("data-era") || "", 10)); } });
-  GYN.on("eraReturn", function(from, y){ need("tab-analysis").click(); open(from as number, y as number); });
   GYN.on("calendarReset", function(){ leaveEra(); detail.hidden = true; listWrap.hidden = false; ui.topbarBack = null; need("topbar-back").hidden = true; });
   addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
 }

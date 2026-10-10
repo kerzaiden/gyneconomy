@@ -1,10 +1,8 @@
 import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
-import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui } from "./dom.ts";
-import { GYN } from "./live.ts";
-import { setTopbar } from "./render-pages.ts";
+import { byId, detailSlot, focusQuiet, moreRow, need } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
-import { boltSvg, calendarSvg, chartSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
+import { boltSvg, calendarSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayValue } from "./era.ts";
@@ -298,9 +296,6 @@ function chartDetail(){
     "<b>Health Score</b> is the share of results that are Normal, out of 100."
   ].concat(methodFacts(), ["<b>History, not forecast:</b> it describes her past, not what comes next."])) + srcBlock([FENCE_SRC, SD_SRC]);
 }
-export function chartDoor(m: CycleModel){
-  return marketCycles.indexOf(m.era) < 0 ? "" : moreDoor(' data-chart-cycle="' + m.era.name + '"', "Cycle Analysis", chartSvg());
-}
 var HOME_ID = "chart-home";
 function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string, text?: string){
   var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), '<small>' + name + '</small><b>' + (text || yearsText(v)) + '</b>', page ? side : null);
@@ -470,23 +465,12 @@ function wireCatDoors(){
     if (at) openWhen(at.getAttribute("data-ind-when") || "", at.getAttribute("data-ind-cat") || ""); else if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
   });
 }
-function crossToChart(){
-  var era = ui.eraOpen, y = window.scrollY || 0;
-  need("tab-chart").click();
-  if (era) setTopbar("Analysis", (ui.chartBack = function(){ GYN.fire("eraReturn", (era as Cycle).from, y); }));
-}
 function rateCycle(e: Event){
   var b = (e.target as Element).closest && (e.target as Element).closest("[data-rate-cycle]"), k = b && ROSTER_BY[b.getAttribute("data-open") || ""].hk;
   if (b && k){ page.mode[k] = "cycles"; page.cycles[k] = b.getAttribute("data-rate-cycle"); }
 }
 export function buildCycleChart(){
   wireFinder(need(HOME_ID), HOME_ID); buildFind(); wireCatDoors(); wirePicks();
-  document.addEventListener("click", function(e){
-    var door = (e.target as Element).closest && (e.target as Element).closest("[data-chart-cycle]"); if (!door) return;
-    crossToChart();
-    page.cycles[HOME_ID] = page.cycles[IND] = door.getAttribute("data-chart-cycle");
-    drawChart(HOME_ID);
-  });
   need("tab-chart").addEventListener("click", function(){ page.cycles[HOME_ID] = null; drawChart(HOME_ID); });
   document.addEventListener("click", rateCycle, true);
   drawChart(HOME_ID);

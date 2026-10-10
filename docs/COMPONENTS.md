@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `5e59718` on 2026-10-10. **109 components**, **19 shared patterns**.
+Generated from commit `e7f94bf` on 2026-10-10. **109 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
@@ -94,7 +94,7 @@ Generated from commit `5e59718` on 2026-10-10. **109 components**, **19 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`learnMore`** | `.learn-more` | `ai-insights.ts:reportCard`, `fed-phases.ts:footnoteHtml` |
-| **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `ai-insights.ts:riskFactors`, `cycle-analysis.ts:chartDoor`, `dom.ts:moreRow` |
+| **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `ai-insights.ts:riskFactors`, `dom.ts:moreRow` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `ai-insights.ts:elements`, `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
@@ -221,8 +221,8 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`need`** | dom.ts | 25 places |
 | **`fmtSigned`** | format.ts | 24 places |
+| **`need`** | dom.ts | 24 places |
 | **`titleCase`** | format.ts | 17 places |
 | **`pageCycle`** | history.ts | 15 places |
 | **`byId`** | dom.ts | 14 places |
@@ -317,7 +317,6 @@ renderer speaks. Listed most-used first.
 | **`quartile`** | format.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
-| **`setTopbar`** | render-pages.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`side`** | cycle-analysis.ts | 3 places |
 | **`spreadSeries`** | render-pages.ts | 3 places |
