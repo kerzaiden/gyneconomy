@@ -101,8 +101,8 @@ body. Their names, opinions and trade advice never reach the screen; their way o
 - *Takes:* rules 1–12. One cause traced through every balance sheet it touches; every number beside its yardstick;
   doubt said aloud; distance to a breaking point without a date.
 - *Leaves:* stock calls, trade advice, politics and war predictions, figures the app does not hold.
-- *In the body:* rising long rates are Pressure rising through the whole circulation; a one-trade market is one
-  dominant follicle; distressed loans awaiting refinancing are a corpus luteum near the end of its term.
+- *In the body:* rising long rates are Pressure rising through the whole circulation; a one-trade market is the
+  selected egg drawing all the capital; distressed loans awaiting refinancing are a corpus luteum near the end of its term.
 
 ## How this page learns
 
