@@ -37,6 +37,8 @@ news. If there is no news, stop here and say so in one line.
 in the facts, `YYYY-MM-DD`), `headline`, `lede`, `story`, and `elements` with one text for each of `weather`,
 `activity`, `mood`, `desire`, `circulation`, `stress`.
 
+- **Read `docs/DIAGNOSIS.md` first and write by it:** how the app diagnoses, and the rules Keren's
+  corrections have added.
 - **Lead with what changed.** The headline names today's news in sentence case, in at most 80 characters. The
   lede is two sentences on what moved. The cycle's story sits on the same page and already tells where she stands
   and the shape of the cycle, so the headline and lede never restate it.
