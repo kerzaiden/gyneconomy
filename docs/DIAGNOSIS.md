@@ -48,15 +48,21 @@ reasoning but never reaches the screen until Keren confirms it.
 | Debt payments squeezing out spending | The spiral arteries constricting and starving the lining, which then sheds | Keren, 10 Oct 2026 |
 | Winter–Deflation | Groundation | Book |
 | Savings | Reserve: what the body can draw on when supply is cut | *proposed* |
-| Credit built in easing | The lining built up in the follicular phase | *proposed* |
-| One trade carrying the market (Concentration risk) | One dominant follicle: the whole cycle rides on it | *proposed* |
+| Credit built in easing | The lining built up in the follicular phase | Keren, 10 Oct 2026 |
+| One trade carrying the market (Concentration risk), at the peak | The selected egg, and the attraction around it: capital drawn to the one story, the other follicles left to wither | Keren, 10 Oct 2026 |
 | Distressed debt waiting to be refinanced | A corpus luteum near the end of its term with no hCG in sight | *proposed* |
-| Debt service and high rates holding back growth | Stress hormones suppressing the cycle | *proposed* |
+| Heavy debt carried year after year, holding back growth | Chronic stress hormones suppressing the whole cycle (the acute squeeze is the shedding row above) | *proposed* |
 
-**How the parallels work together.** Easing builds the lining (credit, spending, risk-taking). The peak passes, and
-tightening holds the lining in place. A lining financed on fixed terms survives only if new income arrives to
-refinance it; when debt payments start to squeeze out spending, the supply to the lining is cut and shedding
-begins: write-offs, defaults, the season turning toward Winter. The doctor's question at every visit is how much
+**Credit and debt are one thing seen from two sides.** Credit is the lining as it is built: blood brought in,
+spending and risk-taking it pays for. Debt is the same lining as it is owed: it has a term, and the term comes due.
+Easing is when the lining is built on credit; after the peak, the cycle turns to what is owed.
+
+**How the parallels work together.** Easing builds the lining. At the peak, capital is drawn to one story, as the
+selected egg draws what suits it. Tightening then holds the lining in place, and every loan rolled over costs more.
+The lining survives only if new income arrives to refinance it, as the corpus luteum (the follicle left behind once
+the egg is released) survives only if hCG arrives. When debt payments start to squeeze out spending, the supply to
+the lining is cut and shedding begins: write-offs, defaults, the season turning toward Winter. In the body the
+shedding follows progesterone's fall, not its rise. The doctor's question at every visit is how much
 lining is held on borrowed terms, how much reserve is left, and whether anything is arriving to renew it.
 
 ## The rules
