@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `371c1c3` on 2026-10-10. **110 components**, **18 shared patterns**.
+Generated from commit `c6e0523` on 2026-10-10. **110 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -263,6 +263,7 @@ renderer speaks. Listed most-used first.
 | **`labOf`** | ai-insights.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
+| **`listWords`** | cycle-analysis.ts | 5 places |
 | **`meanOf`** | cycle-analysis.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
 | **`pct`** | wave-chart.ts | 5 places |
@@ -284,7 +285,6 @@ renderer speaks. Listed most-used first.
 | **`growthWord`** | model.ts | 4 places |
 | **`inflationFigure`** | model.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
-| **`listWords`** | cycle-analysis.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`panel`** | ai-insights.ts | 4 places |
@@ -292,6 +292,7 @@ renderer speaks. Listed most-used first.
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
 | **`tabBar`** | history.ts | 4 places |
+| **`atCycle`** | cycle-analysis.ts | 3 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`barClass`** | cycle-analysis.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
@@ -306,6 +307,7 @@ renderer speaks. Listed most-used first.
 | **`fmtAsOf`** | format.ts | 3 places |
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
+| **`judged`** | cycle-analysis.ts | 3 places |
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
@@ -329,6 +331,7 @@ renderer speaks. Listed most-used first.
 | **`spreadSeries`** | render-pages.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tagFor`** | format.ts | 3 places |
+| **`tier`** | cycle-analysis.ts | 3 places |
 | **`todayFace`** | reading.ts | 3 places |
 | **`trendBox`** | dom.ts | 3 places |
 | **`trendText`** | dom.ts | 3 places |

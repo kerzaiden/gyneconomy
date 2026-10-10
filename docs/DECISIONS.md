@@ -100,8 +100,8 @@ settles it; none is open after V668.
 - **Every cycle page carries AI Insights above Cycle Analysis, the open cycle and every closed one, and the cycle's
   story is told inside the AI Insights page's first container.** The narrative belongs to AI Insights. A closed
   cycle once had none, which left what the app knows about a past cycle (its narrative, its rates, its risks) with
-  nowhere to be read together; a closed cycle's door and lede are its `blurb`, the longer narrative, so its two
-  cards do not repeat the three-line story (Cycle Insights). Keren wanted a sophisticated analysis of the
+  nowhere to be read together; a closed cycle's door and lede are its `blurb`, the longer narrative, the one place a
+  cycle's narrative is read on its page (Cycle Insights, Cycle Analysis Preview). Keren wanted a sophisticated analysis of the
   cycle's narrative, the economy and the market, not three pass scores, and named it "AI Insights". It is a door
   like the story (three lines, maybe three dots) opening an AI Insights page with one container per
   chapter. Claude writes it: Keren chose "Claude, dated" over a live Generate button, which would change the
@@ -712,13 +712,15 @@ settles it; none is open after V668.
   every tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the
   left.** One consistent design system: a dark purple headline with its icon inside a container, everything below
   it, tidy and evenly spaced, with the count shown once, not four times. (0.8.5, 0.8.6, 0.8.8, Oct 6, 2026)
-- **Each cycle's Cycle analysis is a card under the cycle story that previews the visit note, and opens its own page with the cycle picker every history page wears.** The page holds only that
+- **Each cycle's Cycle analysis is a card under AI Insights that previews what the analysis found: the readings at
+  Risk, by name, or those at Attention when none is at Risk, or that every reading is Normal.** It opens its own page with the cycle picker every history page wears. The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
   four), worst first; each result's colour bar stops short of the next. The row opens on the cycle on screen. The row
-  keeps the current cycle short, the preview carries the text so the page need not, the picker
+  keeps the current cycle short, the picker
   matches the cycles/years bar, and results read best by category. The page's name is Keren's: "health chart". The
-  health score left the preview: it is read in Cycle Statistics, so the card is the story and its door.
-  (0.3.0, 0.4.0, Learn More Links)
+  health score left the preview: it is read in Cycle Statistics. The cycle's story left it too: the narrative is
+  AI Insights', and two cards telling it read as one said twice; a named finding is what makes one open the
+  analysis. (0.3.0, 0.4.0, Learn More Links, Cycle Analysis Preview)
 - **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped,**
   since nothing could be read from it. (V612, V656, 0.2.0)
 - **Rhymes is retired, and the proposed weather analysis was declined as not informative; don't bring either

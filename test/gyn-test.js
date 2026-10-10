@@ -305,7 +305,7 @@ async function openPage(p, url, sheet) {
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
       return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('[data-chart-cycle] .trend-text').length,
-                   story: [...d.querySelectorAll('[data-chart-cycle] .trend-text')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
+                   story: [...d.querySelectorAll('[data-chart-cycle] .trend-text')].map(x => /^(Risk|Attention): .+\.$|^Every reading is Normal\.$/.test(x.textContent)).join() === 'true',
                    doors: d.querySelectorAll('[data-open]:not([data-ind-when]), [data-chart-cycle]').length,
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],

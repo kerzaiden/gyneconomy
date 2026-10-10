@@ -300,7 +300,11 @@ function chartDetail(){
 }
 export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
-  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(m.era.story, "ai-clamp") + learnMore());
+  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(standOut(i), "ai-clamp") + learnMore());
+}
+function standOut(i: number){
+  var at = atCycle(i), j = judged(at), named = function(t: string){ return j.filter(function(l){ return tier(l, at) === t; }).map(function(l){ return l.name; }); }, r = named("abnormal"), a = named("borderline");
+  return r.length ? "<b>Risk:</b> " + listWords(r) + "." : a.length ? "<b>Attention:</b> " + listWords(a) + "." : "Every reading is Normal.";
 }
 var HOME_ID = "chart-home";
 function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string, text?: string){
