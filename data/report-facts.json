@@ -1,0 +1,350 @@
+{
+  "cycle": "AI Cycle",
+  "season": "lateautumn",
+  "regime": "contraction",
+  "prices": "rising",
+  "fed": {
+    "range": "3.75–4.00%",
+    "lastMove": "raised a quarter point",
+    "on": "Sep 16, 2026",
+    "next": "Oct 28, 2026"
+  },
+  "categories": [
+    "weather",
+    "activity",
+    "mood",
+    "desire",
+    "circulation",
+    "stress"
+  ],
+  "ids": [
+    "sheet-metric-temp",
+    "sheet-sign-growth-gap",
+    "sheet-sign-hormones",
+    "sheet-sign-market",
+    "sheet-sign-activity",
+    "sheet-sign-payrolls",
+    "sheet-metric-gdp",
+    "sheet-sign-productivity-growth",
+    "sheet-sign-pressure",
+    "sheet-sign-spreads",
+    "sheet-sign-pulse",
+    "sheet-sign-volume",
+    "sheet-sign-saving",
+    "sheet-metric-debt-payments",
+    "sheet-sign-margin",
+    "sheet-metric-debt",
+    "sheet-marker-deficit",
+    "sheet-metric-valuation",
+    "sheet-metric-buffett",
+    "sheet-sign-sentiment",
+    "sheet-sign-confidence",
+    "sheet-sign-desire",
+    "sheet-sign-retail",
+    "sheet-sign-consumer-credit",
+    "sheet-sign-concentration",
+    "sheet-sign-premium",
+    "sheet-metric-delinquency"
+  ],
+  "readings": [
+    {
+      "id": "sheet-metric-temp",
+      "name": "Temperature",
+      "element": "weather",
+      "figure": "3.4%",
+      "word": "Hot · heating",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-growth-gap",
+      "name": "Growth gap",
+      "element": "weather",
+      "figure": "−0.1 pt",
+      "word": "Below potential",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-hormones",
+      "name": "Federal funds rate",
+      "element": "weather",
+      "figure": "3.75–4.00%",
+      "word": "Tightening",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-market",
+      "name": "S&P 500",
+      "element": "weather",
+      "figure": "+14.4%",
+      "word": "Bull year",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-activity",
+      "name": "Unemployment rate",
+      "element": "activity",
+      "figure": "4.1%",
+      "word": "Solid",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-payrolls",
+      "name": "Job growth",
+      "element": "activity",
+      "figure": "+0.3%",
+      "word": "Adding jobs",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-metric-gdp",
+      "name": "GDP growth",
+      "element": "activity",
+      "figure": "+2.1%",
+      "word": "Growing",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-productivity-growth",
+      "name": "Productivity growth",
+      "element": "activity",
+      "figure": "2.2%",
+      "word": "Above trend",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-pressure",
+      "name": "US 10-year Treasury",
+      "element": "circulation",
+      "figure": "5.24%",
+      "word": "Rising",
+      "tier": "Risk",
+      "asOf": "2026-10-09"
+    },
+    {
+      "id": "sheet-sign-spreads",
+      "name": "Treasury spreads",
+      "element": "circulation",
+      "figure": "+0.99",
+      "word": "Optimistic",
+      "tier": "Attention",
+      "asOf": "2026-10-09"
+    },
+    {
+      "id": "sheet-sign-pulse",
+      "name": "Pulse",
+      "element": "circulation",
+      "figure": "1.42×",
+      "word": "Very slow",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-volume",
+      "name": "Volume",
+      "element": "circulation",
+      "figure": "+5.7%",
+      "word": "Steady",
+      "tier": "Normal",
+      "asOf": "2026-08"
+    },
+    {
+      "id": "sheet-sign-saving",
+      "name": "Savings rate",
+      "element": "stress",
+      "figure": "2.8%",
+      "word": "Saving very little",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-metric-debt-payments",
+      "name": "Debt-to-income ratio",
+      "element": "stress",
+      "figure": "11.1%",
+      "word": "Below average",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-margin",
+      "name": "Margin debt",
+      "element": "stress",
+      "figure": "+37%",
+      "word": "Borrowing more",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-metric-debt",
+      "name": "Federal debt",
+      "element": "stress",
+      "figure": "122.6%",
+      "word": "Elevated",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-marker-deficit",
+      "name": "Federal budget",
+      "element": "stress",
+      "figure": "5.8%",
+      "word": "Large deficit",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-metric-valuation",
+      "name": "Shiller CAPE",
+      "element": "mood",
+      "figure": "40.7×",
+      "word": "Rich",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-metric-buffett",
+      "name": "Buffett indicator",
+      "element": "mood",
+      "figure": "≈256%",
+      "word": "Rich",
+      "tier": "Risk",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-sentiment",
+      "name": "Fear",
+      "element": "mood",
+      "figure": "15.4",
+      "word": "Calm",
+      "tier": "Normal",
+      "asOf": "2026-10-08"
+    },
+    {
+      "id": "sheet-sign-confidence",
+      "name": "Confidence",
+      "element": "mood",
+      "figure": "96.1",
+      "word": "Pessimistic",
+      "tier": "Risk",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-desire",
+      "name": "Discretionary spending",
+      "element": "desire",
+      "figure": "+4.6%",
+      "word": "High appetite",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-retail",
+      "name": "Retail sales",
+      "element": "desire",
+      "figure": "+5.4%",
+      "word": "Spending more",
+      "tier": "Normal",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-consumer-credit",
+      "name": "Consumer credit",
+      "element": "desire",
+      "figure": "+2.7%",
+      "word": "Borrowing more",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-sign-concentration",
+      "name": "Concentration risk",
+      "element": "desire",
+      "figure": "40.6%",
+      "word": "Concentrated",
+      "tier": "Risk",
+      "asOf": "2026-10-08"
+    },
+    {
+      "id": "sheet-sign-premium",
+      "name": "Equity risk premium",
+      "element": "desire",
+      "figure": "+0.6%",
+      "word": "",
+      "tier": "Attention",
+      "asOf": ""
+    },
+    {
+      "id": "sheet-metric-delinquency",
+      "name": "Default risk",
+      "element": "desire",
+      "figure": "1.42%",
+      "word": "Below average",
+      "tier": "Normal",
+      "asOf": ""
+    }
+  ],
+  "risks": [
+    "US 10-year Treasury 9 October 2026 · 5.24% · Above every quarterly reading since Q1 2005; the highest was 5.07%, in Q2 2006.",
+    "Buffett indicator Q2 2026 · 256% · Highest on record, which starts in Q1 1970.",
+    "Confidence September 2026 · 96.1 · Its low since January 1960 is 96.0, in May 2026.",
+    "Concentration risk 8 October 2026 · 40.6% · No quarterly reading has been this high since Q4 2025; its high since Q4 1995 is 40.7%, in Q4 2025."
+  ],
+  "attention": [
+    "Temperature",
+    "Job growth",
+    "Treasury spreads",
+    "Pulse",
+    "Savings rate",
+    "Margin debt",
+    "Federal debt",
+    "Federal budget",
+    "Shiller CAPE",
+    "Consumer credit",
+    "Equity risk premium"
+  ],
+  "numbers": [
+    "3.4",
+    "0.1",
+    "3.75",
+    "4.00",
+    "14.4",
+    "4.1",
+    "0.3",
+    "2.1",
+    "2.2",
+    "5.24",
+    "0.99",
+    "1.42",
+    "5.7",
+    "2.8",
+    "11.1",
+    "37",
+    "122.6",
+    "5.8",
+    "40.7",
+    "256",
+    "15.4",
+    "96.1",
+    "4.6",
+    "5.4",
+    "2.7",
+    "40.6",
+    "0.6",
+    "5.07",
+    "96.0",
+    "4",
+    "0.25"
+  ],
+  "lastEdition": {
+    "asOf": "2026-10-09",
+    "headline": "A hot autumn, a calm market and an uneasy household"
+  }
+}

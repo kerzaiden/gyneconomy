@@ -617,10 +617,17 @@
   .ai-rank b{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
   .ai-rank.t-abnormal b{ color:var(--critical-ink); }
   .ai-rank > small{ grid-column:1 / -1; margin-top:2px; font-size:var(--type-meta); line-height:1.45; color:var(--text-secondary); }
-  .ai-by{ margin:0; font-size:var(--type-meta); color:var(--text-muted); }
-  .ai-by.story-by{ display:none; margin:10px 0 6px; }
-  .trend-card.is-open .story-by{ display:block; }
-  .trend-card.is-open .trend-text.ai-clamp{ display:block; -webkit-line-clamp:unset; line-clamp:none; overflow:visible; }
+  .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
+  .wr-head{ display:block; margin-top:8px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.1; color:var(--text-primary); }
+  .wr-page{ display:flex; flex-direction:column; gap:var(--gap); }
+  .wr-top .wr-title, .wr-top .wr-date{ text-align:center; }
+  .wr-top .trend-text{ margin-top:14px; }
+  .wr-title{ margin:0 0 6px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-page-title); line-height:1.1; color:var(--text-primary); }
+  .wr-date{ margin:0; font-size:var(--type-meta); color:var(--text-secondary); }
+  .wr-el + .wr-el{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+  .wr-el .trend-head{ --cat:var(--accent-ink); }
+  .wr-link{ display:inline; margin:0; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .wr-link:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }

@@ -6,6 +6,7 @@ import { policyFactRows } from "./readings.ts";
 import { sheetRenderers } from "./render-core.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
 import { forgetLabs } from "./cycle-analysis.ts";
+import { redrawReport } from "./ai-insights.ts";
 
 function repaintPressureChart(){
   ["sheet-sign-pressure", "sheet-sign-spreads"].forEach(function(id){ var s = byIdMaybe(id); if (s && !s.hidden && sheetRenderers[id]) sheetRenderers[id](); });
@@ -25,6 +26,7 @@ export function bootRepaint(){
   onLive("fedFunds", repaintPolicy);
   onLive("yieldCurve", repaintPressureChart);
   onLive("capeValue", syncCape);
+  onLive("weatherReport", redrawReport);
   onLive("*", repaintDerived);
   exposeLive();
   GYN.step("checkLiveCoverage", checkLiveCoverage, "check");

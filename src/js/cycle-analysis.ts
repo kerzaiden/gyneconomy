@@ -1,5 +1,5 @@
 import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
-import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui, wireClamps } from "./dom.ts";
+import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { setTopbar } from "./render-pages.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
@@ -165,7 +165,7 @@ function scoreTier(v: number){
 function scoreRing(v: number, label: string){ return '<span class="lab-score-v">' + ring(v) + label + '</span>'; }
 function scoreTile(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="lab-score' + cls + '"' + attrs + '>' + inner + '</' + tag + '>';
 }
-var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, activity:sproutSvg, mood:moodSvg, desire:flameSvg, circulation:circulationSvg, stress:boltSvg };
+export var CAT_MARK: Record<string, () => string> = { weather:weatherSvg, activity:sproutSvg, mood:moodSvg, desire:flameSvg, circulation:circulationSvg, stress:boltSvg };
 function foldSec(k: string, title: string, name: string, ls: Lab[], at: At){
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"", name:name,
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + countTag(ls.length) + CHEV + '</button>' },
@@ -378,11 +378,9 @@ function insightsHome(i: number){
 }
 function homeSections(i: number){
   var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
-  return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) +
+  return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) +
     dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
 }
-function aiAt(id: string){ var cat = findOf(id).cat; return cat ? aiParts.insight(cat, (cycleByName(page.cycles[id]) || openCycle()).name, catTitle(cat)) : ""; }
-export var aiParts: { risks: (m: CycleModel) => string; insight: (cat: string, cycle: string, title: string) => string } = { risks:function(){ return ""; }, insight:function(){ return ""; } };
 function whenPicked(id: string){
   var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
   return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
@@ -397,8 +395,8 @@ function drawChart(id: string){
   if (host && c && id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(marketCycles.indexOf(c)) + '</div>'; return; }
   if (!host || !at) return;
   var j = judged(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
-  host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + aiAt(id) + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
-  wireClamps(host); narrow(host, id);
+  host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
+  narrow(host, id);
 }
 export var IND = "sheet-find";
 var IND_ALL = ' data-open="' + IND + '" data-title="Elements" data-ind-cat=""';
@@ -406,6 +404,7 @@ function searchShell(tag: string, cls: string, attrs: string, inner: string){ re
 function pickCat(t: Element, id: string){
   var b = t.closest && t.closest("[data-ind-cat]"); if (!b) return false;
   findOf(IND).cat = b.getAttribute("data-ind-cat") || ""; findOf(IND).tier = b.getAttribute("data-ind-tier") || "all";
+  if (b.hasAttribute("data-ind-cycle")){ page.mode[IND] = "cycles"; page.cycles[IND] = b.getAttribute("data-ind-cycle"); page.when[IND] = undefined; }
   if (id === IND) drawChart(IND); else if (id === HOME_ID){ page.mode[IND] = "cycles"; page.cycles[IND] = page.cycles[HOME_ID]; page.when[IND] = undefined; }
   return true;
 }
