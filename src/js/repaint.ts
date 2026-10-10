@@ -6,7 +6,6 @@ import { policyFactRows } from "./readings.ts";
 import { sheetRenderers } from "./render-core.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
 import { forgetLabs } from "./cycle-analysis.ts";
-import { forgetEchoes } from "./ai-insights.ts";
 
 function repaintPressureChart(){
   ["sheet-sign-pressure", "sheet-sign-spreads"].forEach(function(id){ var s = byIdMaybe(id); if (s && !s.hidden && sheetRenderers[id]) sheetRenderers[id](); });
@@ -17,7 +16,7 @@ function repaintDiagnosis(){
   if (!ui.eraOpen) renderDiagnosis(nowModel);
 }
 function repaintDerived(){
-  forgetLabs(); forgetEchoes();
+  forgetLabs();
   repaintDiagnosis();
   ["chart-home", "sheet-find"].forEach(function(id){ var el = byIdMaybe(id); if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id](); });
 }

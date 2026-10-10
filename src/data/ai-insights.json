@@ -129,16 +129,5 @@
       "weather": "This was a deep winter. Temperature was at Risk, past the fence of her closed cycles, as the crash turned into deflation and prices fell year after year. The S&P 500 was at Risk as well, far below her normal range, with stocks losing ground on average across the cycle.",
       "desire": "The equity risk premium sat at Attention, just below the range of her closed cycles, so stocks paid little more than bonds even as the boom of the late Twenties gave way to the crash."
     }
-  },
-  "echoIntro": "Matched on how the last two years of eight market and economy readings unfolded, against every two-year run since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
-  "echo": [
-    "sheet-metric-valuation",
-    "sheet-metric-buffett",
-    "sheet-sign-premium",
-    "sheet-sign-market",
-    "sheet-sign-hormones",
-    "sheet-metric-temp",
-    "sheet-sign-activity",
-    "sheet-metric-gdp"
-  ]
+  }
 }

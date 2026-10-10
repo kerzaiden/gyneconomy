@@ -98,25 +98,24 @@ settles it; none is open after V668.
 - **On a cycle page, the door to the Analysis tab is called Cycle Analysis; Cycle Statistics is the container
   inside Analysis.** The door opens the whole of Analysis, of which statistics is one part. (0.6.6, 0.6.8, 0.9.46)
 - **AI Insights is not a page but a kind of text: Claude's dated reading sits inside the component it is about,
-  titled AI Insights with the sparkle where it is a container.** One page held the cycle's story,
+  marked by the sparkle where it is a container.** One page held the cycle's story,
   rates, economy, market, risks and closest moments, while Analysis showed the same subjects without that reading,
   so the two collided. Each subject now lives in one place: the cycle's rates story closes Interest Rates on
   Analysis (the general account of tightening and easing went to the Federal funds rate page, where rates are
-  explained), Risk Factors stands on Analysis above Elements, Closest Moments below it, and each element, picked
-  from the filter, carries its own AI Insights below its readings and above More details, written about them,
+  explained), Risk Factors stands on Analysis above Elements, and each element, picked
+  from the filter, carries its own insights below its readings and above More details, titled by the element (Weather
+  Insights, Mood Insights: the sparkle already says it is AI, and one title on every element left the reader
+  unsure which they were reading), three lines with Read more like the Cycle Story, written about them,
   for the cycle on screen, its years and quarters included: the reading belongs to the cycle (Keren), and every
   cycle, open or closed, has one for each element it reads; an element with no reading in a cycle has none. It
   carries no figures, since the page beneath shows them: the page is part of the story. Claude writes it: Keren
   chose "Claude, dated" over a live Generate button, which would change the artifact's grant, and over rule-built
   sentences, which the name would oversell. Each reading carries its date ("Updated 9 October 2026"; the
   sparkle already says it is AI, and which AI does not matter); a closed cycle's is written in the past tense from
-  its averages and its own story. Closest Moments is about today, so it stands on the open cycle only. Closest Moments is
-  computed: the last two years of today's eight market and economy readings matched against every two-year run
-  since 1970 (analog matching on a path; the readings, equal weights and window are Claude's), one moment per
-  episode, with its season and mood then, what is alike and what is apart. Resemblance only, never what followed.
-  The match reads the path that led there because one quarter alone put COVID-19's 2021 Q1 first, which Keren
-  judged not the same; she keeps it while doubting it is sophisticated enough. (0.6.5, 0.6.6, AI Insights
-  Everywhere)
+  its averages and its own story. Closest Moments, today matched to past two-year paths, is retired: Keren
+  wants the moments that resemble today found by what needs attention, the way financial media say "highest
+  since", and Risk Factors' since-dates now say it without a second matching to explain. (0.6.5, 0.6.6, AI Insights
+  Everywhere, Element Insights)
 - **Every cycle page opens on the Cycle Story, the book its mark: three lines, then "Read more" expands it in place
   to the whole story.** The narrative belongs to the cycle page and is short enough to read there, so it opens no
   page. The open cycle's story is Claude's dated lede, its date shown when expanded; a closed cycle's is its
@@ -590,10 +589,16 @@ settles it; none is open after V668.
   figure the page beside them already shows** (the 0.6.12 review found "The Fed has eased" after the Sep 16 hike).
   The emotional reading of each cycle has not been worked out yet; the lede's opening, "Born out of the 2022
   correction", which Keren liked, stays. (0.6.6, 0.6.12, 0.6.13, AI Insights Everywhere)
-- **Risk Factors lists every result Cycle Statistics reads as Risk, each as a bar placing its value against its
-  own record, on Analysis above Elements.** Keren liked the readings as bars, gathered as the risk factors the
-  analysis detected; it reads the Analysis judgement, never its own, and sits with the analysis that finds them.
-  (0.6.13, AI Insights Everywhere)
+- **Risk Factors lists every result Cycle Statistics reads as Risk, each with its value and where it stands in
+  its own record, on Analysis above Elements.** A bar of the share of past readings below it said little about why
+  a reading is at risk; Keren wants where we are, the way financial media put it: the highest on record, or
+  the highest since a date, and the record and when it was set. Each line names where its record starts, since
+  some records are short. The open cycle reads its latest value; a closed cycle its most extreme value inside the
+  cycle, against the record before it. It reads the Analysis judgement, never its own. Each row reads like an
+  Elements row, in market language: the name with its date, the value in red with its triangle, the record on a
+  line below, and no footnote, since Elements already explains the judgement. Tapping it opens that cycle's
+  Elements filtered to Risk; a last row counts the readings at Attention and opens Elements on them.
+  (0.6.13, AI Insights Everywhere, Element Insights)
 
 ### Analysis
 

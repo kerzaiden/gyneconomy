@@ -8,18 +8,14 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared patterns**.
+Generated from commit `cf4b7ff` on 2026-10-10. **104 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`closestMoments`** | `.ai-echoes` | — |
-| **`echoLine`** | `.ai-echo` `.ai-echo-when` | — |
-| **`para`** | `.ai-p` | `ai-insights.ts:closestMoments`, `ai-insights.ts:elementInsight` |
-| **`pathStrip`** | `.ai-path` | `ai-insights.ts:echoLine` |
-| **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:risksPic` |
-| **`risksPic`** | `.ai-rank` `.ai-track` | — |
+| **`riskRows`** | `.ai-rank` `.ai-when` | `ai-insights.ts:risksPic` |
+| **`risksPic`** | `.ai-cap` `.ai-pic` | — |
 
 ## analysis.ts
 
@@ -60,7 +56,7 @@ Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared p
 | **`foldSec`** | `.lab-fold` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:subSec` |
 | **`healthRow`** | `.lab-score-box` | `cycle-analysis.ts:statsHome` |
 | **`insightSec`** | `.insight-mark` | `cycle-analysis.ts:insightsHome` |
-| **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:foldSec` |
+| **`labItem`** | `.lab-item` `.lab-res` | `cycle-analysis.ts:foldSec` |
 | **`labSec`** | `.lab-cat` | `cycle-analysis.ts:bySystem` |
 | **`mark`** | `.len-key` `.odd` `.ok` | `cycle-analysis.ts:healthRow`, `dial-cycle.ts:renderCycleDial` |
 | **`markName`** | `.lab-mark` | `cycle-analysis.ts:subSec` |
@@ -92,8 +88,8 @@ Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `fed-phases.ts:footnoteHtml` |
-| **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `cycle-analysis.ts:chartDoor`, `dom.ts:moreRow` |
+| **`learnMore`** | `.learn-more` | `fed-phases.ts:footnoteHtml` |
+| **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `ai-insights.ts:risksPic`, `cycle-analysis.ts:chartDoor`, `dom.ts:moreRow` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
@@ -153,7 +149,7 @@ Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared p
 |---|---|---|
 | **`clockFace`** | `.clock` `.clock-axis` | `portfolio.ts:drawClock` |
 | **`methodPage`** | `.cat-mood` `.method-card` | `portfolio.ts:drawClock`, `portfolio.ts:drawWeather` |
-| **`say`** | `.method-say` | `ai-insights.ts:echoLine`, `portfolio.ts:drawClock`, `portfolio.ts:drawWeather` |
+| **`say`** | `.method-say` | `portfolio.ts:drawClock`, `portfolio.ts:drawWeather` |
 
 ## pulse-strips.ts
 
@@ -175,7 +171,7 @@ Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:foldSec` |
-| **`dxHead`** | `.dx-sys-head` | `ai-insights.ts:closestMoments`, `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
+| **`dxHead`** | `.dx-sys-head` | `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
 | **`econChips`** | `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`metricSheet`** | `.metric-sheet` | `portfolio.ts:portfolioSheets`, `reading.ts:mountReadings` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
@@ -241,32 +237,29 @@ renderer speaks. Listed most-used first.
 | **`cycleSlice`** | model.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`closedCount`** | cycle-analysis.ts | 7 places |
-| **`keyed`** | roster.ts | 7 places |
 | **`normOf`** | cycle-analysis.ts | 7 places |
 | **`put`** | dom.ts | 7 places |
 | **`qAtIndex`** | format.ts | 7 places |
 | **`cycLabel`** | model.ts | 6 places |
-| **`cycleModel`** | model.ts | 6 places |
 | **`fileRow`** | data.ts | 6 places |
 | **`fitLine`** | charts.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
-| **`strip`** | render-core.ts | 6 places |
 | **`windowYears`** | charts.ts | 6 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`colScale`** | history-charts.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
-| **`dxSys`** | render-core.ts | 5 places |
 | **`factsFrom`** | format.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
+| **`keyed`** | roster.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`meanOf`** | cycle-analysis.ts | 5 places |
-| **`moreRow`** | dom.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
 | **`pct`** | wave-chart.ts | 5 places |
 | **`pctl`** | format.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
+| **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`visits`** | cycle-analysis.ts | 5 places |
 | **`windowScale`** | history.ts | 5 places |
@@ -274,15 +267,14 @@ renderer speaks. Listed most-used first.
 | **`bandEnds`** | format.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
 | **`cycleByName`** | model.ts | 4 places |
-| **`cycleOfYear`** | model.ts | 4 places |
+| **`cycleModel`** | model.ts | 4 places |
 | **`dollars`** | indicators.ts | 4 places |
+| **`dxSys`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`growthWord`** | model.ts | 4 places |
 | **`inflationFigure`** | model.ts | 4 places |
-| **`labOf`** | ai-insights.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
-| **`listWords`** | cycle-analysis.ts | 4 places |
-| **`moodTrack`** | model.ts | 4 places |
+| **`moreRow`** | dom.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
@@ -296,6 +288,7 @@ renderer speaks. Listed most-used first.
 | **`cap`** | cycle-analysis.ts | 3 places |
 | **`categoriesShown`** | roster.ts | 3 places |
 | **`curveAt`** | data.ts | 3 places |
+| **`cycleOfYear`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
@@ -309,19 +302,14 @@ renderer speaks. Listed most-used first.
 | **`liveInto`** | live.ts | 3 places |
 | **`monthIdx`** | wave-chart.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
+| **`moodTrack`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
-| **`panel`** | ai-insights.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
 | **`quartile`** | format.ts | 3 places |
-| **`rankToDate`** | model.ts | 3 places |
 | **`readingFor`** | reading.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
-| **`seasonPills`** | render-core.ts | 3 places |
-| **`seasonRuns`** | render-core.ts | 3 places |
-| **`seasonRunsLabel`** | render-core.ts | 3 places |
-| **`seasonTitle`** | model.ts | 3 places |
 | **`setTopbar`** | render-pages.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`side`** | cycle-analysis.ts | 3 places |
@@ -347,6 +335,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.cycsel-nm` | 3 | `history.ts:headMenuHtml`, `history.ts:headPickRow`, `history.ts:nameAside` |
 | `.marker-sub` | 3 | `indicators.ts:splitInfo`, `inner-pages.ts:valuationInfo`, `readings.ts:volatilityDetailHtml` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
+| `.lab-to` | 2 | `ai-insights.ts:riskRows`, `cycle-analysis.ts:labItem` |
 | `.mono` | 2 | `charts.ts:fitGroup`, `charts.ts:histTip` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
 | `.dx` | 2 | `diagnosis.ts:diagnosisHost`, `portfolio.ts:buildPortfolio` |

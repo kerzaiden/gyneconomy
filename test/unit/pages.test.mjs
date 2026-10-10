@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors, bootWarnings, window } from './dom.mjs';
 import { sheetRenderers } from '../../src/js/render-core.ts';
-import { ROSTER } from '../../src/js/roster.ts';
+import { CATEGORIES, ROSTER } from '../../src/js/roster.ts';
 import { page, pickerOpen } from '../../src/js/history.ts';
 import { cycleByName } from '../../src/js/model.ts';
 import { histFrame } from '../../src/js/charts.ts';
@@ -140,8 +140,7 @@ test('every history chart is attached to its readout, so hover and keys reach it
   assert.deepEqual(loose, []);
 });
 
-test('the Cycle Story tells every cycle; Analysis ranks its risk factors above Elements, on the open cycle adds Closest Moments below them, and every element of every cycle carries its own AI Insights', async () => {
-  const { echoes } = await import('../../src/js/ai-insights.ts');
+test('the Cycle Story tells every cycle; Analysis places its risk factors in their own record above Elements, and every element of every cycle carries its own insights, titled by the element', async () => {
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   const { cycleModel, nowModel } = await import('../../src/js/model.ts');
   const { riskLabs } = await import('../../src/js/cycle-analysis.ts');
@@ -155,12 +154,15 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
   assert.equal(story().querySelector('.ai-clamp').textContent, AI.lede);
   assert.match(story().querySelector('.story-by').textContent, /^Updated \d+ \w+ 20\d\d\.$/);
   draw(nowModel.era);
-  assert.deepEqual(heads(), ['Cycle Statistics', 'Interest Rates', 'Risk Factors', 'Elements', 'Closest Moments']);
-  assert.equal(home.querySelectorAll('.ai-echo').length, 3);
-  assert.ok(echoes().every(e => !e.cycle.ongoing));
+  assert.deepEqual(heads(), ['Cycle Statistics', 'Interest Rates', 'Risk Factors', 'Elements']);
+  home.querySelector('.ai-pic .more-row[data-ind-tier="borderline"]').click();
+  sheetRenderers['sheet-find']();
+  const left = [...document.querySelectorAll('#sheet-find .lab-item')].filter(li => !li.hidden);
+  assert.ok(left.length && left.every(li => li.classList.contains('t-borderline')), 'a risk factor opens Elements on its tier');
+  assert.ok([...home.querySelectorAll('.ai-rank > small')].every(x => /^((Highest|Lowest) on record, which starts in|(Highest|Lowest) since|Its (high|low) since) /.test(x.textContent)), 'each risk factor says where it stands in its own record');
   const risks = riskLabs(marketCycles.indexOf(nowModel.era)).map(l => l.name).sort();
   assert.ok(risks.length > 0);
-  assert.deepEqual([...home.querySelectorAll('.ai-rank span:first-child')].map(s => s.textContent).sort(), risks);
+  assert.deepEqual([...home.querySelectorAll('.ai-rank > span')].map(s => s.firstChild.textContent.trim()).sort(), risks);
   assert.deepEqual(broken(home.innerHTML), []);
   const insights = c => {
     const rows = [...home.querySelectorAll('.insight-row')].map(r => r.dataset.indCat), mine = AI.elements[c.name];
@@ -168,8 +170,9 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
     for (const k of rows) {
       home.querySelector('.insight-row[data-ind-cat="' + k + '"]').click(); sheetRenderers['sheet-find']();
       const box = document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card');
-      assert.equal(box.querySelector('.trend-head').textContent, 'AI Insights', c.name + ' ' + k);
-      assert.equal(box.querySelector('.ai-p').textContent, mine[k], c.name + ' ' + k);
+      assert.equal(box.querySelector('.trend-head').textContent, CATEGORIES.find(g => g.key === k).title + ' Insights', c.name + ' ' + k);
+      assert.equal(box.querySelector('.ai-clamp').textContent, mine[k], c.name + ' ' + k);
+      assert.ok(box.querySelector('[data-story-more]') && box.querySelector('.story-by'), c.name + ' ' + k + ' opens like the Cycle Story');
       assert.doesNotMatch(mine[k], /\d+(\.\d+)?\s?(%|×|pt)|\d\.\d/, c.name + ' ' + k + ' carries no figure');
     }
   };

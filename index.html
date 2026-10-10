@@ -604,22 +604,17 @@
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   .ai-pic{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
-  .ai-pic .strip{ margin:0; }
-  .ai-pic .strip + .strip{ margin-top:5px; }
   .ai-cap{ display:block; margin-top:8px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
-  .ai-rank{ display:grid; grid-template-columns:9.5em 1fr 2.8em; align-items:center; column-gap:10px; padding:4px 0; font-size:var(--type-meta); color:var(--text-primary); }
-  .ai-rank b{ text-align:right; font-variant-numeric:tabular-nums; }
-  .ai-track{ position:relative; height:6px; border-radius:3px; background:var(--surface-2); }
-  .ai-track i{ position:absolute; top:50%; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--accent); }
-  .ai-path{ display:grid; grid-template-columns:2.6em 1fr; align-items:center; column-gap:8px; margin-top:6px; }
-  .ai-path .strip{ margin:0; }
-  .ai-p{ margin:8px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
-  .ai-echoes{ list-style:none; margin:10px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
-  .ai-echo{ padding:10px 12px; border-radius:calc(var(--radius) - 6px); background:var(--surface-2); }
-  .ai-echo-when{ display:block; font-size:var(--type-reading); color:var(--text-primary); }
-  .ai-echo small{ display:block; margin-top:3px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
+  .ai-rank{ --tier:var(--critical); width:100%; margin:0; background:none; border:0; text-align:left; font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; display:grid; grid-template-columns:1fr auto; align-items:baseline; column-gap:10px; padding:8px 0; border-top:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
+  .ai-pic .more-row{ margin-top:12px; }
+  .ai-rank:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+  .ai-rank:first-child{ border-top:0; padding-top:0; }
+  .ai-rank span{ font-weight:600; }
+  .ai-rank .ai-when{ font-weight:400; font-size:var(--type-meta); color:var(--text-muted); }
+  .ai-rank b{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
+  .ai-rank.t-abnormal b{ color:var(--critical-ink); }
+  .ai-rank > small{ grid-column:1 / -1; margin-top:2px; font-size:var(--type-meta); line-height:1.45; color:var(--text-secondary); }
   .ai-by{ margin:0; font-size:var(--type-meta); color:var(--text-muted); }
-  .ai-by.insight-by{ margin-top:10px; }
   .ai-by.story-by{ display:none; margin:10px 0 6px; }
   .trend-card.is-open .story-by{ display:block; }
   .trend-card.is-open .trend-text.ai-clamp{ display:block; -webkit-line-clamp:unset; line-clamp:none; overflow:visible; }
@@ -1263,7 +1258,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.59 (830)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.60 (831)</span></p>
     </div>
   </div>
 
@@ -1691,6 +1686,23 @@
   }
   function learnMore(attrs, label) {
     return attrs ? '<button type="button" class="learn-more"' + attrs + ">" + (label || "Learn more") + "</button>" : '<span class="learn-more">Learn more</span>';
+  }
+  function wireClamps(host) {
+    host.querySelectorAll("[data-story-more]").forEach(function(btn) {
+      var card = btn.closest(".trend-card"), text = card && card.querySelector(".ai-clamp");
+      if (!card || !text) return;
+      var c = card, t = text;
+      var fit = function() {
+        if (t.clientHeight) btn.hidden = !(t.scrollHeight > t.clientHeight + 1 || c.classList.contains("is-open") || !!c.querySelector(".story-by"));
+      };
+      fit();
+      if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(t);
+      btn.addEventListener("click", function() {
+        var open = c.classList.toggle("is-open");
+        btn.textContent = open ? "Read less" : "Read more";
+        btn.setAttribute("aria-expanded", String(open));
+      });
+    });
   }
   function trendBox(mark2, head, body) {
     return trendCard("section", " is-box", "", mark2, head, "", body);
@@ -49175,10 +49187,10 @@
     var none = host.querySelector(".search-none");
     if (none) none.hidden = any;
   }
-  function riskLabs(i) {
+  function riskLabs(i, key) {
     var at = atCycle(i);
     return judged(at).filter(function(l) {
-      return tier(l, at) === "abnormal";
+      return tier(l, at) === (key || "abnormal");
     });
   }
   function judged(at) {
@@ -49361,16 +49373,14 @@
   }
   function homeSections(i) {
     var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
-    return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
+    return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) + dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
   }
   function aiAt(id) {
-    return aiParts.insight(findOf(id).cat, (cycleByName(page.cycles[id]) || openCycle()).name);
+    var cat = findOf(id).cat;
+    return cat ? aiParts.insight(cat, (cycleByName(page.cycles[id]) || openCycle()).name, catTitle(cat)) : "";
   }
   var aiParts = {
     risks: function() {
-      return "";
-    },
-    moments: function() {
       return "";
     },
     insight: function() {
@@ -49400,6 +49410,7 @@
       return l.cat !== "cycle";
     }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
     host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + aiAt(id) + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
+    wireClamps(host);
     narrow(host, id);
   }
   var IND = "sheet-find";
@@ -49411,6 +49422,7 @@
     var b = t.closest && t.closest("[data-ind-cat]");
     if (!b) return false;
     findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
+    findOf(IND).tier = b.getAttribute("data-ind-tier") || "all";
     if (id === IND) drawChart(IND); else if (id === HOME_ID) {
       page.mode[IND] = "cycles";
       page.cycles[IND] = page.cycles[HOME_ID];
@@ -49673,259 +49685,79 @@
         weather: "This was a deep winter. Temperature was at Risk, past the fence of her closed cycles, as the crash turned into deflation and prices fell year after year. The S&P 500 was at Risk as well, far below her normal range, with stocks losing ground on average across the cycle.",
         desire: "The equity risk premium sat at Attention, just below the range of her closed cycles, so stocks paid little more than bonds even as the boom of the late Twenties gave way to the crash."
       }
-    },
-    echoIntro: "Matched on how the last two years of eight market and economy readings unfolded, against every two-year run since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
-    echo: [ "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-market", "sheet-sign-hormones", "sheet-metric-temp", "sheet-sign-activity", "sheet-metric-gdp" ]
+    }
   };
-  var ECHO_WINDOW = 8;
-  function echoWindowWord() {
-    return [ "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ][ECHO_WINDOW - 4] || String(ECHO_WINDOW);
-  }
   var MONTH_NAMES = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
-  var ECHO_FROM = 1970;
-  function openIdx() {
-    return marketCycles.findIndex(function(c) {
-      return !!c.ongoing;
-    });
-  }
   function labOf(id) {
     return labs().filter(function(l) {
       return l.id === id;
     })[0];
   }
-  function quartersOf(k) {
-    var y = k.slice(0, 4);
-    if (/ Q\d$/.test(k)) return [ k ];
-    if (k.length === 7) return [ y + " Q" + Math.ceil(+k.slice(5) / 3) ];
-    return [ "Q1", "Q2", "Q3", "Q4" ].map(function(q) {
-      return y + " " + q;
-    });
-  }
-  function quarterly(id) {
-    var sum = {}, n = {};
-    keyed(ROSTER_BY[id].hist).forEach(function(d) {
-      if (d.v == null) return;
-      quartersOf(d.k).forEach(function(q2) {
-        sum[q2] = (sum[q2] || 0) + d.v;
-        n[q2] = (n[q2] || 0) + 1;
-      });
-    });
-    var out = {};
-    for (var q in sum) out[q] = sum[q] / n[q];
-    return out;
-  }
-  function lastQuarter(id) {
-    return Math.max.apply(null, keyed(ROSTER_BY[id].hist).filter(function(d) {
-      return d.v != null;
-    }).map(function(d) {
-      return d.k.length === 4 ? +d.k * 4 : qIdx(quartersOf(d.k)[0]);
-    }));
-  }
-  function qIdx(q) {
-    return +q.slice(0, 4) * 4 + +q.slice(6) - 1;
-  }
-  function qName(i) {
-    return Math.floor(i / 4) + " Q" + (i % 4 + 1);
-  }
-  function carried(s, to) {
-    var out = {}, last = -1;
-    Object.keys(s).forEach(function(q) {
-      out[qIdx(q)] = s[q];
-      last = Math.max(last, qIdx(q));
-    });
-    for (var i = last + 1; i <= to; i++) out[i] = out[last];
-    return out;
-  }
-  var panelCache = null;
-  function panel() {
-    return panelCache || (panelCache = buildPanel());
-  }
-  function buildPanel() {
-    var ids = ai_insights_default.echo, raw = ids.map(quarterly), nowI = Math.max.apply(null, ids.map(lastQuarter));
-    var series = raw.map(function(s) {
-      return carried(s, nowI);
-    }), now2 = ids.map(function(id) {
-      return labOf(id).per[openIdx()];
-    });
-    var rows = {};
-    for (var i = ECHO_FROM * 4; i <= nowI; i++) {
-      var v = i === nowI ? now2 : series.map(function(s) {
-        return s[i];
-      });
-      if (v.every(function(x) {
-        return x != null;
-      })) rows[i] = v;
-    }
-    var all = Object.keys(rows).map(function(k) {
-      return rows[+k];
-    });
-    var scale = ids.map(function(_, r) {
-      var vs = all.map(function(v2) {
-        return v2[r];
-      }), m = vs.reduce(function(a, b) {
-        return a + b;
-      }, 0) / vs.length;
-      return Math.sqrt(vs.reduce(function(a, b) {
-        return a + (b - m) * (b - m);
-      }, 0) / vs.length);
-    });
-    return {
-      rows: rows,
-      now: now2,
-      nowI: nowI,
-      scale: scale,
-      open: marketCycles[openIdx()].from * 4
-    };
-  }
-  function pathGap(p, k) {
-    var per = p.scale.map(function() {
-      return 0;
-    });
-    for (var j = 0; j < ECHO_WINDOW; j++) {
-      var a = p.rows[k - j], b = p.rows[p.nowI - j];
-      if (!a || !b) return null;
-      a.forEach(function(x, r) {
-        var z = (x - b[r]) / p.scale[r];
-        per[r] += z * z / ECHO_WINDOW;
-      });
-    }
-    return {
-      gap: Math.sqrt(per.reduce(function(x, y) {
-        return x + y;
-      }, 0) / per.length),
-      per: per.map(Math.sqrt)
-    };
-  }
-  var echoCache = null;
-  function forgetEchoes() {
-    panelCache = null;
-    echoCache = null;
-  }
-  function echoes() {
-    if (echoCache) return echoCache;
-    var p = panel(), seen = [];
-    Object.keys(p.rows).map(Number).filter(function(k) {
-      return k < p.open;
-    }).map(function(k) {
-      var g = pathGap(p, k);
-      return g && {
-        q: qName(k),
-        i: k,
-        cycle: cycleOfYear(Math.floor(k / 4)),
-        gap: g.gap,
-        per: g.per,
-        then: p.rows[k]
-      };
-    }).filter(function(e) {
-      return !!e && !!e.cycle;
-    }).sort(function(a, b) {
-      return a.gap - b.gap;
-    }).forEach(function(e) {
-      if (seen.every(function(s) {
-        return Math.abs(s.i - e.i) >= ECHO_WINDOW;
-      })) seen.push(e);
-    });
-    echoCache = seen;
-    return echoCache;
-  }
-  function thenWords(e) {
-    var seg = cycleModel(e.cycle).track.filter(function(s) {
-      return s.q === e.q;
-    })[0];
-    var month = e.q.slice(0, 4) + "-" + QUARTER_END_MONTH[e.q.slice(5)];
-    var mood = moodTrack().filter(function(x) {
-      return x.m === month;
-    })[0];
-    var season = seg ? seasonTitle(wheelMeta[seg.season]) : "";
-    return [ season, mood && mood.word ? "Mrs. Market in " + mood.word : "" ].filter(Boolean).join(", ");
-  }
-  function pairWords(l, then, now2) {
-    return l.name + " (" + fmt(l, then) + " then, " + fmt(l, now2) + " now)";
-  }
-  function echoLine(e) {
-    var p = panel(), order = e.per.map(function(x, i) {
-      return i;
-    }).sort(function(a, b) {
-      return e.per[a] - e.per[b];
-    });
-    var say2 = function(i) {
-      return pairWords(labOf(ai_insights_default.echo[i]), e.then[i], p.now[i]);
-    };
-    var then = thenWords(e);
-    return '<li class="ai-echo"><span class="ai-echo-when"><b>' + e.q + "</b> · " + e.cycle.name + "</span>" + (then ? "<small>Then: " + then + ".</small>" : "") + pathStrip("Then", e.i) + pathStrip("Now", p.nowI) + "<small>Alike: " + listWords(order.slice(0, 2).map(say2)) + ". Apart: " + say2(order[order.length - 1]) + ".</small></li>";
-  }
   function asOfWords() {
     var d = ai_insights_default.asOf.split("-").map(Number);
     return d[2] + " " + MONTH_NAMES[d[1] - 1] + " " + d[0];
   }
-  function aiDetail() {
-    var p = panel(), list = echoes().slice(0, 8), names = listWords(ai_insights_default.echo.map(function(id) {
-      return labOf(id).name;
-    }));
-    return "<p>A moment is matched by how it got here, not by one quarter alone: the last " + echoWindowWord() + " quarters of " + names + ", two years, against every run of " + echoWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
-      return +k < p.open && pathGap(p, +k);
-    }).length + " in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than " + echoWindowWord() + " quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p><p>" + list.map(function(e) {
-      return e.q + " · " + e.cycle.name + ": gap " + e.gap.toFixed(2);
-    }).join("<br>") + "</p>";
+  function keyWords(k) {
+    var m = /^(\d{4})-(\d{2})/.exec(k);
+    return m ? MONTH_NAMES[+m[2] - 1] + " " + m[1] : /^\d{4} Q\d$/.test(k) ? k.slice(5) + " " + k.slice(0, 4) : k;
   }
-  function rankAt(R, i) {
-    var c = marketCycles[i], end = c.ongoing ? Infinity : c.to;
+  function keyYear(k) {
+    return +k.slice(0, 4);
+  }
+  function standing(R, i) {
+    var c = marketCycles[i], l = labOf(R.id), end = c.ongoing ? Infinity : c.to, up = l.per[i] > l.norm.hi;
+    var past = function(a, b) {
+      return up ? a >= b : a <= b;
+    };
     var h = keyed(R.hist).filter(function(d) {
-      return d.v != null && +d.k.slice(0, 4) <= end;
-    }).map(function(d) {
-      return d.v;
+      return d.v != null && keyYear(d.k) <= end;
     });
+    var mine = h.filter(function(d) {
+      return keyYear(d.k) >= c.from;
+    });
+    var at = c.ongoing ? mine[mine.length - 1] : mine.reduce(function(a, d) {
+      return a && past(a.v, d.v) ? a : d;
+    }, mine[0]);
+    var prior = at ? h.slice(0, h.indexOf(at)) : [];
+    if (!at || prior.length < 12) return null;
+    var beyond = prior.filter(function(d) {
+      return past(d.v, at.v);
+    }), last = beyond[beyond.length - 1];
+    var rec = prior.reduce(function(a, d) {
+      return past(a.v, d.v) ? a : d;
+    }), most = up ? "Highest" : "Lowest";
+    var words = !last ? most + " on record, which starts in " + keyWords(h[0].k) : (keyYear(last.k) <= keyYear(at.k) - 2 ? most + " since " + keyWords(last.k) + "; its" : "Its") + " " + (up ? "high" : "low") + " since " + keyWords(h[0].k) + " is " + l.print(rec.v) + ", in " + keyWords(rec.k);
     return {
       R: R,
-      pct: c.ongoing ? rankToDate(h.slice(0, -1), h[h.length - 1]) : rankToDate(h, labOf(R.id).per[i])
+      v: l.print(at.v),
+      when: keyWords(at.k),
+      words: words,
+      record: !last,
+      to: up ? "to-up" : "to-down"
     };
   }
-  function pic(inner, cap2) {
-    return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap2 + "</small></div>";
+  function riskDoor(t) {
+    return ' data-open="' + IND + '" data-title="Elements" data-ind-cat="" data-ind-tier="' + t + '"';
   }
   function riskFactors(m) {
-    return dxSys("", dxHead(diceSvg(), "Risk Factors") + risksPic(m));
+    return dxSys("", dxHead(diceSvg(), "Risk Factors", riskDoor("abnormal")) + risksPic(m));
+  }
+  function riskRows(i, t) {
+    return riskLabs(i, t).map(function(l) {
+      return ROSTER_BY[l.id];
+    }).filter(Boolean).map(function(R) {
+      return standing(R, i);
+    }).filter(function(x) {
+      return x != null;
+    }).sort(function(a, b) {
+      return Number(b.record) - Number(a.record);
+    }).map(function(x) {
+      return '<button type="button" class="ai-rank ' + x.to + " t-" + t + '"' + riskDoor(t) + "><span>" + x.R.name + ' <small class="ai-when">' + x.when + "</small></span><b>" + x.v + '<i class="lab-to" aria-hidden="true"></i></b><small>' + x.words + ".</small></button>";
+    }).join("");
   }
   function risksPic(m) {
-    var i = marketCycles.indexOf(m.era), when = m.ongoing ? "today" : "in this cycle";
-    var risks = riskLabs(i).map(function(l) {
-      return ROSTER_BY[l.id];
-    }).filter(Boolean);
-    var rows = risks.map(function(R) {
-      return rankAt(R, i);
-    }).filter(function(x) {
-      return x.pct != null;
-    }).sort(function(a, b) {
-      return b.pct - a.pct;
-    });
-    return !rows.length ? pic("", "Nothing in Cycle Statistics reads as Risk " + when + ".") : pic(rows.map(function(x) {
-      return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + "%</b></div>";
-    }).join(""), "Every result Cycle Statistics reads as Risk " + when + ", past a fence of her closed cycles, placed against " + (m.ongoing ? "its own whole record: the share of past readings below it." : "its record to the cycle’s end: the share of readings below it."));
-  }
-  var trackCache = null;
-  function segAt(q) {
-    if (!trackCache) {
-      var all = {};
-      marketCycles.forEach(function(c) {
-        cycleModel(c).track.forEach(function(seg) {
-          if (!seg.isNow) all[seg.q] = seg;
-        });
-      });
-      trackCache = all;
-    }
-    return trackCache[q];
-  }
-  function pathStrip(label, end) {
-    var segs = [];
-    for (var i = end - ECHO_WINDOW + 1; i <= end; i++) {
-      var seg = segAt(qName(i));
-      if (seg) segs.push(seg);
-    }
-    var runs = seasonRuns(segs);
-    return '<span class="ai-path"><small>' + label + "</small>" + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + "</span>";
-  }
-  function para(html) {
-    return '<p class="ai-p">' + html + "</p>";
+    var i = marketCycles.indexOf(m.era), rows = riskRows(i, "abnormal"), n = riskLabs(i, "borderline").length;
+    return '<div class="ai-pic">' + (rows || '<small class="ai-cap">Nothing reads as Risk ' + (m.ongoing ? "today" : "in this cycle") + ".</small>") + (n ? moreDoor(riskDoor("borderline"), n + (n > 1 ? " readings need" : " reading needs") + " attention") : "") + "</div>";
   }
   function byLine(cls) {
     return '<p class="ai-by' + cls + '">Updated ' + asOfWords() + ".</p>";
@@ -49933,33 +49765,18 @@
   function storyOf(m) {
     return m.ongoing ? ai_insights_default.lede : m.era.blurb;
   }
+  function clampBody(t, by) {
+    return trendText(t, "ai-clamp") + by + learnMore(' data-story-more aria-expanded="false"', "Read more");
+  }
   function storyCard(m) {
-    return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(m), "ai-clamp") + (m.ongoing ? byLine(" story-by") : "") + learnMore(' data-story-more aria-expanded="false"', "Read more"));
+    return trendBox(bookSvg(), "Cycle Story", clampBody(storyOf(m), m.ongoing ? byLine(" story-by") : ""));
   }
-  function wireStory(host) {
-    var btn = host.querySelector("[data-story-more]"), text = host.querySelector(".ai-clamp"), card = btn && btn.closest(".trend-card");
-    if (!btn || !text || !card) return;
-    var fit = function() {
-      if (text.clientHeight) btn.hidden = !(text.scrollHeight > text.clientHeight + 1 || card.classList.contains("is-open") || !!card.querySelector(".story-by"));
-    };
-    fit();
-    if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(text);
-    btn.addEventListener("click", function() {
-      var open = card.classList.toggle("is-open");
-      btn.textContent = open ? "Read less" : "Read more";
-      btn.setAttribute("aria-expanded", String(open));
-    });
-  }
-  function elementInsight(cat, cycle) {
+  function elementInsight(cat, cycle, title) {
     var t = (ai_insights_default.elements[cycle] || {})[cat];
-    return t ? trendBox(sparkleSvg(), "AI Insights", para(t) + byLine(" insight-by")) : "";
-  }
-  function closestMoments() {
-    return dxSys("", dxHead(clockSvg(), "Closest Moments") + para(ai_insights_default.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + moreRow(aiDetail());
+    return t ? trendBox(sparkleSvg(), title + " Insights", clampBody(t, byLine(" story-by"))) : "";
   }
   function lendAiParts() {
     aiParts.risks = riskFactors;
-    aiParts.moments = closestMoments;
     aiParts.insight = elementInsight;
   }
   var DIAG_SRC = [ {
@@ -50024,7 +49841,7 @@
     var host = document.getElementById("diagnosis");
     if (host && m) {
       host.innerHTML = diagnosisHtml(m);
-      wireStory(host);
+      wireClamps(host);
       wireYearsMore(host);
       fitYearDots();
     }
@@ -50815,17 +50632,17 @@
     var now2 = phaseOf(nowModel.reading);
     return trendDoor(WEATHER_ID, WEATHER_NAME, umbrellaSvg(), WEATHER_NAME, trendText("Something for every kind of weather, held all the time, never timed.") + weatherStrip()) + trendDoor(CLOCK_ID, CLOCK_NAME, clockSvg(), CLOCK_NAME, trendText("Today reads " + now2.name + ", when the clock holds " + now2.holds.toLowerCase() + ".")) + trendSoon(slidersSvg(), "Custom", trendText("Her own mix, set by her own rules."));
   }
-  function portfolioSheets(panel2) {
+  function portfolioSheets(panel) {
     [ WEATHER_ID, CLOCK_ID ].forEach(function(id) {
-      panel2.appendChild(metricSheet(id));
+      panel.appendChild(metricSheet(id));
     });
     sheetRenderers[WEATHER_ID] = drawWeather;
     sheetRenderers[CLOCK_ID] = drawClock;
   }
   function buildPortfolio() {
-    var panel2 = need("panel-portfolio");
-    panel2.innerHTML = '<div class="dx" id="portfolio-home">' + homeHtml() + "</div>";
-    portfolioSheets(panel2);
+    var panel = need("panel-portfolio");
+    panel.innerHTML = '<div class="dx" id="portfolio-home">' + homeHtml() + "</div>";
+    portfolioSheets(panel);
   }
   function bootPortfolio() {
     buildPortfolio();
@@ -52559,14 +52376,14 @@
       });
     });
     [ "analysis", "chart", "portfolio" ].forEach(function(key) {
-      var panel2 = PAGE_HOME[key].panel, go = function(el) {
+      var panel = PAGE_HOME[key].panel, go = function(el) {
         openMetricPage(openTarget(el), el.getAttribute("data-title"), false, key);
       };
-      panel2.addEventListener("click", function(e) {
+      panel.addEventListener("click", function(e) {
         var btn = e.target.closest && e.target.closest("[data-open]");
         if (btn) go(btn);
       });
-      panel2.addEventListener("keydown", function(e) {
+      panel.addEventListener("keydown", function(e) {
         var row = (e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-open]");
         if (row) {
           e.preventDefault();
@@ -52977,7 +52794,6 @@
   }
   function repaintDerived() {
     forgetLabs();
-    forgetEchoes();
     repaintDiagnosis();
     [ "chart-home", "sheet-find" ].forEach(function(id) {
       var el = byIdMaybe(id);

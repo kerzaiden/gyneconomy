@@ -1,5 +1,5 @@
 import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
-import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui } from "./dom.ts";
+import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui, wireClamps } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { setTopbar } from "./render-pages.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
@@ -264,7 +264,7 @@ function narrow(host: HTMLElement, id: string){
   });
   var none = host.querySelector<HTMLElement>(".search-none"); if (none) none.hidden = any;
 }
-export function riskLabs(i: number){ var at = atCycle(i); return judged(at).filter(function(l){ return tier(l, at) === "abnormal"; }); }
+export function riskLabs(i: number, key?: string){ var at = atCycle(i); return judged(at).filter(function(l){ return tier(l, at) === (key || "abnormal"); }); }
 function judged(at: At){ return labs().filter(function(l){ return at.v(l) != null && at.n(l) && !at.skip(l); }); }
 function score(i: number){ var at = atCycle(i), j = judged(at), ok = j.filter(function(l){ return tier(l, at) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
 export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
@@ -379,10 +379,10 @@ function insightsHome(i: number){
 function homeSections(i: number){
   var c = marketCycles[i], m = c.ongoing ? nowModel : cycleModel(c);
   return statsHome(i) + fedEnvironment(m, HOME_ID, page.range[HOME_ID]) + aiParts.risks(m) +
-    dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i)) + (c.ongoing ? aiParts.moments() : "");
+    dxSys("", dxHead("", "Elements", IND_ALL) + insightsHome(i));
 }
-function aiAt(id: string){ return aiParts.insight(findOf(id).cat, (cycleByName(page.cycles[id]) || openCycle()).name); }
-export var aiParts: { risks: (m: CycleModel) => string; moments: () => string; insight: (cat: string, cycle: string) => string } = { risks:function(){ return ""; }, moments:function(){ return ""; }, insight:function(){ return ""; } };
+function aiAt(id: string){ var cat = findOf(id).cat; return cat ? aiParts.insight(cat, (cycleByName(page.cycles[id]) || openCycle()).name, catTitle(cat)) : ""; }
+export var aiParts: { risks: (m: CycleModel) => string; insight: (cat: string, cycle: string, title: string) => string } = { risks:function(){ return ""; }, insight:function(){ return ""; } };
 function whenPicked(id: string){
   var c = cycleByName(page.cycles[id]) || openCycle(), w = page.when[id], y = w ? +w.slice(0, 4) : c.ongoing ? calendarTodayY : c.to;
   return page.mode[id] === "calendar" ? String(y) : w && w.length > 4 ? w : y === calendarTodayY ? nowWhen(true) : y + " Q4";
@@ -398,14 +398,14 @@ function drawChart(id: string){
   if (!host || !at) return;
   var j = judged(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
   host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + aiAt(id) + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
-  narrow(host, id);
+  wireClamps(host); narrow(host, id);
 }
 export var IND = "sheet-find";
 var IND_ALL = ' data-open="' + IND + '" data-title="Elements" data-ind-cat=""';
 function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
 function pickCat(t: Element, id: string){
   var b = t.closest && t.closest("[data-ind-cat]"); if (!b) return false;
-  findOf(IND).cat = b.getAttribute("data-ind-cat") || "";
+  findOf(IND).cat = b.getAttribute("data-ind-cat") || ""; findOf(IND).tier = b.getAttribute("data-ind-tier") || "all";
   if (id === IND) drawChart(IND); else if (id === HOME_ID){ page.mode[IND] = "cycles"; page.cycles[IND] = page.cycles[HOME_ID]; page.when[IND] = undefined; }
   return true;
 }
