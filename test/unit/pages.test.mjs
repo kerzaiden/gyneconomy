@@ -169,7 +169,8 @@ test('the Cycle Story tells every cycle; Analysis ranks its risk factors above E
       home.querySelector('.insight-row[data-ind-cat="' + k + '"]').click(); sheetRenderers['sheet-find']();
       const box = document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card');
       assert.equal(box.querySelector('.trend-head').textContent, CATEGORIES.find(g => g.key === k).title + ' Insights', c.name + ' ' + k);
-      assert.equal(box.querySelector('.ai-p').textContent, mine[k], c.name + ' ' + k);
+      assert.equal(box.querySelector('.ai-clamp').textContent, mine[k], c.name + ' ' + k);
+      assert.ok(box.querySelector('[data-story-more]') && box.querySelector('.story-by'), c.name + ' ' + k + ' opens like the Cycle Story');
       assert.doesNotMatch(mine[k], /\d+(\.\d+)?\s?(%|×|pt)|\d\.\d/, c.name + ' ' + k + ' carries no figure');
     }
   };

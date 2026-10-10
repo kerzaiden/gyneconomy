@@ -145,23 +145,11 @@ function pathStrip(label: string, end: number){
 function para(html: string){ return '<p class="ai-p">' + html + '</p>'; }
 function byLine(cls: string){ return '<p class="ai-by' + cls + '">Updated ' + asOfWords() + '.</p>'; }
 function storyOf(m: CycleModel){ return m.ongoing ? AI.lede : m.era.blurb; }
-export function storyCard(m: CycleModel){
-  return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(m), "ai-clamp") + (m.ongoing ? byLine(" story-by") : "") + learnMore(' data-story-more aria-expanded="false"', "Read more"));
-}
-export function wireStory(host: HTMLElement){
-  var btn = host.querySelector<HTMLElement>("[data-story-more]"), text = host.querySelector<HTMLElement>(".ai-clamp"), card = btn && btn.closest<HTMLElement>(".trend-card");
-  if (!btn || !text || !card) return;
-  var fit = function(){ if ((text as HTMLElement).clientHeight) (btn as HTMLElement).hidden = !((text as HTMLElement).scrollHeight > (text as HTMLElement).clientHeight + 1 || (card as HTMLElement).classList.contains("is-open") || !!(card as HTMLElement).querySelector(".story-by")); };
-  fit();
-  if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(text);
-  btn.addEventListener("click", function(){
-    var open = (card as HTMLElement).classList.toggle("is-open");
-    (btn as HTMLElement).textContent = open ? "Read less" : "Read more"; (btn as HTMLElement).setAttribute("aria-expanded", String(open));
-  });
-}
+function clampBody(t: string, by: string){ return trendText(t, "ai-clamp") + by + learnMore(' data-story-more aria-expanded="false"', "Read more"); }
+export function storyCard(m: CycleModel){ return trendBox(bookSvg(), "Cycle Story", clampBody(storyOf(m), m.ongoing ? byLine(" story-by") : "")); }
 export function elementInsight(cat: string, cycle: string, title: string){
   var t = ((AI.elements as Record<string, Record<string, string>>)[cycle] || {})[cat];
-  return t ? trendBox(sparkleSvg(), title + " Insights", para(t) + byLine(" insight-by")) : "";
+  return t ? trendBox(sparkleSvg(), title + " Insights", clampBody(t, byLine(" story-by"))) : "";
 }
 export function closestMoments(){
   return dxSys("", dxHead(clockSvg(), "Closest Moments") + para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') + moreRow(aiDetail());

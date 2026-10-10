@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared patterns**.
+Generated from commit `48b5f49` on 2026-10-10. **108 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -16,7 +16,7 @@ Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared p
 |---|---|---|
 | **`closestMoments`** | `.ai-echoes` | — |
 | **`echoLine`** | `.ai-echo` `.ai-echo-when` | — |
-| **`para`** | `.ai-p` | `ai-insights.ts:closestMoments`, `ai-insights.ts:elementInsight` |
+| **`para`** | `.ai-p` | `ai-insights.ts:closestMoments` |
 | **`pathStrip`** | `.ai-path` | `ai-insights.ts:echoLine` |
 | **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:risksPic` |
 | **`risksPic`** | `.ai-rank` `.ai-track` | — |
@@ -92,7 +92,7 @@ Generated from commit `85b6bb4` on 2026-10-10. **108 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `fed-phases.ts:footnoteHtml` |
+| **`learnMore`** | `.learn-more` | `fed-phases.ts:footnoteHtml` |
 | **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `cycle-analysis.ts:chartDoor`, `dom.ts:moreRow` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |

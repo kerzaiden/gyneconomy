@@ -622,7 +622,6 @@
   .ai-echo-when{ display:block; font-size:var(--type-reading); color:var(--text-primary); }
   .ai-echo small{ display:block; margin-top:3px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
   .ai-by{ margin:0; font-size:var(--type-meta); color:var(--text-muted); }
-  .ai-by.insight-by{ margin-top:10px; }
   .ai-by.story-by{ display:none; margin:10px 0 6px; }
   .trend-card.is-open .story-by{ display:block; }
   .trend-card.is-open .trend-text.ai-clamp{ display:block; -webkit-line-clamp:unset; line-clamp:none; overflow:visible; }

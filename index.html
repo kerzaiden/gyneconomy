@@ -619,7 +619,6 @@
   .ai-echo-when{ display:block; font-size:var(--type-reading); color:var(--text-primary); }
   .ai-echo small{ display:block; margin-top:3px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
   .ai-by{ margin:0; font-size:var(--type-meta); color:var(--text-muted); }
-  .ai-by.insight-by{ margin-top:10px; }
   .ai-by.story-by{ display:none; margin:10px 0 6px; }
   .trend-card.is-open .story-by{ display:block; }
   .trend-card.is-open .trend-text.ai-clamp{ display:block; -webkit-line-clamp:unset; line-clamp:none; overflow:visible; }
@@ -1691,6 +1690,23 @@
   }
   function learnMore(attrs, label) {
     return attrs ? '<button type="button" class="learn-more"' + attrs + ">" + (label || "Learn more") + "</button>" : '<span class="learn-more">Learn more</span>';
+  }
+  function wireClamps(host) {
+    host.querySelectorAll("[data-story-more]").forEach(function(btn) {
+      var card = btn.closest(".trend-card"), text = card && card.querySelector(".ai-clamp");
+      if (!card || !text) return;
+      var c = card, t = text;
+      var fit = function() {
+        if (t.clientHeight) btn.hidden = !(t.scrollHeight > t.clientHeight + 1 || c.classList.contains("is-open") || !!c.querySelector(".story-by"));
+      };
+      fit();
+      if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(t);
+      btn.addEventListener("click", function() {
+        var open = c.classList.toggle("is-open");
+        btn.textContent = open ? "Read less" : "Read more";
+        btn.setAttribute("aria-expanded", String(open));
+      });
+    });
   }
   function trendBox(mark2, head, body) {
     return trendCard("section", " is-box", "", mark2, head, "", body);
@@ -49401,6 +49417,7 @@
       return l.cat !== "cycle";
     }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
     host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + aiAt(id) + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
+    wireClamps(host);
     narrow(host, id);
   }
   var IND = "sheet-find";
@@ -49934,26 +49951,15 @@
   function storyOf(m) {
     return m.ongoing ? ai_insights_default.lede : m.era.blurb;
   }
-  function storyCard(m) {
-    return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(m), "ai-clamp") + (m.ongoing ? byLine(" story-by") : "") + learnMore(' data-story-more aria-expanded="false"', "Read more"));
+  function clampBody(t, by) {
+    return trendText(t, "ai-clamp") + by + learnMore(' data-story-more aria-expanded="false"', "Read more");
   }
-  function wireStory(host) {
-    var btn = host.querySelector("[data-story-more]"), text = host.querySelector(".ai-clamp"), card = btn && btn.closest(".trend-card");
-    if (!btn || !text || !card) return;
-    var fit = function() {
-      if (text.clientHeight) btn.hidden = !(text.scrollHeight > text.clientHeight + 1 || card.classList.contains("is-open") || !!card.querySelector(".story-by"));
-    };
-    fit();
-    if (typeof ResizeObserver !== "undefined") new ResizeObserver(fit).observe(text);
-    btn.addEventListener("click", function() {
-      var open = card.classList.toggle("is-open");
-      btn.textContent = open ? "Read less" : "Read more";
-      btn.setAttribute("aria-expanded", String(open));
-    });
+  function storyCard(m) {
+    return trendBox(bookSvg(), "Cycle Story", clampBody(storyOf(m), m.ongoing ? byLine(" story-by") : ""));
   }
   function elementInsight(cat, cycle, title) {
     var t = (ai_insights_default.elements[cycle] || {})[cat];
-    return t ? trendBox(sparkleSvg(), title + " Insights", para(t) + byLine(" insight-by")) : "";
+    return t ? trendBox(sparkleSvg(), title + " Insights", clampBody(t, byLine(" story-by"))) : "";
   }
   function closestMoments() {
     return dxSys("", dxHead(clockSvg(), "Closest Moments") + para(ai_insights_default.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + moreRow(aiDetail());
@@ -50025,7 +50031,7 @@
     var host = document.getElementById("diagnosis");
     if (host && m) {
       host.innerHTML = diagnosisHtml(m);
-      wireStory(host);
+      wireClamps(host);
       wireYearsMore(host);
       fitYearDots();
     }

@@ -1,5 +1,5 @@
 import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
-import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui } from "./dom.ts";
+import { byId, detailSlot, focusQuiet, moreDoor, moreRow, need, ui, wireClamps } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { setTopbar } from "./render-pages.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
@@ -398,7 +398,7 @@ function drawChart(id: string){
   if (!host || !at) return;
   var j = judged(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
   host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + aiAt(id) + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
-  narrow(host, id);
+  wireClamps(host); narrow(host, id);
 }
 export var IND = "sheet-find";
 var IND_ALL = ' data-open="' + IND + '" data-title="Elements" data-ind-cat=""';

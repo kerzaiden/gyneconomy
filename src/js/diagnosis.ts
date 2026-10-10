@@ -1,5 +1,5 @@
 import { CHEV } from "./format.ts";
-import { addSources, byId, viewMore } from "./dom.ts";
+import { addSources, byId, viewMore, wireClamps } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
@@ -7,7 +7,7 @@ import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor, IND } from "./cycle-analysis.ts";
-import { lendAiParts, storyCard, wireStory } from "./ai-insights.ts";
+import { lendAiParts, storyCard } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
@@ -56,7 +56,7 @@ function yearMarket(y: number, ytd: boolean, q: number){
 }
 export function renderDiagnosis(m: CycleModel){
   var host = document.getElementById("diagnosis");
-  if (host && m){ host.innerHTML = diagnosisHtml(m); wireStory(host); wireYearsMore(host); fitYearDots(); }
+  if (host && m){ host.innerHTML = diagnosisHtml(m); wireClamps(host); wireYearsMore(host); fitYearDots(); }
 }
 export function fitYearDots(){
   var host = document.getElementById("diagnosis"), span = Math.max(typicalCycleYears * 4, Math.ceil(nowModel.elapsedYears * 4));
