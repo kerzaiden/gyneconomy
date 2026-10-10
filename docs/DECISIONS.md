@@ -891,6 +891,14 @@ settles it; none is open after V668.
   (V639). (V598, V639, V688, 0.9.16)
 - **Pressure is read as a leading sign, because the market's price of money moves before the activity it finances
   shows it.** (V597, V639)
+- **Pressure is what money costs; Stress is what is owed.** Keren asked whether the two were the same: they are force
+  and load. A rise in what money costs reaches what is owed only as debts are taken on or refinanced, which is why
+  Stress can read light while Pressure climbs. Circulation's and Stress's insights both say it. (Pressure and Stress)
+- **The 30-year mortgage rate is a Pressure reading, beside the 10-year, not a Households one.** It is a price, the
+  one households meet, and the rate people hear quoted each week; Keren kept Households to what is owed. Freddie
+  Mac's weekly survey (FRED MORTGAGE30US, from April 1971), as monthly averages. Like the Treasury level and the
+  policy rate it has no band; its columns stand on zero with the window's own average, and its word is a barometer's
+  tendency over twelve months, cut at the quartiles of its own record, as the 10-year's is. (Pressure and Stress)
 - **Mood swings are Volatility: no separate mood-swing figure, and the VIX keeps the market's words (Calm,
   Elevated, Fearful).** The VIX already measures it, and Keren prefers market terminology. (V686)
 - **The yield spread is not a mood reading.** It left the mood reading because the curve steepens when the Fed cuts

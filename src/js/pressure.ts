@@ -1,14 +1,16 @@
-import { factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, srcBlock, titleCase } from "./format.ts";
+import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, srcBlock, titleCase } from "./format.ts";
 import { addSources, need, svgEl } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
 import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
-import { headPickRow, histControls, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
-import { indOf, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, volumeInfoHtml } from "./readings.ts";
+import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
+import { indOf, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, tendencyOf, volumeInfoHtml } from "./readings.ts";
+import type { Tendency } from "./readings.ts";
 import { chartShell, defineReading, indicatorInsight, redrawReading } from "./reading.ts";
 import { ROSTER_BY } from "./roster.ts";
-import { m2GrowthChart } from "./history-charts.ts";
+import { m2GrowthChart, mortgageHistoryChart } from "./history-charts.ts";
+import { mortgageHistory } from "./history-fred.ts";
 import { pulseStripsChart, stripScroller, stripsInfo } from "./pulse-strips.ts";
 import { rhythmCard, rhythmInfo } from "./rhythm.ts";
 type YieldPt = { q: string; v: number | null; latest?: boolean };
@@ -315,6 +317,55 @@ function pressureInsights(){
     "relief; a low level with a steep curve is one at rest that expects to work."));
   return highlightsHtml(cards);
 }
+// ---- RENDER: the 30-year mortgage rate — what a household pays for money, monthly since 1971 ----
+var MORTGAGE_BACK = 12;
+export var MORTGAGE_SRC: Src[] = [
+  { t:"Freddie Mac — Primary Mortgage Market Survey: the average rate on 30-year fixed-rate conforming mortgages, weekly since April 1971", u:"https://www.freddiemac.com/pmms" },
+  { t:"FRED — 30-Year Fixed Rate Mortgage Average in the United States (MORTGAGE30US)", u:"https://fred.stlouisfed.org/series/MORTGAGE30US" }
+];
+export var mortgageTendency: Tendency;
+function mortgageLast(){ return mortgageHistory[mortgageHistory.length - 1]; }
+function mortgageInfo(){
+  var T = mortgageTendency, last = mortgageLast(), pt = function(v: number){ return v.toFixed(2); };
+  return '<h4>30-Year Mortgage Rate</h4>' + factsFrom(
+    "The average rate on a new 30-year fixed-rate mortgage, as Freddie Mac surveys lenders each week; the chart is the monthly " +
+    "average of the weeks, " + last.v.toFixed(2) + "% in " + atMonth(last) + ". It is the price of money where most households meet it: lenders " +
+    "price it off the 10-year Treasury and add a spread for their risk and costs. It is what a new loan costs, not what households pay: " +
+    "most mortgages are fixed, so a higher rate reaches the Debt-to-income ratio only as people move or refinance. " +
+    "The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) +
+    " points against twelve months earlier. Steady is within " + pt(T.still) + " points and quickly is past " + pt(T.fast) +
+    ", the lower and upper quartiles of every twelve-month move since " + atMonth({ m:T.from }) + ". No band is drawn: as with the " +
+    "Treasury yields, no published convention says where a mortgage rate turns high.") + srcBlock(MORTGAGE_SRC);
+}
+function mortgageInsight(){
+  var h = mortgageHistory, last = mortgageLast(), pct = function(v: number){ return v.toFixed(2) + "%"; };
+  var hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; }), lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; });
+  var above = h.filter(function(d){ return d.v >= last.v; }).length;
+  return highlightsHtml([
+    lede("Pressure is what money costs, and this is what it costs a household: the rate on a new 30-year home loan."),
+    hiCard("The Price of a Home", "", atMonth(last) + " averaged " + pct(last.v) + ". Since " + atMonth(h[0]) + " the record runs from " +
+      pct(lo.v) + " in " + atMonth(lo) + " to " + pct(hi.v) + " in " + atMonth(hi) + "; " + above + " of its " + h.length + " months were as high or higher."),
+    hiCard("Where It Reaches Stress", "", "A mortgage is fixed when it is taken, so today’s rate presses on new buyers and on anyone who must " +
+      "refinance, and on the rest only later. That is why the Debt-to-income ratio under Stress can stay light while this rate climbs.")
+  ]);
+}
+function defineMortgage(){
+  var key = "mortgage-range", Y0 = parseInt(mortgageHistory[0].m.slice(0, 4), 10), h = mortgageHistory, n = h.length;
+  mortgageTendency = tendencyOf(h, MORTGAGE_BACK, h[n - 1].v - h[n - 1 - MORTGAGE_BACK].v);
+  addSources(MORTGAGE_SRC);
+  defineReading("sheet-sign-mortgage", {
+    face:function(){ return [mortgageLast().v.toFixed(2) + "%", mortgageTendency.word]; },
+    info:mortgageInfo,
+    controls:function(){ return histControls(key, { series:h }, Y0); },
+    history:function(){
+      var cyc = pageCycle(key), span = cyc ? cycleSlice(h, cyc) : null;
+      var from = span ? span[0] : mWindowFrom(h.length, page.range[key]), to = span ? span[1] : undefined;
+      return { geom:"mortgageHistoryChart", chart:function(w: number){ return mortgageHistoryChart(w, from, { to:to, cycle:!!span }); },
+        trend:trendPill(trendOf(h.slice(from, to).map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"climbing", falling:"easing" }) };
+    },
+    insight:mortgageInsight
+  });
+}
 export function defineMarketReadings(){
-  definePressure(); defineFlow();
+  definePressure(); defineMortgage(); defineFlow();
 }

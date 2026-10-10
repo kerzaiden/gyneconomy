@@ -41947,6 +41947,7 @@
   var delinquencyHistory = fred_default.delinquencyHistory;
   var marginHistory = fred_default.marginHistory;
   var consumerCreditHistory = fred_default.consumerCreditHistory;
+  var mortgageHistory = fred_default.mortgageHistory;
   var dsrQuarterly = fred_default.dsrQuarterly;
   var debtDollarsQuarterly = fred_default.debtDollarsQuarterly;
   var debtToday = fred_default.debtToday;
@@ -45617,22 +45618,25 @@
       state: "good"
     };
   }
-  function derivePressureTendency() {
-    var a = t10yYieldHistory, moves = [], from = "";
+  function tendencyOf(a, back, d) {
+    var moves = [], from = "";
     a.forEach(function(p, i) {
-      var was = hznBack(a, i, HZN_BACK);
+      var was = hznBack(a, i, back);
       if (p.v == null || p.partial || was == null) return;
-      if (!from) from = p.q;
+      if (!from) from = p.q || p.m || "";
       moves.push(Math.abs(p.v - was));
     });
-    var still = quartile(moves, .25), fast = quartile(moves, .75), d = horizonRead.dLong, m = Math.abs(d);
-    pressureTendency = {
+    var still = quartile(moves, .25), fast = quartile(moves, .75), m = Math.abs(d);
+    return {
       d: d,
       still: still,
       fast: fast,
       from: from,
       word: m <= still ? "Steady" : (d > 0 ? "Rising" : "Falling") + (m >= fast ? " quickly" : "")
     };
+  }
+  function derivePressureTendency() {
+    pressureTendency = tendencyOf(t10yYieldHistory, HZN_BACK, horizonRead.dLong);
   }
   function horizonInfoHtml(pick2, detail) {
     var m = HZN_METERS[pick2], shortLeg = pick2 === "2y" ? "2-year" : "3-month";
@@ -46540,6 +46544,19 @@
       cardUnit: "10Y − 3M, points",
       live: [ "yieldCurve" ]
     }, {
+      id: "sheet-sign-mortgage",
+      name: "30-year mortgage rate",
+      cat: "circulation",
+      sub: "Pressure",
+      timing: "leading",
+      hk: "mortgage-range",
+      head: "30-Year Fixed Mortgage Rate",
+      hist: {
+        s: mortgageHistory,
+        k: "m"
+      },
+      cardUnit: "30-year fixed, monthly average"
+    }, {
       id: "sheet-sign-pulse",
       name: "Pulse",
       cat: "circulation",
@@ -47241,10 +47258,16 @@
     return vhOpen(W, H) + 'aria-label="The unemployment rate, every month from ' + y0 + " to " + y1 + ', against the 3.5 to 5 per cent band and CBO’s estimate of the noncyclical rate">' + out.join("") + "</svg>";
   }
   function fedFundsHistoryChart(Wpx, from, o) {
+    return rateColumnsChart(fedFundsHistory, "fedFundsHistoryChart", "The effective federal funds rate", Wpx, from, o);
+  }
+  function mortgageHistoryChart(Wpx, from, o) {
+    return rateColumnsChart(mortgageHistory, "mortgageHistoryChart", "The 30-year fixed mortgage rate", Wpx, from, o);
+  }
+  function rateColumnsChart(series, geom, what, Wpx, from, o) {
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
-    var vals = fedFundsHistory.slice(from, o.to == null ? void 0 : o.to), n = vals.length;
+    var vals = series.slice(from, o.to == null ? void 0 : o.to), n = vals.length;
     if (!n) return "";
     var seen = vals.filter(function(d) {
       return d.v != null;
@@ -47303,7 +47326,7 @@
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-    publishGeom("fedFundsHistoryChart", {
+    publishGeom(geom, {
       L: X(0),
       R: X(n - 1),
       T: T,
@@ -47320,7 +47343,7 @@
         return v.toFixed(2) + "%";
       }
     });
-    return vhOpen(W, H) + 'aria-label="The effective federal funds rate, every month from ' + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="' + what + ", every month from " + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
   }
   function cpiHistoryChart(Wpx, from, o) {
     o = o || {};
@@ -51473,8 +51496,79 @@
     cards.push(hiCard("Level, Not Slope", "", "This page reads the LEVEL. The gap between this yield and the three-month bill is the Treasury spreads reading, under it, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     return highlightsHtml(cards);
   }
+  var MORTGAGE_BACK = 12;
+  var MORTGAGE_SRC = [ {
+    t: "Freddie Mac — Primary Mortgage Market Survey: the average rate on 30-year fixed-rate conforming mortgages, weekly since April 1971",
+    u: "https://www.freddiemac.com/pmms"
+  }, {
+    t: "FRED — 30-Year Fixed Rate Mortgage Average in the United States (MORTGAGE30US)",
+    u: "https://fred.stlouisfed.org/series/MORTGAGE30US"
+  } ];
+  var mortgageTendency;
+  function mortgageLast() {
+    return mortgageHistory[mortgageHistory.length - 1];
+  }
+  function mortgageInfo() {
+    var T = mortgageTendency, last = mortgageLast(), pt = function(v) {
+      return v.toFixed(2);
+    };
+    return "<h4>30-Year Mortgage Rate</h4>" + factsFrom("The average rate on a new 30-year fixed-rate mortgage, as Freddie Mac surveys lenders each week; the chart is the monthly average of the weeks, " + last.v.toFixed(2) + "% in " + atMonth(last) + ". It is the price of money where most households meet it: lenders price it off the 10-year Treasury and add a spread for their risk and costs. It is what a new loan costs, not what households pay: most mortgages are fixed, so a higher rate reaches the Debt-to-income ratio only as people move or refinance. The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) + " points against twelve months earlier. Steady is within " + pt(T.still) + " points and quickly is past " + pt(T.fast) + ", the lower and upper quartiles of every twelve-month move since " + atMonth({
+      m: T.from
+    }) + ". No band is drawn: as with the Treasury yields, no published convention says where a mortgage rate turns high.") + srcBlock(MORTGAGE_SRC);
+  }
+  function mortgageInsight() {
+    var h = mortgageHistory, last = mortgageLast(), pct2 = function(v) {
+      return v.toFixed(2) + "%";
+    };
+    var hi = h.reduce(function(a, d) {
+      return d.v > a.v ? d : a;
+    }), lo = h.reduce(function(a, d) {
+      return d.v < a.v ? d : a;
+    });
+    var above = h.filter(function(d) {
+      return d.v >= last.v;
+    }).length;
+    return highlightsHtml([ lede("Pressure is what money costs, and this is what it costs a household: the rate on a new 30-year home loan."), hiCard("The Price of a Home", "", atMonth(last) + " averaged " + pct2(last.v) + ". Since " + atMonth(h[0]) + " the record runs from " + pct2(lo.v) + " in " + atMonth(lo) + " to " + pct2(hi.v) + " in " + atMonth(hi) + "; " + above + " of its " + h.length + " months were as high or higher."), hiCard("Where It Reaches Stress", "", "A mortgage is fixed when it is taken, so today’s rate presses on new buyers and on anyone who must refinance, and on the rest only later. That is why the Debt-to-income ratio under Stress can stay light while this rate climbs.") ]);
+  }
+  function defineMortgage() {
+    var key = "mortgage-range", Y0 = parseInt(mortgageHistory[0].m.slice(0, 4), 10), h = mortgageHistory, n = h.length;
+    mortgageTendency = tendencyOf(h, MORTGAGE_BACK, h[n - 1].v - h[n - 1 - MORTGAGE_BACK].v);
+    addSources(MORTGAGE_SRC);
+    defineReading("sheet-sign-mortgage", {
+      face: function() {
+        return [ mortgageLast().v.toFixed(2) + "%", mortgageTendency.word ];
+      },
+      info: mortgageInfo,
+      controls: function() {
+        return histControls(key, {
+          series: h
+        }, Y0);
+      },
+      history: function() {
+        var cyc = pageCycle(key), span = cyc ? cycleSlice(h, cyc) : null;
+        var from = span ? span[0] : mWindowFrom(h.length, page.range[key]), to = span ? span[1] : void 0;
+        return {
+          geom: "mortgageHistoryChart",
+          chart: function(w) {
+            return mortgageHistoryChart(w, from, {
+              to: to,
+              cycle: !!span
+            });
+          },
+          trend: trendPill(trendOf(h.slice(from, to).map(function(d) {
+            return d.v;
+          }), "points", "month"), null, true, {
+            rising: "climbing",
+            falling: "easing"
+          })
+        };
+      },
+      insight: mortgageInsight
+    });
+  }
   function defineMarketReadings() {
     definePressure();
+    defineMortgage();
     defineFlow();
   }
   var BUFFETT_2001 = [ {
@@ -52657,7 +52751,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|M13009USM156NNBR|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|nber\.org\/data\/abc|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|ycfaq|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|sec\.gov|ssga\.com|fortune\.com|berkshirehathaway/ ], [ "Households & credit", /finra\.org|nber\.org\/papers|releases\/chargeoff|DRALACBS|releases\/g19|TOTALSL|us-leading-indicators|PSAVERT|TDSP/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|M13009USM156NNBR|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|nber\.org\/data\/abc|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|ycfaq|bostonfed|freddiemac|MORTGAGE30US/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|sec\.gov|ssga\.com|fortune\.com|berkshirehathaway/ ], [ "Households & credit", /finra\.org|nber\.org\/papers|releases\/chargeoff|DRALACBS|releases\/g19|TOTALSL|us-leading-indicators|PSAVERT|TDSP/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {
