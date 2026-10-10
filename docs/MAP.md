@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,876 lines** in 42 files, about 607 KB, roughly **172 thousand tokens**. No session can
+The source is **8,877 lines** in 42 files, about 607 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `c1cb2fe` on 2026-10-10.
+Generated from commit `dcb09d4` on 2026-10-10.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `c1cb2fe` on 2026-10-10.
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **775** top-level functions, **122** top-level vars, **378** exported names, **20** boots.
+Counts: **38** modules, **776** top-level functions, **122** top-level vars, **378** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -48,7 +48,7 @@ Counts: **38** modules, **775** top-level functions, **122** top-level vars, **3
 | `js/tabs-menu.ts` | 228 | 10 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 62 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
-| `js/ai-insights.ts` | 101 | 23 | `cycle-analysis`, `data`, `dom`, `era`, `marks`, `model`, `reading`, `render-core`, `roster` |
+| `js/ai-insights.ts` | 102 | 24 | `cycle-analysis`, `data`, `dom`, `era`, `marks`, `model`, `reading`, `render-core`, `roster` |
 | `js/charts.ts` | 239 | 32 | — |
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 492 | 134 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `live`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `render-pages`, `roster` |
@@ -856,12 +856,13 @@ falls in. **export** marks a name other modules import.
 | 64 | `plain` | `function plain(` |
 | 65 | `prose` | `function prose(` |
 | 71 | `edition` | `function edition(` |
-| 72 | `reportCard` · export | `function reportCard(` |
-| 78 | `elements` | `function elements(` |
-| 84 | `reportHtml` | `function reportHtml(` |
-| 89 | `drawReport` | `function drawReport(` |
-| 90 | `redrawReport` · export | `function redrawReport(` |
-| 91 | `mountReport` · export | `function mountReport(` |
+| 72 | `shortDate` | `function shortDate(` |
+| 73 | `reportCard` · export | `function reportCard(` |
+| 79 | `elements` | `function elements(` |
+| 85 | `reportHtml` | `function reportHtml(` |
+| 90 | `drawReport` | `function drawReport(` |
+| 91 | `redrawReport` · export | `function redrawReport(` |
+| 92 | `mountReport` · export | `function mountReport(` |
 
 ### `js/charts.ts`
 

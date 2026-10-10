@@ -38,7 +38,7 @@ in the facts, `YYYY-MM-DD`), `headline`, `lede`, `story`, and `elements` with on
 `activity`, `mood`, `desire`, `circulation`, `stress`.
 
 - **Lead with what changed.** The headline names today's news in sentence case, in at most 80 characters. The
-  lede is two sentences on what moved. The cycle's story sits right under it and already tells where she stands
+  lede is two sentences on what moved. The cycle's story sits on the same page and already tells where she stands
   and the shape of the cycle, so the headline and lede never restate it.
 - **Each element is two to four sentences**, read across its readings: what they say together, and the one
   that stands out. Weather covers the season, the economy, the Fed and the market.

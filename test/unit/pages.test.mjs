@@ -158,7 +158,7 @@ test('every cycle page opens its Weather Report: today an edition with risk fact
   assert.deepEqual([...home.querySelectorAll('.dx-sys-head')].map(h => h.textContent), ['Cycle Statistics', 'Interest Rates', 'Elements']);
   assert.equal(card().querySelector('.wr-head').textContent, now.report.headline);
   const today = open();
-  assert.deepEqual(heads(today), ['Cycle Story', 'Risk Factors', ...CATEGORIES.slice().sort((a, b) => a.shown - b.shown).map(c => c.title)]);
+  assert.deepEqual(heads(today), ['Risk Factors', 'Cycle Story', ...CATEGORIES.slice().sort((a, b) => a.shown - b.shown).map(c => c.title)]);
   assert.equal(today.querySelector('.wr-title').textContent, now.report.headline);
   assert.ok(today.textContent.includes(now.report.story));
   assert.ok(risksOf(nowModel.era).length > 0);

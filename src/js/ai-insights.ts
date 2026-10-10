@@ -69,11 +69,12 @@ function prose(t: string){
   });
 }
 function edition(){ return dateWords(now.report.asOf); }
+function shortDate(iso: string){ var d = iso.split("-").map(Number); return MONTH_NAMES[d[1] - 1].slice(0, 3) + " " + d[2] + (d[0] === new Date().getFullYear() ? "" : ", " + d[0]); }
 export function reportCard(m: CycleModel){
   var r = now.report, open = !!m.ongoing;
   return trendDoor(REPORT_ID, "Weather Report", weatherSvg(), "Weather Report",
-    '<span class="wr-head">' + (open ? r.headline : m.era.name) + '</span>' + trendText(plain(open ? r.lede : m.era.blurb), "ai-clamp") +
-    '<span class="wr-by">' + (open ? edition() : cycLabel(m.era).years) + '</span>' + learnMore(undefined, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
+    '<span class="wr-head">' + (open ? r.headline : m.era.name) + '</span><span class="wr-by">' + (open ? shortDate(r.asOf) : cycLabel(m.era).years) + '</span>' +
+    trendText(plain(open ? r.lede : m.era.blurb), "ai-clamp") + learnMore(undefined, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
 }
 function elements(){
   return dxSys(" wr-els", categoriesShown().map(function(c){
@@ -84,7 +85,7 @@ function elements(){
 function reportHtml(c: Cycle){
   var r = now.report, story = trendBox(bookSvg(), "Cycle Story", trendText(c.ongoing ? r.story : c.blurb));
   var head = '<h2 class="wr-title">' + (c.ongoing ? r.headline : c.name) + '</h2><p class="wr-date">' + (c.ongoing ? c.name + " \u00b7 " + edition() : cycLabel(c).years) + '</p>';
-  return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + story + riskFactors(c) + elements() : dxSys(" wr-top", head) + story + riskFactors(c);
+  return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + riskFactors(c) + story + elements() : dxSys(" wr-top", head) + riskFactors(c) + story;
 }
 function drawReport(){ put(REPORT_ID + "-body", reportHtml(cycleByName(shown.cycle) || openCycle())); }
 export function redrawReport(){ var s = byIdMaybe(REPORT_ID); if (s && !s.hidden) drawReport(); }

@@ -614,7 +614,7 @@
   .ai-rank b{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
   .ai-rank.t-abnormal b{ color:var(--critical-ink); }
   .ai-rank > small{ grid-column:1 / -1; margin-top:2px; font-size:var(--type-meta); line-height:1.45; color:var(--text-secondary); }
-  .wr-by{ display:block; margin:0 0 6px; font-size:var(--type-meta); color:var(--text-muted); }
+  .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
   .wr-head{ display:block; margin-top:8px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.1; color:var(--text-primary); }
   .wr-page{ display:flex; flex-direction:column; gap:var(--gap); }
   .wr-top .wr-title, .wr-top .wr-date{ text-align:center; }
@@ -49699,9 +49699,13 @@
   function edition() {
     return dateWords(now.report.asOf);
   }
+  function shortDate(iso) {
+    var d = iso.split("-").map(Number);
+    return MONTH_NAMES[d[1] - 1].slice(0, 3) + " " + d[2] + (d[0] === (new Date).getFullYear() ? "" : ", " + d[0]);
+  }
   function reportCard(m) {
     var r = now.report, open = !!m.ongoing;
-    return trendDoor(REPORT_ID, "Weather Report", weatherSvg(), "Weather Report", '<span class="wr-head">' + (open ? r.headline : m.era.name) + "</span>" + trendText(plain(open ? r.lede : m.era.blurb), "ai-clamp") + '<span class="wr-by">' + (open ? edition() : cycLabel(m.era).years) + "</span>" + learnMore(void 0, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
+    return trendDoor(REPORT_ID, "Weather Report", weatherSvg(), "Weather Report", '<span class="wr-head">' + (open ? r.headline : m.era.name) + '</span><span class="wr-by">' + (open ? shortDate(r.asOf) : cycLabel(m.era).years) + "</span>" + trendText(plain(open ? r.lede : m.era.blurb), "ai-clamp") + learnMore(void 0, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
   }
   function elements() {
     return dxSys(" wr-els", categoriesShown().map(function(c) {
@@ -49712,7 +49716,7 @@
   function reportHtml(c) {
     var r = now.report, story = trendBox(bookSvg(), "Cycle Story", trendText(c.ongoing ? r.story : c.blurb));
     var head = '<h2 class="wr-title">' + (c.ongoing ? r.headline : c.name) + '</h2><p class="wr-date">' + (c.ongoing ? c.name + " · " + edition() : cycLabel(c).years) + "</p>";
-    return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + story + riskFactors(c) + elements() : dxSys(" wr-top", head) + story + riskFactors(c);
+    return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + riskFactors(c) + story + elements() : dxSys(" wr-top", head) + riskFactors(c) + story;
   }
   function drawReport() {
     put(REPORT_ID + "-body", reportHtml(cycleByName(shown2.cycle) || openCycle()));
