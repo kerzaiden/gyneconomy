@@ -116,6 +116,8 @@ ok('durable-goods spending is written as the app reads it',
    J(emit([], [], null, null, null, null, null, null, [{ m: '2026-08', v: 3.1 }])).durablesHistory, [{ m: '2026-08', v: 3.1 }]);
 ok('the equity risk premium is written as the app reads it',
    J(emit([], [], null, null, null, null, null, null, null, [{ m: '2026-08', v: 1.2 }])).premiumHistory, [{ m: '2026-08', v: 1.2 }]);
+ok('the 30-year mortgage rate is written as the app reads it',
+   J(emit([], [], null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, [{ m: '2026-09', v: 7.12 }])).mortgageHistory, [{ m: '2026-09', v: 7.12 }]);
 ok('the Fed\'s moves are the discount rate, then the target, then its upper bound, netted by month',
    fedMoves([{ date: '1950-07-01', v: 1.5 }, { date: '1950-08-01', v: 1.75 }],
             [{ date: '1982-09-27', v: 10.25 }, { date: '1982-10-01', v: 9.5 }],

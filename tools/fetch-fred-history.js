@@ -310,7 +310,7 @@ async function spyToday() {
   return spyDailyRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }));
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy, discount) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy, discount, mortgage) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -338,6 +338,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (credit && credit.dsr) out.dsrQuarterly = q(credit.dsr);
   if (dollars) Object.assign(out, { debtDollarsQuarterly: q(dollars.debt), debtToday: { d: dollars.today.d, v: dollars.today.v } });
   if (activity) Object.assign(out, { payrollsHistory: m(activity.payrolls), retailHistory: m(activity.retail) });
+  if (mortgage) out.mortgageHistory = m(mortgage);
   if (heavy) out.topTenRecent = heavy.map(r => ({ q: r.q, d: r.d, v: r.v }));
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {}, gnpQuarterlyBefore: q(e.gnp || []) });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
@@ -441,6 +442,10 @@ async function main() {
     say(('credit ' + k).padEnd(13) + ' ' + a.length + ' periods, ' + (a[0].q || a[0].m) + ' → ' + (a[a.length - 1].q || a[a.length - 1].m));
   }
 
+  const mortgage = monthlyMean(await fredSeries('MORTGAGE30US', '1971-04-01'), 0, 25);
+  if (!mortgage.length || mortgage[0].m !== '1971-04') throw new Error('MORTGAGE30US: expected monthly averages from 1971-04');
+  say('MORTGAGE30US  ' + mortgage.length + ' months, ' + mortgage[0].m + ' → ' + mortgage[mortgage.length - 1].m + ' (Freddie Mac PMMS, monthly average of the weekly survey)');
+
   const dollars = {
     debt: quarterly(await fredSeries('GFDEBTN', '1966-01-01'), 1e5, 1e9).map(d => ({ q: d.q, v: Math.round(d.v / 1000) })),
     today: await debtToPenny()
@@ -464,7 +469,7 @@ async function main() {
   const heavy = keepQuarter(kept, spy);
   say('SPY top ten   ' + spy.d + ' ' + spy.v + '% (State Street daily holdings), kept for ' + heavy.length + ' quarter(s) since the SEC import');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy, discount));
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, credit, dollars, activity, heavy, discount, mortgage));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 

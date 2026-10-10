@@ -18,7 +18,7 @@ type PremiumReading = WordReading & { side: string };
 type MarketReading = WordReading & { wordSays: string; now: YearPoint; lo: YearPoint; hi: YearPoint; open: boolean };
 type HznPoint = { v: number | null; partial?: boolean };
 type HznAt = { i: number; v: number };
-type Tendency = { d: number; still: number; fast: number; from: string; word: string };
+export type Tendency = { d: number; still: number; fast: number; from: string; word: string };
 type HorizonRead = { spread: number; q: HznAt; q2: HznAt; dSpread: number; dLong: number; dShort: number; was: number | null; was2: number | null; d2: number; word: string; state: State };
 type WordOf = { state: State; text: string; says: string; why?: string };
 
@@ -377,18 +377,19 @@ function horizonWord(sp: number, dLong: number, dShort: number, dSpread: number)
   if (dSpread <= 0.05) return { word:"Guarded", state:"warning" };
   return dLong >= -dShort ? { word:"Optimistic", state:"good" } : { word:"Hopeful", state:"good" };
 }
-function derivePressureTendency(){
-  var a: (HznPoint & { q: string })[] = t10yYieldHistory, moves: number[] = [], from = "";
+export function tendencyOf(a: (HznPoint & { q?: string; m?: string })[], back: number, d: number): Tendency {
+  var moves: number[] = [], from = "";
   a.forEach(function(p, i){
-    var was = hznBack(a, i, HZN_BACK);
+    var was = hznBack(a, i, back);
     if (p.v == null || p.partial || was == null) return;
-    if (!from) from = p.q;
+    if (!from) from = p.q || p.m || "";
     moves.push(Math.abs(p.v - was));
   });
-  var still = quartile(moves, 0.25), fast = quartile(moves, 0.75), d = horizonRead.dLong, m = Math.abs(d);
-  pressureTendency = { d:d, still:still, fast:fast, from:from,
+  var still = quartile(moves, 0.25), fast = quartile(moves, 0.75), m = Math.abs(d);
+  return { d:d, still:still, fast:fast, from:from,
     word:m <= still ? "Steady" : (d > 0 ? "Rising" : "Falling") + (m >= fast ? " quickly" : "") };
 }
+function derivePressureTendency(){ pressureTendency = tendencyOf(t10yYieldHistory, HZN_BACK, horizonRead.dLong); }
 export function horizonInfoHtml(pick: string, detail: string){
   var m = HZN_METERS[pick], shortLeg = pick === "2y" ? "2-year" : "3-month";
   return '<h4>10-year minus ' + shortLeg + '</h4>' +

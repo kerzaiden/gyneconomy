@@ -1,7 +1,7 @@
 type HistOpts = { to?: number | null; cycle?: boolean };
 import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex } from "./format.ts";
 import { type HistFrame, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
-import { fedFundsHistory } from "./history-fred.ts";
+import { fedFundsHistory, mortgageHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, m2Yoy, NROU_NOW, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
 import { quarterRegime } from "./model.ts";
@@ -134,11 +134,17 @@ export function unempHistoryChart(Wpx: number, from: number, o?: HistOpts){
     ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
 }
 export function fedFundsHistoryChart(Wpx: number, from: number, o?: HistOpts){
+  return rateColumnsChart(fedFundsHistory, "fedFundsHistoryChart", "The effective federal funds rate", Wpx, from, o);
+}
+export function mortgageHistoryChart(Wpx: number, from: number, o?: HistOpts){
+  return rateColumnsChart(mortgageHistory, "mortgageHistoryChart", "The 30-year fixed mortgage rate", Wpx, from, o);
+}
+function rateColumnsChart(series: MonthPoint[], geom: string, what: string, Wpx: number, from: number, o?: HistOpts){
   o = o || {};
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
-  var vals = fedFundsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
+  var vals = series.slice(from, o.to == null ? undefined : o.to), n = vals.length;
   if (!n) return "";
   var seen = vals.filter(function(d){ return d.v != null; });
   if (!seen.length) return "";
@@ -169,11 +175,11 @@ export function fedFundsHistoryChart(Wpx: number, from: number, o?: HistOpts){
   out.push(zeroRule(L, R, zero));
   out.push(crossLine(T, B));
   out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-  publishGeom("fedFundsHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
+  publishGeom(geom, { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                    refs:[{ label:"Average", v:avgV }],
                    fmt:function(v: number){ return v.toFixed(2) + "%"; } });
   return vhOpen(W, H) +
-    'aria-label="The effective federal funds rate, every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
+    'aria-label="' + what + ', every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
 }
 export function cpiHistoryChart(Wpx: number, from: number, o?: HistOpts){
   o = o || {};
