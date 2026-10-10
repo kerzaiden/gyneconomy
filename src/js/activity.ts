@@ -3,7 +3,7 @@ import { payrollsHistory, potentialYoYHistory, retailHistory } from "./history-f
 import { gdpQuarterlyYoY } from "./refresh-season.ts";
 import { gdpSrc, HOLD_BAND } from "./data.ts";
 
-// ---- Activity: nonfarm payrolls and retail sales, each against a year earlier ----
+// ---- Activity: job growth and retail sales, each against a year earlier ----
 export var PAYROLLS_LINE = 0, RETAIL_LINE = 0, GAP_LINE = 0;
 export var growthGapHistory: QuarterPoint[] = [];
 export var PAYROLLS_SRC: Src[] = [
@@ -42,7 +42,7 @@ function gapSpec(): CreditSpec {
 export function activitySpecs(): CreditSpec[] {
   var pct = function(v: number){ return fmtSigned(v, 1) + "%"; };
   return [gapSpec(),
-    { id:"sheet-sign-payrolls", goodAbove:true, term:"Nonfarm payrolls", econ:"Nonfarm payrolls", unit:"YoY", series:payrollsHistory, mid:PAYROLLS_LINE, line:"No change",
+    { id:"sheet-sign-payrolls", goodAbove:true, term:"Job growth", econ:"Nonfarm payrolls", unit:"YoY", series:payrollsHistory, mid:PAYROLLS_LINE, line:"No change",
       optimal:{ gte:PAYROLLS_LINE, label:"≥ 0%" }, ends:{ low:"Losing jobs" }, fmt:pct, src:PAYROLLS_SRC,
       word:sideWord("Adding jobs", "Losing jobs", "more people are on payrolls", "fewer people are on payrolls"),
       about:"The number of jobs at US employers outside farms, private and government, as the Bureau of Labor Statistics counts them each month " +
