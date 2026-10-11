@@ -310,7 +310,7 @@ settles it; none is open after V668.
   notes, a line or a few bold-led bullets with their sources, and the containers keep the app's spacing (the page
   gap between them, 16px inside).** Keren did not want an info button inside an info page, nor many buttons to
   reach the data. (Legend Icon)
-- **The Season Model is one two-by-three grid: price level across (Cold below 1%, In range 1–3%, Hot above 3%),
+- **The Season Model is one two-by-three grid: price level across (Cold below 1%, Neutral 1–3%, Hot above 3%),
   Expansion and Contraction down the side in vertical labels, each season a block in its colour (Spring and Autumn
   two columns wide), its kinds inside with an arrow for the direction of prices (→ heating, ← cooling, Winter
   none), and today's season outlined and marked Now.** Keren found the six rows with their range bars too complex;
