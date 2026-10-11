@@ -789,9 +789,11 @@ settles it; none is open after V668.
   Sep 16–19, 2026; 0.8.6)
 - **The Season Model table runs in the cycle's order: Spring·disinflation, Spring·reflation, Summer·inflation,
   Autumn·disinflation, Autumn·stagflation, Winter·deflation.** Keren wants the seasons in the order they come,
-  not in the colour order (the blues together) of V193 and 0.8.7. Its price bars wear the season's pastel
-  (`--season-wash`, the shade of the info page's season table) with no gradient: Keren liked those pastels and
-  sees no need to show the transition. (V193, V668, 0.8.7, 0.9.2)
+  not in the colour order (the blues together) of V193 and 0.8.7. Its price bars are coloured by
+  temperature, not by season: the cold part always blue, the range always yellow, the hot part always red, the
+  parts a season does not cover grey, with no 2% line. The season's colour on the bar confused Keren; three
+  temperature colours are enough to tell the seasons apart. The transition seasons carry their direction as an
+  arrow (← Cooling, Heating →); Stagflation reads Hot / Heating. (V193, V668, 0.8.7, 0.9.2; Oct 11, 2026)
 - **The season is computed and never set by hand; `seasonOverride` stays null.** It follows Keren's rule:
   inflation rising while growth falls is stagflation. (undated)
 - **Growth's side is real GDP against a year earlier set beside the economy's potential growth: at or above

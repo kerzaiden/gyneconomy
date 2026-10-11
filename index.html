@@ -498,7 +498,7 @@
     .seasons-rows .range-bar i{ width:14px; height:14px; margin:-7px 0 0 -7px; }
   }
   .seasons-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
-  .seasons-rows .range-bar b{ background:color-mix(in srgb, var(--track) 50%, var(--surface)); } .seasons-rows .range-bar b.on{ background:var(--season-wash); }
+  .seasons-rows .range-bar b{ background:color-mix(in srgb, var(--text-muted) 18%, var(--surface)); } .seasons-rows .range-bar b.on.below{ background:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); } .seasons-rows .range-bar b.on.within{ background:color-mix(in srgb, var(--gold) 60%, var(--surface)); } .seasons-rows .range-bar b.on.above{ background:color-mix(in srgb, var(--critical) 60%, var(--surface)); }
   .seasons-rows .lag-row span:last-child{ text-align:left; font-family:inherit; }
   .range-cell{ display:flex; align-items:center; gap:6px; }
   .range-cell svg{ width:13px; height:13px; flex:none; }
@@ -55705,9 +55705,9 @@
     return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock’s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 growth is Balke and Gordon’s quarterly real GNP, read against its own trend over the same peaks (" + GNP_TREND.toFixed(1) + "% a year).", "<b>Sensitivity</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model’s 1–3% band, a point either side of the Fed’s 2% target.", "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn. A trend that moves less than about a quarter point over the year is steady and keeps the prior direction.", recessionLine(), seasonWhy ]) + srcBlock([ CLOCK_SRC[0] ]);
   }
   function rangePos(v) {
-    if (v < 1) return .28 * Math.max(0, Math.min(1, (v + 1) / 2));
-    if (v <= 3) return .28 + .4 * (v - 1) / 2;
-    return .68 + .32 * Math.min(1, (v - 3) / 4);
+    if (v < 1) return .03 + .21 * Math.max(0, Math.min(1, (v + 1) / 2));
+    if (v <= 3) return .33 + .3 * (v - 1) / 2;
+    return .75 + .22 * Math.min(1, (v - 3) / 4);
   }
   function cycleModelLine() {
     var closed = marketCycles.filter(function(c) {
@@ -55724,7 +55724,7 @@
     var seasonRules = [ {
       key: "springdeflation",
       growth: "Expansion",
-      temp: "Cooling",
+      temp: "← Cooling",
       zones: {
         within: 1,
         below: 1
@@ -55733,7 +55733,7 @@
     }, {
       key: "spring",
       growth: "Expansion",
-      temp: "Heating",
+      temp: "Heating →",
       zones: {
         within: 1,
         below: 1
@@ -55750,7 +55750,7 @@
     }, {
       key: "autumn",
       growth: "Contraction",
-      temp: "Cooling",
+      temp: "← Cooling",
       zones: {
         within: 1,
         above: 1
@@ -55759,7 +55759,7 @@
     }, {
       key: "lateautumn",
       growth: "Contraction",
-      temp: "Heating",
+      temp: "Hot / Heating",
       zones: {
         within: 1,
         above: 1

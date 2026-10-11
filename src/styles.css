@@ -500,7 +500,7 @@
     .seasons-rows .range-bar i{ width:14px; height:14px; margin:-7px 0 0 -7px; }
   }
   .seasons-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
-  .seasons-rows .range-bar b{ background:color-mix(in srgb, var(--track) 50%, var(--surface)); } .seasons-rows .range-bar b.on{ background:var(--season-wash); }
+  .seasons-rows .range-bar b{ background:color-mix(in srgb, var(--text-muted) 18%, var(--surface)); } .seasons-rows .range-bar b.on.below{ background:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); } .seasons-rows .range-bar b.on.within{ background:color-mix(in srgb, var(--gold) 60%, var(--surface)); } .seasons-rows .range-bar b.on.above{ background:color-mix(in srgb, var(--critical) 60%, var(--surface)); }
   .seasons-rows .lag-row span:last-child{ text-align:left; font-family:inherit; }
   .range-cell{ display:flex; align-items:center; gap:6px; }
   .range-cell svg{ width:13px; height:13px; flex:none; }

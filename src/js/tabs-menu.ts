@@ -34,9 +34,9 @@ function seasonModelNote(){
   ]) + srcBlock([CLOCK_SRC[0]]);
 }
 function rangePos(v: number){
-  if (v < 1) return 0.28 * Math.max(0, Math.min(1, (v + 1) / 2));
-  if (v <= 3) return 0.28 + 0.40 * (v - 1) / 2;
-  return 0.68 + 0.32 * Math.min(1, (v - 3) / 4);
+  if (v < 1) return 0.03 + 0.21 * Math.max(0, Math.min(1, (v + 1) / 2));
+  if (v <= 3) return 0.33 + 0.30 * (v - 1) / 2;
+  return 0.75 + 0.22 * Math.min(1, (v - 3) / 4);
 }
 function cycleModelLine(){
   var closed = marketCycles.filter(function(c){ return !c.ongoing; }), years = closed.reduce(function(a, c){ return a + c.to - c.from + 1; }, 0);
@@ -48,11 +48,11 @@ function wireIdea(){
 function renderSeasonRows(){
 
   var seasonRules = [
-    {key:"springdeflation", growth:"Expansion",  temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
-    {key:"spring",          growth:"Expansion",  temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
+    {key:"springdeflation", growth:"Expansion",  temp:"\u2190 Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
+    {key:"spring",          growth:"Expansion",  temp:"Heating \u2192", zones:{within:1, below:1}, range:"Heating — within or below the range"},
     {key:"summer",          growth:"Expansion",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
-    {key:"autumn",          growth:"Contraction", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
-    {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating within or above the range, or steady above it"},
+    {key:"autumn",          growth:"Contraction", temp:"\u2190 Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
+    {key:"lateautumn",      growth:"Contraction", temp:"Hot / Heating", zones:{within:1, above:1}, range:"Heating within or above the range, or steady above it"},
     {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"}
   ];
   var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
