@@ -140,7 +140,7 @@ test('every history chart is attached to its readout, so hover and keys reach it
   assert.deepEqual(loose, []);
 });
 
-test('every cycle page opens its Weather Report: today an edition with risk factors and six elements, a closed cycle its story and its own risk factors', async () => {
+test('Today is the Weather Report with risk factors and six elements, then the Cycle Story; every cycle page opens its story and its own risk factors', async () => {
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   const { cycleModel, nowModel } = await import('../../src/js/model.ts');
   const { riskLabs } = await import('../../src/js/cycle-analysis.ts');
@@ -148,19 +148,23 @@ test('every cycle page opens its Weather Report: today an edition with risk fact
   const { todayFace } = await import('../../src/js/reading.ts');
   const { ROSTER_BY } = await import('../../src/js/roster.ts');
   const card = () => document.querySelector('#diagnosis .trend-card');
-  const sheet = () => document.getElementById('sheet-report');
+  const sheet = () => document.getElementById('sheet-story');
   const home = document.getElementById('chart-home');
   const heads = el => [...el.querySelectorAll('.dx-sys-head, .trend-head')].map(h => h.textContent);
-  const open = () => { card().click(); sheetRenderers['sheet-report'](); return sheet(); };
+  const open = () => { card().click(); sheetRenderers['sheet-story'](); return sheet(); };
   const risksOf = c => riskLabs(marketCycles.indexOf(c)).map(l => l.name).sort();
   const ranked = el => [...el.querySelectorAll('.ai-rank > span')].map(s => s.firstChild.textContent.trim()).sort();
   page.cycles['chart-home'] = nowModel.era.name; sheetRenderers['chart-home']();
   assert.deepEqual([...home.querySelectorAll('.dx-sys-head')].map(h => h.textContent), ['Cycle Statistics', 'Interest Rates', 'Elements']);
-  assert.equal(card().querySelector('.wr-head').textContent, now.report.headline);
-  const today = open();
-  assert.deepEqual(heads(today), ['Risk Factors', 'Cycle Story', ...CATEGORIES.slice().sort((a, b) => a.shown - b.shown).map(c => c.title)]);
-  assert.equal(today.querySelector('.wr-title').textContent, now.report.headline);
-  assert.ok(today.textContent.includes(now.report.story));
+  assert.equal(card().querySelector('.wr-head').textContent, nowModel.era.name);
+  const today = document.getElementById('today-home');
+  assert.deepEqual(heads(today), ['Weather Report', 'Risk Factors', ...CATEGORIES.slice().sort((a, b) => a.shown - b.shown).map(c => c.title), 'Cycle Story']);
+  assert.equal(today.querySelector('.wr-head').textContent, now.report.headline);
+  assert.ok(today.lastElementChild.textContent.includes(now.report.story));
+  const story = open();
+  assert.deepEqual(heads(story), ['Risk Factors', 'Cycle Story']);
+  assert.equal(story.querySelector('.wr-title').textContent, nowModel.era.name);
+  assert.deepEqual(ranked(story), ranked(today));
   assert.ok(risksOf(nowModel.era).length > 0);
   assert.deepEqual(ranked(today), risksOf(nowModel.era));
   assert.ok([...today.querySelectorAll('.ai-rank > small')].every(x => /^((Highest|Lowest) on record, which starts in|(Highest|Lowest) since|Its (high|low) since|(Above|Below) every (quarterly|monthly|yearly) reading since|No (quarterly|monthly|yearly) reading has been this (high|low) since) /.test(x.textContent)), 'each risk factor says where it stands in its own record');

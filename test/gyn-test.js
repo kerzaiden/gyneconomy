@@ -302,6 +302,7 @@ async function openPage(p, url, sheet) {
 
   {
     await p.goto('file://' + url); await ready(p);
+    await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
       return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(),
@@ -311,15 +312,15 @@ async function openPage(p, url, sheet) {
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-open="sheet-find"][data-ind-when]').length : 0,
                    score: !d.querySelector('.trend-card .lab-score') && d.querySelectorAll('.trend-card .learn-more').length === 1,
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
-                   boxes: [...d.children].map(c => c.matches('.trend-card[data-open="sheet-report"]') ? 'report' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
+                   boxes: [...d.children].map(c => c.matches('.trend-card[data-open="sheet-story"]') ? 'story' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
     const today = await read();
     await sweep(p);
-    (today && today.visible && today.title === 'Weather Report' && today.cards === 0 &&
-     today.boxes === 'report,sys' && today.doors === 1 && today.score && today.kicker === 'AI Cycle')
-      ? ok('the dial reads its cycle, and under it the Weather Report, then the cycle year by year', today.title)
-      : bad('the dial reads its cycle, and under it the Weather Report, then the cycle year by year', JSON.stringify(today));
-    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
+    (today && today.visible && today.title === 'Cycle Story' && today.cards === 0 &&
+     today.boxes === 'story,sys' && today.doors === 1 && today.score && today.kicker === 'AI Cycle')
+      ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
+      : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
     (mkt.length >= 10 && mkt.every(c => c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent'))
@@ -329,12 +330,12 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'report,sys' && past.doors === 1 && !past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'story,sys' && past.doors === 1 && !past.after &&
      yearRun(past.years) && past.opens === past.years.length)
       ? ok('the cycle reads year by year, newest first, each year opening Elements, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening Elements, today and at a close', JSON.stringify([today, past]));
     const preview = await p.evaluate(async () => {
-      const yrs = document.querySelector('#diagnosis .dx-years'), btn = yrs.querySelector('.dx-years-more');
+      const yrs = document.querySelector('#diagnosis .dx-years'), btn = yrs.querySelector('.dx-more');
       const shown = () => [...yrs.querySelectorAll('.dx-year')].filter(r => !r.hidden).length;
       const before = shown(); btn.click(); const after = shown(), label = btn.textContent.trim(); btn.click();
       return { before, after, all: yrs.querySelectorAll('.dx-year').length, label, back: shown() };
@@ -351,9 +352,9 @@ async function openPage(p, url, sheet) {
       ? ok('a year in Year by Year opens Elements on that year', yearInd.items + ' readings in 2010')
       : bad('a year in Year by Year opens Elements on that year', JSON.stringify(yearInd));
     await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
-    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
-    (past && past.visible && past.title === 'Weather Report' && past.kicker === 'Big Tech Cycle')
+    (past && past.visible && past.title === 'Cycle Story' && past.kicker === 'Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -387,10 +388,11 @@ async function openPage(p, url, sheet) {
   }
 
   await p.goto('file://' + url); await ready(p);
-  await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click());
+  await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click());
   await settle(p);
-  const spans = await p.evaluate(() => [...document.querySelectorAll('.era-years')].map(e => e.textContent.trim()));
-  spans.some(s => /–Today/.test(s)) ? ok('cycle span says Today') : bad('cycle span says Today', spans.join(' | '));
+  const spans = await p.evaluate(() => [...document.querySelectorAll('#calendar-list .era-years')].map(e => e.textContent.trim()));
+  (spans.length && !spans.some(s => /Today/.test(s))) ? ok('Herstory holds only closed cycles', spans.length + ' cycles, the open one on its own tab')
+    : bad('Herstory holds only closed cycles', spans.join(' | '));
 
   {
     const rateFrom = async (past) => {
@@ -398,8 +400,8 @@ async function openPage(p, url, sheet) {
       return p.evaluate(async (past) => {
         const frame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
         if (past){
-          document.querySelector('.tab-btn[data-tab="analysis"]').click(); await frame();
-          [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click(); await frame();
+          document.querySelector('.tab-btn[data-tab="chart"]').click(); await frame();
+          [...document.querySelectorAll('#calendar-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click(); await frame();
         }
         if (document.querySelector('#diagnosis .fp')) return 'rates card on a cycle page';
         document.querySelector('.tab-btn[data-tab="chart"]').click();
@@ -435,10 +437,11 @@ async function openPage(p, url, sheet) {
       };
       const tab = t => document.querySelector('.tab-btn[data-tab="' + t + '"]').click();
       const out = {};
-      for (const t of ['cycle', 'chart', 'analysis', 'portfolio']) { tab(t); window.scrollTo(0, 0); await frame(); out['tab ' + t] = gapNow(); }
-      tab('analysis'); await frame(); document.querySelector('#cycle-list .era-row').click(); await frame(); window.scrollTo(0, 0); await frame();
+      for (const t of ['today', 'cycle', 'chart', 'portfolio']) { tab(t); window.scrollTo(0, 0); await frame(); out['tab ' + t] = gapNow(); }
+      tab('chart'); await frame(); document.querySelector('#calendar-list .era-row:not([data-era="' + [...document.querySelectorAll('#calendar-list .era-row')][0].dataset.era + '"])').click(); await frame(); window.scrollTo(0, 0); await frame();
       out['a past cycle'] = gapNow();
-      const opener = (id, shown) => [...document.querySelectorAll('[data-open="' + id + '"]')].find(x => x.closest('.tab-panel') && !x.dataset.indCat && (!shown || x.offsetParent));
+      tab('cycle'); await frame();
+      const opener = (id, shown) => [...document.querySelectorAll('[data-open="' + id + '"]')].find(x => x.closest('.tab-panel') && !x.dataset.indCat && !x.dataset.indTier && (!shown || x.offsetParent));
       for (const id of [...new Set([...document.querySelectorAll('.metric-sheet')].map(s => s.id))]) {
         window.__GYN.fire('metricPageReset');
         const chain = []; let cur = id;
@@ -480,9 +483,9 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const tabs = await p.evaluate(() => [...document.querySelectorAll('.tab-btn')].map(b => b.dataset.tab + ':' + b.textContent.trim()).join(' '));
     const gone = await p.evaluate(() => !document.querySelector('.all-row, #search-list, .cat-analysis, .timing[data-ind-tab]') && !document.getElementById('sheet-indicators'));
-    (tabs === 'cycle:Cycle chart:Analysis analysis:Herstory portfolio:Portfolio' && gone)
-      ? ok('the tab bar reads Cycle, Analysis, Herstory, Portfolio', 'no Search page, timing filter or category analysis')
-      : bad('the tab bar reads Cycle, Analysis, Herstory, Portfolio', JSON.stringify({ tabs, gone }));
+    (tabs === 'today:Today cycle:Cycle chart:Analysis portfolio:Portfolio' && gone)
+      ? ok('the tab bar reads Today, Cycle, Analysis, Portfolio', 'no Search page, timing filter or category analysis')
+      : bad('the tab bar reads Today, Cycle, Analysis, Portfolio', JSON.stringify({ tabs, gone }));
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const door = await p.evaluate(() => ({ first: document.getElementById('chart-home').firstElementChild.className,
       rows: [...document.querySelectorAll('#chart-home .insight-row')].map(b => b.dataset.indCat).join() }));
@@ -584,17 +587,14 @@ async function openPage(p, url, sheet) {
       ? ok('a reading in Cycle Statistics opens its page, and its trend button works', fromChart.bar)
       : bad('a reading in Cycle Statistics opens its page, and its trend button works', JSON.stringify(fromChart));
     await p.goto('file://' + url); await ready(p);
-    await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
-    await click(p, '#diagnosis [data-open="sheet-report"]'); await settle(p);
     const feel = await p.evaluate(() => {
-      const s = document.getElementById('sheet-report');
+      const s = document.getElementById('today-home');
       return { head: document.getElementById('topbar-title').textContent, shown: !!s.offsetParent, risks: s.querySelectorAll('.ai-rank').length, els: s.querySelectorAll('.wr-el').length };
     });
-    await click(p, '#sheet-report .wr-link[data-open="sheet-sign-pressure"]'); await settle(p);
+    await click(p, '#today-home .wr-link[data-open="sheet-sign-pressure"]'); await settle(p);
     feel.link = await p.evaluate(() => document.getElementById('topbar-title').textContent);
     await p.click('#topbar-back'); await settle(p);
     feel.back = await p.evaluate(() => document.getElementById('topbar-title').textContent);
-    await p.click('#topbar-back'); await settle(p);
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
     await toInd(p, 'mood');
     await click(p, '#sheet-find .labs > .more-row'); await settle(p);
@@ -608,12 +608,12 @@ async function openPage(p, url, sheet) {
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
     await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
-    (feel.head === 'Weather Report' && feel.shown && feel.risks > 0 && feel.els === 6 && feel.link === 'US 10-year Treasury' && feel.back === 'Weather Report' && cyc && cyc.calls === 4 &&
+    (feel.head === 'Today' && feel.shown && feel.risks > 0 && feel.els === 6 && feel.link === 'US 10-year Treasury' && feel.back === 'Today' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
      cyc.es === '0:1')
-      ? ok('the Weather Report opens its page and each reading it names, and Mood opens the cycle of market emotions, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
-      : bad('the Weather Report opens its page and each reading it names, and Mood opens the cycle of market emotions, one emotion everywhere', JSON.stringify({ feel, cyc }));
+      ? ok('Today opens on the Weather Report and each reading it names opens, and Mood opens the cycle of market emotions, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
+      : bad('Today opens on the Weather Report and each reading it names opens, and Mood opens the cycle of market emotions, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '#season-wheel-hub-open'); await settle(p);
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-find:not([hidden])');
@@ -700,7 +700,7 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());
     await settle(p);
     const nowFrame = await frame();
-    await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
+    await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="chart"]'); if (b) b.click(); });
     await settle(p);
     const cc = await p.evaluate(() => {
       const row = [...document.querySelectorAll('.era-row')].find(x => /Housing/.test(x.textContent));
@@ -729,7 +729,7 @@ async function openPage(p, url, sheet) {
     const bar = () => p.evaluate(() => (document.getElementById('topbar-back').hidden ? '' : '← ') + document.getElementById('topbar-title').textContent);
     const trail = [];
     for (let i = 0; i < 2; i++) { await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); trail.push(await bar()); }
-    (trail.join(' | ') === '← Housing Cycle | Herstory')
+    (trail.join(' | ') === '← Housing Cycle | Analysis')
       ? ok('back walks out of a past cycle one page at a time', trail.join(' | '))
       : bad('back walks out of a past cycle one page at a time', trail.join(' | '));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());
@@ -743,24 +743,6 @@ async function openPage(p, url, sheet) {
       ? ok('the pages follow the cycle, and today comes back', 'picker: Housing')
       : bad('the pages follow the cycle, and today comes back', JSON.stringify({ picked, back }));
 
-    await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
-    await settle(p);
-    const noRow = await p.evaluate(() => {
-      const row = [...document.querySelectorAll('.era-row')].find(x => /Today/.test(x.textContent));
-      if (!row) return 'no ongoing row';
-      row.click(); return null;
-    });
-    await settle(p);
-    const landed = await p.evaluate(() => ({
-      tab: (document.querySelector('.tab-btn.active') || {}).getAttribute
-             ? document.querySelector('.tab-btn.active').getAttribute('data-tab') : null,
-      frozen: !document.getElementById('calendar-cycle').hidden,
-      dial: !!document.querySelector('#cycle-view .season-card'),
-      bar: document.getElementById('topbar-title').textContent.trim()
-    }));
-    (!noRow && landed.tab === 'cycle' && !landed.frozen && landed.dial && /Current Cycle/i.test(landed.bar))
-      ? ok('the open cycle opens the live page', 'landed on the Cycle tab')
-      : bad('the open cycle opens the live page', JSON.stringify({ noRow, landed }));
   }
   await p.close();
 
@@ -963,7 +945,7 @@ async function keyboardAndLayers(b, url) {
       : bad('a history chart reads its values from the arrow keys', JSON.stringify({ host, said }));
   } else bad('a history chart reads its values from the arrow keys', 'no door to Temperature');
 
-  await g.goto('file://' + url); await ready(g);
+  await g.goto('file://' + url); await ready(g); await g.click('.tab-btn[data-tab="cycle"]'); await settle(g);
   const card = await g.evaluate(() => {
     const c = [...document.querySelectorAll('.tab-panel[data-tab="cycle"] [data-open="sheet-find"]')].filter(x => x.offsetParent)[0];
     if (!c) return null; c.focus(); return c.getAttribute('data-open');
@@ -985,7 +967,7 @@ async function keyboardAndLayers(b, url) {
       ? ok('the browser Back steps out of a page, one page at a time, and stays in the app', steps.map(x => x.t).join(' \u2192 '))
       : bad('the browser Back steps out of a page, one page at a time, and stays in the app', JSON.stringify({ steps, app }));
   } else bad('the browser Back steps out of a page, one page at a time, and stays in the app', 'no door to Temperature');
-  await g.goto('file://' + url); await ready(g);
+  await g.goto('file://' + url); await ready(g); await g.click('.tab-btn[data-tab="cycle"]'); await settle(g);
 
   const hub = () => g.evaluate(() => ({ date: document.getElementById('season-wheel-hub-date').textContent,
     said: document.getElementById('season-wheel-live').textContent }));
@@ -1001,7 +983,7 @@ async function keyboardAndLayers(b, url) {
   await g.focus('.tab-btn.active'); await g.keyboard.press('ArrowRight'); await settle(g);
   const tab = await g.evaluate(() => { const a = document.activeElement;
     return { tab: a.getAttribute('data-tab'), sel: a.getAttribute('aria-selected'), stops: [...document.querySelectorAll('.tab-btn')].filter(t => t.tabIndex === 0).length }; });
-  (tab.sel === 'true' && tab.tab !== 'cycle' && tab.stops === 1)
+  (tab.sel === 'true' && tab.tab !== 'cycle' && tab.stops === 1 && tab.tab !== 'today')
     ? ok('the tabs move with the arrow keys, one tab stop', tab.tab)
     : bad('the tabs move with the arrow keys, one tab stop', JSON.stringify(tab));
   await g.close();

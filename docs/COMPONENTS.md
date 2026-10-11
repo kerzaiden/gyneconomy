@@ -8,19 +8,19 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d326b0b` on 2026-10-11. **109 components**, **19 shared patterns**.
+Generated from commit `5f74240` on 2026-10-11. **109 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`elements`** | `.wr-el` | `ai-insights.ts:reportHtml` |
+| **`elements`** | `.wr-el` | `ai-insights.ts:todayHtml` |
+| **`lead`** | `.wr-by` `.wr-head` | `ai-insights.ts:storyCard`, `ai-insights.ts:todayHtml` |
 | **`mountReport`** | `.wr-page` | `diagnosis.ts:diagnosisHost` |
 | **`prose`** | `.wr-link` | `ai-insights.ts:elements` |
-| **`reportCard`** | `.wr-by` `.wr-head` | `diagnosis.ts:diagnosisHtml` |
-| **`reportHtml`** | `.wr-date` `.wr-title` | — |
-| **`riskFactors`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:reportHtml` |
+| **`riskFactors`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:todayHtml` |
 | **`riskRows`** | `.ai-rank` `.ai-when` | `ai-insights.ts:riskFactors` |
+| **`storyHtml`** | `.wr-date` `.wr-title` | — |
 
 ## analysis.ts
 
@@ -79,7 +79,6 @@ Generated from commit `d326b0b` on 2026-10-11. **109 components**, **19 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`yearRow`** | `.dx-year` `.dx-year-lead` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:yearByYear` |
-| **`yearsMore`** | `.cyc-more` `.dx-years-more` | `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
 
@@ -93,7 +92,8 @@ Generated from commit `d326b0b` on 2026-10-11. **109 components**, **19 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`learnMore`** | `.learn-more` | `ai-insights.ts:reportCard`, `fed-phases.ts:footnoteHtml` |
+| **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `fed-phases.ts:footnoteHtml` |
+| **`moreButton`** | `.cyc-more` `.dx-more` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `ai-insights.ts:riskFactors`, `dom.ts:moreRow` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `ai-insights.ts:elements`, `dom.ts:trendCard` |
@@ -176,7 +176,7 @@ Generated from commit `d326b0b` on 2026-10-11. **109 components**, **19 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:foldSec` |
-| **`dxHead`** | `.dx-sys-head` | `ai-insights.ts:riskFactors`, `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
+| **`dxHead`** | `.dx-sys-head` | `ai-insights.ts:riskFactors`, `analysis.ts:cycleRowsHtml`, `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
 | **`econChips`** | `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:mountReport`, `portfolio.ts:portfolioSheets`, `reading.ts:mountReadings` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
@@ -240,9 +240,9 @@ renderer speaks. Listed most-used first.
 | **`qLabel`** | format.ts | 9 places |
 | **`colPath`** | charts.ts | 8 places |
 | **`colWidth`** | charts.ts | 8 places |
-| **`cycLabel`** | model.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`closedCount`** | cycle-analysis.ts | 7 places |
+| **`cycLabel`** | model.ts | 7 places |
 | **`dxSys`** | render-core.ts | 7 places |
 | **`normOf`** | cycle-analysis.ts | 7 places |
 | **`put`** | dom.ts | 7 places |
@@ -253,6 +253,7 @@ renderer speaks. Listed most-used first.
 | **`fitLine`** | charts.ts | 6 places |
 | **`isoDay`** | format.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
+| **`openCycle`** | model.ts | 6 places |
 | **`pct`** | wave-chart.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`windowYears`** | charts.ts | 6 places |
@@ -263,7 +264,6 @@ renderer speaks. Listed most-used first.
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`meanOf`** | cycle-analysis.ts | 5 places |
-| **`openCycle`** | model.ts | 5 places |
 | **`pctl`** | format.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`strip`** | render-core.ts | 5 places |

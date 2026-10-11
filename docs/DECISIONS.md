@@ -98,24 +98,22 @@ settles it; none is open after V668.
 - **A cycle page has no door to the Analysis tab; Cycle Statistics is the container inside Analysis.** Keren
   dropped the Cycle Analysis row that led there; the tab bar opens Analysis. (0.6.6, 0.6.8, 0.9.46, Drop Cycle
   Analysis, Oct 10, 2026)
-- **Claude's reading of the market is one Weather Report, on every cycle page, and nowhere else.** People do not
+- **Claude's reading of the market is one Weather Report, and it is the Today tab.** People do not
   read insights about a past cycle cut off from the present, and insights scattered one per element are not read at
   all; what they come back for is today's story told like financial news, with a door into each reading that makes
   them curious. So the report is one text across the six elements (Weather: the economy, the market and the season;
   Activity, Mood, Desire, Circulation, Stress), with each reading it names linking to its page, and Risk Factors
-  inside it. The element insights of every cycle are gone, and so is the AI Insights sparkle. The cycle's story is
-  folded in rather than kept as a second card, so every cycle page keeps one layout: today's report is the dated
-  edition (headline, date and lede, then Risk Factors, the cycle's story and the six elements), and a closed cycle's is
-  the short version, its own Risk Factors and its story, from data the app already holds. Closest Moments stays
-  retired: the moments that resemble today are found by what needs attention, the way financial media say "highest
-  since", which Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report)
-- **The Weather Report card opens every cycle page, the weather its mark: its headline, its date under it, three lines
-  of its lede, then "Read the report", and the whole card opens the report's page.** A report is a page to read, not a
-  paragraph to unfold. The date stands alone, never "Updated": a report is plainly as of its date. On the card it is short, the way a
-  feed dates a post ("Oct 9", with the year only when it is not this one); the report's page gives it in full. Risk
-  Factors follow the lede, then the story sets the scene for the elements, and the lede carries only what moved and
-  never restates the story. On a closed cycle the headline is the cycle's name, the lines are its story and the date
-  its years, so the card is the same card. (Weather Report)
+  inside it. The element insights of every cycle are gone, and so is the AI Insights sparkle. The report is news and
+  the cycle's story is not, so the story left it: Today is the dated edition (headline, date and lede, then Risk
+  Factors and the six elements), then the Cycle Story of the cycle under way. Closest Moments stays retired: the
+  moments that resemble today are found by what needs attention, the way financial media say "highest since", which
+  Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report, Today Tab)
+- **The Cycle Story card follows the dial on every cycle page, the book its mark: the cycle's name, its years under
+  it, three lines of its story, then "Read the story", and the whole card opens the story's page: the cycle's Risk
+  Factors, then its story.** A past cycle keeps its story and its own risk factors, and because every cycle page is one
+  page, today's cycle carries the same card, the story Today closes on. The Weather Report on Today dates its edition
+  in full ("9 October 2026"), never "Updated": a report is plainly as of its date. Risk Factors follow the lede, and
+  the lede carries only what moved and never restates the story. (Weather Report, Today Tab)
 - **A new edition is written only when there is news, checked every weekday evening, by a scheduled Claude routine
   that publishes it without review.** Of the readings only the Treasury curve, Fear and CAPE move on an ordinary
   weekday and the Fed eight times a year, so a daily rewrite would repeat itself; a monthly release landing, a
@@ -187,13 +185,17 @@ settles it; none is open after V668.
 
 ### Tabs, bars and menu
 
-- **The tab bar is Cycle · Analysis · Herstory · Portfolio.** Search replaced the Content tab (V657) and swapped
-  places with Analysis (V665); Cycle analysis then took Search's place, because the two showed the same readings in
-  different views. Keren renamed the health chart tab Analysis and the old analysis tab Herstory. The Health chart
-  keeps its name where it opens from a cycle's story. (V657, V665, 0.6.1)
-- **Herstory's tab icon is the history clock (an arrow turning back round a clock face), and the page has no
-  "Cycle history" heading: each cycle is its own white container, `--gap` apart.** Keren wanted the icon that stood
-  beside Cycle history, and each cycle in its own container at the agreed margin. (0.6.3)
+- **The tab bar is Today · Cycle · Analysis · Portfolio, and the app opens on Today, its tab icon the weather
+  mark.** Today holds the Weather Report and, later, other financial news: what a reader comes back for every day
+  belongs on the first screen. Herstory gave up its tab to make room, since the cycle list is read far less often
+  than Analysis, Portfolio or the cycle. Search replaced the Content tab (V657) and swapped places with Analysis
+  (V665); Cycle analysis then took Search's place, because the two showed the same readings in different views.
+  (V657, V665, 0.6.1, Today Tab)
+- **Herstory is the last container on Analysis, built like Year by Year: the history clock (an arrow turning back
+  round a clock face) as its mark, the three newest closed cycles, then View more for the rest.** It is read less
+  often than the rest of Analysis, so it sits at the foot; it keeps the icon that stood beside Cycle history. A cycle
+  opens in place, inside Analysis, with the back arrow returning to it. **The open cycle is not in it:** it has not
+  closed, so it is not yet part of her story, and it has its own tab. (0.6.3, V616, Today Tab)
 - **Analysis's More details opens on one line, the way a cycle-tracking app says it ("Averages are based on her 18
   closed cycles since 1928"), then the method as five short bold-led bullets, scannable in about 15 seconds.** The
   full text was too long to open; Keren wanted it summarised, not erased, so a reader can take it in at a glance.
@@ -241,7 +243,7 @@ settles it; none is open after V668.
 - **A page reached from a past cycle stays an inner page, even when it lives on another tab, and Back retraces
   each step to the cycle, where the reader left it.** Cycle Statistics on a past cycle opens Analysis on that cycle
   with the back button and no tab bar; a page opened from there comes back to it, and Back from Analysis returns to
-  the cycle's page in Herstory at the same place. Keren found the crossover landing on a tab home broke the path she
+  the cycle's page at the same place. Keren found the crossover landing on a tab home broke the path she
   was following through the cycle; the inner page is its own world until the reader goes back. (0.9.38)
 - **The top bar sets the page name in Cormorant, in the plum ink, and its buttons are the plum mark alone; the
   menu's screens keep a hairline under their bar.** Keren wanted the title in "feminine letters" and the buttons as
@@ -250,8 +252,8 @@ settles it; none is open after V668.
 - **Detail sheets (the (i) notes, the legend, a quarter, More details) are frosted glass: the sheet at 72% of the
   surface behind a 24px blur, with the glass edge and lift, over a lighter veil that blurs the page by 10px.**
   Keren picked option C from the liquid-glass previews. (0.6.9)
-- **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Analysis", "Herstory", "Portfolio".**
-  (undated, 0.6.1)
+- **The top bar's titles are Keren's names for the tabs: "Today", "Current Cycle", "Analysis", "Portfolio".**
+  (undated, 0.6.1, Today Tab)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
   head names the series (bar "Pulse", head "Velocity of Money (M2)").** A title inside the page only repeated the
   top bar: the bar names the page and the card names the reading. (V208, V288, V298, V361)
@@ -572,8 +574,6 @@ settles it; none is open after V668.
   undated, Sep 18, 2026)
 - **A closed cycle is read, not graded: its small pictures are drawn in the neutral accent, never a state
   colour.** A cycle that ended is not being judged. (V615)
-- **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never
-  a frozen copy.** The cycle has not ended, and a frozen view would say the AI Cycle is over. (V616)
 - **Each cycle's strips in Herstory are drawn against the typical cycle length: a shorter cycle shows
   grey for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
   true proportions.** The grey stands for the average that is left, not a comparison with the longest cycle. (V517)
@@ -582,7 +582,7 @@ settles it; none is open after V668.
   logic. (0.6.6)
 - **On the open cycle, Year by year stops at the year in progress, with no rows for years still to come: its
   quarters already read are drawn, and what is left of the year is grey dots under the grey line, spaced like
-  Herstory's (one quarter of the open cycle's Herstory row apart) so they fill the rest of the year, rather than one
+  Herstory's (one quarter of a Herstory row apart) so they fill the rest of the year, rather than one
   dot per quarter. The first dot sits one dot-gap from the market bar, the same gap as between the dots.** Rows for
   future years waste room; the Herstory spacing is for looks, and an even gap after the bar is tidier. (0.6.6,
   0.6.18, 0.8.8)
@@ -594,7 +594,7 @@ settles it; none is open after V668.
   The emotional reading of each cycle has not been worked out yet; the lede's opening, "Born out of the 2022
   correction", which Keren liked, stays. (0.6.6, 0.6.12, 0.6.13, AI Insights Everywhere)
 - **Risk Factors lists every result Cycle Statistics reads as Risk, each with its value and where it stands in
-  its own record, inside the cycle's Weather Report.** A bar of the share of past readings below it said little about why
+  its own record, in today's Weather Report and on each cycle's Cycle Story page.** A bar of the share of past readings below it said little about why
   a reading is at risk; Keren wants where we are, the way financial media put it: the highest on record, or
   the highest since a date, and the record and when it was set. Each line names where its record starts, since
   some records are short. The open cycle reads today's figure, the one its card shows (one figure, one number: the
@@ -1520,13 +1520,13 @@ settles it; none is open after V668.
   background should be organic, delicate and feminine, flowing like hormones or a flower, prominent without
   competing with the foreground. With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3, 0.6.13, 0.6.14)
-- **A cycle page is the Weather Report, then Year by Year; Interest Rates stands on Analysis
+- **A cycle page is the dial, the Cycle Story, then Year by Year; Interest Rates stands on Analysis
   only.** The first page should not overwhelm; whoever wants the thorough view goes into Analysis through the tab
   bar. The Health Score shows once, in Cycle Statistics, since the analysis is what explains it. (0.6.17, 0.9.46,
-  Cycle Insights, AI Insights Everywhere, Drop Cycle Analysis)
+  Cycle Insights, AI Insights Everywhere, Drop Cycle Analysis, Today Tab)
 - **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
   A change once reached only today's page, because the Diagnosis branched on whether the cycle was open and the
-  browser suite expected the past cycle's old layout. The page is one sequence (Weather Report, Year by
+  browser suite expected the past cycle's old layout. The page is one sequence (Cycle Story, Year by
   Year), and a unit test fails if any closed cycle's page differs in shape from today's. (0.6.13, 0.6.17, 0.9.46,
   Cycle Insights)
 - **Every container title on a cycle page reads like the Weather Report's: bold, deep purple.** Titles were a mix of dark
@@ -1581,9 +1581,10 @@ settles it; none is open after V668.
   dividers across pages. (V282, V604)
 - **The app is one column, at most `--page-w` (590px) wide, centred; every page, the menu and the floating
   buttons read it, and a phone never reaches it. From 1100px the tab bar becomes a sidebar beside the column,
-  a solid container like the cycle cards, one gap from the feed.** At 1180px the desktop view was too wide;
-  Keren halved it and asked for Facebook's shape, a narrow feed with a sidebar in the same design language.
-  (— Narrower Desktop)
+  a solid container like the cycle cards, one gap from the feed, level with the first card; as the page scrolls it
+  rises and sticks to the top, level with the menu button.** At 1180px the desktop view was too wide; Keren halved
+  it and asked for Facebook's shape, a narrow feed with a sidebar in the same design language, and wanted the
+  sidebar to stick to the top while she scrolls. (— Narrower Desktop, Today Tab)
 
 ### Shape and size
 

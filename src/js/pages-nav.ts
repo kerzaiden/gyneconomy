@@ -39,16 +39,16 @@ function plainHome(tab: string, title: string): PageHome {
 function buildNav(){
   // ---- The metric page ----
   var cyclePanel = tabPanel("cycle");
-  var analysisPanel = tabPanel("analysis");
+  var chartPanel = tabPanel("chart");
   var metricPage = document.createElement("div");
   metricPage.id = "metric-page"; metricPage.hidden = true;
   cyclePanel.appendChild(metricPage);
   var PAGE_HOME: Record<string, PageHome> = {
     cycle:    { panel:cyclePanel,    bar:function(){ return ["Current Cycle", null]; },
                 hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
-    analysis: { panel:analysisPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Herstory", null]; },
-                hide:function(){ return [byId(ui.eraOpen ? "calendar-cycle" : "calendar-list")]; } },
-    chart:    { panel:tabPanel("chart"), bar:function(){ return ["Analysis", null]; }, hide:function(){ return [byId("chart-home")]; } }, portfolio:plainHome("portfolio", "Portfolio")
+    chart:    { panel:chartPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Analysis", null]; },
+                hide:function(){ return ui.eraOpen ? [byId("calendar-cycle")] : [byId("chart-home"), byId("calendar-list")]; } },
+    today:plainHome("today", "Today"), portfolio:plainHome("portfolio", "Portfolio")
   };
   var homeCtx = PAGE_HOME.cycle;
   var openSheet: HTMLElement | null = null, openHome: ParentNode | null = null, returnScroll = 0;
@@ -106,7 +106,7 @@ function buildNav(){
     var btn = (e.target as Element).closest && (e.target as Element).closest("[data-open]"), tab = host === cyclePanel ? "cycle" : viewTab(); if (!btn) return;
     if (detailClose) detailClose(); openMetricPage(openTarget(btn), btn.getAttribute("data-title"), false, tab);
   }); });
-  ["analysis", "chart", "portfolio"].forEach(function(key){
+  ["today", "chart", "portfolio"].forEach(function(key){
     var panel = PAGE_HOME[key].panel, go = function(el: Element){ openMetricPage(openTarget(el), el.getAttribute("data-title"), false, key); };
     panel.addEventListener("click", function(e){ var btn = (e.target as Element).closest && (e.target as Element).closest("[data-open]"); if (btn) go(btn); });
     panel.addEventListener("keydown", function(e){
@@ -128,7 +128,7 @@ function buildNav(){
     openMetricPage(openTarget(row), row.getAttribute("data-title"));
   });
   NAV.open = openMetricPage;
-  NAV.panel = analysisPanel;
+  NAV.panel = chartPanel;
 }
 function renderPagesAndNav(){
   wirePageControls();

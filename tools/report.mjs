@@ -46,7 +46,7 @@ export async function facts() {
   const { riskLabs } = await import('../src/js/cycle-analysis.ts');
   const { marketCycles, now } = await import('../src/js/data.ts');
   const { nowModel } = await import('../src/js/model.ts');
-  const { sheetRenderers } = await import('../src/js/render-core.ts');
+  const { drawToday } = await import('../src/js/ai-insights.ts');
   const i = marketCycles.indexOf(nowModel.era), tierOf = {};
   riskLabs(i, 'borderline').forEach(l => { tierOf[l.id] = 'Attention'; });
   riskLabs(i, 'abnormal').forEach(l => { tierOf[l.id] = 'Risk'; });
@@ -54,8 +54,8 @@ export async function facts() {
     const f = todayFace(R), r = readingFor(R.id);
     return { id: R.id, name: R.name, element: R.cat, figure: f.text, word: f.word, tier: tierOf[R.id] || 'Normal', asOf: r.asOf ? r.asOf() : '' };
   });
-  sheetRenderers['sheet-report']();
-  const risks = [...window.document.querySelectorAll('#sheet-report .ai-rank')].map(b => [...b.children].map(c => c.textContent.replace(/\s+/g, ' ').trim()).join(' \u00b7 '));
+  drawToday();
+  const risks = [...window.document.querySelectorAll('#today-home .ai-rank')].map(b => [...b.children].map(c => c.textContent.replace(/\s+/g, ' ').trim()).join(' \u00b7 '));
   const fed = now.fedFunds, season = nowModel.reading;
   const said = readings.map(r => r.figure).concat(risks, [fed.lo, fed.hi, fed.lastMove].map(String), [fed.lo.toFixed(2), fed.hi.toFixed(2)]);
   return {

@@ -10,8 +10,8 @@ import type { Lab } from "./cycle-analysis.ts";
 import { todayValue } from "./era.ts";
 import { readingFor } from "./reading.ts";
 
-// ---- The Weather Report: today's edition on the open cycle; a closed cycle's story and its risk factors against their own record ----
-export var REPORT_ID = "sheet-report";
+// ---- Today: the Weather Report and the cycle's story; every cycle page: its Cycle Story and its risk factors against their own record ----
+export var STORY_ID = "sheet-story";
 var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var EVERY: Record<string, string> = { q:"quarterly", qi:"quarterly", m:"monthly", y:"yearly", yi:"yearly" };
 var shown = { cycle:"" };
@@ -61,7 +61,6 @@ function riskFactors(c: Cycle){
     (rows || '<small class="ai-cap">Nothing reads as Risk ' + (c.ongoing ? "today" : "in this cycle") + '.</small>') +
     (n ? moreDoor(riskDoor("borderline", c), n + (n > 1 ? " readings need" : " reading needs") + " attention") : "") + '</div>');
 }
-function plain(t: string){ return t.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1"); }
 function prose(t: string){
   return t.replace(/\[([^\]]+)\]\((sheet-[a-z0-9-]+)\)/g, function(_, label: string, id: string){
     var R = ROSTER_BY[id];
@@ -69,12 +68,12 @@ function prose(t: string){
   });
 }
 function edition(){ return dateWords(now.report.asOf); }
-function shortDate(iso: string){ var d = iso.split("-").map(Number); return MONTH_NAMES[d[1] - 1].slice(0, 3) + " " + d[2] + (d[0] === new Date().getFullYear() ? "" : ", " + d[0]); }
-export function reportCard(m: CycleModel){
-  var r = now.report, open = !!m.ongoing;
-  return trendDoor(REPORT_ID, "Weather Report", weatherSvg(), "Weather Report",
-    '<span class="wr-head">' + (open ? r.headline : m.era.name) + '</span><span class="wr-by">' + (open ? shortDate(r.asOf) : cycLabel(m.era).years) + '</span>' +
-    trendText(plain(open ? r.lede : m.era.blurb), "ai-clamp") + learnMore(undefined, "Read the report"), ' data-report-cycle="' + m.era.name + '"');
+function storyOf(c: Cycle){ return c.ongoing ? now.report.story : c.blurb; }
+function lead(head: string, by: string){ return '<span class="wr-head">' + head + '</span><span class="wr-by">' + by + '</span>'; }
+export function storyCard(m: CycleModel){
+  return trendDoor(STORY_ID, "Cycle Story", bookSvg(), "Cycle Story",
+    lead(m.era.name, cycLabel(m.era).years) +
+    trendText(storyOf(m.era), "ai-clamp") + learnMore(undefined, "Read the story"), ' data-story-cycle="' + m.era.name + '"');
 }
 function elements(){
   return dxSys(" wr-els", categoriesShown().map(function(c){
@@ -82,20 +81,25 @@ function elements(){
     return t ? '<div class="wr-el">' + trendHead(CAT_MARK[c.key](), c.title, "") + trendText(prose(t)) + '</div>' : "";
   }).join(""));
 }
-function reportHtml(c: Cycle){
-  var r = now.report, story = trendBox(bookSvg(), "Cycle Story", trendText(c.ongoing ? r.story : c.blurb));
-  var head = '<h2 class="wr-title">' + (c.ongoing ? r.headline : c.name) + '</h2><p class="wr-date">' + (c.ongoing ? c.name + " \u00b7 " + edition() : cycLabel(c).years) + '</p>';
-  return c.ongoing ? dxSys(" wr-top", head + trendText(r.lede)) + riskFactors(c) + story + elements() : dxSys(" wr-top", head) + riskFactors(c) + story;
+function storyBox(c: Cycle){ return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(c))); }
+function todayHtml(){
+  var r = now.report, c = openCycle();
+  return trendBox(weatherSvg(), "Weather Report", lead(r.headline, edition()) + trendText(r.lede)) +
+    riskFactors(c) + elements() + storyBox(c);
 }
-function drawReport(){ put(REPORT_ID + "-body", reportHtml(cycleByName(shown.cycle) || openCycle())); }
-export function redrawReport(){ var s = byIdMaybe(REPORT_ID); if (s && !s.hidden) drawReport(); }
+function storyHtml(c: Cycle){ return dxSys(" wr-top", '<h2 class="wr-title">' + c.name + '</h2><p class="wr-date">' + cycLabel(c).years + '</p>') + riskFactors(c) + storyBox(c); }
+export function drawToday(){ put("today-home", todayHtml()); }
+function drawStory(){ put(STORY_ID + "-body", storyHtml(cycleByName(shown.cycle) || openCycle())); }
+export function redrawReport(){ drawToday(); var s = byIdMaybe(STORY_ID); if (s && !s.hidden) drawStory(); }
+function pickStory(e: Event){
+  var b = (e.target as Element).closest && (e.target as Element).closest("[data-story-cycle]");
+  if (b) shown.cycle = b.getAttribute("data-story-cycle") || "";
+}
 export function mountReport(){
-  var sheet = metricSheet(REPORT_ID);
-  sheet.innerHTML = '<div class="wr-page" id="' + REPORT_ID + '-body"></div>';
+  var sheet = metricSheet(STORY_ID);
+  sheet.innerHTML = '<div class="wr-page" id="' + STORY_ID + '-body"></div>';
   need("panel-cycle").appendChild(sheet);
-  sheetRenderers[REPORT_ID] = drawReport;
-  document.addEventListener("click", function(e){
-    var b = (e.target as Element).closest && (e.target as Element).closest("[data-report-cycle]");
-    if (b) shown.cycle = b.getAttribute("data-report-cycle") || "";
-  }, true);
+  sheetRenderers[STORY_ID] = drawStory;
+  document.addEventListener("click", pickStory, true);
+  drawToday();
 }

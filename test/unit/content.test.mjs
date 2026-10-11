@@ -142,16 +142,15 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
-test('the dial is titled by its cycle, its legend speaks in signs, and the Weather Report under it opens today\u2019s edition', () => {
+test('the dial is titled by its cycle, its legend speaks in signs, and the Cycle Story under it opens the cycle\u2019s story', () => {
   assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
   const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
   ['Prices &lt; 1%', 'Prices \u2264 3%', 'Prices &gt; 3%', 'Prices \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
   const first = document.querySelector('#diagnosis .trend-card');
-  assert.equal(first.querySelector('.trend-head').textContent, 'Weather Report');
-  assert.equal(first.dataset.open, 'sheet-report');
-  assert.equal(first.querySelector('.wr-head').textContent, now.report.headline);
-  assert.equal(first.querySelector('.ai-clamp').textContent, now.report.lede);
-  assert.match(first.querySelector('.wr-by').textContent, /^[A-Z][a-z]{2} \d{1,2}(, 20\d\d)?$/);
+  assert.equal(first.querySelector('.trend-head').textContent, 'Cycle Story');
+  assert.equal(first.dataset.open, 'sheet-story');
+  assert.equal(first.querySelector('.wr-head').textContent, nowModel.era.name);
+  assert.equal(first.querySelector('.ai-clamp').textContent, now.report.story);
   assert.equal(document.querySelector('[data-open="sheet-ai-insights"]'), null);
 });
 
@@ -289,9 +288,9 @@ test('a past cycle shows its own record on the Diagnosis, and Back restores toda
   const head = lede();
   const chevs = () => document.querySelectorAll('#diagnosis .trend-card .peek-chev').length;
   assert.equal(chevs(), 0);
-  document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
+  document.querySelector('#calendar-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(heads(), 'Weather Report');
+  assert.equal(heads(), 'Cycle Story');
   assert.equal(chevs(), 0);
   assert.equal(lede(), ui.eraOpen.blurb);
   ui.eraPageBack();
@@ -305,7 +304,7 @@ test('each category’s insights follow the cycle on screen, and the old categor
   assert.equal(document.querySelectorAll('.cat-sheet .cat-item, [id^="sheet-cat-"], .sign-row, .peek').length, 0);
   for (const key of ['weather', 'mood', 'circulation']) assert.ok(catInsight(key), key);
   assert.match(mood(), /She\u2019s in .+AI Cycle/);
-  document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
+  document.querySelector('#calendar-list .era-row[data-era="2009"]').click();
   assert.match(mood(), /She\u2019s in .+Big Tech Cycle/);
   ui.eraPageBack();
   assert.match(mood(), /She\u2019s in .+AI Cycle/);
