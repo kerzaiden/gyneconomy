@@ -763,8 +763,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
 
 ## The season model
 
-Six seasons in cycle order: Summer–Inflation · Autumn–Disinflation · Autumn–Stagflation (key `lateautumn`;
-the display name has no "Late") · Winter–Deflation · Spring–Deflation · Spring–Reflation. Two Springs and
+Six seasons in cycle order: Summer–Inflation · Autumn–Stagflation (key `lateautumn`;
+the display name has no "Late") · Autumn–Disinflation · Winter–Deflation · Spring–Disinflation · Spring–Reflation. Two Springs and
 two Autumns share names, so **every season is named through `seasonTitle(meta)`, never a bare
 `meta.name`**. Actions come from the manuscript's cycle figure (Springs Growing · Summer Ripening · Autumns
 Harvest · Winter Seeding); fertility names only where the book has one — don't invent one.
@@ -783,18 +783,18 @@ slope (V694).
 
 | Season | Growth | Temperature |
 |---|---|---|
-| Spring — Deflation | Expansion | Cooling, within or below |
+| Spring — Disinflation | Expansion | Cooling, any level |
 | Spring — Reflation | Expansion | Heating, within or below |
-| Summer — Inflation | Expansion | Hot |
-| Autumn — Disinflation | Contraction | Cooling, within or above |
-| Autumn — Stagflation | Contraction | Heating, within or above |
+| Summer — Inflation | Expansion | Hot, heating or steady |
+| Autumn — Disinflation | Contraction | Within the range; or hot and cooling |
+| Autumn — Stagflation | Contraction | Hot, heating or steady |
 | Winter — Deflation | Contraction | Cold |
 
-Row order is Keren's. The tie-breaks, all stated in the (i): in expansion, hot is Summer regardless of
-direction, otherwise direction alone decides — **never re-add a Goldilocks Zone**. Contraction mirrors it:
-cold is Winter outright, otherwise direction alone. **Never redefine stagflation as contraction + hot
-regardless of direction** — it flips the Q4 2023 example (CPI 3.32%, hot and falling, reads
-Autumn–Disinflation). Steady prices keep the prior reading's direction (`heading`, carried down the track like `prevRegime`), and read Reflation or Disinflation only when nothing precedes them (0.9.2).
+Row order is Keren's. The tie-breaks, all stated in the (i): in expansion, cooling is Spring–Disinflation
+at any level, and hot is Summer unless it is cooling (2023 Q3, 3.5% and falling, is Disinflation) — **never re-add a Goldilocks Zone**. Contraction mirrors it:
+cold is Winter outright, hot and heating or steady is Stagflation, and everything else (the range, or hot and
+falling) is Disinflation. **Never redefine stagflation as contraction + hot regardless of direction** — it flips
+the Q4 2023 example (CPI 3.32%, hot and falling, reads Autumn–Disinflation). Steady prices otherwise keep the prior reading's direction (`heading`, carried down the track like `prevRegime`), and read Reflation or Disinflation only when nothing precedes them (0.9.2).
 Shrinking needs no rule of its own: below zero is always further than the band below potential. **Inside the
 band the regime continues**: `prevRegime` comes from the track, computed once over the full history, never per
 cycle; the early track runs first and seeds BEA's.
@@ -893,7 +893,7 @@ a `touchstart` handler that changes the DOM (iOS then suppresses the click and e
 ## The dial
 
 Draws the cycle from its first quarter to today or its close; size is one CSS var, `--dial`. Outer ring =
-the four seasons as one round-ended shape per run, colours from the `--season-*` tokens. **Spring–Deflation
+the four seasons as one round-ended shape per run, colours from the `--season-*` tokens. **Spring–Disinflation
 sits between Winter and Spring–Reflation at Keren's choice — don't move it.** A thinner market band runs
 one segment per year from `sp500AnnualReturns`, carrying the **peak year**: the cycle's most profitable
 year by annual total return, **per year, never the compounded high** (Keren's rule); the reader-facing term
@@ -972,7 +972,7 @@ Awaiting Keren: the About-the-book paragraph,
   asset-class returns by season.
 - **The growth-direction threshold ±0.025 pp/qtr is not ratified** (Keren ratified the window, not this);
   it is the one number that can flip Autumn–Stagflation vs Summer.
-- Whether Spring–Deflation's action is "Growing" is not the manuscript's; it has no Content-tab narrative.
+- Whether Spring–Disinflation's action is "Growing" is not the manuscript's; it has no Content-tab narrative.
 - The other segmented controls (indicators tabs, tab bar) were to be revisited together.
 - Stacking panels to compare Temperature and
   Growth; older fixed-viewBox charts should move to render-width drawing when touched.
@@ -1124,7 +1124,7 @@ under the Sentiment subcategory; Debt-to-income ratio, not "Debt service" or "De
 Growth gap, and GDP growth is its own reading under Activity › Output; Stress is
 Households (Savings rate, Debt-to-income ratio, Margin debt) and Government (Federal debt, Federal budget) (0.9.21), and Delinquencies are Default risk, under Desire › Risk (0.9.22); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
-on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
+on screen. Seasons as *Spring — Disinflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.
 
 ## Accessibility

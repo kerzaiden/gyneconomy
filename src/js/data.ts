@@ -303,7 +303,7 @@ function checkMoneyStock(){
 export var seasonReading: Record<Season, SeasonReading> = {
   summer: {
     body: "Peak fertility. Estrogen has crested and the LH surge has done its work; energy and desire are at their highest and everything in the body is built for going out and taking chances. Temperature dips briefly at ovulation and only then begins to climb.",
-    economy: "Overheat. The economy is still growing at or above its potential but inflation sits above target, so the central bank is leaning against it."
+    economy: "Overheat. The economy is still growing at or above its potential but inflation sits above target and is not cooling, so the central bank is leaning against it."
   },
   autumn: {
     body: "Early luteal. Progesterone takes over from estrogen; temperature is up and stays up, energy is steady but turns inward, and the body settles into consolidation rather than display.",
@@ -311,7 +311,7 @@ export var seasonReading: Record<Season, SeasonReading> = {
   },
   lateautumn: {
     body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
-    economy: "Stagflation. Growth runs below the economy’s potential while inflation heats up, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown."
+    economy: "Stagflation. Growth runs below the economy’s potential while inflation runs hot and is not cooling, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown."
   },
   winter: {
     body: "Menstruation — groundation. Shedding, rest and the lowest energy of the cycle. The lining that was built up releases; the body is not failing, it is clearing the way.",
