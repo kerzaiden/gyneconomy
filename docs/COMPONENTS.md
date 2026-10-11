@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `a5af7b6` on 2026-10-11. **108 components**, **12 shared patterns**.
+Generated from commit `9e44908` on 2026-10-11. **109 components**, **12 shared patterns**.
 
 ## ai-insights.ts
 
@@ -114,7 +114,7 @@ Generated from commit `a5af7b6` on 2026-10-11. **108 components**, **12 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`facts`** | `.facts` | `cycle-analysis.ts:chartDetail`, `dial-cycle.ts:bootDialCycle`, `format.ts:factsFrom`, `insights.ts:moodInfo`, `portfolio.ts:clockDetail`, `portfolio.ts:weatherDetail`, `readings.ts:bootReadings`, `readings.ts:deficitInfoHtml`, `readings.ts:volatilityDetailHtml`, `tabs-menu.ts:seasonNotes` |
+| **`facts`** | `.facts` | `cycle-analysis.ts:chartDetail`, `dial-cycle.ts:bootDialCycle`, `format.ts:factsFrom`, `insights.ts:moodInfo`, `portfolio.ts:clockDetail`, `portfolio.ts:weatherDetail`, `readings.ts:bootReadings`, `readings.ts:deficitInfoHtml`, `readings.ts:volatilityDetailHtml`, `tabs-menu.ts:renderSeasonRows` |
 | **`hiCard`** | `.hi-card` `.hi-name` | `indicators.ts:buffettInsight`, `indicators.ts:debtInsight`, `indicators.ts:marketInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `insights.ts:marketCycleCard`, `insights.ts:moodCard`, `insights.ts:seasonCards`, `pressure.ts:mortgageInsight`, `pressure.ts:pressureInsights`, `reading.ts:recordInsight`, `readings.ts:pulseCard`, `render-pages.ts:hormonesInsight`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights`, `rhythm.ts:rhythmCard` |
 | **`highlightsHtml`** | `.hi-head` `.highlights` `.insights` `.peek-chev` | `indicators.ts:buffettInsight`, `indicators.ts:debtInsight`, `indicators.ts:marketInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `pressure.ts:mortgageInsight`, `pressure.ts:pressureInsights`, `reading.ts:recordInsight`, `render-pages.ts:hormonesInsight`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
 | **`hubLine`** | `.hub-line` | `dial-cycle.ts:hubSet`, `dial-cycle.ts:hubShowYear` |
@@ -123,7 +123,7 @@ Generated from commit `a5af7b6` on 2026-10-11. **108 components**, **12 shared p
 | **`ledeHtml`** | `.lede` | `dial-cycle.ts:bootDialCycle`, `readings.ts:bootReadings`, `readings.ts:deficitInfoHtml` |
 | **`legendKey`** | `.key-list` | `cycle-analysis.ts:periodCal`, `reading.ts:mountReadings`, `tabs-menu.ts:renderCycleModel` |
 | **`readingNote`** | `.marker-sub` | `credit.ts:readingOf`, `indicators.ts:splitInfo`, `pulse-strips.ts:stripsInfo`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volatilityDetailHtml`, `readings.ts:volumeInfoHtml`, `rhythm.ts:rhythmInfo` |
-| **`srcBlock`** | `.src` | `cycle-analysis.ts:chartDetail`, `cycle-analysis.ts:flowPage`, `cycle-analysis.ts:healthPage`, `cycle-analysis.ts:lengthPage`, `cycle-analysis.ts:variationPage`, `dial-cycle.ts:bootDialCycle`, `format.ts:readingNote`, `indicators.ts:splitInfo`, `insights.ts:moodInfo`, `portfolio.ts:clockDetail`, `portfolio.ts:weatherDetail`, `pressure.ts:mortgageInfo`, `pressure.ts:pressureMaturities`, `readings.ts:volatilityDetailHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:hormonesInfo`, `render-pages.ts:spreadSeries`, `tabs-menu.ts:renderCycleModel`, `tabs-menu.ts:renderSeasonRows`, `tabs-menu.ts:seasonNotes` |
+| **`srcBlock`** | `.src` | `cycle-analysis.ts:chartDetail`, `cycle-analysis.ts:flowPage`, `cycle-analysis.ts:healthPage`, `cycle-analysis.ts:lengthPage`, `cycle-analysis.ts:variationPage`, `dial-cycle.ts:bootDialCycle`, `format.ts:readingNote`, `indicators.ts:splitInfo`, `insights.ts:moodInfo`, `portfolio.ts:clockDetail`, `portfolio.ts:weatherDetail`, `pressure.ts:mortgageInfo`, `pressure.ts:pressureMaturities`, `readings.ts:volatilityDetailHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:hormonesInfo`, `render-pages.ts:spreadSeries`, `tabs-menu.ts:renderCycleModel`, `tabs-menu.ts:renderSeasonRows` |
 
 ## history-charts.ts
 
@@ -201,7 +201,8 @@ Generated from commit `a5af7b6` on 2026-10-11. **108 components**, **12 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`renderSeasonRows`** | `.cell` `.cold` `.hot` `.meta` `.range-bar` `.range-cell` | `tabs-menu.ts:bootGuide` |
+| **`seasonCell`** | `.sg-cell` | `tabs-menu.ts:seasonGrid` |
+| **`seasonGrid`** | `.season-grid` `.sg-head` `.sg-row` | `tabs-menu.ts:renderSeasonRows` |
 | **`wireMenu`** | `.menu-card` `.menu-label` `.menu-row` `.menu-section` | `tabs-menu.ts:bootTabsMenu` |
 
 ## wave-chart.ts
@@ -306,7 +307,6 @@ renderer speaks. Listed most-used first.
 | **`growthWord`** | model.ts | 3 places |
 | **`hasWhen`** | cycle-analysis.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
-| **`inflationFigure`** | model.ts | 3 places |
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`lenKey`** | cycle-analysis.ts | 3 places |

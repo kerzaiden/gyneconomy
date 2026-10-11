@@ -2,8 +2,8 @@ import { facts, legendKey, listed, srcBlock } from "./format.ts";
 import { byId, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
-import { CLOCK_SRC, FED_TARGET_SRC, frameworkRows, HOLD_BAND, marketCycles, typicalCycleSrc } from "./data.ts";
-import { cpiNow, currentEra, currentSeason, inflationFigure, recessionRecord, seasonGroup } from "./model.ts";
+import { CLOCK_SRC, FED_TARGET_SRC, frameworkRows, gdpSrc, marketCycles, typicalCycleSrc } from "./data.ts";
+import { currentEra, currentSeason, recessionRecord, seasonGroup } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { FRAMEWORK_SRC, sourceShelves } from "./sources.ts";
 import { categoriesShown, ROSTER, TIMING } from "./roster.ts";
@@ -13,18 +13,19 @@ function recessionLine(){
   var r = recessionRecord();
   return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of " + r.total + " NBER recession quarters fell in Autumn or Winter, seasons that hold " + r.share + "% of all quarters.";
 }
-function seasonNotes(){
-  return facts([
-    "<b>Growth gap</b>: real GDP growth over a year against its potential, the CBO\u2019s since 1950; within \u00b1" + HOLD_BAND + " points the regime holds.",
-    "<b>Price level</b>: CPI before 2000, PCE since; 1\u20133% is a point either side of the Fed\u2019s 2% target.",
-    "<b>Direction</b>: inflation\u2019s twelve-month trend; under about a quarter point a year is steady.",
-    recessionLine()
-  ]) + srcBlock([CLOCK_SRC[0], FED_TARGET_SRC]);
+function seasonCell(group: string, span: number, kinds: string[]){
+  var now = seasonGroup(currentSeason) === group;
+  return '<div class="sg-cell ' + group + (span > 1 ? ' wide' : '') + (now ? ' now' : '') + '">' + (now ? '<em>Now</em>' : '') +
+    '<b>' + wheelMeta[group as Season].name + '</b>' + kinds.map(function(k){ return '<small>' + k + '</small>'; }).join("") + '</div>';
 }
-function rangePos(v: number){
-  if (v < 1) return 0.03 + 0.21 * Math.max(0, Math.min(1, (v + 1) / 2));
-  if (v <= 3) return 0.33 + 0.30 * (v - 1) / 2;
-  return 0.75 + 0.22 * Math.min(1, (v - 3) / 4);
+function seasonGrid(){
+  var head = function(name: string, sub: string){ return '<div class="sg-head"><b>' + name + '</b><small>' + sub + '</small></div>'; };
+  var row = function(name: string){ return '<div class="sg-row">' + name + '</div>'; };
+  var heating = function(k: Season){ return wheelMeta[k].theme + ' <span aria-label="heating">\u2192</span>'; };
+  var cooling = function(k: Season){ return '<span aria-label="cooling">\u2190</span> ' + wheelMeta[k].theme; };
+  return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1\u20133%") + head("Hot", "above 3%") +
+    row("Expansion") + seasonCell("spring", 2, [heating("spring"), cooling("springdeflation")]) + seasonCell("summer", 1, [heating("summer")]) +
+    row("Contraction") + seasonCell("winter", 1, [wheelMeta.winter.theme]) + seasonCell("autumn", 2, [heating("lateautumn"), cooling("autumn")]) + '</div>';
 }
 function cycleModelLine(){
   var closed = marketCycles.filter(function(c){ return !c.ongoing; }), years = closed.reduce(function(a, c){ return a + c.to - c.from + 1; }, 0);
@@ -41,33 +42,14 @@ function wireIdea(){
   viewMore(need("idea-more"), [].slice.call(need("idea-prose").querySelectorAll("p[hidden]")));
 }
 function renderSeasonRows(){
-
-  var seasonRules = [
-    {key:"springdeflation", growth:"Expansion",  temp:"\u2190 Cooling", zones:{below:1, within:1, above:1}, range:"Cooling — at any level"},
-    {key:"spring",          growth:"Expansion",  temp:"Heating \u2192", zones:{within:1, below:1}, range:"Heating — within or below the range"},
-    {key:"summer",          growth:"Expansion",  temp:"Hot / Heating \u2192", zones:{above:1},  range:"Above the range — hot, heating or steady"},
-    {key:"lateautumn",      growth:"Contraction", temp:"Hot / Heating \u2192", zones:{above:1}, range:"Above the range — hot, heating or steady"},
-    {key:"autumn",          growth:"Contraction", temp:"Warm / \u2190 Cooling", zones:{within:1, above:1}, range:"Within the range, or hot and cooling"},
-    {key:"winter",          growth:"Contraction", temp:"\u21c4 Cold",    zones:{below:1},  range:"Below the range — cold"}
-  ];
-  var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
-  var FLAME = '<svg class="hot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.4 0 7-2.9 7-6.6 0-3.2-2-5.3-3.6-7.2-.6 1.4-1.4 2.2-2.4 2.6.3-3-1-6.3-4-8.8-.2 3-1.6 4.6-3 6.3C4.6 10.1 5 12 5 15.4 5 19.1 7.6 22 12 22z"/><path d="M12 22c-1.9 0-3-1.4-3-3 0-1.5.9-2.4 1.8-3.4.6 1 1.4 1.5 2.2 1.7.4-1 .3-2.1.1-3.1 1.5 1.3 1.9 2.7 1.9 4.2 0 1.8-1.1 3.6-3 3.6z"/></svg>';
-  function rangeBarHtml(zones: { below?: number; within?: number; above?: number }, dotValue: number | null){
-    return '<span class="range-bar">' +
-      ["below","within","above"].map(function(z){
-        var w = zones[z as keyof typeof zones] || 0;
-        return '<b class="' + z + (w ? ' on' : '') + '"></b>';
-      }).join("") +
-      (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="PCE ' + dotValue.toFixed(1) + '% today"></i>' : '') +
-    '</span>';
-  }
-  put("seasons-rows", seasonRules.map(function(r){
-      var m = wheelMeta[r.key as Season], now = r.key === currentSeason;
-      return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
-        '<span class="range-cell" title="' + r.range + (now ? ' · PCE ' + inflationFigure(cpiNow) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
-    }).join(""));
+  put("seasons-grid", seasonGrid());
+  put("seasons-notes", facts([
+    "<b>Expansion</b>: real GDP growth at or above its potential, the CBO\u2019s since 1950.",
+    "<b>Contraction</b>: growth below its potential.",
+    "<b>Arrows</b>: \u2192 prices heating, \u2190 prices cooling.",
+    recessionLine()
+  ]) + srcBlock([CLOCK_SRC[0], FED_TARGET_SRC, gdpSrc[gdpSrc.length - 1]]));
   renderCycleModel();
-  put("seasons-notes", seasonNotes());
 
   put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' +
     frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join(""));

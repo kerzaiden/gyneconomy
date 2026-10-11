@@ -367,7 +367,7 @@
   .season-wheel-hub-open:disabled{ cursor:default; }
   .season-wheel-hub-date{ font-family:var(--font-sans); font-size:calc(var(--dial) * 0.042); line-height:1.1; color:var(--text-secondary); }
   .season-wheel-hub-date b{ font-weight:700; color:var(--text-primary); }
-  .season-wheel-hub-theme, .seasons-rows .lag-row span:first-child{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
+  .season-wheel-hub-theme{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
   .season-wheel-hub-theme.bull, .season-wheel-hub-theme.bear{ padding:0.04em 0.32em 0.08em; border-radius:0.3em; }
   .season-wheel-hub-theme.bull{ color:var(--bull-ink); background:var(--bull-wash); }
   .season-wheel-hub-theme.bear{ color:var(--bear-ink); background:var(--bear-wash); }
@@ -479,6 +479,18 @@
   .model-card > .menu-section{ margin:0; padding:14px 16px 12px; border-bottom:1px solid var(--border); }
   .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px 16px; border-bottom:1px solid var(--border); }
   .model-notes{ padding:12px 16px 14px; border-top:1px solid var(--border); }
+  .model-card > p + .season-grid{ margin-top:-1px; }
+  .season-grid{ display:grid; grid-template-columns:20px 1fr 1fr 1fr; gap:6px; padding:12px 16px 16px; }
+  .sg-head{ align-self:end; text-align:center; font-size:var(--type-meta); font-weight:600; color:var(--text-primary); line-height:1.3; }
+  .sg-head small{ display:block; font-weight:400; color:var(--text-muted); }
+  .sg-row{ writing-mode:vertical-rl; transform:rotate(180deg); justify-self:center; align-self:center; font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
+  .sg-cell{ position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:3px; min-height:64px; padding:12px 8px;
+    border-radius:var(--radius); background:color-mix(in srgb, var(--season) 30%, var(--surface)); text-align:center; }
+  .sg-cell.wide{ grid-column:span 2; }
+  .sg-cell b{ font-size:var(--type-reading); font-weight:700; color:var(--text-primary); }
+  .sg-cell small{ font-size:var(--type-label); line-height:1.35; color:var(--text-secondary); }
+  .sg-cell.now{ box-shadow:inset 0 0 0 2px var(--accent-ink); }
+  .sg-cell em{ position:absolute; top:6px; right:9px; font-style:normal; font-size:var(--type-label); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent-ink); }
   .model-notes p{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-secondary); }
   .model-notes > :first-child{ margin-top:0; }
   .model-card > p:last-child{ border-bottom:0; }
@@ -486,32 +498,6 @@
   .model-card .menu-prose p{ color:var(--text-secondary); line-height:1.65; }
   .model-card .legend-rows{ margin:0; }
   .model-card .legend-row{ padding:10px 16px; }
-  .seasons-rows .lag-row{ grid-template-columns: 1.35fr 0.75fr 1.15fr 1.15fr; font-size:var(--type-interface); padding:10px 16px; }
-  .seasons-rows .meta{ display:none; } .seasons-rows .cell{ white-space:nowrap; }
-  @media (max-width:640px){
-    .seasons-rows .lag-row{ grid-template-columns: 1fr; grid-template-areas: "name" "meta" "range"; gap:5px; padding:12px 16px; }
-    .seasons-rows .lag-row span:first-child{ grid-area:name; font-size:var(--type-reading); }
-    .seasons-rows .cell{ display:none; }
-    .seasons-rows .meta{ display:block; grid-area:meta; font-size:var(--type-meta); color:var(--text-secondary); }
-    .seasons-rows .lag-row span:last-child{ grid-area:range; margin-top:3px; }
-    .seasons-rows .range-bar{ height:12px; width:auto; flex:1; max-width:none; }
-    .seasons-rows .range-cell{ gap:8px; }
-    .seasons-rows .range-cell svg{ width:15px; height:15px; }
-    .seasons-rows .range-bar i{ width:14px; height:14px; margin:-7px 0 0 -7px; }
-  }
-  .seasons-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
-  .seasons-rows .range-bar b{ background:color-mix(in srgb, var(--text-muted) 18%, var(--surface)); } .seasons-rows .range-bar b.on.below{ background:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); } .seasons-rows .range-bar b.on.within{ background:color-mix(in srgb, var(--gold) 60%, var(--surface)); } .seasons-rows .range-bar b.on.above{ background:color-mix(in srgb, var(--critical) 60%, var(--surface)); }
-  .seasons-rows .lag-row span:last-child{ text-align:left; font-family:inherit; }
-  .range-cell{ display:flex; align-items:center; gap:6px; }
-  .range-cell svg{ width:13px; height:13px; flex:none; }
-  .range-cell svg.cold{ color:var(--season-winter); } .range-cell svg.hot{ color:var(--season-summer); }
-  .range-bar{ position:relative; display:flex; gap:2px; height:9px; width:100%; max-width:150px; }
-  .range-bar b{ display:block; height:100%; border-radius:5px; background:var(--track); }
-  .range-bar b.below{ flex:0 0 28%; } .range-bar b.within{ flex:0 0 40%; } .range-bar b.above{ flex:0 0 28%; }
-  .range-bar b.on{ background:var(--season, var(--text-muted)); }
-  .range-bar i{ position:absolute; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border-radius:50%; background:var(--surface); border:2.5px solid var(--text-primary); box-sizing:border-box; }
-  .seasons-rows .lag-row.now{ background:var(--surface-2); }
-  .seasons-rows .lag-row em{ font-style:normal; font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-ink); margin-left:6px; }
   .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; padding:10px 16px; }
   .framework-rows .lag-row span:last-child{ font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); text-align:right; }
   .framework-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
@@ -1305,9 +1291,10 @@
         <div class="model-notes" id="cycle-model-notes"></div>
       </div>
 
-      <div class="menu-card model-card seasons-rows">
-        <h3 class="menu-section" id="seasons-kicker">The Season Model</h3>
-        <div id="seasons-rows"></div>
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Season Model</h3>
+        <p>Two questions set the season: is growth keeping up with its potential, and how hot are prices?</p>
+        <div id="seasons-grid"></div>
         <div class="model-notes" id="seasons-notes"></div>
       </div>
 
@@ -55664,13 +55651,26 @@
     var r = recessionRecord();
     return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of " + r.total + " NBER recession quarters fell in Autumn or Winter, seasons that hold " + r.share + "% of all quarters.";
   }
-  function seasonNotes() {
-    return facts([ "<b>Growth gap</b>: real GDP growth over a year against its potential, the CBO’s since 1950; within ±" + HOLD_BAND + " points the regime holds.", "<b>Price level</b>: CPI before 2000, PCE since; 1–3% is a point either side of the Fed’s 2% target.", "<b>Direction</b>: inflation’s twelve-month trend; under about a quarter point a year is steady.", recessionLine() ]) + srcBlock([ CLOCK_SRC[0], FED_TARGET_SRC ]);
+  function seasonCell(group, span, kinds) {
+    var now2 = seasonGroup(currentSeason) === group;
+    return '<div class="sg-cell ' + group + (span > 1 ? " wide" : "") + (now2 ? " now" : "") + '">' + (now2 ? "<em>Now</em>" : "") + "<b>" + wheelMeta[group].name + "</b>" + kinds.map(function(k) {
+      return "<small>" + k + "</small>";
+    }).join("") + "</div>";
   }
-  function rangePos(v) {
-    if (v < 1) return .03 + .21 * Math.max(0, Math.min(1, (v + 1) / 2));
-    if (v <= 3) return .33 + .3 * (v - 1) / 2;
-    return .75 + .22 * Math.min(1, (v - 3) / 4);
+  function seasonGrid() {
+    var head = function(name, sub) {
+      return '<div class="sg-head"><b>' + name + "</b><small>" + sub + "</small></div>";
+    };
+    var row = function(name) {
+      return '<div class="sg-row">' + name + "</div>";
+    };
+    var heating = function(k) {
+      return wheelMeta[k].theme + ' <span aria-label="heating">→</span>';
+    };
+    var cooling = function(k) {
+      return '<span aria-label="cooling">←</span> ' + wheelMeta[k].theme;
+    };
+    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1–3%") + head("Hot", "above 3%") + row("Expansion") + seasonCell("spring", 2, [ heating("spring"), cooling("springdeflation") ]) + seasonCell("summer", 1, [ heating("summer") ]) + row("Contraction") + seasonCell("winter", 1, [ wheelMeta.winter.theme ]) + seasonCell("autumn", 2, [ heating("lateautumn"), cooling("autumn") ]) + "</div>";
   }
   function cycleModelLine() {
     var closed = marketCycles.filter(function(c) {
@@ -55694,73 +55694,9 @@
     viewMore(need("idea-more"), [].slice.call(need("idea-prose").querySelectorAll("p[hidden]")));
   }
   function renderSeasonRows() {
-    var seasonRules = [ {
-      key: "springdeflation",
-      growth: "Expansion",
-      temp: "← Cooling",
-      zones: {
-        below: 1,
-        within: 1,
-        above: 1
-      },
-      range: "Cooling — at any level"
-    }, {
-      key: "spring",
-      growth: "Expansion",
-      temp: "Heating →",
-      zones: {
-        within: 1,
-        below: 1
-      },
-      range: "Heating — within or below the range"
-    }, {
-      key: "summer",
-      growth: "Expansion",
-      temp: "Hot / Heating →",
-      zones: {
-        above: 1
-      },
-      range: "Above the range — hot, heating or steady"
-    }, {
-      key: "lateautumn",
-      growth: "Contraction",
-      temp: "Hot / Heating →",
-      zones: {
-        above: 1
-      },
-      range: "Above the range — hot, heating or steady"
-    }, {
-      key: "autumn",
-      growth: "Contraction",
-      temp: "Warm / ← Cooling",
-      zones: {
-        within: 1,
-        above: 1
-      },
-      range: "Within the range, or hot and cooling"
-    }, {
-      key: "winter",
-      growth: "Contraction",
-      temp: "⇄ Cold",
-      zones: {
-        below: 1
-      },
-      range: "Below the range — cold"
-    } ];
-    var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
-    var FLAME = '<svg class="hot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.4 0 7-2.9 7-6.6 0-3.2-2-5.3-3.6-7.2-.6 1.4-1.4 2.2-2.4 2.6.3-3-1-6.3-4-8.8-.2 3-1.6 4.6-3 6.3C4.6 10.1 5 12 5 15.4 5 19.1 7.6 22 12 22z"/><path d="M12 22c-1.9 0-3-1.4-3-3 0-1.5.9-2.4 1.8-3.4.6 1 1.4 1.5 2.2 1.7.4-1 .3-2.1.1-3.1 1.5 1.3 1.9 2.7 1.9 4.2 0 1.8-1.1 3.6-3 3.6z"/></svg>';
-    function rangeBarHtml(zones, dotValue) {
-      return '<span class="range-bar">' + [ "below", "within", "above" ].map(function(z) {
-        var w = zones[z] || 0;
-        return '<b class="' + z + (w ? " on" : "") + '"></b>';
-      }).join("") + (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="PCE ' + dotValue.toFixed(1) + '% today"></i>' : "") + "</span>";
-    }
-    put("seasons-rows", seasonRules.map(function(r) {
-      var m = wheelMeta[r.key], now2 = r.key === currentSeason;
-      return '<div class="lag-row ' + seasonGroup(r.key) + (now2 ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now2 ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now2 ? " · PCE " + inflationFigure(cpiNow) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now2 ? cpiNow : null) + FLAME + "</span></div>";
-    }).join(""));
+    put("seasons-grid", seasonGrid());
+    put("seasons-notes", facts([ "<b>Expansion</b>: real GDP growth at or above its potential, the CBO’s since 1950.", "<b>Contraction</b>: growth below its potential.", "<b>Arrows</b>: → prices heating, ← prices cooling.", recessionLine() ]) + srcBlock([ CLOCK_SRC[0], FED_TARGET_SRC, gdpSrc[gdpSrc.length - 1] ]));
     renderCycleModel();
-    put("seasons-notes", seasonNotes());
     put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' + frameworkRows.map(function(r) {
       return '<div class="lag-row"><span>' + r.indicator + "</span><span>" + r.body + "</span><span>" + r.economy + "</span><span>" + r.category + "</span></div>";
     }).join(""));

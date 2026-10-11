@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,807 lines** in 44 files, about 600 KB, roughly **170 thousand tokens**. No session can
+The source is **8,776 lines** in 44 files, about 596 KB, roughly **169 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `a5af7b6` on 2026-10-11.
+Generated from commit `9e44908` on 2026-10-11.
 
 ## The page
 
@@ -18,8 +18,8 @@ Generated from commit `a5af7b6` on 2026-10-11.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,163 | the whole stylesheet, every token and rule |
-| `page-body.html` | 247 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
+| `styles.css` | 1,149 | the whole stylesheet, every token and rule |
+| `page-body.html` | 248 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 40 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
@@ -45,7 +45,7 @@ Counts: **40** modules, **809** top-level functions, **125** top-level vars, **3
 | `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 141 | 12 | `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `render-core`, `render-pages` |
-| `js/tabs-menu.ts` | 230 | 16 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
+| `js/tabs-menu.ts` | 212 | 16 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
 | `js/repaint.ts` | 40 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 60 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 66 | 14 | `cycle-analysis`, `data`, `dial-ring`, `dom`, `format`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
@@ -96,7 +96,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 16 | `bootAnalysis` | `js/analysis.ts:74`–78 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:135`–140 |
-| 19 | `bootTabsMenu` | `js/tabs-menu.ts:219`–229 |
+| 19 | `bootTabsMenu` | `js/tabs-menu.ts:201`–211 |
 | 20 | `bootRepaint` | `js/repaint.ts:26`–39 |
 
 ## Script, module by module
@@ -798,41 +798,41 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 12 | `recessionLine` | `function recessionLine(` |
-| 16 | `seasonNotes` | `function seasonNotes(` |
-| 24 | `rangePos` | `function rangePos(` |
-| 29 | `cycleModelLine` | `function cycleModelLine(` |
-| 33 | `PEAK_MARK` | `var PEAK_MARK =` |
-| 34 | `renderCycleModel` | `function renderCycleModel(` |
-| 40 | `wireIdea` | `function wireIdea(` |
-| 43 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 16 | `seasonCell` | `function seasonCell(` |
+| 21 | `seasonGrid` | `function seasonGrid(` |
+| 30 | `cycleModelLine` | `function cycleModelLine(` |
+| 34 | `PEAK_MARK` | `var PEAK_MARK =` |
+| 35 | `renderCycleModel` | `function renderCycleModel(` |
+| 41 | `wireIdea` | `function wireIdea(` |
+| 44 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 #### How to Read: where each reading sits and when it speaks, from the roster
 
 | Line | Name | Anchor |
 |---|---|---|
-| 77 | `placeLine` | `function placeLine(` |
-| 84 | `timingLine` | `function timingLine(` |
-| 91 | `renderHowto` | `function renderHowto(` |
+| 59 | `placeLine` | `function placeLine(` |
+| 66 | `timingLine` | `function timingLine(` |
+| 73 | `renderHowto` | `function renderHowto(` |
 
 #### TAB NAVIGATION (Today / Cycle / Analysis / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 93 | `renderTopbar` | `function renderTopbar(` |
-| 122 | `wireTabKeys` | `function wireTabKeys(` |
-| 123 | `wireTabDoors` | `function wireTabDoors(` |
+| 75 | `renderTopbar` | `function renderTopbar(` |
+| 104 | `wireTabKeys` | `function wireTabKeys(` |
+| 105 | `wireTabDoors` | `function wireTabDoors(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 131 | `wireMenu` | `function wireMenu(` |
+| 113 | `wireMenu` | `function wireMenu(` |
 
 #### Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its
 
 | Line | Name | Anchor |
 |---|---|---|
-| 211 | `bootGuide` | `function bootGuide(` |
+| 193 | `bootGuide` | `function bootGuide(` |
 
 ### `js/repaint.ts`
 
@@ -1532,20 +1532,20 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 341 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
 | 403 | tab bar (app-style segmented navigation) |
 | 439 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
-| 522 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 662 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 679 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 726 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 864 | View more: the button under Year by Year and Herstory |
-| 875 | The symptoms: a cycle's years against today |
-| 1,021 | yield curve charts |
-| 1,035 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,049 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,057 | un-inversion-to-recession historical lag panel |
-| 1,066 | the reading's tag |
-| 1,070 | info icon + popover (progressive disclosure for longer notes) |
-| 1,084 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,154 | footer |
+| 508 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
+| 648 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 665 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 712 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 850 | View more: the button under Year by Year and Herstory |
+| 861 | The symptoms: a cycle's years against today |
+| 1,007 | yield curve charts |
+| 1,021 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,035 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,043 | un-inversion-to-recession historical lag panel |
+| 1,052 | the reading's tag |
+| 1,056 | info icon + popover (progressive disclosure for longer notes) |
+| 1,070 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,140 | footer |
 
 ## Markup landmarks
 
@@ -1554,7 +1554,7 @@ Banner comments in `page-body.html`:
 | Line | Section |
 |---|---|
 
-Every `id` in the static DOM (63), which is what the renderers fill:
+Every `id` in the static DOM (62), which is what the renderers fill:
 
 | Line | id |
 |---|---|
@@ -1600,27 +1600,26 @@ Every `id` in the static DOM (63), which is what the renderers fill:
 | 164 | `cycle-model-line` |
 | 165 | `cycle-model-key` |
 | 166 | `cycle-model-notes` |
-| 170 | `seasons-kicker` |
-| 171 | `seasons-rows` |
-| 172 | `seasons-notes` |
-| 176 | `framework-kicker` |
-| 177 | `framework-rows` |
-| 178 | `framework-notes` |
-| 188 | `sheet-appearance` |
-| 196 | `theme-toggle` |
-| 203 | `sheet-contact` |
-| 212 | `contact-form` |
-| 213 | `contact-title` |
-| 214 | `contact-message` |
-| 216 | `contact-hint` |
-| 217 | `contact-send` |
-| 223 | `sheet-sources` |
-| 226 | `sources-back` |
-| 231 | `asof-text` |
-| 232 | `sources-groups` |
-| 238 | `detail-backdrop` |
-| 240 | `detail-modal-close` |
-| 241 | `detail-modal-body` |
+| 172 | `seasons-grid` |
+| 173 | `seasons-notes` |
+| 177 | `framework-kicker` |
+| 178 | `framework-rows` |
+| 179 | `framework-notes` |
+| 189 | `sheet-appearance` |
+| 197 | `theme-toggle` |
+| 204 | `sheet-contact` |
+| 213 | `contact-form` |
+| 214 | `contact-title` |
+| 215 | `contact-message` |
+| 217 | `contact-hint` |
+| 218 | `contact-send` |
+| 224 | `sheet-sources` |
+| 227 | `sources-back` |
+| 232 | `asof-text` |
+| 233 | `sources-groups` |
+| 239 | `detail-backdrop` |
+| 241 | `detail-modal-close` |
+| 242 | `detail-modal-body` |
 
 ## Finding things fast
 

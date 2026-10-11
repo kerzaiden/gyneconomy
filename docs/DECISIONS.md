@@ -304,20 +304,24 @@ settles it; none is open after V668.
   model and framework the Content tab used to carry; its text is a draft for Keren to edit.** Keren merged
   them and renamed the page. (V657)
 - **Every section of About Gyneconomy is one container with its title inside, as the Cycle Model is; The Idea
-  shows its first paragraph and a View more for the rest; the Season Model's rows carry no header row.** Keren
-  wanted The Idea built like the Cycle Model, all of it one container, and found the "Season" header unnecessary.
-  (0.8.1, Oct 5, 2026)
+  shows its first paragraph and a View more for the rest.** Keren wanted The Idea built like the Cycle Model, all of
+  it one container. (0.8.1, Oct 5, 2026)
 - **About Gyneconomy has no (i): it is already the page that explains, so each container ends on its own brief
   notes, a line or a few bold-led bullets with their sources, and the containers keep the app's spacing (the page
   gap between them, 16px inside).** Keren did not want an info button inside an info page, nor many buttons to
-  reach the data. The two-by-three season table and the "Today" paragraph went with the Season Model's (i): the
-  rows already show every season and mark today's. (Legend Icon)
+  reach the data. (Legend Icon)
+- **The Season Model is one two-by-three grid: price level across (Cold below 1%, In range 1–3%, Hot above 3%),
+  Expansion and Contraction down the side in vertical labels, each season a block in its colour (Spring and Autumn
+  two columns wide), its kinds inside with an arrow for the direction of prices (→ heating, ← cooling, Winter
+  none), and today's season outlined and marked Now.** Keren found the six rows with their range bars too complex;
+  the grid answers the model's two questions at a glance, and the arrows read along the temperature axis. Below it,
+  bold-led bullets define Expansion (growth at or above potential, the CBO's since 1950), Contraction and the
+  arrows, then the record against recessions. (Legend Icon)
 - **The Cycle Model speaks in bull and bear years, and says how many cycles the record holds and how long they
   run on average, computed from the app's own closed cycles.** A cycle runs from its first bull year to the bear
   year that ends it; the average length gives a reader a notion of how the whole app is built. (0.8.1, Oct 5, 2026)
 - **The Framework's container holds its table, full width, and one line under it on the seven signs and when each
-  kind speaks,** so the page does not repeat itself. The Season Model's notes use the precise terms, concisely, as
-  Keren asked: growth gap (with its sensitivity), price level and direction. The growth gap (Keren's name) is
+  kind speaks,** so the page does not repeat itself. The growth gap (Keren's name) is
   growth against potential growth (the Investment Clock's growth above or below trend), not the output gap, which
   measures the level: tested on 1953–2026, the output gap put 31 of 39 recession quarters in Autumn or Winter
   against the growth gap's 38 (season-model/output-gap-test.md), so the app does not carry the output gap. For

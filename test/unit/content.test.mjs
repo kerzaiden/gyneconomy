@@ -150,8 +150,11 @@ test('the dial carries no title, only its legend icon, a door to About Gyneconom
   assert.ok(document.querySelector('#sheet-book #cycle-model'));
   const about = document.getElementById('sheet-book');
   assert.equal(about.querySelectorAll('.expand-btn, .info-btn').length, 0, 'About opens nothing further: its notes sit in its cards');
-  assert.deepEqual([...about.querySelectorAll('#seasons-notes .facts li b')].map(b => b.textContent), ['Growth gap', 'Price level', 'Direction', 'Against the record']);
+  assert.deepEqual([...about.querySelectorAll('#seasons-notes .facts li b')].map(b => b.textContent), ['Expansion', 'Contraction', 'Arrows', 'Against the record']);
   assert.ok(document.getElementById('framework-notes').textContent.includes('seven signs'));
+  const cells = [...about.querySelectorAll('#seasons-grid .sg-cell')];
+  assert.deepEqual(cells.map(c => c.querySelector('b').textContent), ['Spring', 'Summer', 'Winter', 'Autumn']);
+  assert.equal(about.querySelectorAll('#seasons-grid .sg-cell.now').length, 1);
   assert.deepEqual([...document.querySelectorAll('#cycle-model-key .legend-row')].map(r => r.firstChild.nextSibling.textContent), ['Bull year', 'Bear year', 'Year in progress', 'Peak year']);
   const first = document.querySelector('#diagnosis .trend-card');
   assert.equal(first.querySelector('.trend-head').textContent, nowModel.era.name + ' \u00b7 ' + cycLabel(nowModel.era).years);
