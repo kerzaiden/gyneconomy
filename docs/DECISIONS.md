@@ -114,7 +114,7 @@ settles it; none is open after V668.
   more", which opens the rest in place ("Read less" closes it).** The story's own page repeated Risk Factors, already
   on Today, and a page for one paragraph was a detour; one title line with the years saves the space a separate name
   and date took, and the book already says it is a story, so the title does not. A past cycle keeps its story, and because every cycle page is one page, today's cycle carries the
-  same card. The Weather Report on Today dates its edition in full ("9 October 2026"), never "Updated": a report is plainly as of its date. Risk Factors follow the lede, and
+  same card. The Weather Report on Today dates its edition in full ("October 9, 2026"), never "Updated": a report is plainly as of its date. Dates follow the US convention, month first and no ordinal ("October 9", "Oct 11" where space is tight), the app's readers' convention; "9 October" read as foreign to Keren. Risk Factors follow the lede, and
   the lede carries only what moved and never restates the story. (Weather Report, Today Tab, Story In Place)
 - **A new edition is written only when there is news, checked every weekday evening, by a scheduled Claude routine
   that publishes it without review.** Of the readings only the Treasury curve, Fear and CAPE move on an ordinary

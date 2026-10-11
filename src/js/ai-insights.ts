@@ -9,7 +9,7 @@ import { CAT_MARK, IND, riskCard } from "./cycle-analysis.ts";
 
 // ---- Today: the Weather Report and its risk factors; every cycle page: its Cycle Story, read in place ----
 var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-function dateWords(iso: string){ var d = iso.split("-").map(Number); return (d[2] ? d[2] + " " : "") + MONTH_NAMES[d[1] - 1] + " " + d[0]; }
+function dateWords(iso: string){ var d = iso.split("-").map(Number); return MONTH_NAMES[d[1] - 1] + " " + (d[2] ? d[2] + ", " : "") + d[0]; }
 function riskDoor(t: string, c: Cycle){ return ' data-open="' + IND + '" data-title="Elements" data-ind-cat="" data-ind-tier="' + t + '" data-ind-cycle="' + c.name + '"'; }
 function riskFactors(c: Cycle){
   return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk today.");

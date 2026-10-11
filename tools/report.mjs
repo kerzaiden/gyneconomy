@@ -4,13 +4,13 @@ import fs from 'fs';
 const ROOT = new URL('../', import.meta.url);
 const json = p => JSON.parse(fs.readFileSync(new URL(p, ROOT), 'utf8'));
 const MONTHS = 'January|February|March|April|May|June|July|August|September|October|November|December';
-const DATES = [new RegExp('\\b\\d{1,2} (' + MONTHS + ')( \\d{4})?\\b', 'g'), new RegExp('\\b(' + MONTHS + ') \\d{4}\\b', 'g'), /\bQ[1-4] \d{4}\b/g, /\b(18|19|20)\d{2}s?\b/g, /S&P 500/g, /\b\d+-(year|month|week|day)\b/g];
+const DATES = [new RegExp('\\b(' + MONTHS + ') \\d{1,2}(, \\d{4})?\\b', 'g'), new RegExp('\\b(' + MONTHS + ') \\d{4}\\b', 'g'), /\bQ[1-4] \d{4}\b/g, /\b(18|19|20)\d{2}s?\b/g, /S&P 500/g, /\b\d+-(year|month|week|day)\b/g];
 const FORECAST = /\b(will|won['’]t|expect\w*|forecast\w*|predict\w*|outlook|likely|unlikely|going to|poised|bound to|next (week|month|quarter|year))\b/i;
 const LIMITS = { headline: 80, lede: 420, story: 900, element: 620 };
 const LINK = /\[([^\]]+)\]\(([^)]*)\)/g;
 
 const MONTH_NAMES = MONTHS.split('|'), EVERY = { q: 'quarterly', qi: 'quarterly', m: 'monthly', y: 'yearly', yi: 'yearly' };
-const dateWords = iso => { const d = iso.split('-').map(Number); return (d[2] ? d[2] + ' ' : '') + MONTH_NAMES[d[1] - 1] + ' ' + d[0]; };
+const dateWords = iso => { const d = iso.split('-').map(Number); return MONTH_NAMES[d[1] - 1] + ' ' + (d[2] ? d[2] + ', ' : '') + d[0]; };
 const keyWords = k => { const m = /^(\d{4})-(\d{2})/.exec(k); return m ? MONTH_NAMES[+m[2] - 1] + ' ' + m[1] : /^\d{4} Q\d$/.test(k) ? k.slice(5) + ' ' + k.slice(0, 4) : k; };
 const keyYear = k => +k.slice(0, 4);
 function recordWords(s) {

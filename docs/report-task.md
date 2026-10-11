@@ -46,7 +46,7 @@ in the facts, `YYYY-MM-DD`), `headline`, `lede`, `story`, and `elements` with on
   that stands out. Weather covers the season, the economy, the Fed and the market.
 - **Link each reading the first time it is named**: `[US 10-year Treasury](sheet-sign-pressure)`, with the ids
   from the facts.
-- **Quote a figure only as the facts print it**, and only a figure the facts hold. Say dates as "9 October".
+- **Quote a figure only as the facts print it**, and only a figure the facts hold. Say dates the US way, month first: "October 9", or "October 9, 2026" with the year; never "9 October" or "9th".
 - **Never forecast.** No "will", "expect", "likely", "outlook", "next year"; say what is, and what it last
   resembled ("the highest since 2007").
 - **Keep the market's words** (bull year, tightening, risk premium) and her voice: Mrs. Market is "she".
