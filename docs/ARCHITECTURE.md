@@ -424,8 +424,8 @@ Rules that shape the pages:
   card (Valuations: Shiller CAPE · Buffett indicator; Debt: Margin debt · Federal debt
   · Federal budget · Savings rate · Debt-to-income ratio · Default risk). The split pages are
   built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, declared by
-  `defineSplits` as readings), on the history component (`divergeChart` hung from the reading's
-  sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
+  `defineSplits` as readings), on the history component (`divergeChart`, columns from zero with the reading's
+  sourced line drawn across them, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
   Indicators holds the groups as its subcategories (0.8.5), and there are no group pages (0.8.6).
   The Power score is gone (V660): its card, page, composite and history;
   the three fiscal markers it summed each keep their own page.

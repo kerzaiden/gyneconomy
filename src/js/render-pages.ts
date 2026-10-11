@@ -4,11 +4,11 @@ import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPath, colWidth, divergeChart, fitLine, histFrame, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { curveAsOf, curveNoteFull, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { curveAsOf, curveNoteFull, FENCE_SRC, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cycleQtrIdx, cycleSlice } from "./model.ts";
 import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, timelineWindow } from "./history.ts";
 import { curveVerdict, fearCurve, horizonInfoHtml, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
-import { fedFundsHistoryChart } from "./history-charts.ts";
+import { fedFundsHistoryChart, rateShades } from "./history-charts.ts";
 import { chartShell, defineReading, redrawReading } from "./reading.ts";
 type SpreadSeries = { title: string; lede: string; data: typeof t10y3mHistory; detail: string; sources: Src[] };
 type VolPoint = (typeof volatilityHistory)[number];
@@ -244,8 +244,8 @@ function hormonesInfo(){ return '<h4>Effective Federal Funds Rate</h4>' + factsF
     "\u2014 that month ran partly under the previous target. " +
     "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " +
     "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " +
-    "both is the reason this one stands on zero rather than on its own minimum. " +
-    "Source: Federal Reserve H.15 via FRED, series FEDFUNDS."); }
+    "both is the reason this one stands on zero rather than on its own minimum. " + rateShades(fedFundsHistory) + " " +
+    "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.") + srcBlock([FENCE_SRC]); }
 function ffPeaks(){
   var out: typeof fedFundsHistory = [], mode = "up", ext = fedFundsHistory[0];
   fedFundsHistory.forEach(function(d){

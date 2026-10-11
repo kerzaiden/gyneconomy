@@ -331,7 +331,7 @@
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
     --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f;
     --hist-0:color-mix(in srgb, var(--gold) 40%, var(--surface)); --hist-1:color-mix(in srgb, var(--gold) 70%, var(--surface)); --hist-2:var(--gold);
-    --hist-3:color-mix(in srgb, var(--season-summer) 55%, var(--gold)); --hist-4:var(--season-summer); --hist-5:var(--accent);
+    --hist-3:color-mix(in srgb, var(--season-summer) 55%, var(--gold)); --hist-4:var(--season-summer); --hist-5:color-mix(in srgb, var(--bleed-mid) 55%, var(--blush)); --hist-x:var(--accent);
 
     --mini-h:42px;
     --pad:10px;
@@ -456,7 +456,7 @@
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); }
 
   .temp-col{ fill:none; stroke-linecap:round; }
-  .temp-col.s0{ stroke:var(--hist-5); }
+  .temp-col.s0{ stroke:var(--hist-x); }
   .temp-col.s1{ stroke:var(--hist-0); }
   .temp-col.s2{ stroke:var(--hist-1); }
   .temp-col.s3{ stroke:var(--hist-2); }
@@ -661,13 +661,13 @@
   .m2-col.v2{ stroke:var(--hist-2); }
   .m2-col.v3{ stroke:var(--hist-3); }
   .m2-col.v4{ stroke:var(--hist-4); }
-  .m2-col.v5{ stroke:var(--hist-5); }
+  .m2-col.v5{ stroke:var(--hist-x); }
 
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--hist-4); }
   .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); opacity:0.9; }
   .unemp-col.tight, .unemp-col.warning{ stroke:var(--hist-4); }
-  .unemp-col.serious{ stroke:var(--hist-5); }
+  .unemp-col.serious{ stroke:var(--hist-x); }
   .def-col{ fill:none; stroke-linecap:round; stroke:var(--hist-4); opacity:0.85; }
   .def-col.surplus{ stroke:var(--hist-2); opacity:0.95; }
 
@@ -799,6 +799,7 @@
   .ff-col.f3{ stroke:var(--hist-3); }
   .ff-col.f4{ stroke:var(--hist-4); }
   .ff-col.f5{ stroke:var(--hist-5); }
+  .ff-col.fx{ stroke:var(--hist-x); }
   .dv-bar.over{ stroke:var(--hist-4); } .dv-bar.under{ stroke:var(--hist-2); }
   .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
@@ -44534,6 +44535,10 @@
   var PULSE_STEADY_HI = pctl(m2vPre, .9) / PULSE_PRE2008;
   var PULSE_FLOOR = Math.min.apply(null, m2vPre) / PULSE_PRE2008;
   var PULSE_CEIL = Math.max.apply(null, m2vPre) / PULSE_PRE2008;
+  var FENCE_SRC = {
+    t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
+    u: "https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm"
+  };
   var PRODUCTIVITY_SRC = [ {
     t: "BLS — Productivity and Costs",
     u: "https://www.bls.gov/productivity/"
@@ -45215,16 +45220,16 @@
     }).filter(function(v) {
       return v != null;
     });
-    var lo = Math.min.apply(null, vs.concat([ o.mid ])), hi = Math.max.apply(null, vs.concat([ o.mid ]));
-    var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / (above + below || 1);
-    var midY = padT + above * unit;
+    var lo = Math.min.apply(null, vs.concat([ o.mid, 0 ])), hi = Math.max.apply(null, vs.concat([ o.mid, 0 ]));
+    var top = hi + (hi - lo) * .06, bot = lo < 0 ? lo - (hi - lo) * .06 : 0, unit = ih / (top - bot || 1);
     function y(v) {
-      return (midY - (v - o.mid) * unit).toFixed(1);
+      return (padT + (top - v) * unit).toFixed(1);
     }
+    var midY = parseFloat(y(o.mid)), zeroY = parseFloat(y(0));
     var n = o.vals.length, slot = iw / n, sw = colWidth(slot);
     var out = [ chartAxes({
-      lo: o.mid - below,
-      hi: o.mid + above,
+      lo: bot,
+      hi: top,
       y: y,
       x0: padL,
       x1: W - padR,
@@ -45242,9 +45247,10 @@
         return;
       }
       var v = d.v, cx = (padL + slot * (i + .5)).toFixed(1), y1 = parseFloat(y(v));
-      if (Math.abs(y1 - midY) < .6) y1 = midY + (v >= o.mid ? -.6 : .6);
-      out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
+      if (Math.abs(y1 - zeroY) < .6) y1 = zeroY + (v >= 0 ? -.6 : .6);
+      out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, zeroY, y1, sw) + '"/>');
     });
+    if (bot < 0) out.push(zeroRule(padL, W - padR, zeroY));
     var dAvg = vs.reduce(function(a, v) {
       return a + v;
     }, 0) / (vs.length || 1);
@@ -49298,6 +49304,15 @@
   function mortgageHistoryChart(Wpx, from, o) {
     return rateColumnsChart(mortgageHistory, "mortgageHistoryChart", "The 30-year fixed mortgage rate", Wpx, from, o);
   }
+  function rateFence(series) {
+    var vs = series.map(function(d) {
+      return d.v;
+    }), q1 = quartile(vs, .25), q3 = quartile(vs, .75);
+    return q3 + 1.5 * (q3 - q1);
+  }
+  function rateShades(series) {
+    return "The columns shade from yellow to red by height, six equal steps of the range in view; plum marks only the months past " + rateFence(series).toFixed(2) + "%, Tukey’s fence of the whole record, the standard rule for an outlier.";
+  }
   function rateColumnsChart(series, geom, what, Wpx, from, o) {
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
@@ -49340,8 +49355,9 @@
     var seenV = seen.map(function(d) {
       return d.v;
     });
-    var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
+    var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV), fence = rateFence(series);
     var step = function(v) {
+      if (v > fence) return "x";
       if (!(vHi > vLo)) return 5;
       return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
     };
@@ -50069,7 +50085,7 @@
     return a === -1 ? null : [ a, b ];
   }
   function hormonesInfo() {
-    return "<h4>Effective Federal Funds Rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole yield curve is quoted against, which is why it reads first on this page and the Treasury levels below read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, so the two are different figures and the page says which is which: the range is the decision, the chart is where money traded. Target " + fedFundsRange() + (now.fedFunds.asOf ? ", set " + now.fedFunds.asOf : "") + (now.fedFunds.vote ? " on a " + now.fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date — that month ran partly under the previous target. The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June 1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds both is the reason this one stands on zero rather than on its own minimum. Source: Federal Reserve H.15 via FRED, series FEDFUNDS.");
+    return "<h4>Effective Federal Funds Rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole yield curve is quoted against, which is why it reads first on this page and the Treasury levels below read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, so the two are different figures and the page says which is which: the range is the decision, the chart is where money traded. Target " + fedFundsRange() + (now.fedFunds.asOf ? ", set " + now.fedFunds.asOf : "") + (now.fedFunds.vote ? " on a " + now.fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date — that month ran partly under the previous target. The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June 1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds both is the reason this one stands on zero rather than on its own minimum. " + rateShades(fedFundsHistory) + " Source: Federal Reserve H.15 via FRED, series FEDFUNDS.") + srcBlock([ FENCE_SRC ]);
   }
   function ffPeaks() {
     var out = [], mode = "up", ext = fedFundsHistory[0];
@@ -50753,10 +50769,6 @@
     return INSIGHT[key] ? INSIGHT[key]() : "";
   }
   var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
-  var FENCE_SRC = {
-    t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
-    u: "https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm"
-  };
   var SD_SRC = {
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — Measures of Scale (standard deviation)",
     u: "https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm"
@@ -53445,7 +53457,7 @@
     };
     return "<h4>30-Year Mortgage Rate</h4>" + factsFrom("The average rate on a new 30-year fixed-rate mortgage, as Freddie Mac surveys lenders each week; the chart is the monthly average of the weeks surveyed, " + last.v.toFixed(2) + "% in " + atMonth(last) + ", whose last month holds only the weeks published so far. It is the price of money where most households meet it: lenders price it off the 10-year Treasury and add a spread for their risk and costs. It is what a new loan costs, not what households pay: most mortgages are fixed, so a higher rate reaches the Debt-to-income ratio only as people move or refinance. The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) + " points against twelve months earlier. Steady is within " + pt(T.still) + " points and quickly is past " + pt(T.fast) + ", the lower and upper quartiles of every twelve-month move since " + atMonth({
       m: T.from
-    }) + ". No band is drawn: as with the Treasury yields, no published convention says where a mortgage rate turns high.") + srcBlock(MORTGAGE_SRC);
+    }) + ". No band is drawn: as with the Treasury yields, no published convention says where a mortgage rate turns high. " + rateShades(mortgageHistory)) + srcBlock(MORTGAGE_SRC.concat([ FENCE_SRC ]));
   }
   function mortgageInsight() {
     var h = mortgageHistory, last = mortgageLast(), pct2 = function(v) {

@@ -1,5 +1,5 @@
 type HistOpts = { to?: number | null; cycle?: boolean };
-import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex } from "./format.ts";
+import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex, quartile } from "./format.ts";
 import { type HistFrame, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
 import { fedFundsHistory, mortgageHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
@@ -138,6 +138,14 @@ export function fedFundsHistoryChart(Wpx: number, from: number, o?: HistOpts){
 export function mortgageHistoryChart(Wpx: number, from: number, o?: HistOpts){
   return rateColumnsChart(mortgageHistory, "mortgageHistoryChart", "The 30-year fixed mortgage rate", Wpx, from, o);
 }
+export function rateFence(series: MonthPoint[]){
+  var vs = series.map(function(d){ return d.v; }), q1 = quartile(vs, 0.25), q3 = quartile(vs, 0.75);
+  return q3 + 1.5 * (q3 - q1);
+}
+export function rateShades(series: MonthPoint[]){
+  return "The columns shade from yellow to red by height, six equal steps of the range in view; plum marks only the months past " +
+    rateFence(series).toFixed(2) + "%, Tukey\u2019s fence of the whole record, the standard rule for an outlier.";
+}
 function rateColumnsChart(series: MonthPoint[], geom: string, what: string, Wpx: number, from: number, o?: HistOpts){
   o = o || {};
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
@@ -158,8 +166,9 @@ function rateColumnsChart(series: MonthPoint[], geom: string, what: string, Wpx:
   yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
   var sw = colWidth((R - L) / n);
   var seenV = seen.map(function(d){ return d.v; });
-  var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
-  var step = function(v: number){
+  var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV), fence = rateFence(series);
+  var step = function(v: number): number | string {
+    if (v > fence) return "x";
     if (!(vHi > vLo)) return 5;
     return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
   };

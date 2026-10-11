@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `5f74240` on 2026-10-11. **109 components**, **19 shared patterns**.
+Generated from commit `1e06e85` on 2026-10-11. **109 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
@@ -46,7 +46,7 @@ Generated from commit `5f74240` on 2026-10-11. **109 components**, **19 shared p
 | **`vGrid`** | `.bt-vgrid` | `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:yearTicks`, `pulse-strips.ts:stripPaper`, `render-pages.ts:paintSpreads` |
 | **`vhOpen`** | `.vh-svg` | `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:rateColumnsChart`, `history-charts.ts:unempHistoryChart`, `pulse-strips.ts:pulseStripsChart` |
 | **`xLabel`** | `.bt-xl` | `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:yearTicks`, `pulse-strips.ts:pulseStripsChart`, `render-pages.ts:paintSpreads` |
-| **`zeroRule`** | `.m2-zero` | `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:rateColumnsChart`, `history-charts.ts:unempHistoryChart` |
+| **`zeroRule`** | `.m2-zero` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:rateColumnsChart`, `history-charts.ts:unempHistoryChart` |
 
 ## cycle-analysis.ts
 
@@ -115,7 +115,7 @@ Generated from commit `5f74240` on 2026-10-11. **109 components**, **19 shared p
 | **`hubLine`** | `.hub-line` | `dial-cycle.ts:hubSet`, `dial-cycle.ts:hubShowYear` |
 | **`lede`** | `.hi-lede` | `indicators.ts:buffettInsight`, `indicators.ts:debtInsight`, `indicators.ts:marketInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightMood`, `insights.ts:insightStress`, `insights.ts:insightWeather`, `pressure.ts:mortgageInsight`, `pressure.ts:pressureInsights`, `reading.ts:recordInsight`, `render-pages.ts:hormonesInsight`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
 | **`ledeHtml`** | `.lede` | `dial-cycle.ts:bootDialCycle`, `readings.ts:bootReadings`, `readings.ts:deficitInfoHtml`, `tabs-menu.ts:renderSeasonRows`, `tabs-menu.ts:seasonModelNote` |
-| **`srcBlock`** | `.src` | `credit.ts:readingOf`, `cycle-analysis.ts:chartDetail`, `cycle-analysis.ts:flowPage`, `cycle-analysis.ts:healthPage`, `cycle-analysis.ts:lengthPage`, `cycle-analysis.ts:variationPage`, `dial-cycle.ts:bootDialCycle`, `dial-cycle.ts:renderCycleKicker`, `indicators.ts:splitInfo`, `insights.ts:moodInfo`, `portfolio.ts:clockDetail`, `portfolio.ts:weatherDetail`, `pressure.ts:mortgageInfo`, `pressure.ts:pressureMaturities`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volatilityDetailHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries`, `tabs-menu.ts:renderSeasonRows`, `tabs-menu.ts:seasonModelNote` |
+| **`srcBlock`** | `.src` | `credit.ts:readingOf`, `cycle-analysis.ts:chartDetail`, `cycle-analysis.ts:flowPage`, `cycle-analysis.ts:healthPage`, `cycle-analysis.ts:lengthPage`, `cycle-analysis.ts:variationPage`, `dial-cycle.ts:bootDialCycle`, `dial-cycle.ts:renderCycleKicker`, `indicators.ts:splitInfo`, `insights.ts:moodInfo`, `portfolio.ts:clockDetail`, `portfolio.ts:weatherDetail`, `pressure.ts:mortgageInfo`, `pressure.ts:pressureMaturities`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volatilityDetailHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:hormonesInfo`, `render-pages.ts:spreadSeries`, `tabs-menu.ts:renderSeasonRows`, `tabs-menu.ts:seasonModelNote` |
 
 ## history-charts.ts
 
@@ -284,6 +284,7 @@ renderer speaks. Listed most-used first.
 | **`mWindowFrom`** | history.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
+| **`quartile`** | format.ts | 4 places |
 | **`readingFor`** | reading.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
@@ -314,7 +315,6 @@ renderer speaks. Listed most-used first.
 | **`mortgageLast`** | pressure.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
-| **`quartile`** | format.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |

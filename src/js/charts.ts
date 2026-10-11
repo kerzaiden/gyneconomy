@@ -155,20 +155,21 @@ export function divergeChart(o: DivergeOpts, W?: number){
   var F = histFrame(W), H = F.H;
   var padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B, iw = W - padL - padR, ih = H - padT - padB;
   var vs = o.vals.map(function(d){ return d.v; }).filter(function(v){ return v != null; });
-  var lo = Math.min.apply(null, (vs as number[]).concat([o.mid])), hi = Math.max.apply(null, (vs as number[]).concat([o.mid]));
-  var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / ((above + below) || 1);
-  var midY = padT + above * unit;
-  function y(v: number){ return (midY - (v - o.mid) * unit).toFixed(1); }
+  var lo = Math.min.apply(null, (vs as number[]).concat([o.mid, 0])), hi = Math.max.apply(null, (vs as number[]).concat([o.mid, 0]));
+  var top = hi + (hi - lo) * 0.06, bot = lo < 0 ? lo - (hi - lo) * 0.06 : 0, unit = ih / ((top - bot) || 1);
+  function y(v: number){ return (padT + (top - v) * unit).toFixed(1); }
+  var midY = parseFloat(y(o.mid)), zeroY = parseFloat(y(0));
   var n = o.vals.length, slot = iw / n, sw = colWidth(slot);
-  var out = [chartAxes({ lo:o.mid - below, hi:o.mid + above, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG - AXIS.READ), bot:(padT + ih),
+  var out = [chartAxes({ lo:bot, hi:top, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG - AXIS.READ), bot:(padT + ih),
                          base:(padT + ih), skipNear:midY, step:o.step, fmt:(o.tickFmt || o.fmt) })];
   out.push('<path class="dv-mid" d="M' + padL + ',' + midY.toFixed(1) + 'L' + (W - padR) + ',' + midY.toFixed(1) + '"/>');
   o.vals.forEach(function(d, i){
     if (d.v == null){ out.push('<path class="dv-bar hcol" d=""/>'); return; }
     var v = d.v, cx = (padL + slot * (i + 0.5)).toFixed(1), y1 = parseFloat(y(v));
-    if (Math.abs(y1 - midY) < 0.6) y1 = midY + (v >= o.mid ? -0.6 : 0.6);
-    out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
+    if (Math.abs(y1 - zeroY) < 0.6) y1 = zeroY + (v >= 0 ? -0.6 : 0.6);
+    out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, zeroY, y1, sw) + '"/>');
   });
+  if (bot < 0) out.push(zeroRule(padL, W - padR, zeroY));
   var dAvg = (vs as number[]).reduce(function(a, v){ return a + v; }, 0) / (vs.length || 1);
   out.push(avgRule(padL, (W - padR), y(dAvg)));
   if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * 0.5, padL + slot * (n - 0.5), y, W, padL, padR));

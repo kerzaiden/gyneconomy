@@ -1338,15 +1338,21 @@ settles it; none is open after V668.
 
 ### Each page's picture
 
-- **Every history colours its columns from one palette, the Interest Rates chart's: yellow, orange and dark
-  plum, as one ramp of six steps (`--hist-0` to `--hist-5`, pale yellow, yellow, amber, orange, plum).** A
-  history with two states (a reading's good side or bad side of its line, a normal or inverted curve, expansion
-  surplus or deficit, a regular or odd beat) draws the easy one yellow (`--hist-2`) and the
-  hard one orange (`--hist-4`), as the Interest Rates chart draws rates yellow and prices orange; a third,
-  worse state is plum (`--hist-5`); a history coloured by level (Temperature, Hormones, Mortgage, Volume) steps
-  along the ramp. Keren found a teal, blue or red per history confusing: one code read the same way on every
-  page. The state each column is in is still decided by each page's own rule, and Cycle Statistics' verdict
-  bars keep the tier colours. (History Colours)
+- **Every history colours its columns from one palette, the Interest Rates chart's: yellow, orange and red, as
+  one ramp of six steps (`--hist-0` to `--hist-5`, pale yellow, yellow, amber, orange, red), with dark plum
+  (`--hist-x`) kept for extremes.** A history with two states (a reading's good side or bad side of its line, a
+  normal or inverted curve, expansion surplus or deficit, a regular or odd beat) draws the easy one yellow
+  (`--hist-2`) and the hard one orange (`--hist-4`), as the Interest Rates chart draws rates yellow and prices
+  orange; a history coloured by level (Temperature, Hormones, Mortgage, Volume) steps along the ramp. Plum marks
+  only an extreme with a source: the Sahm trigger, money contracting, CPI below the range, and on the two rate
+  histories the months past Tukey's fence of the whole record. The red step is a softer red, of the trend pill's
+  family: plum at the top of every level ramp was too dark a jump (Keren). One code reads the same way on every
+  page; the state each column is in is still decided by each page's own rule, and Cycle Statistics' verdict
+  bars keep the tier colours. (History Colours, History Red)
+
+- **Every history's columns stand on zero and grow up from it (down only for a negative value); a reading's
+  line (a median, an average, a target) is drawn across them, never hung from.** Columns hung from a median read
+  backwards: a savings rate of 2.8% drew the longest column. (History Red)
 
 - **Growth's history is real GDP year over year, quarterly from 1988, as columns from zero, all in one colour
   (`hist-2`).** The season already says the regime, so a second colour per column repeated it and made the

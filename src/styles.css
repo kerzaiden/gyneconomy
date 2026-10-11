@@ -330,7 +330,7 @@
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
     --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f;
     --hist-0:color-mix(in srgb, var(--gold) 40%, var(--surface)); --hist-1:color-mix(in srgb, var(--gold) 70%, var(--surface)); --hist-2:var(--gold);
-    --hist-3:color-mix(in srgb, var(--season-summer) 55%, var(--gold)); --hist-4:var(--season-summer); --hist-5:var(--accent);
+    --hist-3:color-mix(in srgb, var(--season-summer) 55%, var(--gold)); --hist-4:var(--season-summer); --hist-5:color-mix(in srgb, var(--bleed-mid) 55%, var(--blush)); --hist-x:var(--accent);
     /* ---- THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change ---- */
     --mini-h:42px;
     --pad:10px;
@@ -457,7 +457,7 @@
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); }
 
   .temp-col{ fill:none; stroke-linecap:round; }
-  .temp-col.s0{ stroke:var(--hist-5); }
+  .temp-col.s0{ stroke:var(--hist-x); }
   .temp-col.s1{ stroke:var(--hist-0); }
   .temp-col.s2{ stroke:var(--hist-1); }
   .temp-col.s3{ stroke:var(--hist-2); }
@@ -664,14 +664,14 @@
   .m2-col.v2{ stroke:var(--hist-2); }
   .m2-col.v3{ stroke:var(--hist-3); }
   .m2-col.v4{ stroke:var(--hist-4); }
-  .m2-col.v5{ stroke:var(--hist-5); }
+  .m2-col.v5{ stroke:var(--hist-x); }
 
 
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--hist-4); }
   .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); opacity:0.9; }
   .unemp-col.tight, .unemp-col.warning{ stroke:var(--hist-4); }
-  .unemp-col.serious{ stroke:var(--hist-5); }
+  .unemp-col.serious{ stroke:var(--hist-x); }
   .def-col{ fill:none; stroke-linecap:round; stroke:var(--hist-4); opacity:0.85; }
   .def-col.surplus{ stroke:var(--hist-2); opacity:0.95; }
 
@@ -805,6 +805,7 @@
   .ff-col.f3{ stroke:var(--hist-3); }
   .ff-col.f4{ stroke:var(--hist-4); }
   .ff-col.f5{ stroke:var(--hist-5); }
+  .ff-col.fx{ stroke:var(--hist-x); }
   .dv-bar.over{ stroke:var(--hist-4); } .dv-bar.under{ stroke:var(--hist-2); }
   .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }

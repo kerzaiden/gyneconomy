@@ -2,14 +2,14 @@ import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, m
 import { addSources, need, svgEl } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
-import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
+import { curveAsOf, curveAt, curveSpread, FENCE_SRC, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
 import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
 import { indOf, periodIso, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, tendencyOf, volumeInfoHtml } from "./readings.ts";
 import type { Tendency } from "./readings.ts";
 import { chartShell, defineReading, indicatorInsight, redrawReading } from "./reading.ts";
 import { ROSTER_BY } from "./roster.ts";
-import { m2GrowthChart, mortgageHistoryChart } from "./history-charts.ts";
+import { m2GrowthChart, mortgageHistoryChart, rateShades } from "./history-charts.ts";
 import { mortgageHistory } from "./history-fred.ts";
 import { pulseStripsChart, stripScroller, stripsInfo } from "./pulse-strips.ts";
 import { rhythmCard, rhythmInfo } from "./rhythm.ts";
@@ -337,7 +337,7 @@ function mortgageInfo(){
     "The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) +
     " points against twelve months earlier. Steady is within " + pt(T.still) + " points and quickly is past " + pt(T.fast) +
     ", the lower and upper quartiles of every twelve-month move since " + atMonth({ m:T.from }) + ". No band is drawn: as with the " +
-    "Treasury yields, no published convention says where a mortgage rate turns high.") + srcBlock(MORTGAGE_SRC);
+    "Treasury yields, no published convention says where a mortgage rate turns high. " + rateShades(mortgageHistory)) + srcBlock(MORTGAGE_SRC.concat([FENCE_SRC]));
 }
 function mortgageInsight(){
   var h = mortgageHistory, last = mortgageLast(), pct = function(v: number){ return v.toFixed(2) + "%"; };

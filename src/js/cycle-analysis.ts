@@ -4,7 +4,7 @@ import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
-import { marketCycles, sp500AnnualReturns } from "./data.ts";
+import { FENCE_SRC, marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayValue } from "./era.ts";
 import { todayFace } from "./reading.ts";
 import { calendarTodayY, DATA_COMPILED } from "./refresh-season.ts";
@@ -20,7 +20,6 @@ export type Lab = { id: string; name: string; cat: string; good?: "up" | "down";
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
-var FENCE_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)", u:"https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm" };
 var SD_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — Measures of Scale (standard deviation)", u:"https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm" };
 
 function normOf(vs: number[]): Norm | null {

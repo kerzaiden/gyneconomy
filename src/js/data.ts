@@ -220,6 +220,7 @@ var m2vPre = m2vHistory.slice(0, (2008 - M2V_FROM_YEAR) * 4);
 export var PULSE_PRE2008 = mean(m2vPre);
 export var PULSE_STEADY_LO = pctl(m2vPre, 0.1) / PULSE_PRE2008, PULSE_STEADY_HI = pctl(m2vPre, 0.9) / PULSE_PRE2008;
 export var PULSE_FLOOR = Math.min.apply(null, m2vPre) / PULSE_PRE2008, PULSE_CEIL = Math.max.apply(null, m2vPre) / PULSE_PRE2008;
+export var FENCE_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)", u:"https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm" };
 export var PRODUCTIVITY_SRC: Src[] = [
   {t:"BLS \u2014 Productivity and Costs", u:"https://www.bls.gov/productivity/"},
   {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
