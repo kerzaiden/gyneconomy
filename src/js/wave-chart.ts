@@ -20,7 +20,7 @@ function monthPoints(list: MonthPoint[], from: number, to: number){
   for (var k = 0; k <= POINTS; k++){
     var c = from + (to - from) * k / POINTS, w = 0, sum = 0;
     for (var i = Math.floor(c - 3 * sigma); i <= Math.ceil(c + 3 * sigma); i++) if (at[i] != null){ var g = Math.exp(-(i - c) * (i - c) / (2 * sigma * sigma)); w += g; sum += g * at[i]; }
-    if (w) out.push({ i: c, v: sum / w });
+    if (w && (at[Math.floor(c)] != null || at[Math.ceil(c)] != null)) out.push({ i: c, v: sum / w });
   }
   return out;
 }

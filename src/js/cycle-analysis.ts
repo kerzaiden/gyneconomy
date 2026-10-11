@@ -269,8 +269,8 @@ function narrow(host: HTMLElement, id: string){
   var none = host.querySelector<HTMLElement>(".search-none"); if (none) none.hidden = any;
 }
 export function riskLabs(i: number, key?: string){ var at = atCycle(i); return judged(at).filter(function(l){ return tier(l, at) === (key || "abnormal"); }); }
-function judged(at: At){ return listed(at).filter(function(l){ return at.n(l); }); }
-function listed(at: At){ return labs().filter(function(l){ return at.v(l) != null && !at.skip(l); }); }
+function judged(at: At){ return listedLabs(at).filter(function(l){ return at.n(l); }); }
+function listedLabs(at: At){ return labs().filter(function(l){ return at.v(l) != null && !at.skip(l); }); }
 function score(i: number){ var at = atCycle(i), j = judged(at), ok = j.filter(function(l){ return tier(l, at) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
 export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 function word(n: number){ return NUM[n] || String(n); }
@@ -413,7 +413,7 @@ function drawChart(id: string){
   var host = byId(id), c = pageCycle(id), at = periodAt(id);
   if (host && c && id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(marketCycles.indexOf(c)) + '</div>'; return; }
   if (!host || !at) return;
-  var j = listed(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
+  var j = listedLabs(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
   host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs">' + labBox(bySystem(at, j, findOf(id).cat)) + noneLine("No reading matches.", " hidden") + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }

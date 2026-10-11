@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `0e86412` on 2026-10-11. **110 components**, **18 shared patterns**.
+Generated from commit `3d80533` on 2026-10-11. **110 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -239,10 +239,10 @@ renderer speaks. Listed most-used first.
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`monthLabel`** | format.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
+| **`closedCount`** | cycle-analysis.ts | 8 places |
 | **`colPath`** | charts.ts | 8 places |
 | **`colWidth`** | charts.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
-| **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`cycLabel`** | model.ts | 7 places |
 | **`normOf`** | cycle-analysis.ts | 7 places |
 | **`put`** | dom.ts | 7 places |
@@ -289,6 +289,7 @@ renderer speaks. Listed most-used first.
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
 | **`trendText`** | dom.ts | 4 places |
+| **`word`** | cycle-analysis.ts | 4 places |
 | **`yearsWord`** | cycle-analysis.ts | 4 places |
 | **`atCycle`** | cycle-analysis.ts | 3 places |
 | **`attrNum`** | history.ts | 3 places |
@@ -308,6 +309,7 @@ renderer speaks. Listed most-used first.
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
+| **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`monthIdx`** | wave-chart.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
@@ -328,7 +330,6 @@ renderer speaks. Listed most-used first.
 | **`todayFace`** | reading.ts | 3 places |
 | **`typical`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
-| **`word`** | cycle-analysis.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
 
 ## Shared patterns

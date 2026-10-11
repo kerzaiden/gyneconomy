@@ -139,6 +139,15 @@ test('before 1948 a season is read every quarter from Balke and Gordon\'s GNP, a
   assert.deepEqual([Object.keys(seasons).filter(q => q < '1948 Q1').length, Object.keys(seasons).sort()[0]], [80, '1928 Q1']);
 });
 
+test('the Rates line starts on a reading on every cycle: the discount rate carries it until the federal funds rate begins', async () => {
+  const { rateSeries } = await import('../../src/js/fed-phases.ts');
+  for (const c of marketCycles) {
+    const rates = rateSeries((c.ongoing ? 2026 : c.to) + '-12'), from = c.from + '-01';
+    assert.ok(rates[0].m <= from, c.name + ' starts ' + rates[0].m);
+    assert.ok(rates.every((d, i) => !i || d.m > rates[i - 1].m), c.name + ' months run in order');
+  }
+});
+
 test('a reading past the band never prints as the band\'s edge', () => {
   assert.deepEqual([3.04, 2.96, 3.4, 0.96, 1.04, -0.04, -1.26].map(inflationFigure), ['3.04', '3.0', '3.4', '0.96', '1.0', '0.0', '\u22121.3']);
 });
