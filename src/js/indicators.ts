@@ -91,7 +91,7 @@ function splitHistory(s: SplitSpec): History {
   var id = s.id, cyc = pageCycle(id);
   var span = cyc ? cycleSlice(s.series, cyc) : null;
   var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, page.range[id]);
-  var tr = trendOf(vals.map(function(d){ return d.v; }), "points", periodOfSeries(s.series[0]));
+  var tr = trendOf(vals.map(function(d){ return d.v; }), periodOfSeries(s.series[0]));
   return { geom:"divergeChart", trend:trendPill(tr, null, true), chart:function(w: number){
     return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
       xLabel:periodTicks(vals), at:s.at || function(d: SeriesPt){ return d.m ? atMonth(d as MonthPoint) : d.q ? qPretty(d.q) : "FY" + d.y; },

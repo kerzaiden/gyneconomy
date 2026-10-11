@@ -323,7 +323,7 @@ function touchGate(host: HTMLElement, at: (e: { clientX: number; clientY: number
   host.addEventListener("pointerup", function(){ if (down) pick(down); live = false; });
   host.addEventListener("pointercancel", function(){ drop(); live = false; });
 }
-function wireHistHover(host: HTMLElement, tipId: string){
+function wireHistHover(host: HTMLElement){
   if (!host) return;
   histReadEnsure(host);
   histReadFill(host, null);
@@ -331,9 +331,7 @@ function wireHistHover(host: HTMLElement, tipId: string){
   histLive(host);
   if (host.__hovWired) return;
   host.__hovWired = true;
-  var tip = byId(tipId);
   function hide(){
-    if (tip){ tip.style.opacity = "0"; tip.hidden = true; }
     host.classList.remove("hovering");
     if (host.__onCol){ host.__onCol.classList.remove("on"); host.__onCol = null; }
     histReadFill(host, null);
@@ -342,7 +340,7 @@ function wireHistHover(host: HTMLElement, tipId: string){
     var col0 = host.querySelector<SVGElement>(".hcol");
     var g = host.__geom;
     var svg = (col0 && col0.ownerSVGElement) || host.querySelector("svg.hist-svg") || host.querySelector("svg");
-    if (!g || !svg || !tip) return;
+    if (!g || !svg) return;
     var box = svg.getBoundingClientRect();
     var scale = box.width / g.W || 1;
     var x = (e.clientX - box.left) / scale;
@@ -383,7 +381,7 @@ function histKeysWire(host: HTMLElement, hide: () => void){
     histLive(host).textContent = [part(".hr-label"), part(".hr-value")].filter(Boolean).join(", ");
   });
 }
-export function mWindowFrom(len: number, key: string | undefined){
+function mWindowFrom(len: number, key: string | undefined){
   var sp = timelineSpan(key);
   return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 12);
 }
@@ -410,8 +408,8 @@ function tabSegs(items: string[][], active: string | undefined, attr: string){
 export function tabBar(attrs: string, items: string[][], active: string | undefined, attr: string, cls?: string){
   return '<div class="rangebar' + (cls ? " " + cls : "") + '" role="tablist" ' + attrs + '>' + tabSegs(items, active, attr) + '</div>';
 }
-function modeBar(id: string, active: string | undefined, extra?: string[][]){
-  return tabBar('data-mode-for="' + id + '"', [["cycles", "Cycles"], ["calendar", "Years"]].concat(extra || []), active, "data-mode");
+function modeBar(id: string, active: string | undefined){
+  return tabBar('data-mode-for="' + id + '"', [["cycles", "Cycles"], ["calendar", "Years"]], active, "data-mode");
 }
 export var pickerOpen: Record<string, boolean> = {};
 export function controlKeys(el: Element | null): string[] {
@@ -424,11 +422,11 @@ function controlKeysIn(box: Element, el: Element): string[] {
   var at = "[" + a + '="' + box.getAttribute(a) + '"] ';
   return (b ? [at + "[" + b + '="' + el.getAttribute(b) + '"]'] : []).concat(a === "data-cycles-for" ? [at + "[data-picker-toggle]"] : []);
 }
-export function histControls(id: string, tl: TimelineSource, minYear?: number | null, extra?: string[][]){
+export function histControls(id: string, tl: TimelineSource, minYear?: number | null){
   var mode = page.mode[id], on = mode === "cycles";
   if (minYear == null) minYear = page.y0[id];
   var known = mode === "cycles" || mode === "calendar";
-  return controlsBox(modeBar(id, mode, extra) +
+  return controlsBox(modeBar(id, mode) +
     (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear)
                       : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:page.stops[id] }), page.range[id])));
 }
@@ -463,13 +461,13 @@ export function headSigma(id: string, text?: string | null){
   el.textContent = text == null ? "" : "(Σ" + text + ")";
   el.hidden = text == null;
 }
-export function attachHistory(host: HTMLElement | null, tipId?: string | null, expect?: string){
+export function attachHistory(host: HTMLElement | null, expect?: string){
   if (!host) return null;
   var g = pendingGeom;
   if (expect && (!g || g.src !== expect))
     (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
   host.__geom = g;
-  if (tipId) wireHistHover(host, tipId);
+  wireHistHover(host);
   return g;
 }
 

@@ -3,9 +3,9 @@ import { topTenQuarterly } from "./data.ts";
 import { topTenRecent } from "./history-fred.ts";
 
 // ---- Concentration: the ten largest S&P 500 holdings' share of the index ----
-export var CONCENTRATION_TO = 2025;
+var CONCENTRATION_TO = 2025;
 export var CONCENTRATION_MEAN: number;
-export var CONCENTRATION_SRC: Src[] = [
+var CONCENTRATION_SRC: Src[] = [
   { t:"SEC EDGAR — SPDR S&P 500 ETF Trust (SPY), annual and semi-annual reports (Form N-30D), the full schedule of investments since December 1995", u:"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000884394&type=N-30D" },
   { t:"SEC EDGAR — SPDR S&P 500 ETF Trust (SPY), Form N-PORT, the full portfolio at each quarter end since September 2019", u:"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000884394&type=NPORT-P" },
   { t:"State Street Global Advisors — SPY daily holdings, the latest figure", u:"https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy" }

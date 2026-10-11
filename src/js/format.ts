@@ -54,9 +54,9 @@ export function dropWhatIsShown(full: string | null | undefined, shown: string |
   while (i < parts.length && parts[i] && seen.indexOf(norm(parts[i])) !== -1) i++;
   return i ? parts.slice(i).join(" ").replace(/^\s+/, "") : full;
 }
-export function highlightsHtml(cards: string[], cyclesHtml?: string, moreHtml?: string, head?: string){
+export function highlightsHtml(cards: string[], cyclesHtml?: string, moreHtml?: string){
   if (!cards.length && !cyclesHtml && !moreHtml) return "";
-  return '<section class="highlights insights"><div class="hi-head">' + titleCase(head || "Insights") + '</div>' + cards.join("") +
+  return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") +
     (cyclesHtml || "") + (moreHtml || "") + '</section>';
 }
 export function maxIn<P extends Point & { v: number }>(series: P[], from: number, to: number){

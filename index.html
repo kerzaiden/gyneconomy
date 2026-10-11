@@ -887,9 +887,6 @@
   .aux-stat + .method-say{ margin-top:24px; }
   .method-card .more-row{ margin-top:20px; }
   .labs .more-row, .dx > .more-row{ margin-top:0; }
-  .more-lead{ display:inline-flex; align-items:center; gap:10px; }
-  .more-mark{ display:inline-flex; width:18px; height:18px; }
-  .more-mark svg{ width:100%; height:100%; }
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
@@ -1035,7 +1032,6 @@
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
   .hero-hit{ fill:transparent; }
 
-  .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
   .vh-host .temp-col, .vh-host .growth-col{ transition:opacity 0.08s; }
   .hovering .hcol{ opacity:0.38; }
   .hovering .hcol.on{ opacity:1; }
@@ -1043,14 +1039,6 @@
   .hovering .hist-cross{ opacity:0.3; }
   .resting .hist-cross{ opacity:0.16; }
   .hovering.resting .hist-cross{ opacity:0.3; }
-  .gdp-tooltip{
-    position:absolute; pointer-events:none; background:var(--text-primary); color:var(--surface);
-    font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); line-height:1.5; padding:8px 10px; border-radius:var(--radius);
-    transform:translate(-50%,-100%); margin-top:-10px; opacity:0; transition:opacity 0.1s; white-space:nowrap; z-index:3;
-  }
-  .gdp-tooltip b{ display:block; font-size:var(--type-label); margin-bottom:2px; }
-  .gdp-tooltip .row{ display:flex; gap:8px; justify-content:space-between; }
-  .gdp-tooltip .row .sw{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; }
 
   .has-hist-read{ position:relative; }
   .hist-read{ position:absolute; left:0; right:0; top:0; z-index:3; pointer-events:none; padding:0; margin:0; }
@@ -1064,11 +1052,6 @@
              color:var(--text-primary); margin:0; white-space:nowrap; }
   .hr-plate.compact .hr-value{ font-size:var(--type-reading); line-height:1.467; }
   @media (max-width:400px){ .hr-value{ font-size:var(--type-section); } }
-  .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
-  .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
-                             vertical-align:middle; margin-right:6px; }
-  .gdp-tooltip .row.ref .sw.dash{ border-top:0; height:2px;
-    background:repeating-linear-gradient(to right, currentColor 0 4px, transparent 4px 7px); }
 
   .page-chart:has(.band-head){
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
@@ -1519,9 +1502,9 @@
     while (i < parts.length && parts[i] && seen.indexOf(norm(parts[i])) !== -1) i++;
     return i ? parts.slice(i).join(" ").replace(/^\s+/, "") : full;
   }
-  function highlightsHtml(cards, cyclesHtml, moreHtml, head) {
+  function highlightsHtml(cards, cyclesHtml, moreHtml) {
     if (!cards.length && !cyclesHtml && !moreHtml) return "";
-    return '<section class="highlights insights"><div class="hi-head">' + titleCase(head || "Insights") + "</div>" + cards.join("") + (cyclesHtml || "") + (moreHtml || "") + "</section>";
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + (cyclesHtml || "") + (moreHtml || "") + "</section>";
   }
   function maxIn(series, from, to) {
     var vs = series.filter(function(d) {
@@ -1727,8 +1710,8 @@
     if (!fullHtml) return "";
     return moreDoor(' data-detail-idx="' + detailSlot(fullHtml) + '"', label || "More details");
   }
-  function moreDoor(attrs, label, mark2) {
-    return '<button type="button" class="more-row"' + attrs + "><span" + (mark2 ? ' class="more-lead"><span class="more-mark" aria-hidden="true">' + mark2 + "</span>" : ">") + label + "</span>" + CHEV + "</button>";
+  function moreDoor(attrs, label) {
+    return '<button type="button" class="more-row"' + attrs + "><span>" + label + "</span>" + CHEV + "</button>";
   }
   function moreButton(more) {
     return '<button type="button" class="cyc-more dx-more" aria-expanded="false"' + (more ? "" : " hidden") + "><span>View more</span>" + CHEV + "</button>";
@@ -46297,7 +46280,7 @@
       };
     });
   }
-  function trendOf(vals, unit, period) {
+  function trendOf(vals, period) {
     period = period || "period";
     if (!vals || vals.length < 8) return {
       word: "unavailable",
@@ -46366,7 +46349,7 @@
     return d.y % 10 ? "" : "’" + String(d.y).slice(2);
   }
   function fitLine(vals, per, fmt2, x0, x1, y, W, padL, padR) {
-    var fit = trendOf(vals, "points", per).fit;
+    var fit = trendOf(vals, per).fit;
     return fit && fit.n > 1 ? fitGroup({
       fit: fit,
       fmt: fmt2
@@ -46474,11 +46457,8 @@
     pendingGeom = g;
     return g;
   }
-  function histBar(inner, id) {
-    return '<div class="hist-bar"' + (id ? ' id="' + id + '"' : "") + ">" + (inner || "") + "</div>";
-  }
-  function histTip(id) {
-    return '<div class="gdp-tooltip mono hist-tip" id="' + id + '" hidden></div>';
+  function histBar(inner) {
+    return '<div class="hist-bar">' + (inner || "") + "</div>";
   }
   function avgRule(x0, x1, y) {
     return '<path class="temp-avg" d="M' + x0 + "," + y + "H" + x1 + '"/>';
@@ -48289,7 +48269,7 @@
       live = false;
     });
   }
-  function wireHistHover(host, tipId) {
+  function wireHistHover(host) {
     if (!host) return;
     histReadEnsure(host);
     histReadFill(host, null);
@@ -48297,12 +48277,7 @@
     histLive(host);
     if (host.__hovWired) return;
     host.__hovWired = true;
-    var tip = byId(tipId);
     function hide() {
-      if (tip) {
-        tip.style.opacity = "0";
-        tip.hidden = true;
-      }
       host.classList.remove("hovering");
       if (host.__onCol) {
         host.__onCol.classList.remove("on");
@@ -48314,7 +48289,7 @@
       var col0 = host.querySelector(".hcol");
       var g = host.__geom;
       var svg = col0 && col0.ownerSVGElement || host.querySelector("svg.hist-svg") || host.querySelector("svg");
-      if (!g || !svg || !tip) return;
+      if (!g || !svg) return;
       var box = svg.getBoundingClientRect();
       var scale = box.width / g.W || 1;
       var x = (e.clientX - box.left) / scale;
@@ -48412,8 +48387,8 @@
   function tabBar(attrs, items, active, attr, cls) {
     return '<div class="rangebar' + (cls ? " " + cls : "") + '" role="tablist" ' + attrs + ">" + tabSegs(items, active, attr) + "</div>";
   }
-  function modeBar(id, active, extra) {
-    return tabBar('data-mode-for="' + id + '"', [ [ "cycles", "Cycles" ], [ "calendar", "Years" ] ].concat(extra || []), active, "data-mode");
+  function modeBar(id, active) {
+    return tabBar('data-mode-for="' + id + '"', [ [ "cycles", "Cycles" ], [ "calendar", "Years" ] ], active, "data-mode");
   }
   var pickerOpen = {};
   function controlKeys(el) {
@@ -48430,11 +48405,11 @@
     var at = "[" + a + '="' + box.getAttribute(a) + '"] ';
     return (b ? [ at + "[" + b + '="' + el.getAttribute(b) + '"]' ] : []).concat(a === "data-cycles-for" ? [ at + "[data-picker-toggle]" ] : []);
   }
-  function histControls(id, tl, minYear, extra) {
+  function histControls(id, tl, minYear) {
     var mode = page.mode[id], on = mode === "cycles";
     if (minYear == null) minYear = page.y0[id];
     var known = mode === "cycles" || mode === "calendar";
-    return controlsBox(modeBar(id, mode, extra) + (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear) : rangeBar(id, timelineFor({
+    return controlsBox(modeBar(id, mode) + (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear) : rangeBar(id, timelineFor({
       series: tl.series,
       depth: tl.depth,
       stops: page.stops[id]
@@ -48478,12 +48453,12 @@
     el.textContent = text == null ? "" : "(Σ" + text + ")";
     el.hidden = text == null;
   }
-  function attachHistory(host, tipId, expect) {
+  function attachHistory(host, expect) {
     if (!host) return null;
     var g = pendingGeom;
     if (expect && (!g || g.src !== expect)) (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
     host.__geom = g;
-    if (tipId) wireHistHover(host, tipId);
+    wireHistHover(host);
     return g;
   }
   function bootHistory() {
@@ -49669,7 +49644,7 @@
   function diamondSvg() {
     return markSvg('<path d="M6.2 3.9h11.6l3.9 5.3L12 20.4 2.3 9.2z" stroke-width="1.7"/><path d="M2.3 9.2h19.4" stroke-width="1.5"/><path d="M6.2 3.9 8.9 9.2M17.8 3.9 15.1 9.2" stroke-width="1.35" opacity="0.75"/>');
   }
-  function markSvg(body, extra) {
+  function markSvg(body) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + "</svg>";
   }
   function orbitSvg() {
@@ -50519,7 +50494,7 @@
       return v.toFixed(1);
     };
     var out = [], zero = Y(0), sw = colWidth(slot);
-    var defFit = trendOf(vals, "points", "year").fit;
+    var defFit = trendOf(vals, "year").fit;
     var run = null;
     for (var k = 0; k <= n; k++) {
       var inRec = k < n && DEF_RECESSION_FY[y0 + k];
@@ -50872,14 +50847,14 @@
   }
   function historyHtml(R, h, W) {
     var svg = h.chart(W);
-    return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '">' + svg + "</div>" : svg) + h.trend + histTip(R.id + "-tip") + "</div>";
+    return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '">' + svg + "</div>" : svg) + h.trend + "</div>";
   }
   function drawReading(R, W) {
     var r = readingFor(R.id), w = W || 340, h = r.history(w);
     put(R.id + "-chart", histBar(r.controls()) + historyHtml(R, h, w) + (r.aside ? r.aside() : ""));
     var box = document.querySelector("#" + R.id + "-chart .page-chart");
     if (h.paint && box) h.paint(box); else refitHistory(box, h.chart);
-    attachHistory(box, R.id + "-tip", h.geom);
+    attachHistory(box, h.geom);
     if (h.sigma !== void 0) headSigma(R.hk || R.id, h.sigma);
     paintInsight(R);
   }
@@ -51212,7 +51187,7 @@
           paint: function() {
             paintSpreads(spreadPick, from, to);
           },
-          trend: trendPill(trendOf(w, "points", "quarter"), null, true, {
+          trend: trendPill(trendOf(w, "quarter"), null, true, {
             rising: "steepening",
             falling: "flattening"
           })
@@ -51319,7 +51294,7 @@
           },
           trend: trendPill(trendOf(win.map(function(d) {
             return d.v;
-          }), "points", "month"), null, true, {
+          }), "month"), null, true, {
             rising: "tightening",
             falling: "easing"
           })
@@ -51349,7 +51324,7 @@
         if (!vals.length) vals = volatilityHistory.slice(-12);
         var fit = trendOf(vals.map(function(d) {
           return d.v;
-        }), "points", "month");
+        }), "month");
         var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10), parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
         var line = VIX_CALM;
         return {
@@ -51467,9 +51442,6 @@
   }
   function lineTone(color) {
     return "--line:var(--" + color + ")";
-  }
-  function bandTone(band) {
-    return band ? ' style="--band:var(--' + band + ')"' : "";
   }
   function monthPoints(list, from, to) {
     var at = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out = [];
@@ -51606,10 +51578,10 @@
     var lines = o.series.map(function(s) {
       return monthPoints(s.list, o.from, o.to);
     }), sc = levelScale(lines);
-    return '<div class="wave-plot"' + bandTone(o.band) + '><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + "</span>" + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + "</div>" + axisHtml(o.from, o.to, o.open);
+    return '<div class="wave-plot"><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + "</span>" + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + "</div>" + axisHtml(o.from, o.to, o.open);
   }
-  function waveLegend(keys, band) {
-    return '<ul class="wave-legend"' + bandTone(band) + ">" + keys.map(function(k) {
+  function waveLegend(keys) {
+    return '<ul class="wave-legend">' + keys.map(function(k) {
       return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + ">" + k.name + "</li>";
     }).join("") + "</ul>";
   }
@@ -52453,10 +52425,10 @@
     var none = host.querySelector(".search-none");
     if (none) none.hidden = any;
   }
-  function riskLabs(i, key) {
+  function riskLabs(i) {
     var at = atCycle(i);
     return judged(at).filter(function(l) {
-      return tier(l, at) === (key || "abnormal");
+      return tier(l, at) === "abnormal";
     });
   }
   function judged(at) {
@@ -54208,7 +54180,7 @@
         refitHistory(box, chart);
         stripScroller(box);
       },
-      trend: trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, false, {
+      trend: trendPill(trendOf(m2vHistory.slice(from, to), "quarter"), null, false, {
         rising: "accelerating",
         falling: "decelerating"
       })
@@ -54271,7 +54243,7 @@
           },
           trend: trendPill(trendOf(m2Yoy.slice(4).slice(from, to).filter(function(v) {
             return v != null;
-          }), "points", "quarter"), null, true, {
+          }), "quarter"), null, true, {
             rising: "expanding",
             falling: "contracting"
           })
@@ -54343,7 +54315,7 @@
         if (i >= ylmFrom && i < ylmTo && d.v != null) fitVals.push(d.v);
       });
     });
-    var ylmFit = trendOf(fitVals, "points", "quarter").fit;
+    var ylmFit = trendOf(fitVals, "quarter").fit;
     if (ylmFit && ylmFit.n > 1) svg.insertAdjacentHTML("beforeend", fitGroup({
       fit: ylmFit,
       fmt: function(v) {
@@ -54560,7 +54532,7 @@
           chart: function() {
             return chartShell("ylm", "US Treasury yield levels by maturity, quarterly, 2005 to 2026");
           },
-          trend: trendPill(trendOf(w, "points", "quarter"), null, true, {
+          trend: trendPill(trendOf(w, "quarter"), null, true, {
             rising: "climbing",
             falling: "easing"
           })
@@ -54663,7 +54635,7 @@
           },
           trend: trendPill(trendOf(h.slice(from, to).map(function(d) {
             return d.v;
-          }), "points", "month"), null, true, {
+          }), "month"), null, true, {
             rising: "climbing",
             falling: "easing"
           })
@@ -54869,7 +54841,7 @@
     var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, page.range[id]);
     var tr = trendOf(vals.map(function(d) {
       return d.v;
-    }), "points", periodOfSeries(s.series[0]));
+    }), periodOfSeries(s.series[0]));
     return {
       geom: "divergeChart",
       trend: trendPill(tr, null, true),
@@ -55035,7 +55007,7 @@
           },
           trend: trendPill(trendOf(win.map(function(d) {
             return d.v;
-          }), "points", "month"), null, true, {
+          }), "month"), null, true, {
             rising: "heating",
             falling: "cooling"
           })
@@ -55071,7 +55043,7 @@
           },
           trend: trendPill(trendOf(win.map(function(d) {
             return d.v;
-          }), "points", "quarter"), null, true, {
+          }), "quarter"), null, true, {
             rising: "accelerating",
             falling: "slowing"
           })
@@ -55114,7 +55086,7 @@
           },
           trend: trendPill(trendOf(win.map(function(d) {
             return d.v;
-          }), "points", "month"), null, true, {
+          }), "month"), null, true, {
             rising: "loosening",
             falling: "tightening"
           })
@@ -55152,7 +55124,7 @@
           chart: function(W) {
             return deficitChart(W, from, to);
           },
-          trend: trendPill(trendOf(deficitHistory.slice(from, to), "points", "year"), null, true, {
+          trend: trendPill(trendOf(deficitHistory.slice(from, to), "year"), null, true, {
             rising: "improving",
             falling: "widening"
           })
@@ -55197,7 +55169,7 @@
         var vals = span ? capeHistory.slice(span[0], span[1]) : timelineWindow(capeHistory, r);
         var capeTrend = trendOf(vals.map(function(d) {
           return d.v;
-        }), "×", "year");
+        }), "year");
         return {
           geom: "divergeChart",
           trend: trendPill(capeTrend, null, true),

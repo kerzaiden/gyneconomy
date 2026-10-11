@@ -3,10 +3,10 @@ import { AXIS, beatPath, chartAxes, histFrame, publishGeom, vGrid, vhOpen, xLabe
 import { M2_FLOOD, M2V_FROM_YEAR, m2vHistory, m2Yoy } from "./data.ts";
 import { fmtSigned, qAtIndex, quartile, readingNote } from "./format.ts";
 
-export var PULSE_BEATS = 5, PULSE_VIEW = 4, PULSE_PEEK = 0.4, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10, PULSE_BAR = 14, PULSE_THUMB = 44;
+var PULSE_BEATS = 5, PULSE_VIEW = 4, PULSE_PEEK = 0.4, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10, PULSE_BAR = 14, PULSE_THUMB = 44;
 var fences: number[] | null = null;
 function pulseMove(i: number){ return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100; }
-export function pulseFences(){
+function pulseFences(){
   if (fences) return fences;
   var moves: number[] = [];
   for (var i = 1; i < m2vHistory.length; i++) moves.push(pulseMove(i));
@@ -19,7 +19,7 @@ export function pulseBeat(i: number){
   return m < f[0] ? "flat" : (m < f[1] || m > f[2]) ? "odd" : "";
 }
 function f1(v: number){ return v.toFixed(1); }
-export function pulseStroke(i: number){
+function pulseStroke(i: number){
   var g = m2Yoy[i];
   return g == null ? null : Math.max(-1, Math.min(1, g / M2_FLOOD));
 }

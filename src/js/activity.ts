@@ -6,11 +6,11 @@ import { gdpSrc, HOLD_BAND } from "./data.ts";
 // ---- Activity: job growth and retail sales, each against a year earlier ----
 export var PAYROLLS_LINE = 0, RETAIL_LINE = 0, GAP_LINE = 0;
 export var growthGapHistory: QuarterPoint[] = [];
-export var PAYROLLS_SRC: Src[] = [
+var PAYROLLS_SRC: Src[] = [
   { t:"Bureau of Labor Statistics — Current Employment Statistics, the monthly survey of employers", u:"https://www.bls.gov/ces/" },
   { t:"FRED — All Employees, Total Nonfarm, seasonally adjusted, monthly since 1939 (PAYEMS)", u:"https://fred.stlouisfed.org/series/PAYEMS" }
 ];
-export var RETAIL_SRC: Src[] = [
+var RETAIL_SRC: Src[] = [
   { t:"US Census Bureau — Monthly Retail Trade: advance retail and food services sales", u:"https://www.census.gov/retail/index.html" },
   { t:"FRED — Advance Retail Sales: Retail Trade and Food Services, seasonally adjusted, monthly since 1992 (RSAFS)", u:"https://fred.stlouisfed.org/series/RSAFS" }
 ];

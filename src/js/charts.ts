@@ -7,10 +7,10 @@ type XLabelOpts = { xLabel?: ((d: never, i: number) => string) | null; _years?: 
 type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; marks?: number[]; markFmt?: (v: number) => string; noGridAt?: number | null; base?: number | string | null; gutter?: number };
 type DivergeDatum = { v: number | null; y?: number; [k: string]: unknown };
 type DivergeOpts = XLabelOpts & FitOpts & { vals: DivergeDatum[]; mid: number; midLabel?: string; tickFmt?: (v: number) => string; step?: number; goodAbove?: boolean; at?: ChartGeom["at"]; alt?: string };
-export type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: number; T: number; B: number };
+type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: number; T: number; B: number };
 
 // ---- The range bar ----
-export function trendOf(vals: (number | null)[] | null | undefined, unit?: string, period?: string): Trend {
+export function trendOf(vals: (number | null)[] | null | undefined, period?: string): Trend {
   period = period || "period";
   if (!vals || vals.length < 8) return { word:"unavailable", span:"", flat:true };
   var n = vals.length, m = 0, sx = 0, sy = 0, sxy = 0, sxx = 0;
@@ -52,7 +52,7 @@ function xLabelOf(o: XLabelOpts, d: { y?: number }, i: number, all?: { y?: numbe
   return d.y % 10 ? "" : "\u2019" + String(d.y).slice(2);
 }
 export function fitLine(vals: (number | null)[], per: string, fmt: (v: number) => string, x0: number, x1: number, y: YScale, W: number, padL: number, padR: number){
-  var fit = trendOf(vals, "points", per).fit;
+  var fit = trendOf(vals, per).fit;
   return fit && fit.n > 1 ? fitGroup({ fit:fit, fmt:fmt }, x0, x1, y, W, padL, padR) : "";
 }
 export function fitGroup(o: FitOpts, x0: number, x1: number, y: YScale, W: number, padL: number, padR: number){
@@ -128,10 +128,9 @@ export function zeroRule(L: number, R: number, y: number){
 export function meanRule(L: number, R: number, y: number){ return '<path class="vh-mean" d="M' + L + ',' + y.toFixed(1) + 'H' + R + '"/>'; }
 export var pendingGeom: ChartGeom | null = null;
 export function publishGeom(name: string, g: ChartGeom){ g.src = name; pendingGeom = g; return g; }
-export function histBar(inner?: string | null, id?: string | null){
-  return '<div class="hist-bar"' + (id ? ' id="' + id + '"' : '') + '>' + (inner || '') + '</div>';
+export function histBar(inner?: string | null){
+  return '<div class="hist-bar">' + (inner || '') + '</div>';
 }
-export function histTip(id: string){ return '<div class="gdp-tooltip mono hist-tip" id="' + id + '" hidden></div>'; }
 export function avgRule(x0: number | string, x1: number | string, y: number | string){
   return '<path class="temp-avg" d="M' + x0 + ',' + y + 'H' + x1 + '"/>';
 }

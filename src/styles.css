@@ -896,9 +896,6 @@
   .aux-stat + .method-say{ margin-top:24px; }
   .method-card .more-row{ margin-top:20px; }
   .labs .more-row, .dx > .more-row{ margin-top:0; }
-  .more-lead{ display:inline-flex; align-items:center; gap:10px; }
-  .more-mark{ display:inline-flex; width:18px; height:18px; }
-  .more-mark svg{ width:100%; height:100%; }
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
@@ -1046,7 +1043,6 @@
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
   .hero-hit{ fill:transparent; }
 
-  .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
   .vh-host .temp-col, .vh-host .growth-col{ transition:opacity 0.08s; }
   .hovering .hcol{ opacity:0.38; }
   .hovering .hcol.on{ opacity:1; }
@@ -1054,14 +1050,6 @@
   .hovering .hist-cross{ opacity:0.3; }
   .resting .hist-cross{ opacity:0.16; }
   .hovering.resting .hist-cross{ opacity:0.3; }
-  .gdp-tooltip{
-    position:absolute; pointer-events:none; background:var(--text-primary); color:var(--surface);
-    font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); line-height:1.5; padding:8px 10px; border-radius:var(--radius);
-    transform:translate(-50%,-100%); margin-top:-10px; opacity:0; transition:opacity 0.1s; white-space:nowrap; z-index:3;
-  }
-  .gdp-tooltip b{ display:block; font-size:var(--type-label); margin-bottom:2px; }
-  .gdp-tooltip .row{ display:flex; gap:8px; justify-content:space-between; }
-  .gdp-tooltip .row .sw{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; }
 
   /* ---- the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a ---- */
   .has-hist-read{ position:relative; }
@@ -1076,11 +1064,6 @@
              color:var(--text-primary); margin:0; white-space:nowrap; }
   .hr-plate.compact .hr-value{ font-size:var(--type-reading); line-height:1.467; }
   @media (max-width:400px){ .hr-value{ font-size:var(--type-section); } }
-  .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
-  .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
-                             vertical-align:middle; margin-right:6px; }
-  .gdp-tooltip .row.ref .sw.dash{ border-top:0; height:2px;
-    background:repeating-linear-gradient(to right, currentColor 0 4px, transparent 4px 7px); }
 
   /* ---- 10Y-3M spread history (quarterly, with recession bands) ---- */
 

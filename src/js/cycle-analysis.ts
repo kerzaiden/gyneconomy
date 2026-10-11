@@ -16,7 +16,7 @@ import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
 type Norm = { lo: number; hi: number; fence: number; floor: number };
-export type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; per: (number | null)[]; norm: Norm | null; settled?: boolean; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
+type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; per: (number | null)[]; norm: Norm | null; settled?: boolean; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
@@ -54,7 +54,7 @@ function cycleReadings(R: RosterRow){
 function readingsNorm(seen: number[][]){
   return normOf(([] as number[]).concat.apply([], seen.slice(0, closedCount())));
 }
-export var DEPTH_CYCLES = 4, DEPTH_YEARS = 20;
+var DEPTH_CYCLES = 4, DEPTH_YEARS = 20;
 var PER_YEAR: Record<string, number> = { m:12, q:4, qi:4, y:1, yi:1 };
 function deep(R: RosterRow, seen: number[][]){
   var closed = seen.slice(0, closedCount()), n = closed.filter(function(vs){ return vs.length; }).length;
@@ -268,11 +268,11 @@ function narrow(host: HTMLElement, id: string){
   });
   var none = host.querySelector<HTMLElement>(".search-none"); if (none) none.hidden = any;
 }
-export function riskLabs(i: number, key?: string){ var at = atCycle(i); return judged(at).filter(function(l){ return tier(l, at) === (key || "abnormal"); }); }
+export function riskLabs(i: number){ var at = atCycle(i); return judged(at).filter(function(l){ return tier(l, at) === "abnormal"; }); }
 function judged(at: At){ return listedLabs(at).filter(function(l){ return at.n(l); }); }
 function listedLabs(at: At){ return labs().filter(function(l){ return at.v(l) != null && !at.skip(l); }); }
 function score(i: number){ var at = atCycle(i), j = judged(at), ok = j.filter(function(l){ return tier(l, at) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
-export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
+function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 function word(n: number){ return NUM[n] || String(n); }
 function cap(t: string){ return t.charAt(0).toUpperCase() + t.slice(1); }
 

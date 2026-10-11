@@ -73,7 +73,7 @@ function pulseHistory(){
     var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : undefined;
     var chart = function(w: number){ return pulseStripsChart(w, from, to); };
     return { geom:"pulseStripsChart", wrap:"vh-host", chart:chart, paint:function(box: HTMLElement){ refitHistory(box, chart); stripScroller(box); },
-      trend:trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, false, { rising:"accelerating", falling:"decelerating" }) };
+      trend:trendPill(trendOf(m2vHistory.slice(from, to), "quarter"), null, false, { rising:"accelerating", falling:"decelerating" }) };
   }
 function defineFlow(){
   defineReading("sheet-sign-pulse", {
@@ -96,7 +96,7 @@ function defineFlow(){
       var idx = cyc ? cycleQtrIdx(M2_FROM_YEAR + 1, cyc, len) : null;
       var from = idx ? idx[0] : qWindowFrom(len, key), to = idx ? idx[1] : undefined;
       return { geom:"m2GrowthChart", wrap:"vh-host", chart:function(w: number){ return m2GrowthChart(w, from, { to:to }); },
-        trend:trendPill(trendOf(m2Yoy.slice(4).slice(from, to).filter(function(v){ return v != null; }), "points", "quarter"), null, true,
+        trend:trendPill(trendOf(m2Yoy.slice(4).slice(from, to).filter(function(v){ return v != null; }), "quarter"), null, true,
           { rising:"expanding", falling:"contracting" }) };
     },
     insight:function(){ return indicatorInsight(ROSTER_BY["sheet-sign-volume"], flowRow("Volume"), function(v){ return fmtSigned(v, 1) + "%"; }); },
@@ -148,7 +148,7 @@ function ylmFitLine(svg: Element, maturities: Maturity[], ylmFrom: number, ylmTo
     if (!m.on) return;
     m.data.forEach(function(d, i){ if (i >= ylmFrom && i < ylmTo && d.v != null) fitVals.push(d.v); });
   });
-  var ylmFit = trendOf(fitVals, "points", "quarter").fit;
+  var ylmFit = trendOf(fitVals, "quarter").fit;
   if (ylmFit && ylmFit.n > 1)
     svg.insertAdjacentHTML("beforeend", fitGroup(
       { fit:ylmFit, fmt:function(v: number){ return v.toFixed(2) + "%"; } },
@@ -279,7 +279,7 @@ function definePressure(){
       if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d){ if (d.v != null) w.push(d.v); });
       return { geom:"ylm", paint:render,
         chart:function(){ return chartShell("ylm", "US Treasury yield levels by maturity, quarterly, 2005 to 2026"); },
-        trend:trendPill(trendOf(w, "points", "quarter"), null, true, { rising:"climbing", falling:"easing" }) };
+        trend:trendPill(trendOf(w, "quarter"), null, true, { rising:"climbing", falling:"easing" }) };
     },
     insight:pressureInsights
   });
@@ -320,11 +320,11 @@ function pressureInsights(){
 }
 // ---- RENDER: the 30-year mortgage rate — what a household pays for money, monthly since 1971 ----
 var MORTGAGE_BACK = 12;
-export var MORTGAGE_SRC: Src[] = [
+var MORTGAGE_SRC: Src[] = [
   { t:"Freddie Mac — Primary Mortgage Market Survey: the average rate on 30-year fixed-rate conforming mortgages, weekly since April 1971", u:"https://www.freddiemac.com/pmms" },
   { t:"FRED — 30-Year Fixed Rate Mortgage Average in the United States (MORTGAGE30US)", u:"https://fred.stlouisfed.org/series/MORTGAGE30US" }
 ];
-export var mortgageTendency: Tendency;
+var mortgageTendency: Tendency;
 function mortgageLast(){ return mortgageHistory[mortgageHistory.length - 1]; }
 function mortgageInfo(){
   var T = mortgageTendency, last = mortgageLast(), pt = function(v: number){ return v.toFixed(2); };
@@ -363,7 +363,7 @@ function defineMortgage(){
     history:function(){
       var w = monthWindow(key, h), from = w.from, to = w.to;
       return { geom:"mortgageHistoryChart", chart:function(W: number){ return mortgageHistoryChart(W, from, { to:to, cycle:w.cycle }); },
-        trend:trendPill(trendOf(h.slice(from, to).map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"climbing", falling:"easing" }) };
+        trend:trendPill(trendOf(h.slice(from, to).map(function(d){ return d.v; }), "month"), null, true, { rising:"climbing", falling:"easing" }) };
     },
     insight:mortgageInsight
   });

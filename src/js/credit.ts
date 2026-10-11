@@ -6,26 +6,26 @@ import { activitySpecs } from "./activity.ts";
 import { concentrationSpecs } from "./concentration.ts";
 
 // ---- Credit, households and debt: consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies ----
-export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
-export type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
+type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
+type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
 
 export var CONSUMER_LINE = 0, MARGIN_LINE = 0, DELINQUENCY_TO = 2025;
-export var CONSUMER_SRC: Src[] = [
+var CONSUMER_SRC: Src[] = [
   { t:"Federal Reserve — G.19 Consumer Credit, monthly: revolving (credit cards) and nonrevolving (auto and student loans) credit owed by households, mortgages excluded", u:"https://www.federalreserve.gov/releases/g19/current/" },
   { t:"FRED — Total Consumer Credit Owned and Securitized (TOTALSL)", u:"https://fred.stlouisfed.org/series/TOTALSL" },
   { t:"The Conference Board — Lagging Economic Index, whose components include consumer installment credit outstanding to personal income", u:"https://www.conference-board.org/topics/us-leading-indicators" }
 ];
-export var MARGIN_SRC: Src[] = [
+var MARGIN_SRC: Src[] = [
   { t:"FINRA — Margin Statistics: debit balances in customers’ securities margin accounts, monthly", u:"https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics" }
 ];
-export var SAVING_SRC: Src[] = [
+var SAVING_SRC: Src[] = [
   { t:"BEA via FRED \u2014 Personal Saving Rate, quarterly since 1947 (PSAVERT)", u:"https://fred.stlouisfed.org/series/PSAVERT" }
 ];
-export var DEBT_PAYMENTS_SRC: Src[] = [
+var DEBT_PAYMENTS_SRC: Src[] = [
   { t:"Federal Reserve via FRED \u2014 Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)", u:"https://fred.stlouisfed.org/series/TDSP" },
   { t:"Jord\u00e0, Schularick and Taylor \u2014 When Credit Bites Back: Leverage, Business Cycles, and Crises (NBER Working Paper 17621, 2011)", u:"https://www.nber.org/papers/w17621" }
 ];
-export var DELINQUENCY_SRC: Src[] = [
+var DELINQUENCY_SRC: Src[] = [
   { t:"Federal Reserve — Charge-Off and Delinquency Rates on Loans and Leases at Commercial Banks, all loans, seasonally adjusted", u:"https://www.federalreserve.gov/releases/chargeoff/" },
   { t:"FRED — Delinquency Rate on All Loans, All Commercial Banks (DRALACBS)", u:"https://fred.stlouisfed.org/series/DRALACBS" }
 ];

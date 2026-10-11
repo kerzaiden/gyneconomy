@@ -8,7 +8,7 @@ import { categoriesShown, ROSTER_BY } from "./roster.ts";
 import { CAT_MARK, IND, riskCard } from "./cycle-analysis.ts";
 
 // ---- Today: the Weather Report and the cycle's story; every cycle page: its Cycle Story and its risk factors against their own record ----
-export var STORY_ID = "sheet-story";
+var STORY_ID = "sheet-story";
 var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var shown = { cycle:"" };
 function dateWords(iso: string){ var d = iso.split("-").map(Number); return (d[2] ? d[2] + " " : "") + MONTH_NAMES[d[1] - 1] + " " + d[0]; }
@@ -43,7 +43,7 @@ function todayHtml(){
     riskFactors(c) + elements();
 }
 function storyHtml(c: Cycle){ return dxSys(" wr-top", '<h2 class="wr-title">' + c.name + '</h2><p class="wr-date">' + cycLabel(c).years + '</p>') + riskFactors(c) + storyBox(c); }
-export function drawToday(){ put("today-home", todayHtml()); }
+function drawToday(){ put("today-home", todayHtml()); }
 function drawStory(){ put(STORY_ID + "-body", storyHtml(cycleByName(shown.cycle) || openCycle())); }
 export function redrawReport(){ drawToday(); var s = byIdMaybe(STORY_ID); if (s && !s.hidden) drawStory(); }
 function pickStory(e: Event){

@@ -177,7 +177,7 @@ function defineSpreads(){
       return { geom:"spreadHistory",
         chart:function(){ return chartShell("spread-history", "Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded", "hist-svg"); },
         paint:function(){ paintSpreads(spreadPick, from, to); },
-        trend:trendPill(trendOf(w, "points", "quarter"), null, true, { rising:"steepening", falling:"flattening" }) };
+        trend:trendPill(trendOf(w, "quarter"), null, true, { rising:"steepening", falling:"flattening" }) };
     },
     insight:spreadInsights
   });
@@ -274,7 +274,7 @@ function defineHormones(){
       var w = monthWindow(key, fedFundsHistory), from = w.from, to = w.to;
       var win = fedFundsHistory.slice(from, to);
       return { geom:"fedFundsHistoryChart", chart:function(W: number){ return fedFundsHistoryChart(W, from, { to:to, cycle:w.cycle }); },
-        trend:trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"tightening", falling:"easing" }) };
+        trend:trendPill(trendOf(win.map(function(d){ return d.v; }), "month"), null, true, { rising:"tightening", falling:"easing" }) };
     },
     insight:hormonesInsight
   });
@@ -291,7 +291,7 @@ function defineVolatility(){
       var cyc = pageCycle(key, VOL_Y0), span = cyc ? cycleSlice(volatilityHistory, cyc) : null;
       var vals = span ? volatilityHistory.slice(span[0], span[1]) : timelineWindow(volatilityHistory, page.range[key]);
       if (!vals.length) vals = volatilityHistory.slice(-12);
-      var fit = trendOf(vals.map(function(d){ return d.v; }), "points", "month");
+      var fit = trendOf(vals.map(function(d){ return d.v; }), "month");
       var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10), parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
       var line = VIX_CALM;
       return { geom:"divergeChart", trend:trendPill(fit, null, true), chart:function(w: number){

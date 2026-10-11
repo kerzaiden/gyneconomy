@@ -21,7 +21,7 @@ export function deficitChart(Wpx: number, from: number, to?: number | null){
   var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0), sw = colWidth(slot);
-  var defFit = trendOf(vals, "points", "year").fit;
+  var defFit = trendOf(vals, "year").fit;
 
   var run: number | null = null;
   for (var k = 0; k <= n; k++){
@@ -139,7 +139,7 @@ export function fedFundsHistoryChart(Wpx: number, from: number, o?: HistOpts){
 export function mortgageHistoryChart(Wpx: number, from: number, o?: HistOpts){
   return columnHistory(rateSpec(mortgageHistory, "mortgageHistoryChart", "The 30-year fixed mortgage rate"), Wpx, from, o);
 }
-export function rateFence(series: MonthPoint[]){
+function rateFence(series: MonthPoint[]){
   var vs = series.map(function(d){ return d.v; }), q1 = quartile(vs, 0.25), q3 = quartile(vs, 0.75);
   return q3 + 1.5 * (q3 - q1);
 }
