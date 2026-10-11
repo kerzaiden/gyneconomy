@@ -2,7 +2,7 @@ import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreRow, need } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
-import { boltSvg, calendarSvg, circulationSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
+import { boltSvg, calendarSvg, circulationSvg, diceSvg, flameSvg, moodSvg, slidersSvg, sproutSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { eraFig, todayValue } from "./era.ts";
@@ -171,7 +171,7 @@ function foldSec(k: string, title: string, name: string, ls: Lab[], at: At){
 }
 function labSec(k: string, ls: Lab[], at: At){
   var title = catTitle(k), name = catName(k);
-  return foldSec(k, title, '<button type="button" class="lab-cat" data-ind-cat="' + k + '">' + name + '</button>', ls, at);
+  return foldSec(k, title, labCat(' data-ind-cat="' + k + '"', name), ls, at);
 }
 function subSec(k: string, sub: string, ls: Lab[], at: At){
   return foldSec(k, sub, markName(SUB_MARK[sub], sub), ls, at);
@@ -365,7 +365,15 @@ function insightSec(k: string, ls: Lab[]){
 }
 function catName(k: string){ return markName(CAT_MARK[k], catTitle(k)); }
 function markName(mark: () => string, name: string){ return '<span class="lab-mark">' + mark() + '</span>' + name; }
+function labCat(attrs: string, name: string){ return '<button type="button" class="lab-cat"' + attrs + '>' + name + '</button>'; }
+function noneLine(text: string, attrs: string){ return '<p class="search-none"' + attrs + '>' + text + '</p>'; }
+function labBox(inner: string){ return '<div class="lab-box">' + inner + '</div>'; }
 function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' readings">' + n + '</small>'; }
+export function riskCard(i: number, attrs: string, none: string){
+  var at = atCycle(i), ls = riskLabs(i).filter(function(l){ return ROSTER_BY[l.id]; });
+  return labBox(catHeadCard("lab-sec plain", "risk", { tag:"button", cls:"lab-head lab-door ", attrs:' type="button"' + attrs, name:markName(diceSvg, "Risk Factors"), aside:CHEV },
+    '<ul>' + ls.map(function(l){ return labItem(l, at); }).join("") + '</ul>' + (ls.length ? "" : noneLine(none, ""))));
+}
 function insightsHome(i: number){
   var j = judged(atCycle(i));
   return categoriesShown().map(function(c){
@@ -392,7 +400,7 @@ function drawChart(id: string){
   if (host && c && id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(marketCycles.indexOf(c)) + '</div>'; return; }
   if (!host || !at) return;
   var j = judged(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
-  host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
+  host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs">' + labBox(bySystem(at, j, findOf(id).cat)) + noneLine("No reading matches.", " hidden") + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
 export var IND = "sheet-find";

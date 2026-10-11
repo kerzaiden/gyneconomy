@@ -604,17 +604,6 @@
   .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-  .ai-pic{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
-  .ai-cap{ display:block; margin-top:8px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
-  .ai-rank{ --tier:var(--critical); width:100%; margin:0; background:none; border:0; text-align:left; font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; display:grid; grid-template-columns:1fr auto; align-items:baseline; column-gap:10px; padding:8px 0; border-top:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
-  .ai-pic .more-row{ margin-top:12px; }
-  .ai-rank:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
-  .ai-rank:first-child{ border-top:0; padding-top:0; }
-  .ai-rank span{ font-weight:600; }
-  .ai-rank .ai-when{ font-weight:400; font-size:var(--type-meta); color:var(--text-muted); }
-  .ai-rank b{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
-  .ai-rank.t-abnormal b{ color:var(--critical-ink); }
-  .ai-rank > small{ grid-column:1 / -1; margin-top:2px; font-size:var(--type-meta); line-height:1.45; color:var(--text-secondary); }
   .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
   .wr-head{ display:block; margin-top:8px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.1; color:var(--text-primary); }
   .wr-page{ display:flex; flex-direction:column; gap:var(--gap); }
@@ -886,7 +875,7 @@
   .dx-more:hover{ background:transparent; }
   /* ---- The symptoms: a cycle's years against today ---- */
   .cat-weather{ --cat:var(--season-summer); } .cat-activity{ --cat:var(--earth); } .cat-circulation{ --cat:var(--ff-blue); }
-  .cat-mood{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
+  .cat-mood, .cat-risk{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
   .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
@@ -1011,6 +1000,11 @@
   .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); }
   .plain .lab-mark{ vertical-align:-3px; margin-right:6px; }
   .plain .lab-mark svg{ width:16px; height:16px; }
+  .lab-door{ width:100%; border:0; border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); font-family:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .lab-door:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .plain .lab-door .ind-cat-name{ font-size:var(--type-reading); font-weight:700; color:var(--accent); }
+  .plain .lab-door .lab-mark svg{ width:18px; height:18px; }
+  .lab-door .peek-chev{ color:var(--text-muted); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--normal); border-bottom:1px solid var(--border); }
   .lab-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; padding:11px 16px; cursor:default; }
