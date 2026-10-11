@@ -104,11 +104,16 @@ settles it; none is open after V668.
   them curious. So the report is one text across the six elements (Weather: the economy, the market and the season;
   Activity, Mood, Desire, Circulation, Stress), with each reading it names linking to its page, and Risk Factors
   inside it. The element insights of every cycle are gone, and so is the AI Insights sparkle. The report is news and
-  the cycle's story is not, so the story left it: Today is the dated edition (headline, date and lede, then Risk
-  Factors and the six elements). The Cycle Story is not on Today: it is general, not news, and belongs to the
+  the cycle's story is not, so the story left it: Today is the dated edition (headline, date and lede, then the cycle card,
+  Risk Factors and the six elements). The Cycle Story is not on Today: it is general, not news, and belongs to the
   Cycle tab. Closest Moments stays retired: the
   moments that resemble today are found by what needs attention, the way financial media say "highest since", which
   Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report, Today Tab)
+- **Under the Weather Report, Today carries the current cycle in small: the dial's own ring on the left (its seasons,
+  bull and bear years and the typical cycle ahead, without the year badge), and on the right what the dial's hub says
+  (the cycle and its year, today's date, the season, its stage and the S&P 500 this year); the whole card opens the
+  Cycle tab.** Keren wanted the cycle in view where the app opens, as a door to its page, without repeating the
+  dial. The ring is the dial's, drawn by one function (`dialRing`), so the two cannot part. (Story In Place)
 - **The Cycle Story card follows the dial on every cycle page, the book its mark, titled by its cycle alone ("AI
   Cycle", "Dot-Com Cycle") with a dot and its years beside the title, then three lines of its story and "Read
   more", which opens the rest in place ("Read less" closes it).** The story's own page repeated Risk Factors, already

@@ -320,6 +320,11 @@ async function openPage(p, url, sheet) {
      today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker === 'AI Cycle')
       ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
+    const ringDoor = await p.evaluate(() => { document.querySelector('.tab-btn[data-tab="today"]').click(); document.querySelector('#today-home .today-cycle').click();
+      return { tab: document.querySelector('.tab-btn.active').dataset.tab, shown: !!document.getElementById('diagnosis').offsetParent, title: document.getElementById('topbar-title').textContent }; });
+    (ringDoor.tab === 'cycle' && ringDoor.shown && ringDoor.title === 'Current Cycle')
+      ? ok('the cycle card on Today opens the current cycle', ringDoor.title)
+      : bad('the cycle card on Today opens the current cycle', JSON.stringify(ringDoor));
     const story = await p.evaluate(() => { const k = document.querySelector('#diagnosis .trend-card'), t = k.querySelector('.trend-text'), m = k.querySelector('[data-story-more]');
       const shut = t.getBoundingClientRect().height, cut = t.scrollHeight > t.clientHeight; m.click();
       const open = t.getBoundingClientRect().height, label = m.textContent; m.click();

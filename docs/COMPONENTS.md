@@ -8,12 +8,13 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `a887649` on 2026-10-11. **109 components**, **18 shared patterns**.
+Generated from commit `a9cc5c5` on 2026-10-11. **111 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
+| **`cycleCard`** | `.today-cycle` `.today-cycle-date` `.today-cycle-hub` `.today-cycle-kicker` `.today-cycle-ret` `.today-cycle-season` `.today-cycle-stage` | `ai-insights.ts:todayHtml` |
 | **`elements`** | `.wr-el` | `ai-insights.ts:todayHtml` |
 | **`lead`** | `.wr-by` `.wr-head` | `ai-insights.ts:todayHtml` |
 | **`prose`** | `.wr-link` | `ai-insights.ts:elements` |
@@ -84,9 +85,16 @@ Generated from commit `a887649` on 2026-10-11. **109 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`drawDial`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-today-badge` `.dial-track` `.disc` `.dot` `.lbl` `.num` | `dial-cycle.ts:renderCycleView` |
+| **`drawDial`** | `.dial-today-badge` `.lbl` `.num` | `dial-cycle.ts:renderCycleView` |
 | **`hubSet`** | `.hub-chev` `.hub-stage` | `dial-cycle.ts:hubShowDefault`, `dial-cycle.ts:hubShowQuarter` |
 | **`renderCycleKicker`** | `.bar` `.info-btn` `.legend-head` `.legend-row` `.legend-rows` `.ytd` | `dial-cycle.ts:bootDialCycle` |
+
+## dial-ring.ts
+
+| Component | Owns | Used by |
+|---|---|---|
+| **`dialRing`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-track` `.disc` `.dot` | `dial-cycle.ts:drawDial`, `dial-ring.ts:miniRing` |
+| **`miniRing`** | `.cycle-dial` `.mini-ring` | `ai-insights.ts:cycleCard` |
 
 ## dom.ts
 
@@ -95,7 +103,6 @@ Generated from commit `a887649` on 2026-10-11. **109 components**, **18 shared p
 | **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `fed-phases.ts:footnoteHtml` |
 | **`moreButton`** | `.cyc-more` `.dx-more` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `dom.ts:moreRow` |
-| **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `ai-insights.ts:elements`, `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
 
@@ -221,7 +228,7 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`fmtSigned`** | format.ts | 24 places |
+| **`fmtSigned`** | format.ts | 25 places |
 | **`need`** | dom.ts | 23 places |
 | **`titleCase`** | format.ts | 17 places |
 | **`pageCycle`** | history.ts | 15 places |
@@ -342,6 +349,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.cycsel-nm` | 3 | `history.ts:headMenuHtml`, `history.ts:headPickRow`, `history.ts:nameAside` |
 | `.marker-sub` | 3 | `indicators.ts:splitInfo`, `inner-pages.ts:valuationInfo`, `readings.ts:volatilityDetailHtml` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
+| `.trend-card` | 2 | `ai-insights.ts:cycleCard`, `dom.ts:trendCard` |
 | `.mono` | 2 | `charts.ts:fitGroup`, `charts.ts:histTip` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
 | `.dx` | 2 | `diagnosis.ts:diagnosisHost`, `portfolio.ts:buildPortfolio` |

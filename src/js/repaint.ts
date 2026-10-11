@@ -19,6 +19,7 @@ function repaintDiagnosis(){
 function repaintDerived(){
   forgetLabs();
   repaintDiagnosis();
+  drawToday();
   ["chart-home", "sheet-find"].forEach(function(id){ var el = byIdMaybe(id); if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id](); });
 }
 

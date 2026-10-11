@@ -612,6 +612,16 @@
   .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
   .wr-head{ display:block; margin-top:8px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.1; color:var(--text-primary); }
   .wr-page{ display:flex; flex-direction:column; gap:var(--gap); }
+  .today-cycle{ display:flex; align-items:center; gap:16px; padding:14px 16px; }
+  .today-cycle .mini-ring{ position:static; width:112px; height:112px; flex:none; }
+  .today-cycle .mini-ring *{ pointer-events:none; }
+  .today-cycle-hub{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .today-cycle-kicker{ font-size:var(--type-label); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); }
+  .today-cycle-date, .today-cycle-ret{ font-size:var(--type-meta); color:var(--text-secondary); }
+  .today-cycle-date b, .today-cycle-ret b{ font-weight:700; color:var(--text-primary); }
+  .today-cycle-season{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.05; color:var(--text-primary); }
+  .today-cycle-stage{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-row); line-height:1.1; color:var(--text-secondary); }
+  .today-cycle .peek-chev{ color:var(--text-muted); }
   .trend-when{ font-weight:500; color:var(--text-muted); white-space:nowrap; }
   .wr-el + .wr-el{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
   .wr-el .trend-head{ --cat:var(--accent-ink); }
