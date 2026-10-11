@@ -841,6 +841,10 @@ settles it; none is open after V668.
   stagnant growth, not only a direction; prices stuck above the range are hard to bring down. Prices hot but
   cooling stay Disinflation (2023 Q4). Measured first: one quarter moves, 1967 Q4 (3.3%, steady), and today is
   unchanged. (Oct 11, 2026)
+- **Winter–Deflation stays contraction with inflation below the 1% floor, not only below zero.** Keren measured
+  Winter from the Fed's 2% target: half of it or less is the ground the economy has to climb back from. Strict
+  deflation (below 0%) was measured and dropped: it took eleven quarters out of Winter, 2008 Q4 and 2020 Q2
+  among them. (Oct 11, 2026)
 - **Stagflation does not need prices above the range; it mirrors expansion.** Keren made the two sides
   symmetric "even though heating-within-range is empirically rare". (undated, Sep 19, 2026)
 - **Spring–Disinflation (expansion, prices cooling, within or below the range) replaced the Goldilocks Zone;
