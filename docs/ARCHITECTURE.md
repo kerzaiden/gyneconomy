@@ -883,7 +883,10 @@ same CPI is the same colour in any cycle. **The column histories are one compone
 (series, month or quarter, reference line, column class and step ramp, digits, aria text) over one body, which
 draws the axes, year marks, columns, average, fit, zero rule, reference rule, crosshair and hit area in that
 order. The Federal budget stays its own function because its fiscal-year axis, recession shading and 1983
-mark are not a variant of the others, but it takes its column width from `colWidth` like every chart.
+mark are not a variant of the others, but it takes its column width from `colWidth` like every chart. Every history column carries `.hcol`, which owns its fill and cap, and a ramp names its steps from the one
+set `hc-0` to `hc-5` and `hc-x`, each the `--hist-` ink of the same name; a column's own class keeps only what is its
+own (a default ink, an opacity, a state such as `inv` or `surplus`). A peek's columns take the same fill and cap from
+`.peek-chart.heat`, since they carry no `.hcol`.
 
 **The Balance** (Weather's Insights) reads the GAP between total price change and total real growth
 over a cycle's closed years — Dot-Com −3.6, Housing +1.5, Big Tech +0.2, Stimulus +3.5. They finish close

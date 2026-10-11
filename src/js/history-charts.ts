@@ -166,9 +166,9 @@ function rateSpec(series: MonthPoint[], geom: string, what: string): ColumnSpec 
       var vLo = Math.min.apply(null, seen), vHi = Math.max.apply(null, seen);
       return function(d){
         var v = d.v as number;
-        if (v > fence) return "fx";
-        if (!(vHi > vLo)) return "f5";
-        return "f" + Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
+        if (v > fence) return "hc-x";
+        if (!(vHi > vLo)) return "hc-5";
+        return "hc-" + Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
       };
     } };
 }
@@ -191,7 +191,7 @@ export function m2GrowthChart(Wpx: number, from: number, o?: HistOpts){
     tail:", against the long-run norm of " + M2_NORM + " per cent" }, Wpx, from, o);
 }
 function m2Step(v: number){
-  return v < 0 ? "v5" : v < M2_PACE_LO ? "v4" : v < M2_NORM ? "v3" : v < M2_PACE_HI ? "v2" : v <= M2_FLOOD ? "v1" : "v0";
+  return v < 0 ? "hc-x" : v < M2_PACE_LO ? "hc-4" : v < M2_NORM ? "hc-3" : v < M2_PACE_HI ? "hc-2" : v <= M2_FLOOD ? "hc-1" : "hc-0";
 }
 var heatTop: number[] = [];
 function heatEdges(){
@@ -200,5 +200,5 @@ function heatEdges(){
 }
 function heatStep(v: number){
   var top = heatEdges();
-  return v < TEMP_BAND_LO ? "s0" : v < CPI_TARGET ? "s1" : v < TEMP_BAND_HI ? "s2" : v < top[0] ? "s3" : v < top[1] ? "s4" : "s5";
+  return v < TEMP_BAND_LO ? "hc-x" : v < CPI_TARGET ? "hc-0" : v < TEMP_BAND_HI ? "hc-1" : v < top[0] ? "hc-2" : v < top[1] ? "hc-3" : "hc-4";
 }
