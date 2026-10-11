@@ -114,6 +114,7 @@ type RosterRow = {
   stops?: string[];
   mid?: number;
   flip?: boolean;
+  src?: Src[];
 };
 type PeekCardOpts = { value?: string; word?: string; state?: Tone; cols?: (number | null)[]; colClass?: (v: number, i: number) => string; colBase?: number; colRule?: boolean; target?: string; title?: string; kicker?: string; mark?: string; unit?: string };
 type CreditPoint = { m?: string; q?: string; d?: string; v: number };
