@@ -793,7 +793,7 @@ settles it; none is open after V668.
   temperature, not by season: the cold part always blue, the range always yellow, the hot part always red, the
   parts a season does not cover grey, with no 2% line. The season's colour on the bar confused Keren; three
   temperature colours are enough to tell the seasons apart. The transition seasons carry their direction as an
-  arrow (← Cooling, Heating →); Stagflation reads Hot / Heating. (V193, V668, 0.8.7, 0.9.2; Oct 11, 2026)
+  arrow (← Cooling, Heating →); Summer and Stagflation read Steady / Heating →. (V193, V668, 0.8.7, 0.9.2; Oct 11, 2026)
 - **The season is computed and never set by hand; `seasonOverride` stays null.** It follows Keren's rule:
   inflation rising while growth falls is stagflation. (undated)
 - **Growth's side is real GDP against a year earlier set beside the economy's potential growth: at or above
@@ -825,8 +825,8 @@ settles it; none is open after V668.
   whether a trend is certain, and a season has to say it has turned before certainty arrives; Keren kept hers.
   Growth has no tolerance of its own since the eight-quarter trend went in 0.8.0. (1.2.2; the full list is in
   code-review/trends-1.3.0.md in the project files)
-- **In expansion, hot is Summer–Inflation; otherwise cooling is Spring–Disinflation and heating is
-  Spring–Reflation, within or below the range. In contraction, cold is Winter–Deflation; otherwise heating, or
+- **In expansion, cooling at any level is Spring–Disinflation; heating within or below the range is
+  Spring–Reflation; hot prices heating or steady are Summer–Inflation. In contraction, cold is Winter–Deflation; otherwise heating, or
   prices steady above the range, is Autumn–Stagflation and cooling is Autumn–Disinflation, within or above the
   range.** Keren's season table.
   Steady prices (a twelve-month trend inside ±0.02 points a month) keep the prior quarter's direction, as growth
@@ -838,6 +838,12 @@ settles it; none is open after V668.
   deflation is prices falling, inflation below zero (textbook, IMF and Fed usage). Heating takes its name from
   growth: reflation in expansion, stagflation in contraction. The key stays `springdeflation`, as `lateautumn`
   did, so nothing downstream moves. (Oct 11, 2026)
+- **Summer is hot prices still heating or stuck; hot prices cooling in expansion are Spring–Disinflation.** The
+  direction names the season and the colour already shows the heat: prices cooling in a growing economy are
+  disinflation at any level, the soft landings (1983–85, 1988, 2023 Q3). It mirrors Autumn, where hot and cooling
+  is Disinflation and hot and steady is Stagflation. Measured first: 28 quarters move from Summer to
+  Spring–Disinflation (Summer 84 to 56); today is unchanged. Replaces "hot is Summer regardless of direction".
+  (Oct 11, 2026)
 - **Stagflation is stagnant growth with sticky inflation: in contraction, prices steady above the range read
   Stagflation whatever the prior direction.** The classic definition is a level, persistently high inflation with
   stagnant growth, not only a direction; prices stuck above the range are hard to bring down. Prices hot but
@@ -849,7 +855,7 @@ settles it; none is open after V668.
   among them. (Oct 11, 2026)
 - **Stagflation does not need prices above the range; it mirrors expansion.** Keren made the two sides
   symmetric "even though heating-within-range is empirically rare". (undated, Sep 19, 2026)
-- **Spring–Disinflation (expansion, prices cooling, within or below the range) replaced the Goldilocks Zone;
+- **Spring–Disinflation (expansion, prices cooling, at any level since Oct 11, 2026) replaced the Goldilocks Zone;
   never re-add it.** In expansion, direction alone now decides, as it already did in contraction. (undated,
   Sep 18, 2026)
 - **Spring–Disinflation has no narrative until Keren writes one; its card stays blank, with no drafted copy.**

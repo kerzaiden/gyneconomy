@@ -50,6 +50,8 @@ ok('positive growth well below potential is contraction', readSeason(cpi(2.0, 0)
 ok('shrinking output is contraction', readSeason(cpi(2.0, 0), { q: 'x', v: -1 }, P, 'expansion').regime, 'contraction');
 
 ok('expansion + hot prices        = summer',          season(cpi(4.2, 0.05), up),  'summer');
+ok('expansion + hot prices steady = summer',          readSeason(cpi(4.2, 0), up, P, null, 'falling').season, 'summer');
+ok('expansion + hot prices cooling = springdeflation', season(cpi(4.2, -0.05), up), 'springdeflation');
 ok('expansion + cooling prices    = springdeflation', season(cpi(2.0, -0.05), up), 'springdeflation');
 ok('expansion + heating prices    = spring',          season(cpi(2.0, 0.05), up),  'spring');
 ok('expansion + steady prices     = spring',          season(cpi(2.0, 0), up),     'spring');
