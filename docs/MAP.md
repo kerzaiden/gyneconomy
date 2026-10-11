@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,921 lines** in 42 files, about 610 KB, roughly **173 thousand tokens**. No session can
+The source is **8,917 lines** in 42 files, about 610 KB, roughly **173 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `5ef10a2` on 2026-10-11.
+Generated from commit `bc0115c` on 2026-10-11.
 
 ## The page
 
@@ -42,7 +42,7 @@ Counts: **38** modules, **784** top-level functions, **123** top-level vars, **3
 | `js/render-pages.ts` | 383 | 20 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
 | `js/diagnosis.ts` | 84 | 12 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
 | `js/dial-cycle.ts` | 385 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
-| `js/analysis.ts` | 83 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
+| `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 146 | 12 | `data`, `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `readings`, `render-core`, `render-pages` |
 | `js/tabs-menu.ts` | 228 | 10 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
@@ -91,7 +91,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 13 | `bootRenderPages` | `js/render-pages.ts:374`–379 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:80`–83 |
 | 15 | `bootDialCycle` | `js/dial-cycle.ts:363`–384 |
-| 16 | `bootAnalysis` | `js/analysis.ts:78`–82 |
+| 16 | `bootAnalysis` | `js/analysis.ts:74`–78 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:139`–145 |
 | 19 | `bootTabsMenu` | `js/tabs-menu.ts:216`–227 |
@@ -714,7 +714,7 @@ falls in. **export** marks a name other modules import.
 
 ### `js/analysis.ts`
 
-#### RENDER: Herstory, the list of cycles at the foot of Analysis; tapping one opens the cycle view for it
+#### RENDER: Herstory, the list of closed cycles at the foot of Analysis; tapping one opens the cycle view for it
 
 | Line | Name | Anchor |
 |---|---|---|
@@ -725,10 +725,10 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 59 | `parentOf` | `function parentOf(` |
-| 60 | `eraShow` | `function eraShow(` |
-| 65 | `enterEra` | `function enterEra(` |
-| 72 | `leaveEra` | `function leaveEra(` |
+| 55 | `parentOf` | `function parentOf(` |
+| 56 | `eraShow` | `function eraShow(` |
+| 61 | `enterEra` | `function enterEra(` |
+| 68 | `leaveEra` | `function leaveEra(` |
 
 ### `js/portfolio.ts`
 

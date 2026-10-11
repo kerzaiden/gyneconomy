@@ -391,7 +391,7 @@ The conversion was proved by the snapshot (every state identical) and the browse
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
 to the manuscript, not part of it. Tabs: Today · Cycle · Analysis · Portfolio, opening on Today. These are labels,
 and Analysis's panel keeps its key `chart`: Analysis is Cycle Statistics, which took Search's place in 0.6.1, and
-Herstory, the cycle list (`#calendar-list`), is its last container since Today Tab; a past cycle opens in
+Herstory, the list of closed cycles (`#calendar-list`), is its last container since Today Tab; a past cycle opens in
 `#calendar-cycle` inside the same panel. The Content tab's models live in About Gyneconomy, the menu's page formerly
 "About the book" (V657). Cycle = the dial, then Browse, six categories since 0.9.11: Weather (Economic Season ·
 Market) · Activity (Labor · Output; key `activity`) · Mood (Valuations · Sentiment) · Desire (Demand · Risk) ·

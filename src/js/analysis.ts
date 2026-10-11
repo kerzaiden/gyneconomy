@@ -12,19 +12,19 @@ import { PREVIEW } from "./diagnosis.ts";
 
 type Strip = ReturnType<typeof seasonStripHtml>;
 
-// ---- RENDER: Herstory, the list of cycles at the foot of Analysis; tapping one opens the cycle view for it ----
+// ---- RENDER: Herstory, the list of closed cycles at the foot of Analysis; tapping one opens the cycle view for it ----
 function cycleRowsHtml(){
-  var strips: Record<number, Strip> = {};
-  marketCycles.forEach(function(c){ strips[c.from] = seasonStripHtml(c); });
-  return dxSys(" dx-years", dxHead(herstorySvg(), "Herstory") + marketCycles.slice().reverse().map(function(cyc){
+  var strips: Record<number, Strip> = {}, closed = marketCycles.filter(function(c){ return !c.ongoing; });
+  closed.forEach(function(c){ strips[c.from] = seasonStripHtml(c); });
+  return dxSys(" dx-years", dxHead(herstorySvg(), "Herstory") + closed.slice().reverse().map(function(cyc){
     var total = eraMarketTotal(cyc), strip = strips[cyc.from];
     var head = '<span class="era-name">' + cyc.name + '</span>' +
       '<span class="era-years">' + cycLabel(cyc).years + ' <b>(' + strip.years + 'Y)</b></span>' + CHEV;
     var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
-    var foot = econChips(eraGrowth(cyc).total, eraInflation(cyc).total, total, 0, !!cyc.ongoing, "");
+    var foot = econChips(eraGrowth(cyc).total, eraInflation(cyc).total, total, 0, false, "");
     return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div>' +
           '<div class="era-bands">' + bands + '</div>' + foot + '</div>';
-  }).join('') + moreButton(marketCycles.length > PREVIEW));
+  }).join('') + moreButton(closed.length > PREVIEW));
 }
 function renderCycleList(){
   var list = need("calendar-list"), home = need("chart-home"), detail = need("calendar-cycle");
@@ -35,10 +35,6 @@ function renderCycleList(){
   function open(from: number, y?: number){
     var era = marketCycles.filter(function(c){ return c.from === from; })[0];
     if (!era) return;
-    if (era.ongoing){
-      var tab = document.querySelector<HTMLElement>('.tab-btn[data-tab="cycle"]');
-      if (tab){ tab.click(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
-    }
     enterEra(era, detail);
     showHome(false);
     setTopbar(era.name, (ui.eraPageBack = back));

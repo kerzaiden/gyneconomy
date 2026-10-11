@@ -390,8 +390,9 @@ async function openPage(p, url, sheet) {
   await p.goto('file://' + url); await ready(p);
   await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click());
   await settle(p);
-  const spans = await p.evaluate(() => [...document.querySelectorAll('.era-years')].map(e => e.textContent.trim()));
-  spans.some(s => /–Today/.test(s)) ? ok('cycle span says Today') : bad('cycle span says Today', spans.join(' | '));
+  const spans = await p.evaluate(() => [...document.querySelectorAll('#calendar-list .era-years')].map(e => e.textContent.trim()));
+  (spans.length && !spans.some(s => /Today/.test(s))) ? ok('Herstory holds only closed cycles', spans.length + ' cycles, the open one on its own tab')
+    : bad('Herstory holds only closed cycles', spans.join(' | '));
 
   {
     const rateFrom = async (past) => {
@@ -742,24 +743,6 @@ async function openPage(p, url, sheet) {
       ? ok('the pages follow the cycle, and today comes back', 'picker: Housing')
       : bad('the pages follow the cycle, and today comes back', JSON.stringify({ picked, back }));
 
-    await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="chart"]'); if (b) b.click(); });
-    await settle(p);
-    const noRow = await p.evaluate(() => {
-      const row = [...document.querySelectorAll('.era-row')].find(x => /Today/.test(x.textContent));
-      if (!row) return 'no ongoing row';
-      row.click(); return null;
-    });
-    await settle(p);
-    const landed = await p.evaluate(() => ({
-      tab: (document.querySelector('.tab-btn.active') || {}).getAttribute
-             ? document.querySelector('.tab-btn.active').getAttribute('data-tab') : null,
-      frozen: !document.getElementById('calendar-cycle').hidden,
-      dial: !!document.querySelector('#cycle-view .season-card'),
-      bar: document.getElementById('topbar-title').textContent.trim()
-    }));
-    (!noRow && landed.tab === 'cycle' && !landed.frozen && landed.dial && /Current Cycle/i.test(landed.bar))
-      ? ok('the open cycle opens the live page', 'landed on the Cycle tab')
-      : bad('the open cycle opens the live page', JSON.stringify({ noRow, landed }));
   }
   await p.close();
 

@@ -192,9 +192,10 @@ settles it; none is open after V668.
   (V665); Cycle analysis then took Search's place, because the two showed the same readings in different views.
   (V657, V665, 0.6.1, Today Tab)
 - **Herstory is the last container on Analysis, built like Year by Year: the history clock (an arrow turning back
-  round a clock face) as its mark, the three newest cycles, then View more for the rest.** It is read less often
-  than the rest of Analysis, so it sits at the foot; it keeps the icon that stood beside Cycle history. A cycle opens
-  in place, inside Analysis, with the back arrow returning to it. (0.6.3, Today Tab)
+  round a clock face) as its mark, the three newest closed cycles, then View more for the rest.** It is read less
+  often than the rest of Analysis, so it sits at the foot; it keeps the icon that stood beside Cycle history. A cycle
+  opens in place, inside Analysis, with the back arrow returning to it. **The open cycle is not in it:** it has not
+  closed, so it is not yet part of her story, and it has its own tab. (0.6.3, V616, Today Tab)
 - **Analysis's More details opens on one line, the way a cycle-tracking app says it ("Averages are based on her 18
   closed cycles since 1928"), then the method as five short bold-led bullets, scannable in about 15 seconds.** The
   full text was too long to open; Keren wanted it summarised, not erased, so a reader can take it in at a glance.
@@ -573,8 +574,6 @@ settles it; none is open after V668.
   undated, Sep 18, 2026)
 - **A closed cycle is read, not graded: its small pictures are drawn in the neutral accent, never a state
   colour.** A cycle that ended is not being judged. (V615)
-- **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never
-  a frozen copy.** The cycle has not ended, and a frozen view would say the AI Cycle is over. (V616)
 - **Each cycle's strips in Herstory are drawn against the typical cycle length: a shorter cycle shows
   grey for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
   true proportions.** The grey stands for the average that is left, not a comparison with the longest cycle. (V517)
@@ -583,7 +582,7 @@ settles it; none is open after V668.
   logic. (0.6.6)
 - **On the open cycle, Year by year stops at the year in progress, with no rows for years still to come: its
   quarters already read are drawn, and what is left of the year is grey dots under the grey line, spaced like
-  Herstory's (one quarter of the open cycle's Herstory row apart) so they fill the rest of the year, rather than one
+  Herstory's (one quarter of a Herstory row apart) so they fill the rest of the year, rather than one
   dot per quarter. The first dot sits one dot-gap from the market bar, the same gap as between the dots.** Rows for
   future years waste room; the Herstory spacing is for looks, and an even gap after the bar is tidier. (0.6.6,
   0.6.18, 0.8.8)
