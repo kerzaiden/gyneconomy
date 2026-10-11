@@ -31,7 +31,7 @@
   <div id="cycle-view">
 
     <div class="season-card">
-      <div class="cv-head season-head"><div class="cv-kicker" id="cycle-kicker">Gyneconomy</div></div>
+      <div class="cv-head season-head"><div class="cv-kicker" id="cycle-kicker"></div></div>
       <div class="season-wheel-wrap">
         <div class="season-wheel">
           <svg class="cycle-dial" id="cycle-dial" viewBox="-108 -108 216 216" aria-hidden="true" style="pointer-events:none"></svg>
@@ -92,7 +92,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.0.2 (846)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.0.3 (847)</span></p>
     </div>
   </div>
 
@@ -116,7 +116,7 @@
       <h3 class="menu-section">The Six Seasons</h3>
       <div class="menu-card menu-prose">
         <p>A season is computed from two readings, never set by hand. <b>Growth</b> is real GDP against a year earlier, set beside the economy's <b>potential</b>, how fast it can grow without overheating: at or above potential is expansion, below it is contraction, even while output still grows. Within half a point of potential the economy keeps the side it was on. <b>Temperature</b> is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and which way it is heading over the last twelve months.</p>
-        <p>In expansion, cooling at any level is <b>Spring — disinflation</b>; heating within or below the range is <b>Spring — reflation</b>; and hot prices heating or stuck are <b>Summer — inflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; hot prices heating or stuck are <b>Autumn — stagflation</b>; and prices within the range, or hot and cooling, are <b>Autumn — disinflation</b>.</p>
+        <p>In expansion, within or below the range, cooling is <b>Spring — disinflation</b> and heating is <b>Spring — reflation</b>; and hot prices in any direction are <b>Summer — inflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; hot prices heating or stuck are <b>Autumn — stagflation</b>; and prices within the range, or hot and cooling, are <b>Autumn — disinflation</b>.</p>
         <p>The 1–3% band is part of the Season Model’s structure, a point either side of the Fed's 2% objective, read on CPI before 2000 and on PCE, the Fed’s own gauge, since. The full rule, with today's row marked, is in the menu under <b>About Gyneconomy</b>, in <b>The Season Model</b>.</p>
       </div>
 
@@ -159,23 +159,24 @@
         <button type="button" class="cyc-more" id="idea-more" aria-expanded="false" aria-controls="idea-prose"><span>View more</span><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></button>
       </div>
 
-      <div class="menu-card model-card">
-        <h3 class="menu-section">The Cycle Model</h3>
+      <div class="menu-card model-card" id="cycle-model">
+        <h3 class="menu-section" id="cycle-model-kicker">The Cycle Model</h3>
         <p id="cycle-model-line"></p>
-        <div class="legend-rows">
-          <div class="legend-row"><span class="season-sw" style="--season:var(--bleed-mid)"></span>Bear year<small>the market closed down</small></div>
-          <div class="legend-row"><span class="season-sw" style="--season:var(--ovulate)"></span>Bull year<small>the market closed up</small></div>
-        </div>
+        <div id="cycle-model-key"></div>
+        <div class="model-notes" id="cycle-model-notes"></div>
       </div>
 
-      <div class="menu-card model-card seasons-rows">
-        <h3 class="menu-section" id="seasons-kicker">The Season Model</h3>
-        <div id="seasons-rows"></div>
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Season Model</h3>
+        <p>Two questions set the season: is growth keeping up with its potential, and how hot are prices?</p>
+        <div id="seasons-grid"></div>
+        <div class="model-notes" id="seasons-notes"></div>
       </div>
 
       <div class="menu-card model-card framework-rows">
         <h3 class="menu-section" id="framework-kicker">The Framework</h3>
         <div id="framework-rows"></div>
+        <div class="model-notes" id="framework-notes"></div>
       </div>
 
       <div class="menu-card model-card">

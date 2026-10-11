@@ -304,21 +304,28 @@ settles it; none is open after V668.
   model and framework the Content tab used to carry; its text is a draft for Keren to edit.** Keren merged
   them and renamed the page. (V657)
 - **Every section of About Gyneconomy is one container with its title inside, as the Cycle Model is; The Idea
-  shows its first paragraph and a View more for the rest; the Season Model's rows carry no header row.** Keren
-  wanted The Idea built like the Cycle Model, all of it one container, and found the "Season" header unnecessary.
-  Its (i) opens on one plain line and a two-by-three table (growth against potential by cold, in range and hot), so
-  the model can be told word for word. (0.8.1, Oct 5, 2026)
+  shows its first paragraph and a View more for the rest.** Keren wanted The Idea built like the Cycle Model, all of
+  it one container. (0.8.1, Oct 5, 2026)
+- **About Gyneconomy has no (i): it is already the page that explains, so each container ends on its own brief
+  notes, a line or a few bold-led bullets with their sources, and the containers keep the app's spacing (the page
+  gap between them, 16px inside).** Keren did not want an info button inside an info page, nor many buttons to
+  reach the data. (Legend Icon)
+- **The Season Model is one two-by-three grid: price level across (Cold below 1%, Warm 1–3%, Hot above 3%: warm, like the water in a shower, is where growth is comfortable),
+  Expansion and Contraction down the side in vertical labels, each season a block in its colour (Spring and Autumn
+  two columns wide), its kinds inside with an arrow for the direction of prices (→ heating, ← cooling, Winter
+  none), and today's season outlined and marked Now.** Keren found the six rows with their range bars too complex;
+  the grid answers the model's two questions at a glance, and the arrows read along the temperature axis. Below it,
+  bold-led bullets define Expansion (growth at or above potential, the CBO's since 1950), Contraction and the
+  arrows, then the record against recessions. (Legend Icon)
 - **The Cycle Model speaks in bull and bear years, and says how many cycles the record holds and how long they
   run on average, computed from the app's own closed cycles.** A cycle runs from its first bull year to the bear
   year that ends it; the average length gives a reader a notion of how the whole app is built. (0.8.1, Oct 5, 2026)
-- **The Framework's container holds only its table, full width; the paragraph on the seven signs is its (i)'s one
-  line, with the leading, coincident and lagging examples as bullets,** so the page does not repeat itself. The
-  Season Model's (i) uses the precise terms, concisely, as Keren asked: growth gap, sensitivity, price level,
-  direction (transition seasons only), and its table shows all 18 combinations. The growth gap (Keren's name) is
+- **The Framework's container holds its table, full width, and one line under it on the seven signs and when each
+  kind speaks,** so the page does not repeat itself. The growth gap (Keren's name) is
   growth against potential growth (the Investment Clock's growth above or below trend), not the output gap, which
   measures the level: tested on 1953–2026, the output gap put 31 of 39 recession quarters in Autumn or Winter
   against the growth gap's 38 (season-model/output-gap-test.md), so the app does not carry the output gap. For
-  credibility, the (i) credits the Investment Clock (Merrill Lynch, 2004) for the growth question. It closes on its
+  credibility, the notes credit the Investment Clock (Merrill Lynch, 2004) for the growth question. They close on its
   record against NBER recessions since 1953, by season: the recession quarters that fell in Autumn or Winter against
   those seasons' share of all quarters, computed by `recessionRecord` from the app's own seasons. Keren holds that
   stating this record adds much of the model's credibility. Contractions without a recession are not counted against
@@ -479,17 +486,13 @@ settles it; none is open after V668.
   the cool row contraction, so the blue half of the ring is where recessions fall, and Spring's yellow is the gold
   Growth already wears in expansion. Autumn stays light blue against the calendar's orange because in the model it is
   a contraction season. Summer keeps its red-orange, since a true red would read as Risk or a bear year. (V180, 0.8.7)
-- **The dial's legend states each range in plain mathematical signs: Winter CPI < 1%, Spring CPI ≤ 3%, Summer
-  CPI > 3%, Autumn CPI ≥ 1%; a bull year's return ≥ 0%, a bear year's < 0%.** The signs are the model's own tests
-  (`readSeason`, `TEMP_BAND_LO`/`TEMP_BAND_HI`), and every range should be stated in basic mathematical signs. (0.6.6)
-- **Under the seasons the legend explains only the 1–3% range (a point either side of the Fed's 2% target, part
-  of the Season Model's structure), and it carries no how-to paragraph.** Good UI needs no explaining. (0.6.6)
-- **The legend's last section is "The market cycle": a typical market cycle, a bull market and the bear market that
-  ends it, has run about 5 to 6½ years across the long record (First Trust about 5.2, Fisher about 6.4); a typical
-  length, not a forecast.** It stands in place of "The ring's span" and its notes on scaling, and says no more than
-  that, in numbers. (0.6.6)
-- **The legend opens on its sections with no introduction: "Seasons (Q)", drawn by quarter, and "S&P 500 (YoY)", each
-  year's calendar return.** An introductory paragraph was unneeded; the sections say what each ring counts. (0.6.6)
+- **The dial has no legend of its own: its legend icon opens About Gyneconomy at The Cycle Model, whose key is the
+  dial's (Bull year, Bear year, Year in progress, Peak year), and the Season Model below it carries the seasons'
+  colours and rules.** The legend was the Season Model told a second time, and the two had parted: its price-only
+  signs left out growth (Spring ≤ 3% missed Spring · Disinflation above 3%), and its 5 to 6½ years stood beside the
+  app's own average. The Cycle Model's notes give the published 5 to 6½ years (First Trust, Fisher) as agreement
+  with the app's own record, a typical length and not a forecast; the Season Model's notes cite the Fed for the 2%
+  point. The back arrow returns to the dial when About was opened from it. (0.6.6; Legend Icon)
 - **The ring closes on itself but for a small seam at 12 o'clock; don't re-add the coral drop in the seam
   (Clue's day-1 mark).** The small gap closes the cycle between its start and end; the drop added too much. (V199,
   V200)
@@ -551,10 +554,9 @@ settles it; none is open after V668.
   seasons have, and the YEAR badge sits just after the last quarter that has a season (on the seam when the
   cycle fills the ring).** A season that has not been computed has not happened yet; Keren saw the bull bar
   run past the season bar. (V552, V554)
-- **The cycle card's title is the cycle's name (the AI Cycle today, the cycle shown on a Herstory page), with an (i)
-  that opens the one legend: the seasons' colours and the market band's colours; no season line or note sits beside
-  the wheel.** The centre already says the season, and the cycle's name says more than "Gyneconomy" did. (V176,
-  Sep 19, 2026; 0.6.6)
+- **The dial carries no title: at its top left sits only a legend icon (three dots, three lines) in the muted grey,
+  so it does not compete with the dial; no season line or note sits beside the wheel.** The cycle's name and years
+  already head the story under the dial, so a name above it repeated them. (V176, Sep 19, 2026; 0.6.6; Legend Icon)
 
 ### The market band and the peak
 
@@ -828,8 +830,8 @@ settles it; none is open after V668.
   whether a trend is certain, and a season has to say it has turned before certainty arrives; Keren kept hers.
   Growth has no tolerance of its own since the eight-quarter trend went in 0.8.0. (1.2.2; the full list is in
   code-review/trends-1.3.0.md in the project files)
-- **In expansion, cooling at any level is Spring–Disinflation; heating within or below the range is
-  Spring–Reflation; hot prices heating or steady are Summer–Inflation. In contraction, cold is Winter–Deflation; hot prices heating or steady are
+- **In expansion, hot prices in any direction are Summer–Inflation; below the top of the range, cooling is
+  Spring–Disinflation and heating Spring–Reflation. In contraction, cold is Winter–Deflation; hot prices heating or steady are
   Autumn–Stagflation; prices within the range, or hot and cooling, are Autumn–Disinflation.** Keren's season table.
   Steady prices (a twelve-month trend inside ±0.02 points a month) keep the prior quarter's direction, as growth
   inside its margin keeps the prior regime: without a significant change, the season simply continues. With no
@@ -840,12 +842,13 @@ settles it; none is open after V668.
   deflation is prices falling, inflation below zero (textbook, IMF and Fed usage). Heating takes its name from
   growth: reflation in expansion, stagflation in contraction. The key stays `springdeflation`, as `lateautumn`
   did, so nothing downstream moves. (Oct 11, 2026)
-- **Summer is hot prices still heating or stuck; hot prices cooling in expansion are Spring–Disinflation.** The
-  direction names the season and the colour already shows the heat: prices cooling in a growing economy are
-  disinflation at any level, the soft landings (1983–85, 1988, 2023 Q3). It mirrors Autumn, where hot and cooling
-  is Disinflation and hot and steady is Stagflation. Measured first: 28 quarters move from Summer to
-  Spring–Disinflation (Summer 84 to 56); today is unchanged. Replaces "hot is Summer regardless of direction".
-  (Oct 11, 2026)
+- **Summer is hot prices in any direction; the polar seasons, Summer and Winter, have no direction, and the
+  transition seasons, Spring and Autumn, are named by it.** Keren chose simplicity: nobody understands a model whose
+  hottest season splits by direction. It is also how the real seasons turn: Spring starts chilly and warms, hot is
+  Summer, and Summer cools through Autumn into Winter. This reverses 1.0.1's "hot prices cooling in expansion are
+  Spring–Disinflation" the same day; Autumn keeps 1.0.1's rule, and the grid marks its Stagflation with an asterisk,
+  only while hot. Measured first: 28 quarters move from Spring–Disinflation to Summer (1976, 1985, 2023 Q3 among
+  them); today and the record against recessions are unchanged. (Legend Icon)
 - **Stagflation is stagnant growth with sticky inflation: in contraction, prices steady above the range read
   Stagflation whatever the prior direction.** The classic definition is a level, persistently high inflation with
   stagnant growth, not only a direction; prices stuck above the range are hard to bring down. Prices hot but
@@ -857,7 +860,7 @@ settles it; none is open after V668.
   among them. (Oct 11, 2026)
 - **Stagflation needs hot prices, heating or steady; contraction within the range is Autumn–Disinflation whatever
   its direction.** Stagflation is stagnant growth with inflation too high: a shrinking economy with inflation in
-  the range is not stagflation (Keren). It mirrors Summer, so each colour on the Season Model's bar names one
+  the range is not stagflation (Keren). Each colour on the Season Model's bar names one
   side's seasons: Autumn–Stagflation is red, Autumn–Disinflation yellow or red. Autumn is named by the absence of
   heat: warm prices in a below-potential economy are not stagflation until they are hot, so they read as the
   cooling side of the cycle. Formally disinflation means falling inflation, so a warm Autumn with inflation rising
@@ -865,7 +868,7 @@ settles it; none is open after V668.
   quarters move from Stagflation to Disinflation (among them 2001, 2007 Q3, 2016–17 and 2025 Q4); today is
   unchanged. Replaces "Stagflation does not need prices above the range; it mirrors expansion" (Sep 19, 2026).
   (Oct 11, 2026)
-- **Spring–Disinflation (expansion, prices cooling, at any level since Oct 11, 2026) replaced the Goldilocks Zone;
+- **Spring–Disinflation (expansion, prices cooling within or below the range) replaced the Goldilocks Zone;
   never re-add it.** In expansion, direction alone now decides, as it already did in contraction. (undated,
   Sep 18, 2026)
 - **Spring–Disinflation has no narrative until Keren writes one; its card stays blank, with no drafted copy.**

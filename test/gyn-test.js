@@ -305,7 +305,7 @@ async function openPage(p, url, sheet) {
     await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
-      return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(),
+      return d ? { kicker: document.getElementById('cycle-kicker').textContent.trim() === '' && !!document.querySelector('#cycle-kicker .icon-btn svg'), visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(),
                    doors: d.querySelectorAll('[data-open]:not([data-ind-when])').length,
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
@@ -317,9 +317,17 @@ async function openPage(p, url, sheet) {
     const today = await read();
     await sweep(p);
     (today && today.visible && today.title.startsWith(await p.evaluate(() => window.__GYN.cycle) + ' \u00b7 ') && today.cards === 0 &&
-     today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker === await p.evaluate(() => window.__GYN.cycle))
+     today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker)
       ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
+    await p.click('#cycle-kicker .icon-btn'); await settle(p);
+    const legendDoor = await p.evaluate(() => { const s = document.getElementById('sheet-book'), bar = s.querySelector('.topbar').getBoundingClientRect(), card = document.getElementById('cycle-model').getBoundingClientRect();
+      return { open: !s.hidden && document.getElementById('more-menu').hidden, inView: card.top >= bar.bottom && card.top < bar.bottom + 40 }; });
+    await p.click('#sheet-book [data-sheet-back]'); await settle(p);
+    const legendBack = await p.evaluate(() => document.getElementById('sheet-book').hidden && document.activeElement.matches('#cycle-kicker .icon-btn') && document.body.style.overflow === '');
+    (legendDoor.open && legendDoor.inView && legendBack)
+      ? ok('the dial\u2019s legend icon opens About Gyneconomy at the Cycle Model, and its back arrow returns to the dial')
+      : bad('the dial\u2019s legend icon opens About Gyneconomy at the Cycle Model, and its back arrow returns to the dial', JSON.stringify({ legendDoor, legendBack }));
     const ringDoor = await p.evaluate(() => { document.querySelector('.tab-btn[data-tab="today"]').click(); document.querySelector('#today-home .today-cycle').click();
       return { tab: document.querySelector('.tab-btn.active').dataset.tab, shown: !!document.getElementById('diagnosis').offsetParent, title: document.getElementById('topbar-title').textContent }; });
     (ringDoor.tab === 'cycle' && ringDoor.shown && ringDoor.title === 'Current Cycle')
@@ -366,7 +374,7 @@ async function openPage(p, url, sheet) {
     await filt(p, '[data-pick-period="' + await p.evaluate(() => window.__GYN.cycle) + '"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
-    (past && past.visible && past.title === 'Big Tech Cycle \u00b7 2009\u20132018' && past.kicker === 'Big Tech Cycle')
+    (past && past.visible && past.title === 'Big Tech Cycle \u00b7 2009\u20132018' && past.kicker)
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -688,15 +696,15 @@ async function openPage(p, url, sheet) {
       : bad('every selection bar, search field and button is fully rounded', JSON.stringify({ kinds, sharp }));
     const about = await p.evaluate(() => {
       const sheet = document.getElementById('sheet-book');
-      return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,
+      return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-grid .sg-cell').length,
         framework: sheet.querySelectorAll('#framework-rows .lag-row').length, cycle: /The Cycle Model/.test(sheet.textContent),
-        row: /About Gyneconomy/.test(document.querySelector('[data-sheet="book"]').textContent),
+        row: /About Gyneconomy/.test(document.querySelector('.menu-row[data-sheet="book"]').textContent),
         line: /completed \d+ cycles, \d+\.\d years long on average/.test(document.getElementById('cycle-model-line').textContent),
         titles: [...sheet.querySelectorAll('.menu-section')].every(h => h.parentElement.classList.contains('model-card')),
         idea: (() => { const shown = () => [...document.querySelectorAll('#idea-prose p')].filter(x => !x.hidden).length, a = shown();
           document.getElementById('idea-more').click(); const b = shown(); document.getElementById('idea-more').click(); return a + '/' + b + '/' + shown(); })() };
     });
-    (about.title === 'About Gyneconomy' && about.seasons === 6 && about.framework > 1 && about.cycle && about.row && about.titles && about.line && about.idea === '1/4/1')
+    (about.title === 'About Gyneconomy' && about.seasons === 4 && about.framework > 1 && about.cycle && about.row && about.titles && about.line && about.idea === '1/4/1')
       ? ok('About Gyneconomy carries the models the Content tab held', about.seasons + ' seasons, ' + (about.framework - 1) + ' signs')
       : bad('About Gyneconomy carries the models the Content tab held', JSON.stringify(about));
     const splash = await p.evaluate(() => {

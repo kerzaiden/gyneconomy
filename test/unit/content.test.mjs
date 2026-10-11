@@ -143,10 +143,19 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
-test('the dial is titled by its cycle, its legend speaks in signs, and the cycle\u2019s story under it reads in place', () => {
-  assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
-  const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
-  ['Prices &lt; 1%', 'Prices \u2264 3%', 'Prices &gt; 3%', 'Prices \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
+test('the dial carries no title, only its legend icon, a door to About Gyneconomy\u2019s Cycle Model, and the cycle\u2019s story under it reads in place', () => {
+  const kicker = document.getElementById('cycle-kicker'), door = kicker.querySelector('.icon-btn');
+  assert.equal(kicker.textContent.trim(), '');
+  assert.deepEqual([door.dataset.sheet, door.dataset.sheetAt], ['book', 'cycle-model']);
+  assert.ok(document.querySelector('#sheet-book #cycle-model'));
+  const about = document.getElementById('sheet-book');
+  assert.equal(about.querySelectorAll('.expand-btn, .info-btn').length, 0, 'About opens nothing further: its notes sit in its cards');
+  assert.deepEqual([...about.querySelectorAll('#seasons-notes .facts li b')].map(b => b.textContent), ['Expansion', 'Contraction', 'Arrows', '*Stagflation', 'Against the record']);
+  assert.ok(document.getElementById('framework-notes').textContent.includes('seven signs'));
+  const cells = [...about.querySelectorAll('#seasons-grid .sg-cell')];
+  assert.deepEqual(cells.map(c => c.querySelector('b').textContent), ['Spring', 'Summer', 'Winter', 'Autumn']);
+  assert.equal(about.querySelectorAll('#seasons-grid .sg-cell.now').length, 1);
+  assert.deepEqual([...document.querySelectorAll('#cycle-model-key .legend-row')].map(r => r.firstChild.nextSibling.textContent), ['Bull year', 'Bear year', 'Year in progress', 'Peak year']);
   const first = document.querySelector('#diagnosis .trend-card');
   assert.equal(first.querySelector('.trend-head').textContent, nowModel.era.name + ' \u00b7 ' + cycLabel(nowModel.era).years);
   assert.equal(first.dataset.open, undefined);

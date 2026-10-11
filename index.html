@@ -319,21 +319,19 @@
     position:relative;
   }
   .season-head{ flex:1 0 100%; order:-2; align-self:flex-start; margin-bottom:-6px; position:relative; z-index:2; }
-  .detail-modal .legend-rows{ margin:12px 0 4px; }
-  .detail-modal .legend-row, .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
-  .detail-modal .legend-row:last-child, .model-card .legend-row:last-child{ border-bottom:none; }
-  .detail-modal .legend-row svg{ width:20px; height:20px; flex:none; }
+  .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
+  .model-card .legend-row:last-child{ border-bottom:none; }
+  .model-card .legend-row svg{ width:20px; height:20px; flex:none; }
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
   .winter, .spring, .autumn, .summer{ --season-wash:color-mix(in srgb, var(--season) 40%, var(--surface)); }
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
 
   .strip-run.ytd{ opacity:0.55; }
   .key-list{ list-style:none; padding:0; }
-  .key-sw, .season-sw{ display:inline-block; flex:none; border-radius:3px; background:var(--season); }
-  .key-sw.bar, .season-sw{ width:20px; height:6px; }
+  .key-sw{ display:inline-block; flex:none; border-radius:3px; background:var(--season); }
+  .key-sw.bar{ width:20px; height:6px; }
   .key-sw.ytd{ opacity:0.55; }
-  .detail-modal .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
-  .detail-modal .legend-head{ font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
+  .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
 
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
@@ -369,7 +367,7 @@
   .season-wheel-hub-open:disabled{ cursor:default; }
   .season-wheel-hub-date{ font-family:var(--font-sans); font-size:calc(var(--dial) * 0.042); line-height:1.1; color:var(--text-secondary); }
   .season-wheel-hub-date b{ font-weight:700; color:var(--text-primary); }
-  .season-wheel-hub-theme, .detail-modal .legend-row, .seasons-rows .lag-row span:first-child{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
+  .season-wheel-hub-theme{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
   .season-wheel-hub-theme.bull, .season-wheel-hub-theme.bear{ padding:0.04em 0.32em 0.08em; border-radius:0.3em; }
   .season-wheel-hub-theme.bull{ color:var(--bull-ink); background:var(--bull-wash); }
   .season-wheel-hub-theme.bear{ color:var(--bear-ink); background:var(--bear-wash); }
@@ -477,48 +475,31 @@
   .chart-label-plate{ fill:var(--surface); }
   .hl-lab{ font-family:var(--font-sans); font-size:var(--type-label); fill:var(--text-muted); }
 
-  .model-card > .menu-section{ margin:0; padding:16px 12px 12px; border-bottom:1px solid var(--border); }
-  .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px; border-bottom:1px solid var(--border); }
+  .model-card{ margin-bottom:var(--gap); }
+  .model-card > .menu-section{ margin:0; padding:14px 16px 12px; border-bottom:1px solid var(--border); }
+  .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .model-notes{ padding:12px 16px 14px; border-top:1px solid var(--border); }
+  .model-card > p + .season-grid{ margin-top:-1px; }
+  .season-grid{ display:grid; grid-template-columns:20px 1fr 1fr 1fr; gap:6px; padding:12px 16px 16px; }
+  .sg-head{ align-self:end; text-align:center; font-size:var(--type-meta); font-weight:600; color:var(--text-primary); line-height:1.3; }
+  .sg-head small{ display:block; font-weight:400; color:var(--text-muted); }
+  .sg-row{ writing-mode:vertical-rl; transform:rotate(180deg); justify-self:center; align-self:center; font-size:var(--type-label); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-primary); }
+  .sg-cell{ position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:3px; min-height:64px; padding:12px 8px;
+    border-radius:var(--radius); background:color-mix(in srgb, var(--season) 30%, var(--surface)); text-align:center; }
+  .sg-cell.wide{ grid-column:span 2; }
+  .sg-cell.winter{ background:color-mix(in srgb, var(--season) 55%, var(--surface)); }
+  .sg-cell b{ font-size:var(--type-reading); font-weight:700; color:var(--text-primary); }
+  .sg-cell small{ font-size:var(--type-label); line-height:1.35; color:var(--text-secondary); }
+  .sg-cell.now{ box-shadow:inset 0 0 0 2px var(--accent-ink); }
+  .sg-cell em{ position:absolute; top:6px; right:9px; font-style:normal; font-size:var(--type-label); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent-ink); }
+  .model-notes p{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-secondary); }
+  .model-notes > :first-child{ margin-top:0; }
   .model-card > p:last-child{ border-bottom:0; }
-  .model-card > .menu-prose{ padding:0 12px; }
+  .model-card > .menu-prose{ padding:0 16px; }
   .model-card .menu-prose p{ color:var(--text-secondary); line-height:1.65; }
   .model-card .legend-rows{ margin:0; }
-  .model-card .legend-row{ padding:10px 12px; }
-  .seasons-rows .lag-row{ grid-template-columns: 1.35fr 0.75fr 1.15fr 1.15fr; font-size:var(--type-interface); padding:10px 12px; }
-  .seasons-rows .meta{ display:none; } .seasons-rows .cell{ white-space:nowrap; }
-  @media (max-width:640px){
-    .seasons-rows .lag-row{ grid-template-columns: 1fr; grid-template-areas: "name" "meta" "range"; gap:5px; padding:13px 12px; }
-    .seasons-rows .lag-row span:first-child{ grid-area:name; font-size:var(--type-reading); }
-    .seasons-rows .cell{ display:none; }
-    .seasons-rows .meta{ display:block; grid-area:meta; font-size:var(--type-meta); color:var(--text-secondary); }
-    .seasons-rows .lag-row span:last-child{ grid-area:range; margin-top:3px; }
-    .seasons-rows .range-bar{ height:12px; width:auto; flex:1; max-width:none; }
-    .seasons-rows .range-cell{ gap:8px; }
-    .seasons-rows .range-cell svg{ width:15px; height:15px; }
-    .seasons-rows .range-bar i{ width:14px; height:14px; margin:-7px 0 0 -7px; }
-  }
-  .seasons-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
-  .seasons-rows .range-bar b{ background:color-mix(in srgb, var(--text-muted) 18%, var(--surface)); } .seasons-rows .range-bar b.on.below{ background:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); } .seasons-rows .range-bar b.on.within{ background:color-mix(in srgb, var(--gold) 60%, var(--surface)); } .seasons-rows .range-bar b.on.above{ background:color-mix(in srgb, var(--critical) 60%, var(--surface)); }
-  .seasons-rows .lag-row span:last-child{ text-align:left; font-family:inherit; }
-  .range-cell{ display:flex; align-items:center; gap:6px; }
-  .range-cell svg{ width:13px; height:13px; flex:none; }
-  .range-cell svg.cold{ color:var(--season-winter); } .range-cell svg.hot{ color:var(--season-summer); }
-  .range-bar{ position:relative; display:flex; gap:2px; height:9px; width:100%; max-width:150px; }
-  .range-bar b{ display:block; height:100%; border-radius:5px; background:var(--track); }
-  .range-bar b.below{ flex:0 0 28%; } .range-bar b.within{ flex:0 0 40%; } .range-bar b.above{ flex:0 0 28%; }
-  .range-bar b.on{ background:var(--season, var(--text-muted)); }
-  .range-bar i{ position:absolute; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border-radius:50%; background:var(--surface); border:2.5px solid var(--text-primary); box-sizing:border-box; }
-  .seasons-rows .lag-row.now{ background:var(--surface-2); }
-  .seasons-rows .lag-row em{ font-style:normal; font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-ink); margin-left:6px; }
-  .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; padding:10px 12px; }
-  .season-grid{ display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:4px; margin:16px 0 18px; }
-  .season-grid small{ display:block; font-size:var(--type-label); color:var(--text-muted); line-height:1.3; margin-top:2px; }
-  .sg-head{ align-self:center; font-size:var(--type-meta); color:var(--text-primary); line-height:1.3; padding:2px; }
-  .sg-head b{ font-weight:600; }
-  .sg-cell{ display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:64px; padding:10px 6px; border-radius:10px; background:var(--season-wash); }
-  .sg-cell b{ font-size:var(--type-interface); font-weight:600; color:var(--text-primary); }
-  .sg-cell.wide{ grid-column:span 2; }
-  .sg-cell small{ color:var(--text-secondary); }
+  .model-card .legend-row{ padding:10px 16px; }
+  .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; padding:10px 16px; }
   .framework-rows .lag-row span:last-child{ font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); text-align:right; }
   .framework-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
   @media (max-width:520px){ .framework-rows .lag-row{ grid-template-columns: 1fr 1.6fr 0.9fr; } .framework-rows .lag-row span:nth-child(2){ display:none; } }
@@ -1096,17 +1077,18 @@
     .detail-modal-close{ top:18px; right:18px; z-index:2; }
     .detail-modal h4{ font-size:var(--type-reading-head); line-height:1.15; padding-right:0; margin-bottom:12px; }
     .detail-modal .caption, .detail-modal p{ font-size:var(--type-reading); line-height:1.6; }
-    .detail-modal .legend-row{ font-size:var(--type-reading); padding:10px 0; }
     .detail-modal .aux-stat, .metric-sheet .aux-stat{ font-size:var(--type-interface); }
     .detail-modal .src{ font-size:var(--type-meta); }
   }
   .detail-modal .caption{ font-size:var(--type-interface); color:var(--text-secondary); line-height:1.55; margin:16px 0 0; }
   .detail-modal .caption.follow{ margin-top:10px; }
-  .detail-modal .facts{ margin:12px 0 0; padding:0; list-style:none; }
-  .detail-modal .facts li{ position:relative; padding-left:17px; margin-bottom:9px; font-size:var(--type-reading); line-height:1.55; color:var(--text-secondary); }
-  .detail-modal .facts li:last-child{ margin-bottom:0; }
-  .detail-modal .facts li::before{ content:""; position:absolute; left:2px; top:9px; width:5px; height:5px; border-radius:50%; background:var(--text-muted); }
-  .detail-modal .facts li b{ color:var(--text-primary); font-weight:600; }
+  .detail-modal .facts, .model-notes .facts{ margin:12px 0 0; padding:0; list-style:none; }
+  .detail-modal .facts li, .model-notes .facts li{ position:relative; padding-left:17px; margin-bottom:9px; font-size:var(--type-reading); line-height:1.55; color:var(--text-secondary); }
+  .detail-modal .facts li:last-child, .model-notes .facts li:last-child{ margin-bottom:0; }
+  .detail-modal .facts li::before, .model-notes .facts li::before{ content:""; position:absolute; left:2px; top:9px; width:5px; height:5px; border-radius:50%; background:var(--text-muted); }
+  .detail-modal .facts li b, .model-notes .facts li b{ color:var(--text-primary); font-weight:600; }
+  .model-notes .facts{ margin-top:0; }
+  .model-notes .facts li{ font-size:var(--type-interface); }
   .detail-modal .lede{ font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); margin:0; }
   .detail-modal .aux-stat, .metric-sheet .aux-stat{
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
@@ -1114,8 +1096,8 @@
   }
   .detail-modal .aux-stat b, .metric-sheet .aux-stat b{ color:var(--text-primary); font-family:var(--font-mono); font-weight:600; }
   .aux-stat.wordy b{ font-family:var(--font-sans) !important; font-weight:600; }
-  .detail-modal .src{ font-size:var(--type-label); color:var(--text-muted); margin-top:12px; }
-  .detail-modal .src a{ color:var(--text-muted); }
+  .detail-modal .src, .model-notes .src{ font-size:var(--type-label); color:var(--text-muted); margin-top:12px; }
+  .detail-modal .src a, .model-notes .src a{ color:var(--text-muted); }
   .detail-modal .marker-sub{ display:block; font-size:var(--type-meta); color:var(--text-muted); margin-top:2px; }
   .detail-modal h4{ font-family:var(--font-serif); font-style:normal; font-weight:500; font-size:var(--type-reading-head); margin:0 0 2px; color:var(--text-primary); padding-right:26px; }
 
@@ -1127,6 +1109,12 @@
     transition:background 0.12s, color 0.12s, border-color 0.12s;
   }
   .expand-btn:hover{ background:var(--accent-wash); color:var(--accent-ink); border-color:var(--accent); }
+  .icon-btn{
+    display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:2px; margin:-2px 0 0 -4px;
+    border:0; border-radius:var(--radius); background:transparent; color:var(--text-muted); transform:none; cursor:pointer; transition:color 0.12s;
+  }
+  .icon-btn svg{ width:100%; height:100%; }
+  .icon-btn:hover, .icon-btn[aria-expanded="true"]{ background:transparent; color:var(--text-secondary); }
 
   a{ text-decoration: none; }
   a:hover{ text-decoration: underline; }
@@ -1169,7 +1157,7 @@
   <div id="cycle-view">
 
     <div class="season-card">
-      <div class="cv-head season-head"><div class="cv-kicker" id="cycle-kicker">Gyneconomy</div></div>
+      <div class="cv-head season-head"><div class="cv-kicker" id="cycle-kicker"></div></div>
       <div class="season-wheel-wrap">
         <div class="season-wheel">
           <svg class="cycle-dial" id="cycle-dial" viewBox="-108 -108 216 216" aria-hidden="true" style="pointer-events:none"></svg>
@@ -1230,7 +1218,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.0.2 (846)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.0.3 (847)</span></p>
     </div>
   </div>
 
@@ -1254,7 +1242,7 @@
       <h3 class="menu-section">The Six Seasons</h3>
       <div class="menu-card menu-prose">
         <p>A season is computed from two readings, never set by hand. <b>Growth</b> is real GDP against a year earlier, set beside the economy's <b>potential</b>, how fast it can grow without overheating: at or above potential is expansion, below it is contraction, even while output still grows. Within half a point of potential the economy keeps the side it was on. <b>Temperature</b> is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and which way it is heading over the last twelve months.</p>
-        <p>In expansion, cooling at any level is <b>Spring — disinflation</b>; heating within or below the range is <b>Spring — reflation</b>; and hot prices heating or stuck are <b>Summer — inflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; hot prices heating or stuck are <b>Autumn — stagflation</b>; and prices within the range, or hot and cooling, are <b>Autumn — disinflation</b>.</p>
+        <p>In expansion, within or below the range, cooling is <b>Spring — disinflation</b> and heating is <b>Spring — reflation</b>; and hot prices in any direction are <b>Summer — inflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; hot prices heating or stuck are <b>Autumn — stagflation</b>; and prices within the range, or hot and cooling, are <b>Autumn — disinflation</b>.</p>
         <p>The 1–3% band is part of the Season Model’s structure, a point either side of the Fed's 2% objective, read on CPI before 2000 and on PCE, the Fed’s own gauge, since. The full rule, with today's row marked, is in the menu under <b>About Gyneconomy</b>, in <b>The Season Model</b>.</p>
       </div>
 
@@ -1297,23 +1285,24 @@
         <button type="button" class="cyc-more" id="idea-more" aria-expanded="false" aria-controls="idea-prose"><span>View more</span><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></button>
       </div>
 
-      <div class="menu-card model-card">
-        <h3 class="menu-section">The Cycle Model</h3>
+      <div class="menu-card model-card" id="cycle-model">
+        <h3 class="menu-section" id="cycle-model-kicker">The Cycle Model</h3>
         <p id="cycle-model-line"></p>
-        <div class="legend-rows">
-          <div class="legend-row"><span class="season-sw" style="--season:var(--bleed-mid)"></span>Bear year<small>the market closed down</small></div>
-          <div class="legend-row"><span class="season-sw" style="--season:var(--ovulate)"></span>Bull year<small>the market closed up</small></div>
-        </div>
+        <div id="cycle-model-key"></div>
+        <div class="model-notes" id="cycle-model-notes"></div>
       </div>
 
-      <div class="menu-card model-card seasons-rows">
-        <h3 class="menu-section" id="seasons-kicker">The Season Model</h3>
-        <div id="seasons-rows"></div>
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Season Model</h3>
+        <p>Two questions set the season: is growth keeping up with its potential, and how hot are prices?</p>
+        <div id="seasons-grid"></div>
+        <div class="model-notes" id="seasons-notes"></div>
       </div>
 
       <div class="menu-card model-card framework-rows">
         <h3 class="menu-section" id="framework-kicker">The Framework</h3>
         <div id="framework-rows"></div>
+        <div class="model-notes" id="framework-notes"></div>
       </div>
 
       <div class="menu-card model-card">
@@ -47187,7 +47176,7 @@
     var cpiDirection = cpiDirectionOf(cpiSlope), heading = cpiDirection === "steady" ? prevHeading || cpiDirection : cpiDirection;
     var cpiHot = cpiNow2 > 3, cpiCold = cpiNow2 < 1;
     var regime = regimeOf(gdp.v, potential, prevRegime), season;
-    if (regime === "expansion") season = cpiHot && cpiDirection !== "falling" ? "summer" : heading === "falling" ? "springdeflation" : "spring"; else season = cpiCold ? "winter" : cpiHot && cpiDirection !== "falling" ? "lateautumn" : "autumn";
+    if (regime === "expansion") season = cpiHot ? "summer" : heading === "falling" ? "springdeflation" : "spring"; else season = cpiCold ? "winter" : cpiHot && cpiDirection !== "falling" ? "lateautumn" : "autumn";
     return {
       season: season,
       regime: regime,
@@ -47394,27 +47383,9 @@
       growth: eraGrowth(era)
     };
   }
-  var seasonRuleSentence = {
-    spring: "Expansion with prices heating, within or below the range, is reflation — Spring.",
-    springdeflation: "Expansion with prices cooling, at any level, is Spring — disinflation.",
-    summer: "Expansion with prices above the range — hot — and heating or steady is inflation, Summer.",
-    autumn: "Contraction with prices within the range, or hot and cooling, is disinflation — Autumn.",
-    lateautumn: "Contraction with prices above the range — hot — and heating or steady is Autumn — stagflation.",
-    winter: "Contraction with prices below the range — cold — is deflation, Winter."
-  };
   function potentialGap(r) {
     var gap = r.gdpLatest.v - r.potential;
     return Math.abs(gap) <= HOLD_BAND ? "within " + HOLD_BAND + " points of" : gap > 0 ? "above" : "below";
-  }
-  function seasonWhyFor(m) {
-    var r = m.reading;
-    return "Today the economy is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " + pricesWord(r) + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + inflationFigure(r.cpiNow) + "%). " + seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
-  }
-  function pricesWord(r) {
-    var word = function(d) {
-      return d === "rising" ? "heating" : d === "falling" ? "cooling" : "steady";
-    };
-    return word(r.cpiDirection) + (r.heading !== r.cpiDirection ? ", so still " + word(r.heading) : "");
   }
   function inflationFigure(v) {
     var s = (Math.round(v * 10) / 10 || 0).toFixed(1);
@@ -47739,7 +47710,6 @@
   var nowModel;
   var cpiNow;
   var currentSeason;
-  var seasonWhy;
   var currentEra;
   var seasonTrackAll;
   var seasonTrackYears;
@@ -47815,7 +47785,6 @@
     readingNow = nowModel.reading;
     cpiNow = readingNow.cpiNow;
     currentSeason = nowModel.season;
-    seasonWhy = seasonWhyFor(nowModel);
     addSources(gdpSrc);
   }
   var page = {
@@ -49657,6 +49626,9 @@
   }
   function umbrellaSvg() {
     return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17 0z" stroke-width="1.8"/><path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>');
+  }
+  function legendSvg() {
+    return markSvg('<circle cx="5" cy="5.6" r="1.7" stroke-width="1.6"/><circle cx="5" cy="12" r="1.7" stroke-width="1.6"/><circle cx="5" cy="18.4" r="1.7" stroke-width="1.6"/><path d="M9.6 5.6h10.4M9.6 12h10.4M9.6 18.4h10.4" stroke-width="1.8"/>');
   }
   function slidersSvg() {
     return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/><circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>');
@@ -53143,16 +53115,7 @@
     rovingKeys(group, "[data-theme-choice]", "aria-checked", true);
   }
   function renderCycleKicker() {
-    var html = '<h4>Legend</h4><div class="legend-head">Seasons (Q)</div>' + legendKey([ [ "winter", "Winter", "Prices &lt; " + TEMP_BAND_LO + "%" ], [ "spring", "Spring", "Prices ≤ " + TEMP_BAND_HI + "%" ], [ "summer", "Summer", "Prices &gt; " + TEMP_BAND_HI + "%" ], [ "autumn", "Autumn", "Prices ≥ " + TEMP_BAND_LO + "%" ] ], {
-      shape: "bar",
-      cls: "legend-rows",
-      row: "legend-row"
-    }) + '<p class="caption">The range is ' + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% inflation, CPI before 2000 and PCE since, a point either side of the Fed’s " + CPI_TARGET + "% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model’s structure.</p>" + srcBlock([ FED_TARGET_SRC ]) + '<div class="legend-head">S&amp;P 500 (YoY)</div>' + legendKey([ [ "mkt-up", "Bull year", "return ≥ 0%" ], [ "mkt-down", "Bear year", "return &lt; 0%" ], [ "mkt-up ytd", "Year in progress", "in progress" ], [ "", "Peak year", "highest return", '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>' ] ], {
-      shape: "bar",
-      cls: "legend-rows",
-      row: "legend-row"
-    }) + '<div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
-    put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + "</span>" + expandBtn(html, "Legend"));
+    put("cycle-kicker", '<button type="button" class="icon-btn" data-sheet="book" data-sheet-at="cycle-model" aria-label="Legend: About Gyneconomy" title="Legend">' + legendSvg() + "</button>");
   }
   function hubSet(dateHtml, meta, y, open) {
     put("season-wheel-hub-date", dateHtml);
@@ -53371,7 +53334,6 @@
   }
   function showEra(era) {
     ui.shownEra = era;
-    put("cycle-kicker-name", era.name);
   }
   function showCycle(era) {
     if (ui.shownEra !== era) renderCycleView(cycleModel(era));
@@ -55686,31 +55648,30 @@
       return s.src.length > 0;
     });
   }
+  function recessionLine() {
+    var r = recessionRecord();
+    return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of " + r.total + " NBER recession quarters fell in Autumn or Winter, seasons that hold " + r.share + "% of all quarters.";
+  }
+  function seasonCell(group, span, kinds) {
+    var now2 = seasonGroup(currentSeason) === group;
+    return '<div class="sg-cell ' + group + (span > 1 ? " wide" : "") + (now2 ? " now" : "") + '">' + (now2 ? "<em>Now</em>" : "") + "<b>" + wheelMeta[group].name + "</b>" + kinds.map(function(k) {
+      return "<small>" + k + "</small>";
+    }).join("") + "</div>";
+  }
   function seasonGrid() {
-    var cell = function(group, span, name, kinds) {
-      return '<div class="sg-cell ' + group + (span > 1 ? " wide" : "") + '"><b>' + name + "</b>" + kinds.map(function(k) {
-        return "<small>" + k + "</small>";
-      }).join("") + "</div>";
-    };
     var head = function(name, sub) {
       return '<div class="sg-head"><b>' + name + "</b><small>" + sub + "</small></div>";
     };
-    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1–3%") + head("Hot", "above 3%") + head("Expansion", "at or above potential") + cell("spring", 2, "Spring", [ "Reflation · heating", "Disinflation · cooling, any level" ]) + cell("summer", 1, "Summer", [ "Inflation · heating or steady" ]) + head("Contraction", "below potential") + cell("winter", 1, "Winter", [ "Deflation" ]) + cell("autumn", 2, "Autumn", [ "Stagflation · hot, heating or steady", "Disinflation · warm, or hot and cooling" ]) + "</div>";
-  }
-  function recessionLine() {
-    var r = recessionRecord();
-    return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of the " + r.total + " quarters of the " + r.recessions + " NBER recessions fell in Autumn or Winter (" + r.autumn + " Autumn, " + r.winter + " Winter), seasons that hold " + r.share + "% of all quarters.";
-  }
-  function sideFacts() {
-    return [ "<b>Direction</b>: the twelve-month trend of inflation, cooling, steady or heating. A trend that moves less than about a quarter point over the year is steady.", "<b>Expansion</b>: cooling at any level is Spring · disinflation; heating while cold or warm is Spring · reflation; hot and heating or steady is Summer · inflation. Steady while cold or warm keeps the prior direction.", "<b>Contraction</b>: hot and heating or steady is Autumn · stagflation; hot and cooling, or warm in any direction, is Autumn · disinflation; cold in any direction is Winter · deflation. Each of the 18 combinations has its season." ];
-  }
-  function seasonModelNote() {
-    return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock’s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 growth is Balke and Gordon’s quarterly real GNP, read against its own trend over the same peaks (" + GNP_TREND.toFixed(1) + "% a year).", "<b>Sensitivity</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since. The middle of each bar is the 1–3% band, a point either side of the Fed’s 2% target: below it is cold (blue), within it warm (yellow), above it hot (red). Like a shower, the band is the water you can stand in: not too hot, not too cold.", ...sideFacts(), recessionLine(), seasonWhy ]) + srcBlock([ CLOCK_SRC[0] ]);
-  }
-  function rangePos(v) {
-    if (v < 1) return .03 + .21 * Math.max(0, Math.min(1, (v + 1) / 2));
-    if (v <= 3) return .33 + .3 * (v - 1) / 2;
-    return .75 + .22 * Math.min(1, (v - 3) / 4);
+    var row = function(name) {
+      return '<div class="sg-row">' + name + "</div>";
+    };
+    var heating = function(k) {
+      return wheelMeta[k].theme + ' <span aria-label="heating">→</span>';
+    };
+    var cooling = function(k) {
+      return '<span aria-label="cooling">←</span> ' + wheelMeta[k].theme;
+    };
+    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("Warm", "1–3%") + head("Hot", "above 3%") + row("Expansion") + seasonCell("spring", 2, [ heating("spring"), cooling("springdeflation") ]) + seasonCell("summer", 1, [ wheelMeta.summer.theme ]) + row("Contraction") + seasonCell("winter", 1, [ wheelMeta.winter.theme ]) + seasonCell("autumn", 2, [ heating("lateautumn") + "*", cooling("autumn") ]) + "</div>";
   }
   function cycleModelLine() {
     var closed = marketCycles.filter(function(c) {
@@ -55720,81 +55681,27 @@
     }, 0);
     return "A cycle begins with its first bull year and ends with the bear year that closes it. Since " + marketCycles[0].from + " the market has completed " + closed.length + " cycles, " + (years / closed.length).toFixed(1) + " years long on average, and the app measures today against every one of them.";
   }
+  var PEAK_MARK = '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>';
+  function renderCycleModel() {
+    put("cycle-model-line", cycleModelLine());
+    put("cycle-model-key", legendKey([ [ "mkt-up", "Bull year", "the market closed up" ], [ "mkt-down", "Bear year", "the market closed down" ], [ "mkt-up ytd", "Year in progress", "not yet closed" ], [ "", "Peak year", "the cycle’s highest return", PEAK_MARK ] ], {
+      shape: "bar",
+      cls: "legend-rows",
+      row: "legend-row"
+    }));
+    put("cycle-model-notes", "<p>Published histories agree: a bull market and the bear market that ends it have run about 5 to 6½ years since the 1940s. A typical length, not a forecast.</p>" + srcBlock(typicalCycleSrc));
+  }
   function wireIdea() {
     viewMore(need("idea-more"), [].slice.call(need("idea-prose").querySelectorAll("p[hidden]")));
   }
   function renderSeasonRows() {
-    var seasonRules = [ {
-      key: "springdeflation",
-      growth: "Expansion",
-      temp: "← Cooling",
-      zones: {
-        below: 1,
-        within: 1,
-        above: 1
-      },
-      range: "Cooling — at any level"
-    }, {
-      key: "spring",
-      growth: "Expansion",
-      temp: "Heating →",
-      zones: {
-        within: 1,
-        below: 1
-      },
-      range: "Heating — within or below the range"
-    }, {
-      key: "summer",
-      growth: "Expansion",
-      temp: "Hot / Heating →",
-      zones: {
-        above: 1
-      },
-      range: "Above the range — hot, heating or steady"
-    }, {
-      key: "lateautumn",
-      growth: "Contraction",
-      temp: "Hot / Heating →",
-      zones: {
-        above: 1
-      },
-      range: "Above the range — hot, heating or steady"
-    }, {
-      key: "autumn",
-      growth: "Contraction",
-      temp: "Warm / ← Cooling",
-      zones: {
-        within: 1,
-        above: 1
-      },
-      range: "Within the range, or hot and cooling"
-    }, {
-      key: "winter",
-      growth: "Contraction",
-      temp: "⇄ Cold",
-      zones: {
-        below: 1
-      },
-      range: "Below the range — cold"
-    } ];
-    var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
-    var FLAME = '<svg class="hot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.4 0 7-2.9 7-6.6 0-3.2-2-5.3-3.6-7.2-.6 1.4-1.4 2.2-2.4 2.6.3-3-1-6.3-4-8.8-.2 3-1.6 4.6-3 6.3C4.6 10.1 5 12 5 15.4 5 19.1 7.6 22 12 22z"/><path d="M12 22c-1.9 0-3-1.4-3-3 0-1.5.9-2.4 1.8-3.4.6 1 1.4 1.5 2.2 1.7.4-1 .3-2.1.1-3.1 1.5 1.3 1.9 2.7 1.9 4.2 0 1.8-1.1 3.6-3 3.6z"/></svg>';
-    function rangeBarHtml(zones, dotValue) {
-      return '<span class="range-bar">' + [ "below", "within", "above" ].map(function(z) {
-        var w = zones[z] || 0;
-        return '<b class="' + z + (w ? " on" : "") + '"></b>';
-      }).join("") + (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="PCE ' + dotValue.toFixed(1) + '% today"></i>' : "") + "</span>";
-    }
-    put("seasons-rows", seasonRules.map(function(r) {
-      var m = wheelMeta[r.key], now2 = r.key === currentSeason;
-      return '<div class="lag-row ' + seasonGroup(r.key) + (now2 ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now2 ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now2 ? " · PCE " + inflationFigure(cpiNow) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now2 ? cpiNow : null) + FLAME + "</span></div>";
-    }).join(""));
-    put("cycle-model-line", cycleModelLine());
-    put("seasons-kicker", "The Season Model" + expandBtn(seasonModelNote()));
+    put("seasons-grid", seasonGrid());
+    put("seasons-notes", facts([ "<b>Expansion</b>: real GDP growth at or above its potential, the CBO’s since 1950.", "<b>Contraction</b>: growth below its potential.", "<b>Arrows</b>: → prices heating, ← prices cooling. Spring and Autumn are transitions, so their direction names them; Summer and Winter hold whatever the direction.", "<b>*Stagflation</b> only while prices are hot, above 3%, and not cooling. Warm prices in a contraction are Disinflation, heating or cooling.", recessionLine() ]) + srcBlock([ CLOCK_SRC[0], FED_TARGET_SRC, gdpSrc[gdpSrc.length - 1] ]));
+    renderCycleModel();
     put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' + frameworkRows.map(function(r) {
       return '<div class="lag-row"><span>' + r.indicator + "</span><span>" + r.body + "</span><span>" + r.economy + "</span><span>" + r.category + "</span></div>";
     }).join(""));
-    put("framework-kicker", "The framework" + expandBtn("<h4>The Seasonal Behaviour Framework</h4>" + ledeHtml("Every reading in this app is one of the book’s seven signs, each paired with its bodily counterpart and sorted by when it speaks.") + facts([ "<b>Leading</b> signs turn first: rising estrogen and the change in cervical fluid come days before ovulation, as credit growth and the yield curve move before the economy. The yield curve and consumer expectations are both components of the Conference Board’s Leading Economic Index.", "<b>Coincident</b> signs report the present: desire peaks in the fertile window itself, as appetite shows in what households are buying now.", "<b>Lagging</b> signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway." ]) + srcBlock(FRAMEWORK_SRC)));
+    put("framework-notes", "<p>Every reading in this app is one of the book’s seven signs, paired with its bodily counterpart: leading signs turn first, coincident ones report the present, lagging ones confirm afterwards.</p>" + srcBlock(FRAMEWORK_SRC));
   }
   function placeLine(c) {
     var rows = ROSTER.filter(function(R) {
@@ -55956,28 +55863,41 @@
       }).join(""));
       built = true;
     }
-    var openSheet = null, openRow = null;
+    var openSheet = null, openRow = null, sheetLocked = false;
     function showSheet(name, row) {
       var el = byId("sheet-" + name);
       if (!el) return;
       if (name === "sources" && !built) buildSources();
-      el.scrollTop = 0;
+      var fromPage = !menu.contains(row), at = row.getAttribute("data-sheet-at"), b = el.querySelector("[data-sheet-back]");
+      if (fromPage && !locked) {
+        prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        sheetLocked = true;
+      }
+      if (b) b.setAttribute("aria-label", fromPage ? "Back" : "Back to the menu");
       slideIn(el);
       openSheet = el;
       openRow = row;
-      var b = el.querySelector("[data-sheet-back]");
-      if (b) b.focus();
+      var to = at ? byId(at) : null, bar = el.querySelector(".topbar");
+      el.scrollTop = to ? to.offsetTop - (bar ? bar.offsetHeight : 0) - 12 : 0;
+      if (b) b.focus({
+        preventScroll: true
+      });
     }
     function hideSheet() {
       if (!openSheet) return;
       var el = openSheet, row = openRow;
       openSheet = null;
       openRow = null;
+      if (sheetLocked) {
+        document.body.style.overflow = prevOverflow;
+        sheetLocked = false;
+      }
       if (row) row.focus();
       slideOut(el);
     }
-    menu.addEventListener("click", function(e) {
-      var row = e.target.closest && e.target.closest(".menu-row[data-sheet]"), name = row && row.getAttribute("data-sheet");
+    document.addEventListener("click", function(e) {
+      var row = e.target.closest && e.target.closest("[data-sheet]"), name = row && row.getAttribute("data-sheet");
       if (row && name != null) showSheet(name, row);
     });
     document.addEventListener("click", function(e) {

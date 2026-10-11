@@ -318,21 +318,19 @@
     position:relative;
   }
   .season-head{ flex:1 0 100%; order:-2; align-self:flex-start; margin-bottom:-6px; position:relative; z-index:2; }
-  .detail-modal .legend-rows{ margin:12px 0 4px; }
-  .detail-modal .legend-row, .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
-  .detail-modal .legend-row:last-child, .model-card .legend-row:last-child{ border-bottom:none; }
-  .detail-modal .legend-row svg{ width:20px; height:20px; flex:none; }
+  .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
+  .model-card .legend-row:last-child{ border-bottom:none; }
+  .model-card .legend-row svg{ width:20px; height:20px; flex:none; }
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
   .winter, .spring, .autumn, .summer{ --season-wash:color-mix(in srgb, var(--season) 40%, var(--surface)); }
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
 
   .strip-run.ytd{ opacity:0.55; }
   .key-list{ list-style:none; padding:0; }
-  .key-sw, .season-sw{ display:inline-block; flex:none; border-radius:3px; background:var(--season); }
-  .key-sw.bar, .season-sw{ width:20px; height:6px; }
+  .key-sw{ display:inline-block; flex:none; border-radius:3px; background:var(--season); }
+  .key-sw.bar{ width:20px; height:6px; }
   .key-sw.ytd{ opacity:0.55; }
-  .detail-modal .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
-  .detail-modal .legend-head{ font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
+  .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
 
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
@@ -368,7 +366,7 @@
   .season-wheel-hub-open:disabled{ cursor:default; }
   .season-wheel-hub-date{ font-family:var(--font-sans); font-size:calc(var(--dial) * 0.042); line-height:1.1; color:var(--text-secondary); }
   .season-wheel-hub-date b{ font-weight:700; color:var(--text-primary); }
-  .season-wheel-hub-theme, .detail-modal .legend-row, .seasons-rows .lag-row span:first-child{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
+  .season-wheel-hub-theme{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
   .season-wheel-hub-theme.bull, .season-wheel-hub-theme.bear{ padding:0.04em 0.32em 0.08em; border-radius:0.3em; }
   .season-wheel-hub-theme.bull{ color:var(--bull-ink); background:var(--bull-wash); }
   .season-wheel-hub-theme.bear{ color:var(--bear-ink); background:var(--bear-wash); }
@@ -479,48 +477,31 @@
   .hl-lab{ font-family:var(--font-sans); font-size:var(--type-label); fill:var(--text-muted); }
 
 
-  .model-card > .menu-section{ margin:0; padding:16px 12px 12px; border-bottom:1px solid var(--border); }
-  .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px; border-bottom:1px solid var(--border); }
+  .model-card{ margin-bottom:var(--gap); }
+  .model-card > .menu-section{ margin:0; padding:14px 16px 12px; border-bottom:1px solid var(--border); }
+  .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .model-notes{ padding:12px 16px 14px; border-top:1px solid var(--border); }
+  .model-card > p + .season-grid{ margin-top:-1px; }
+  .season-grid{ display:grid; grid-template-columns:20px 1fr 1fr 1fr; gap:6px; padding:12px 16px 16px; }
+  .sg-head{ align-self:end; text-align:center; font-size:var(--type-meta); font-weight:600; color:var(--text-primary); line-height:1.3; }
+  .sg-head small{ display:block; font-weight:400; color:var(--text-muted); }
+  .sg-row{ writing-mode:vertical-rl; transform:rotate(180deg); justify-self:center; align-self:center; font-size:var(--type-label); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-primary); }
+  .sg-cell{ position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:3px; min-height:64px; padding:12px 8px;
+    border-radius:var(--radius); background:color-mix(in srgb, var(--season) 30%, var(--surface)); text-align:center; }
+  .sg-cell.wide{ grid-column:span 2; }
+  .sg-cell.winter{ background:color-mix(in srgb, var(--season) 55%, var(--surface)); }
+  .sg-cell b{ font-size:var(--type-reading); font-weight:700; color:var(--text-primary); }
+  .sg-cell small{ font-size:var(--type-label); line-height:1.35; color:var(--text-secondary); }
+  .sg-cell.now{ box-shadow:inset 0 0 0 2px var(--accent-ink); }
+  .sg-cell em{ position:absolute; top:6px; right:9px; font-style:normal; font-size:var(--type-label); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent-ink); }
+  .model-notes p{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-secondary); }
+  .model-notes > :first-child{ margin-top:0; }
   .model-card > p:last-child{ border-bottom:0; }
-  .model-card > .menu-prose{ padding:0 12px; }
+  .model-card > .menu-prose{ padding:0 16px; }
   .model-card .menu-prose p{ color:var(--text-secondary); line-height:1.65; }
   .model-card .legend-rows{ margin:0; }
-  .model-card .legend-row{ padding:10px 12px; }
-  .seasons-rows .lag-row{ grid-template-columns: 1.35fr 0.75fr 1.15fr 1.15fr; font-size:var(--type-interface); padding:10px 12px; }
-  .seasons-rows .meta{ display:none; } .seasons-rows .cell{ white-space:nowrap; }
-  @media (max-width:640px){
-    .seasons-rows .lag-row{ grid-template-columns: 1fr; grid-template-areas: "name" "meta" "range"; gap:5px; padding:13px 12px; }
-    .seasons-rows .lag-row span:first-child{ grid-area:name; font-size:var(--type-reading); }
-    .seasons-rows .cell{ display:none; }
-    .seasons-rows .meta{ display:block; grid-area:meta; font-size:var(--type-meta); color:var(--text-secondary); }
-    .seasons-rows .lag-row span:last-child{ grid-area:range; margin-top:3px; }
-    .seasons-rows .range-bar{ height:12px; width:auto; flex:1; max-width:none; }
-    .seasons-rows .range-cell{ gap:8px; }
-    .seasons-rows .range-cell svg{ width:15px; height:15px; }
-    .seasons-rows .range-bar i{ width:14px; height:14px; margin:-7px 0 0 -7px; }
-  }
-  .seasons-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
-  .seasons-rows .range-bar b{ background:color-mix(in srgb, var(--text-muted) 18%, var(--surface)); } .seasons-rows .range-bar b.on.below{ background:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); } .seasons-rows .range-bar b.on.within{ background:color-mix(in srgb, var(--gold) 60%, var(--surface)); } .seasons-rows .range-bar b.on.above{ background:color-mix(in srgb, var(--critical) 60%, var(--surface)); }
-  .seasons-rows .lag-row span:last-child{ text-align:left; font-family:inherit; }
-  .range-cell{ display:flex; align-items:center; gap:6px; }
-  .range-cell svg{ width:13px; height:13px; flex:none; }
-  .range-cell svg.cold{ color:var(--season-winter); } .range-cell svg.hot{ color:var(--season-summer); }
-  .range-bar{ position:relative; display:flex; gap:2px; height:9px; width:100%; max-width:150px; }
-  .range-bar b{ display:block; height:100%; border-radius:5px; background:var(--track); }
-  .range-bar b.below{ flex:0 0 28%; } .range-bar b.within{ flex:0 0 40%; } .range-bar b.above{ flex:0 0 28%; }
-  .range-bar b.on{ background:var(--season, var(--text-muted)); }
-  .range-bar i{ position:absolute; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border-radius:50%; background:var(--surface); border:2.5px solid var(--text-primary); box-sizing:border-box; }
-  .seasons-rows .lag-row.now{ background:var(--surface-2); }
-  .seasons-rows .lag-row em{ font-style:normal; font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-ink); margin-left:6px; }
-  .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; padding:10px 12px; }
-  .season-grid{ display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:4px; margin:16px 0 18px; }
-  .season-grid small{ display:block; font-size:var(--type-label); color:var(--text-muted); line-height:1.3; margin-top:2px; }
-  .sg-head{ align-self:center; font-size:var(--type-meta); color:var(--text-primary); line-height:1.3; padding:2px; }
-  .sg-head b{ font-weight:600; }
-  .sg-cell{ display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:64px; padding:10px 6px; border-radius:10px; background:var(--season-wash); }
-  .sg-cell b{ font-size:var(--type-interface); font-weight:600; color:var(--text-primary); }
-  .sg-cell.wide{ grid-column:span 2; }
-  .sg-cell small{ color:var(--text-secondary); }
+  .model-card .legend-row{ padding:10px 16px; }
+  .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; padding:10px 16px; }
   .framework-rows .lag-row span:last-child{ font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); text-align:right; }
   .framework-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
   @media (max-width:520px){ .framework-rows .lag-row{ grid-template-columns: 1fr 1.6fr 0.9fr; } .framework-rows .lag-row span:nth-child(2){ display:none; } }
@@ -1118,17 +1099,18 @@
     .detail-modal-close{ top:18px; right:18px; z-index:2; }
     .detail-modal h4{ font-size:var(--type-reading-head); line-height:1.15; padding-right:0; margin-bottom:12px; }
     .detail-modal .caption, .detail-modal p{ font-size:var(--type-reading); line-height:1.6; }
-    .detail-modal .legend-row{ font-size:var(--type-reading); padding:10px 0; }
     .detail-modal .aux-stat, .metric-sheet .aux-stat{ font-size:var(--type-interface); }
     .detail-modal .src{ font-size:var(--type-meta); }
   }
   .detail-modal .caption{ font-size:var(--type-interface); color:var(--text-secondary); line-height:1.55; margin:16px 0 0; }
   .detail-modal .caption.follow{ margin-top:10px; }
-  .detail-modal .facts{ margin:12px 0 0; padding:0; list-style:none; }
-  .detail-modal .facts li{ position:relative; padding-left:17px; margin-bottom:9px; font-size:var(--type-reading); line-height:1.55; color:var(--text-secondary); }
-  .detail-modal .facts li:last-child{ margin-bottom:0; }
-  .detail-modal .facts li::before{ content:""; position:absolute; left:2px; top:9px; width:5px; height:5px; border-radius:50%; background:var(--text-muted); }
-  .detail-modal .facts li b{ color:var(--text-primary); font-weight:600; }
+  .detail-modal .facts, .model-notes .facts{ margin:12px 0 0; padding:0; list-style:none; }
+  .detail-modal .facts li, .model-notes .facts li{ position:relative; padding-left:17px; margin-bottom:9px; font-size:var(--type-reading); line-height:1.55; color:var(--text-secondary); }
+  .detail-modal .facts li:last-child, .model-notes .facts li:last-child{ margin-bottom:0; }
+  .detail-modal .facts li::before, .model-notes .facts li::before{ content:""; position:absolute; left:2px; top:9px; width:5px; height:5px; border-radius:50%; background:var(--text-muted); }
+  .detail-modal .facts li b, .model-notes .facts li b{ color:var(--text-primary); font-weight:600; }
+  .model-notes .facts{ margin-top:0; }
+  .model-notes .facts li{ font-size:var(--type-interface); }
   .detail-modal .lede{ font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); margin:0; }
   .detail-modal .aux-stat, .metric-sheet .aux-stat{
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
@@ -1136,8 +1118,8 @@
   }
   .detail-modal .aux-stat b, .metric-sheet .aux-stat b{ color:var(--text-primary); font-family:var(--font-mono); font-weight:600; }
   .aux-stat.wordy b{ font-family:var(--font-sans) !important; font-weight:600; }
-  .detail-modal .src{ font-size:var(--type-label); color:var(--text-muted); margin-top:12px; }
-  .detail-modal .src a{ color:var(--text-muted); }
+  .detail-modal .src, .model-notes .src{ font-size:var(--type-label); color:var(--text-muted); margin-top:12px; }
+  .detail-modal .src a, .model-notes .src a{ color:var(--text-muted); }
   .detail-modal .marker-sub{ display:block; font-size:var(--type-meta); color:var(--text-muted); margin-top:2px; }
   .detail-modal h4{ font-family:var(--font-serif); font-style:normal; font-weight:500; font-size:var(--type-reading-head); margin:0 0 2px; color:var(--text-primary); padding-right:26px; }
 
@@ -1149,6 +1131,12 @@
     transition:background 0.12s, color 0.12s, border-color 0.12s;
   }
   .expand-btn:hover{ background:var(--accent-wash); color:var(--accent-ink); border-color:var(--accent); }
+  .icon-btn{
+    display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:2px; margin:-2px 0 0 -4px;
+    border:0; border-radius:var(--radius); background:transparent; color:var(--text-muted); transform:none; cursor:pointer; transition:color 0.12s;
+  }
+  .icon-btn svg{ width:100%; height:100%; }
+  .icon-btn:hover, .icon-btn[aria-expanded="true"]{ background:transparent; color:var(--text-secondary); }
 
   /* ---- footer ---- */
 

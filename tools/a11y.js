@@ -67,7 +67,7 @@ const tap = async (p, sel, until) => {
     await open(p, FILE);
     if (await tap(p, '.menu-btn', () => document.querySelector('.more-menu.in'))) {
       await audit(p, at + ' menu');
-      if (await tap(p, '[data-sheet="book"]')) await audit(p, at + ' about');
+      if (await tap(p, '.menu-row[data-sheet="book"]')) await audit(p, at + ' about');
       else skipped.push(at + ' about');
     } else skipped.push(at + ' menu');
     await ctx.close();

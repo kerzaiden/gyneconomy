@@ -1,8 +1,8 @@
-import { facts, fmtSigned, hubLine, ledeHtml, legendKey, monthLabel, qLabel, srcBlock } from "./format.ts";
-import { byId, expandBtn, need, put, rovingKeys, ui } from "./dom.ts";
+import { facts, fmtSigned, hubLine, ledeHtml, monthLabel, qLabel, srcBlock } from "./format.ts";
+import { byId, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
-import { CPI_TARGET, FED_TARGET_SRC, gdpSrc, HOLD_BAND, sp500AnnualReturns, TEMP_BAND_HI, TEMP_BAND_LO, typicalCycleSrc, typicalCycleYears } from "./data.ts";
+import { gdpSrc, HOLD_BAND, sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { cycleModel, cycleYtdFraction } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
 import { closedSegs, marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
@@ -12,6 +12,7 @@ import { cycleViewEl } from "./render-pages.ts";
 import { IND, nowWhen } from "./cycle-analysis.ts";
 import { dialRing } from "./dial-ring.ts";
 import type { DialQuarter } from "./dial-ring.ts";
+import { legendSvg } from "./marks.ts";
 
 type CycleModel = ReturnType<typeof cycleModel>;
 type DialState = { m: CycleModel; quarters: DialQuarter[]; badgeDeg: number; badgeAt: number; polar: (r: number, deg: number) => string[]; parked: number | null };
@@ -53,17 +54,9 @@ function wireThemeChoice(){
   paint();
   rovingKeys(group, "[data-theme-choice]", "aria-checked", true);
 }
-// ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the ----
+// ---- the legend: a door to About Gyneconomy, where the models and their keys live ----
 function renderCycleKicker(){
-  var html = '<h4>Legend</h4>' +
-    '<div class="legend-head">Seasons (Q)</div>' + legendKey([["winter","Winter","Prices &lt; " + TEMP_BAND_LO + "%"],["spring","Spring","Prices \u2264 " + TEMP_BAND_HI + "%"],["summer","Summer","Prices &gt; " + TEMP_BAND_HI + "%"],["autumn","Autumn","Prices \u2265 " + TEMP_BAND_LO + "%"]], { shape:"bar", cls:"legend-rows", row:"legend-row" }) +
-    '<p class="caption">The range is ' + TEMP_BAND_LO + '–' + TEMP_BAND_HI + '% inflation, CPI before 2000 and PCE since, a point either side of the Fed\u2019s ' + CPI_TARGET + '% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model\u2019s structure.</p>' + srcBlock([FED_TARGET_SRC]) +
-    '<div class="legend-head">S&amp;P 500 (YoY)</div>' + legendKey([["mkt-up", "Bull year", "return \u2265 0%"], ["mkt-down", "Bear year", "return &lt; 0%"], ["mkt-up ytd", "Year in progress", "in progress"],
-      ["", "Peak year", "highest return", '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>']], { shape:"bar", cls:"legend-rows", row:"legend-row" }) +
-    '<div class="legend-head">The market cycle</div>' +
-    '<p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6\u00bd years across the long record. It is a typical length, not a forecast.</p>' +
-    srcBlock(typicalCycleSrc);
-  put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span>' + expandBtn(html, "Legend"));
+  put("cycle-kicker", '<button type="button" class="icon-btn" data-sheet="book" data-sheet-at="cycle-model" aria-label="Legend: About Gyneconomy" title="Legend">' + legendSvg() + '</button>');
 }
 // ---- the hub: the reading inside the circle ----
 function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, open: HubOpen){
@@ -207,7 +200,6 @@ export function renderCycleView(m: CycleModel){
 }
 function showEra(era: Cycle){
   ui.shownEra = era;
-  put("cycle-kicker-name", era.name);
 }
 export function showCycle(era: Cycle){ if (ui.shownEra !== era) renderCycleView(cycleModel(era)); }
 // ---- A cycle's season strip (carried by the one cycle row) ----

@@ -35,6 +35,8 @@ export function calendarSvg(){ return markSvg('<rect x="4" y="5.5" width="16" he
 export function bookSvg(){ return markSvg('<path d="M12 6.6C10 5.1 7.3 4.6 3.8 5v13.6c3.5-.4 6.2.1 8.2 1.6 2-1.5 4.7-2 8.2-1.6V5c-3.5-.4-6.2.1-8.2 1.6z" stroke-width="1.8"/><path d="M12 6.6v13.6" stroke-width="1.8"/>'); }
 export function umbrellaSvg(){ return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17 0z" stroke-width="1.8"/>' +
   '<path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>'); }
+export function legendSvg(){ return markSvg('<circle cx="5" cy="5.6" r="1.7" stroke-width="1.6"/><circle cx="5" cy="12" r="1.7" stroke-width="1.6"/><circle cx="5" cy="18.4" r="1.7" stroke-width="1.6"/>' +
+  '<path d="M9.6 5.6h10.4M9.6 12h10.4M9.6 18.4h10.4" stroke-width="1.8"/>'); }
 export function slidersSvg(){ return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/>' +
   '<circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>'); }
 export function heartSvg(){ return markSvg(
