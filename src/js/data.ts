@@ -311,7 +311,7 @@ export var seasonReading: Record<Season, SeasonReading> = {
   },
   lateautumn: {
     body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
-    economy: "Stagflation. Growth runs below the economy’s potential while inflation heats up, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown."
+    economy: "Stagflation. Growth runs below the economy’s potential while inflation heats up or stays stuck above target, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown."
   },
   winter: {
     body: "Menstruation — groundation. Shedding, rest and the lowest energy of the cycle. The lining that was built up releases; the body is not failing, it is clearing the way.",

@@ -15,8 +15,8 @@ function seasonGrid(){
   };
   var head = function(name: string, sub: string){ return '<div class="sg-head"><b>' + name + '</b><small>' + sub + '</small></div>'; };
   return '<div class="season-grid">' + '<span></span>' + head("Cold", "below 1%") + head("In range", "1\u20133%") + head("Hot", "above 3%") +
-    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating", "Deflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation"]) +
-    head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling"]) +
+    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating", "Disinflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation"]) +
+    head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating or sticky", "Disinflation \u00b7 cooling"]) +
   '</div>';
 }
 function recessionLine(){
@@ -52,7 +52,7 @@ function renderSeasonRows(){
     {key:"spring",          growth:"Expansion",  temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
     {key:"summer",          growth:"Expansion",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
     {key:"autumn",          growth:"Contraction", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
-    {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"},
+    {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating within or above the range, or steady above it"},
     {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"}
   ];
   var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';

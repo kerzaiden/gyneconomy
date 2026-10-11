@@ -17,7 +17,7 @@ export var wheelMeta: Record<Season, { name: string; theme: string; altName: str
   autumn:{name:"Autumn", theme:"Disinflation", altName:null},
   lateautumn:{name:"Autumn", theme:"Stagflation", altName:null},
   winter:{name:"Winter", theme:"Deflation", altName:"Groundation"},
-  springdeflation:{name:"Spring", theme:"Deflation", altName:null},
+  springdeflation:{name:"Spring", theme:"Disinflation", altName:null},
   spring:{name:"Spring", theme:"Reflation", altName:null}
 };
 export var seasonOverride: Season | null = null;
