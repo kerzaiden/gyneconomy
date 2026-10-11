@@ -3,7 +3,7 @@ import { byId, detailTexts, focusQuiet, layer, onScreen } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, pendingGeom } from "./charts.ts";
 import { deficitHistory, marketCycles } from "./data.ts";
-import { cycLabel, cycleByName, openCycle } from "./model.ts";
+import { cycLabel, cycleByName, cycleSlice, openCycle } from "./model.ts";
 
 type HeadGroup = { key: string; label: string; on: boolean; value: string; rows: string };
 type HistHeadSpec = { mark?: () => string; title?: string | (() => string); menu?: () => HeadGroup[] };
@@ -391,6 +391,10 @@ function histKeysWire(host: HTMLElement, hide: () => void){
 export function mWindowFrom(len: number, key: string | undefined){
   var sp = timelineSpan(key);
   return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 12);
+}
+export function monthWindow(id: string, series: Point[], fromFn?: (len: number, key: string | undefined) => number){
+  var cyc = pageCycle(id), span = cyc ? cycleSlice(series, cyc) : null;
+  return span ? { from:span[0], to:span[1] as number | undefined, cycle:true } : { from:(fromFn || mWindowFrom)(series.length, page.range[id]), to:undefined, cycle:false };
 }
 export function qWindowFrom(len: number, key: string | undefined){
   var sp = timelineSpan(key);

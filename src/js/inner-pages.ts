@@ -4,7 +4,7 @@ import { divergeChart, trendOf, trendPill } from "./charts.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, capeHistory, DEFICIT_LINE, DEF_FROM_YEAR, deficitHistory, fileRow, labRow, longCycleSrc, now, syncCapeHistory, unempHistory } from "./data.ts";
 import { currentEra, cycleSlice, growthWord, inflationFigure, nowModel, potentialGap, totalGrowthYears, totalRiseIn } from "./model.ts";
-import { controlKeys, defFrom, histControls, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, timelineSpan, timelineWindow } from "./history.ts";
+import { controlKeys, defFrom, histControls, monthWindow, page, pageCycle, pickerOpen, qWindowFrom, timelineSpan, timelineWindow } from "./history.ts";
 import { activityInfoHtml, deficitInfoHtml, gdpWord, growthInfoHtml, lagging, phaseClass, tempInfo, temperatureInfoHtml } from "./readings.ts";
 import { cpiHistoryChart, deficitChart, gdpHistoryChart, heatKey, unempHistoryChart } from "./history-charts.ts";
 import { gdpFigure, sheetRenderers, tempWord } from "./render-core.ts";
@@ -14,14 +14,6 @@ import { defineReading, indicatorInsight, recordInsight, recordPoints } from "./
 import { ROSTER_BY } from "./roster.ts";
 
 // ---- THE INNER PAGES ----
-function actCycleMonths(c: Cycle){
-  var to = c.to || calendarTodayY, a = -1, b = -1;
-  unempHistory.forEach(function(d, i){
-    var y = parseInt(d.m.slice(0, 4), 10);
-    if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
-  });
-  return a === -1 ? null : [a, b];
-}
 function redrawSheet(id: string){
   var h = byId("metric-page"), d = sheetRenderers[id], keys = controlKeys(document.activeElement);
   if (d) d(h && h.clientWidth ? h.clientWidth : 340);
@@ -32,10 +24,6 @@ function redrawSheet(id: string){
   keys.some(function(k){ return focusQuiet(document.querySelector<HTMLElement>(k)); });
 }
 function lagRow(term: string){ var ind = lagging.filter(function(x){ return x.bodyTerm === term; })[0]; if (!ind) throw new Error("no " + term + " reading"); return ind; }
-function monthWindow(id: string, series: MonthPoint[]){
-  var cyc = pageCycle(id), span = cyc ? cycleSlice(series, cyc) : null;
-  return span ? { from:span[0], to:span[1] as number | undefined, cycle:true } : { from:mWindowFrom(series.length, page.range[id]), to:undefined, cycle:false };
-}
 function defineTemp(){
   var id = "sheet-metric-temp";
   defineReading(id, {
@@ -59,11 +47,10 @@ function defineGdp(){
     info:growthInfoHtml,
     controls:function(){ return histControls(id, { series:gdpQuarterlyYoY }); },
     history:function(){
-      var cyc = pageCycle(id), span = cyc ? cycleSlice(gdpQuarterlyYoY, cyc) : null;
-      var from = span ? span[0] : qWindowFrom(gdpQuarterlyYoY.length, page.range[id]), to = span ? span[1] : undefined;
+      var w = monthWindow(id, gdpQuarterlyYoY, qWindowFrom), from = w.from, to = w.to;
       var win = gdpQuarterlyYoY.slice(from, to), gt = totalGrowthYears(yearOf(win[0]), yearOf(win[win.length - 1]));
       return { geom:"gdpHistoryChart", wrap:"vh-host", sigma:gt ? fmtSigned(gt.total, 0) + "%" : null,
-        chart:function(W: number){ return gdpHistoryChart(W, from, { to:to, cycle:!!span }); },
+        chart:function(W: number){ return gdpHistoryChart(W, from, { to:to, cycle:w.cycle }); },
         trend:trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true, { rising:"accelerating", falling:"slowing" }) };
     },
     insight:gdpHighlights
@@ -77,11 +64,10 @@ function defineActivity(){
     key:function(){ return [["hk-2", "Within " + ACT_BAND_LO + "\u2013" + ACT_BAND_HI + "%"], ["hk-4", "Below " + ACT_BAND_LO + "% or above " + ACT_BAND_HI + "%"], ["hk-x", "Above " + ACT_BAND_HI + "% with the Sahm rule triggered"]]; },
     controls:function(){ return histControls(id, { series:unempHistory }); },
     history:function(){
-      var cyc = pageCycle(id), span = cyc ? actCycleMonths(cyc) : null;
-      var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]), to = span ? span[1] : undefined;
+      var w = monthWindow(id, unempHistory), from = w.from, to = w.to;
       var win = unempHistory.slice(from, to).filter(function(d){ return d.v != null; });
       return { geom:"unempHistoryChart", wrap:"vh-host",
-        chart:function(W: number){ return unempHistoryChart(W, from, { to:to, cycle:!!span }); },
+        chart:function(W: number){ return unempHistoryChart(W, from, { to:to, cycle:w.cycle }); },
         trend:trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"loosening", falling:"tightening" }) };
     },
     insight:function(){ return indicatorInsight(ROSTER_BY[id], lagRow("Activity"), function(v){ return v.toFixed(1) + "%"; }); }

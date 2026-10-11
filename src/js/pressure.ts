@@ -4,7 +4,7 @@ import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colScale, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
 import { curveAsOf, curveAt, curveSpread, FENCE_SRC, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
-import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
+import { headPickRow, histControls, monthWindow, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
 import { indOf, periodIso, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, tendencyOf, volumeInfoHtml } from "./readings.ts";
 import type { Tendency } from "./readings.ts";
 import { chartShell, defineReading, indicatorInsight, redrawReading } from "./reading.ts";
@@ -361,9 +361,8 @@ function defineMortgage(){
     key:function(){ return rateKey(mortgageHistory); },
     controls:function(){ return histControls(key, { series:h }, Y0); },
     history:function(){
-      var cyc = pageCycle(key), span = cyc ? cycleSlice(h, cyc) : null;
-      var from = span ? span[0] : mWindowFrom(h.length, page.range[key]), to = span ? span[1] : undefined;
-      return { geom:"mortgageHistoryChart", chart:function(w: number){ return mortgageHistoryChart(w, from, { to:to, cycle:!!span }); },
+      var w = monthWindow(key, h), from = w.from, to = w.to;
+      return { geom:"mortgageHistoryChart", chart:function(W: number){ return mortgageHistoryChart(W, from, { to:to, cycle:w.cycle }); },
         trend:trendPill(trendOf(h.slice(from, to).map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"climbing", falling:"easing" }) };
     },
     insight:mortgageInsight

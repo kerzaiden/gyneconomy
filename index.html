@@ -48333,6 +48333,18 @@
     var sp = timelineSpan(key);
     return sp == null || sp === Infinity ? 0 : Math.max(0, len2 - sp * 12);
   }
+  function monthWindow(id, series, fromFn) {
+    var cyc = pageCycle(id), span = cyc ? cycleSlice(series, cyc) : null;
+    return span ? {
+      from: span[0],
+      to: span[1],
+      cycle: true
+    } : {
+      from: (fromFn || mWindowFrom)(series.length, page.range[id]),
+      to: void 0,
+      cycle: false
+    };
+  }
   function qWindowFrom(len2, key) {
     var sp = timelineSpan(key);
     return sp == null || sp === Infinity ? 0 : Math.max(0, len2 - sp * 4);
@@ -51128,17 +51140,6 @@
       wordy: true
     } ].map(auxStat).join(""));
   }
-  function ffCycleMonths(c) {
-    var to = c.to || calendarTodayY, a = -1, b = -1;
-    fedFundsHistory.forEach(function(d, i) {
-      var y = parseInt(d.m.slice(0, 4), 10);
-      if (y >= c.from && y <= to) {
-        if (a === -1) a = i;
-        b = i + 1;
-      }
-    });
-    return a === -1 ? null : [ a, b ];
-  }
   function hormonesInfo() {
     return "<h4>Effective Federal Funds Rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole yield curve is quoted against, which is why it reads first on this page and the Treasury levels below read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, so the two are different figures and the page says which is which: the range is the decision, the chart is where money traded. Target " + fedFundsRange() + (now.fedFunds.asOf ? ", set " + now.fedFunds.asOf : "") + (now.fedFunds.vote ? " on a " + now.fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date — that month ran partly under the previous target. The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June 1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds both is the reason this one stands on zero rather than on its own minimum. Source: Federal Reserve H.15 via FRED, series FEDFUNDS.") + srcBlock([ FENCE_SRC ]);
   }
@@ -51198,15 +51199,14 @@
         }, FF_Y0);
       },
       history: function() {
-        var cyc = pageCycle(key), span = cyc ? ffCycleMonths(cyc) : null;
-        var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, page.range[key]), to = span ? span[1] : void 0;
+        var w = monthWindow(key, fedFundsHistory), from = w.from, to = w.to;
         var win = fedFundsHistory.slice(from, to);
         return {
           geom: "fedFundsHistoryChart",
-          chart: function(w) {
-            return fedFundsHistoryChart(w, from, {
+          chart: function(W) {
+            return fedFundsHistoryChart(W, from, {
               to: to,
-              cycle: !!span
+              cycle: w.cycle
             });
           },
           trend: trendPill(trendOf(win.map(function(d) {
@@ -54526,14 +54526,13 @@
         }, Y0);
       },
       history: function() {
-        var cyc = pageCycle(key), span = cyc ? cycleSlice(h, cyc) : null;
-        var from = span ? span[0] : mWindowFrom(h.length, page.range[key]), to = span ? span[1] : void 0;
+        var w = monthWindow(key, h), from = w.from, to = w.to;
         return {
           geom: "mortgageHistoryChart",
-          chart: function(w) {
-            return mortgageHistoryChart(w, from, {
+          chart: function(W) {
+            return mortgageHistoryChart(W, from, {
               to: to,
-              cycle: !!span
+              cycle: w.cycle
             });
           },
           trend: trendPill(trendOf(h.slice(from, to).map(function(d) {
@@ -54860,17 +54859,6 @@
     for (var i = h.length - 1; i >= 0 && h[i].v >= 0; i--) run++;
     return highlightsHtml([ lede("What the whole stock market returned each year, dividends included. A year above the line is a bull year and one below it a bear year, the same years the dial’s inner band colours."), hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "%, " + (last.v >= 0 ? "a bull year" : "a bear year") + (run > 1 ? ", the " + (ORDINAL[run] || run + "th") + " bull year in a row." : ".") + (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")), hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " + bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.") ]);
   }
-  function actCycleMonths(c) {
-    var to = c.to || calendarTodayY, a = -1, b = -1;
-    unempHistory.forEach(function(d, i) {
-      var y = parseInt(d.m.slice(0, 4), 10);
-      if (y >= c.from && y <= to) {
-        if (a === -1) a = i;
-        b = i + 1;
-      }
-    });
-    return a === -1 ? null : [ a, b ];
-  }
   function redrawSheet(id) {
     var h = byId("metric-page"), d = sheetRenderers[id], keys = controlKeys(document.activeElement);
     if (d) d(h && h.clientWidth ? h.clientWidth : 340);
@@ -54888,18 +54876,6 @@
     })[0];
     if (!ind) throw new Error("no " + term + " reading");
     return ind;
-  }
-  function monthWindow(id, series) {
-    var cyc = pageCycle(id), span = cyc ? cycleSlice(series, cyc) : null;
-    return span ? {
-      from: span[0],
-      to: span[1],
-      cycle: true
-    } : {
-      from: mWindowFrom(series.length, page.range[id]),
-      to: void 0,
-      cycle: false
-    };
   }
   function defineTemp() {
     var id = "sheet-metric-temp";
@@ -54952,8 +54928,7 @@
         });
       },
       history: function() {
-        var cyc = pageCycle(id), span = cyc ? cycleSlice(gdpQuarterlyYoY, cyc) : null;
-        var from = span ? span[0] : qWindowFrom(gdpQuarterlyYoY.length, page.range[id]), to = span ? span[1] : void 0;
+        var w = monthWindow(id, gdpQuarterlyYoY, qWindowFrom), from = w.from, to = w.to;
         var win = gdpQuarterlyYoY.slice(from, to), gt = totalGrowthYears(yearOf(win[0]), yearOf(win[win.length - 1]));
         return {
           geom: "gdpHistoryChart",
@@ -54962,7 +54937,7 @@
           chart: function(W) {
             return gdpHistoryChart(W, from, {
               to: to,
-              cycle: !!span
+              cycle: w.cycle
             });
           },
           trend: trendPill(trendOf(win.map(function(d) {
@@ -54995,8 +54970,7 @@
         });
       },
       history: function() {
-        var cyc = pageCycle(id), span = cyc ? actCycleMonths(cyc) : null;
-        var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]), to = span ? span[1] : void 0;
+        var w = monthWindow(id, unempHistory), from = w.from, to = w.to;
         var win = unempHistory.slice(from, to).filter(function(d) {
           return d.v != null;
         });
@@ -55006,7 +54980,7 @@
           chart: function(W) {
             return unempHistoryChart(W, from, {
               to: to,
-              cycle: !!span
+              cycle: w.cycle
             });
           },
           trend: trendPill(trendOf(win.map(function(d) {

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `57189b1` on 2026-10-11. **106 components**, **17 shared patterns**.
+Generated from commit `9f98a6b` on 2026-10-11. **106 components**, **17 shared patterns**.
 
 ## ai-insights.ts
 
@@ -221,14 +221,13 @@ renderer speaks. Listed most-used first.
 | **`fmtSigned`** | format.ts | 24 places |
 | **`need`** | dom.ts | 24 places |
 | **`titleCase`** | format.ts | 17 places |
-| **`pageCycle`** | history.ts | 15 places |
 | **`byId`** | dom.ts | 14 places |
 | **`defineReading`** | reading.ts | 12 places |
 | **`histControls`** | history.ts | 12 places |
 | **`metered`** | format.ts | 11 places |
+| **`pageCycle`** | history.ts | 11 places |
 | **`f1`** | pulse-strips.ts | 10 places |
 | **`addSources`** | dom.ts | 9 places |
-| **`cycleSlice`** | model.ts | 9 places |
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`monthLabel`** | format.ts | 9 places |
@@ -236,6 +235,7 @@ renderer speaks. Listed most-used first.
 | **`closedCount`** | cycle-analysis.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`cycLabel`** | model.ts | 7 places |
+| **`cycleSlice`** | model.ts | 7 places |
 | **`histFrame`** | charts.ts | 7 places |
 | **`mean`** | format.ts | 7 places |
 | **`normOf`** | cycle-analysis.ts | 7 places |
@@ -257,8 +257,8 @@ renderer speaks. Listed most-used first.
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`meanOf`** | cycle-analysis.ts | 5 places |
+| **`monthWindow`** | history.ts | 5 places |
 | **`pctl`** | format.ts | 5 places |
-| **`qWindowFrom`** | history.ts | 5 places |
 | **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`visits`** | cycle-analysis.ts | 5 places |
@@ -275,10 +275,10 @@ renderer speaks. Listed most-used first.
 | **`keyed`** | roster.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
 | **`moreRow`** | dom.ts | 4 places |
-| **`mWindowFrom`** | history.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
 | **`quartile`** | format.ts | 4 places |
+| **`qWindowFrom`** | history.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
 | **`trendText`** | dom.ts | 4 places |

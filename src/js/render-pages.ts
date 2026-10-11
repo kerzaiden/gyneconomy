@@ -3,10 +3,9 @@ import { addSources, appendSvgMarkup, byId, expandBtn, need, svgEl, ui } from ".
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPath, colScale, colWidth, crossLine, divergeChart, fitLine, histFrame, publishGeom, trendOf, trendPill, windowYears, yearMarks, zeroRule } from "./charts.ts";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
-import { calendarTodayY } from "./refresh-season.ts";
 import { curveAsOf, curveNoteFull, FENCE_SRC, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cycleQtrIdx, cycleSlice } from "./model.ts";
-import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, timelineWindow } from "./history.ts";
+import { headPickRow, histControls, monthWindow, page, pageCycle, qWindowFrom, timelineWindow } from "./history.ts";
 import { curveVerdict, fearCurve, horizonInfoHtml, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
 import { fedFundsHistoryChart, rateKey } from "./history-charts.ts";
 import { chartShell, defineReading, redrawReading } from "./reading.ts";
@@ -210,14 +209,6 @@ function spreadInsights(){
     { label:"Deepest point", value:"−1.89 pts · May 4, 2023", wordy:true }].map(auxStat).join(""));
 }
 // ---- RENDER: Hormones ----
-function ffCycleMonths(c: Cycle){
-  var to = c.to || calendarTodayY, a = -1, b = -1;
-  fedFundsHistory.forEach(function(d, i){
-    var y = parseInt(d.m.slice(0, 4), 10);
-    if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
-  });
-  return a === -1 ? null : [a, b];
-}
 function hormonesInfo(){ return '<h4>Effective Federal Funds Rate</h4>' + factsFrom(
     "The rate banks actually charge each other overnight, averaged by month. It is the price the whole " +
     "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " +
@@ -280,10 +271,9 @@ function defineHormones(){
     key:function(){ return rateKey(fedFundsHistory); },
     controls:function(){ return histControls(key, { series:fedFundsHistory }, FF_Y0); },
     history:function(){
-      var cyc = pageCycle(key), span = cyc ? ffCycleMonths(cyc) : null;
-      var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, page.range[key]), to = span ? span[1] : undefined;
+      var w = monthWindow(key, fedFundsHistory), from = w.from, to = w.to;
       var win = fedFundsHistory.slice(from, to);
-      return { geom:"fedFundsHistoryChart", chart:function(w: number){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); },
+      return { geom:"fedFundsHistoryChart", chart:function(W: number){ return fedFundsHistoryChart(W, from, { to:to, cycle:w.cycle }); },
         trend:trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"tightening", falling:"easing" }) };
     },
     insight:hormonesInsight
