@@ -280,9 +280,8 @@ settles it; none is open after V668.
   surface behind a 24px blur, with the glass edge and lift, over a lighter veil that blurs the page by 10px.**
   Keren picked option C from the liquid-glass previews. (0.6.9)
 - **The top bar's titles are Keren's names for the tabs: "Today", "Current Cycle", "Analysis", "Portfolio".**
-  Today's home shows no title: the Weather Report's date already says which day it is, so the word only takes the
-  space. It stays in the heading for screen readers and returns on any page opened from Today. (undated, 0.6.1,
-  Today Tab, Home Tab)
+  Today keeps its title for now, though the Weather Report's date already names the day: Keren will decide when
+  she settles the top bar. (undated, 0.6.1, Today Tab, Home Tab)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
   head names the series (bar "Pulse", head "Velocity of Money (M2)").** A title inside the page only repeated the
   top bar: the bar names the page and the card names the reading. (V208, V288, V298, V361)

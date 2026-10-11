@@ -320,12 +320,6 @@ async function openPage(p, url, sheet) {
      today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker === await p.evaluate(() => window.__GYN.cycle))
       ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
-    const bare = await p.evaluate(() => { document.querySelector('.tab-btn[data-tab="today"]').click(); const h = document.getElementById('topbar-title');
-      const today = { text: h.textContent, w: h.getBoundingClientRect().width }; document.querySelector('.tab-btn[data-tab="chart"]').click();
-      return { today, chart: h.getBoundingClientRect().width }; });
-    (bare.today.text === 'Today' && bare.today.w <= 1 && bare.chart > 1)
-      ? ok('Today shows no title, its heading kept for screen readers; other tabs show theirs', JSON.stringify(bare))
-      : bad('Today shows no title, its heading kept for screen readers; other tabs show theirs', JSON.stringify(bare));
     const ringDoor = await p.evaluate(() => { document.querySelector('.tab-btn[data-tab="today"]').click(); document.querySelector('#today-home .today-cycle').click();
       return { tab: document.querySelector('.tab-btn.active').dataset.tab, shown: !!document.getElementById('diagnosis').offsetParent, title: document.getElementById('topbar-title').textContent }; });
     (ringDoor.tab === 'cycle' && ringDoor.shown && ringDoor.title === 'Current Cycle')
