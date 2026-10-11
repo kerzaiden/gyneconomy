@@ -8,17 +8,17 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `7293c97` on 2026-10-11. **108 components**, **9 shared patterns**.
+Generated from commit `0fe4986` on 2026-10-11. **109 components**, **10 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
+| **`cycleCard`** | `.today-cycle` `.today-cycle-hub` `.today-cycle-kicker` `.today-cycle-ret` `.today-cycle-season` `.today-cycle-stage` | `ai-insights.ts:todayHtml` |
 | **`elements`** | `.wr-el` | `ai-insights.ts:todayHtml` |
-| **`lead`** | `.wr-by` `.wr-head` | `ai-insights.ts:storyCard`, `ai-insights.ts:todayHtml` |
-| **`mountReport`** | `.wr-page` | `diagnosis.ts:diagnosisHost` |
+| **`lead`** | `.wr-by` `.wr-head` | `ai-insights.ts:todayHtml` |
 | **`prose`** | `.wr-link` | `ai-insights.ts:elements`, `ai-insights.ts:storyCard`, `ai-insights.ts:todayHtml` |
-| **`storyHtml`** | `.wr-date` `.wr-title` | — |
+| **`storyCard`** | `.trend-when` | `diagnosis.ts:diagnosisHtml` |
 
 ## analysis.ts
 
@@ -83,9 +83,16 @@ Generated from commit `7293c97` on 2026-10-11. **108 components**, **9 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`drawDial`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-today-badge` `.dial-track` `.disc` `.dot` `.lbl` `.num` | `dial-cycle.ts:renderCycleView` |
+| **`drawDial`** | `.dial-today-badge` `.lbl` `.num` | `dial-cycle.ts:renderCycleView` |
 | **`hubSet`** | `.hub-chev` `.hub-stage` | `dial-cycle.ts:hubShowDefault`, `dial-cycle.ts:hubShowQuarter` |
 | **`renderCycleKicker`** | `.legend-head` | `dial-cycle.ts:bootDialCycle` |
+
+## dial-ring.ts
+
+| Component | Owns | Used by |
+|---|---|---|
+| **`dialRing`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-track` `.disc` `.dot` | `dial-cycle.ts:drawDial`, `dial-ring.ts:miniRing` |
+| **`miniRing`** | `.cycle-dial` `.mini-ring` | `ai-insights.ts:cycleCard` |
 
 ## dom.ts
 
@@ -94,7 +101,6 @@ Generated from commit `7293c97` on 2026-10-11. **108 components**, **9 shared pa
 | **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `fed-phases.ts:footnoteHtml` |
 | **`moreButton`** | `.cyc-more` `.dx-more` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`moreDoor`** | `.more-row` | `dom.ts:moreRow` |
-| **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `ai-insights.ts:elements`, `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
 
@@ -177,7 +183,7 @@ Generated from commit `7293c97` on 2026-10-11. **108 components**, **9 shared pa
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:riskCard` |
 | **`dxHead`** | `.dx-sys-head` | `analysis.ts:cycleRowsHtml`, `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
 | **`econChips`** | `.chip` `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
-| **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:mountReport`, `portfolio.ts:portfolioSheets`, `reading.ts:mountReadings` |
+| **`metricSheet`** | `.metric-sheet` | `portfolio.ts:portfolioSheets`, `reading.ts:mountReadings` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
 | **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml` |
 | **`stripTrack`** | `.strip-track` | `dial-cycle.ts:seasonStripHtml` |
@@ -220,8 +226,8 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`fmtSigned`** | format.ts | 24 places |
-| **`need`** | dom.ts | 24 places |
+| **`fmtSigned`** | format.ts | 25 places |
+| **`need`** | dom.ts | 23 places |
 | **`mean`** | format.ts | 18 places |
 | **`titleCase`** | format.ts | 15 places |
 | **`byId`** | dom.ts | 13 places |
@@ -292,7 +298,6 @@ renderer speaks. Listed most-used first.
 | **`barClass`** | cycle-analysis.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`calBtn`** | cycle-analysis.ts | 3 places |
-| **`closedSegs`** | render-core.ts | 3 places |
 | **`colScale`** | charts.ts | 3 places |
 | **`curveAt`** | data.ts | 3 places |
 | **`cycleOfYear`** | model.ts | 3 places |
@@ -314,7 +319,6 @@ renderer speaks. Listed most-used first.
 | **`moodToday`** | model.ts | 3 places |
 | **`moodTrack`** | model.ts | 3 places |
 | **`mortgageLast`** | pressure.ts | 3 places |
-| **`one`** | dial-cycle.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
 | **`qYears`** | format.ts | 3 places |
@@ -341,6 +345,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.caption` | 6 | `dial-cycle.ts:renderCycleKicker`, `format.ts:readingNote`, `pressure.ts:pressureMaturities`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadDetail`, `render-pages.ts:spreadSeries` |
 | `.follow` | 3 | `format.ts:readingNote`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
+| `.trend-card` | 2 | `ai-insights.ts:cycleCard`, `dom.ts:trendCard` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
 | `.dx` | 2 | `diagnosis.ts:diagnosisHost`, `portfolio.ts:buildPortfolio` |
 | `.dx-mark` | 2 | `dom.ts:trendHead`, `render-core.ts:dxHead` |

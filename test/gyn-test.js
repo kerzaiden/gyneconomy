@@ -312,14 +312,26 @@ async function openPage(p, url, sheet) {
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-open="sheet-find"][data-ind-when]').length : 0,
                    score: !d.querySelector('.trend-card .lab-score') && d.querySelectorAll('.trend-card .learn-more').length === 1,
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
-                   boxes: [...d.children].map(c => c.matches('.trend-card[data-open="sheet-story"]') ? 'story' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
+                   boxes: [...d.children].map(c => c.matches('.trend-card:has([data-story-more])') ? 'story' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-plot') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
     const today = await read();
     await sweep(p);
-    (today && today.visible && today.title === 'Cycle Story' && today.cards === 0 &&
-     today.boxes === 'story,sys' && today.doors === 1 && today.score && !!today.kicker && today.kicker === await p.evaluate(() => window.__GYN.cycle))
+    (today && today.visible && today.title.startsWith(await p.evaluate(() => window.__GYN.cycle) + ' \u00b7 ') && today.cards === 0 &&
+     today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker === await p.evaluate(() => window.__GYN.cycle))
       ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
+    const ringDoor = await p.evaluate(() => { document.querySelector('.tab-btn[data-tab="today"]').click(); document.querySelector('#today-home .today-cycle').click();
+      return { tab: document.querySelector('.tab-btn.active').dataset.tab, shown: !!document.getElementById('diagnosis').offsetParent, title: document.getElementById('topbar-title').textContent }; });
+    (ringDoor.tab === 'cycle' && ringDoor.shown && ringDoor.title === 'Current Cycle')
+      ? ok('the cycle card on Today opens the current cycle', ringDoor.title)
+      : bad('the cycle card on Today opens the current cycle', JSON.stringify(ringDoor));
+    const story = await p.evaluate(() => { const k = document.querySelector('#diagnosis .trend-card'), t = k.querySelector('.trend-text'), m = k.querySelector('[data-story-more]');
+      const shut = t.getBoundingClientRect().height, cut = t.scrollHeight > t.clientHeight; m.click();
+      const open = t.getBoundingClientRect().height, label = m.textContent; m.click();
+      return { cut, grew: open > shut, label, back: t.getBoundingClientRect().height === shut, sheet: !!document.querySelector('.sheet.open, .sheet.show') }; });
+    (story.cut && story.grew && story.label === 'Read less' && story.back && !story.sheet)
+      ? ok('the cycle story clamps to three lines and Read more opens it in place', JSON.stringify(story))
+      : bad('the cycle story clamps to three lines and Read more opens it in place', JSON.stringify(story));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
@@ -330,7 +342,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'story,sys' && past.doors === 1 && !past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'story,sys' && past.doors === 0 && !past.after &&
      yearRun(past.years) && past.opens === past.years.length)
       ? ok('the cycle reads year by year, newest first, each year opening Elements, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening Elements, today and at a close', JSON.stringify([today, past]));
@@ -354,7 +366,7 @@ async function openPage(p, url, sheet) {
     await filt(p, '[data-pick-period="' + await p.evaluate(() => window.__GYN.cycle) + '"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
-    (past && past.visible && past.title === 'Cycle Story' && past.kicker === 'Big Tech Cycle')
+    (past && past.visible && past.title === 'Big Tech Cycle \u00b7 2009\u20132018' && past.kicker === 'Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -487,13 +499,13 @@ async function openPage(p, url, sheet) {
       ? ok('the tab bar reads Today, Cycle, Analysis, Portfolio', 'no Search page, timing filter or category analysis')
       : bad('the tab bar reads Today, Cycle, Analysis, Portfolio', JSON.stringify({ tabs, gone }));
     const bar = async () => p.evaluate(() => { const t = document.querySelector('.tabbar'), s = t.querySelector('.tab-btn span');
-      return { icons: s.getBoundingClientRect().width <= 1, width: t.offsetWidth, small: t.classList.contains('small'), pill: getComputedStyle(t.querySelector('.tab-btn.active')).backgroundColor }; });
+      return { icons: s.getBoundingClientRect().width <= 1, width: t.offsetWidth, height: t.getBoundingClientRect().height, pill: getComputedStyle(t.querySelector('.tab-btn.active')).backgroundColor }; });
     const rest = await bar();
     await p.mouse.wheel(0, 900); await settle(p); const down = await bar();
-    await p.mouse.wheel(0, -300); await settle(p); const up = await bar();
-    (rest.icons && rest.width < 300 && !rest.small && rest.pill !== 'rgba(0, 0, 0, 0)' && down.small && !up.small)
-      ? ok('the phone tab bar shows icons only, a pill on the open tab, and shrinks while scrolling down', rest.width + 'px, ' + rest.pill)
-      : bad('the phone tab bar shows icons only, a pill on the open tab, and shrinks while scrolling down', JSON.stringify({ rest, down, up }));
+    await p.mouse.wheel(0, -900); await settle(p);
+    (rest.icons && rest.width < 340 && rest.pill !== 'rgba(0, 0, 0, 0)' && down.height === rest.height && down.width === rest.width)
+      ? ok('the phone tab bar shows icons only, a pill on the open tab, and holds its size while scrolling', rest.width + 'px, ' + rest.pill)
+      : bad('the phone tab bar shows icons only, a pill on the open tab, and holds its size while scrolling', JSON.stringify({ rest, down }));
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const door = await p.evaluate(() => ({ first: document.getElementById('chart-home').firstElementChild.className,
       rows: [...document.querySelectorAll('#chart-home .insight-row')].map(b => b.dataset.indCat).join() }));

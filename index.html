@@ -408,28 +408,25 @@
     display:flex; border-radius:var(--round); padding:5px; gap:2px;
     background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
     border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
-    transform-origin:50% 100%; transition:transform 0.25s ease;
   }
-  .tabbar.small{ transform:scale(0.7); }
   .tab-btn{
-    flex:none; width:64px; height:44px; border:none; background:transparent; padding:0; border-radius:var(--round); cursor:pointer;
+    flex:none; width:76px; height:48px; border:none; background:transparent; padding:0; border-radius:var(--round); cursor:pointer;
     display:flex; align-items:center; justify-content:center;
     font-family:var(--font-sans); font-size:var(--type-label); font-weight:600; color:var(--text-secondary);
     transition:background 0.15s ease, color 0.15s ease;
   }
   .tab-btn span{ position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
-  .tab-btn svg{ width:24px; height:24px; flex:none; opacity:0.9; }
+  .tab-btn svg{ width:26px; height:26px; flex:none; opacity:0.9; }
   .tab-btn.active{ background:var(--glass-on); color:var(--accent-ink); }
   .tab-btn.active svg{ opacity:1; stroke-width:2.2; }
   .tab-btn:hover:not(.active){ color:var(--text-primary); }
-  .wrap{ --tabbar-lift:max(10px, calc(env(safe-area-inset-bottom, 0px) - 12px)); padding-bottom:calc(56px + var(--tabbar-lift) + var(--gap-top)); }
+  .wrap{ --tabbar-lift:max(10px, calc(env(safe-area-inset-bottom, 0px) - 12px)); padding-bottom:calc(60px + var(--tabbar-lift) + var(--gap-top)); }
   .tabnav{ margin-bottom:0; }
   @media (min-width:1100px){
     .tabnav{ position:sticky; top:8px; z-index:40; height:0; }
     .tabbar{ position:absolute; top:2px; bottom:auto; left:calc(-1 * (var(--gap) + 220px)); right:auto; margin:0; width:220px; flex-direction:column; gap:4px; padding:8px;
       border-radius:var(--radius); background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow); -webkit-backdrop-filter:none; backdrop-filter:none; }
     .tab-btn.active{ background:var(--surface-2); }
-    .tabbar.small{ transform:none; }
     .tab-btn{ width:auto; height:auto; flex-direction:row; justify-content:flex-start; gap:12px; padding:10px 14px; font-size:var(--type-interface); border-radius:calc(var(--radius) - 6px); }
     .tab-btn span{ position:static; width:auto; height:auto; margin:0; overflow:visible; clip:auto; }
     .tab-btn svg{ width:22px; height:22px; }
@@ -577,6 +574,7 @@
   .wave-key-line::before{ width:14px; height:5px; border-radius:3px; background:var(--line); }
   .fp-note{ margin:12px 0 0; padding:12px 14px; border-radius:12px; background:var(--seg-track); font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .learn-more{ display:inline-flex; align-items:center; gap:3px; padding:0; border:0; background:none; font:inherit; font-size:var(--type-interface); font-weight:600; color:var(--accent-ink); cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
+  .learn-more[hidden]{ display:none; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
@@ -616,9 +614,19 @@
   .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
   .wr-head{ display:block; margin-top:8px; font-family:var(--font-serif); font-weight:500; font-size:var(--type-reading-head); line-height:1.1; color:var(--text-primary); }
   .wr-page{ display:flex; flex-direction:column; gap:var(--gap); }
-  .wr-top .wr-title, .wr-top .wr-date{ text-align:center; }
-  .wr-title{ margin:0 0 6px; font-family:var(--font-serif); font-weight:500; font-size:var(--type-page-title); line-height:1.1; color:var(--text-primary); }
-  .wr-date{ margin:0; font-size:var(--type-meta); color:var(--text-secondary); }
+  .today-cycle{ display:flex; align-items:center; gap:14px; padding:12px 16px; }
+  .today-cycle .mini-ring{ position:static; width:56px; height:56px; flex:none; }
+  .today-cycle .mini-ring *{ pointer-events:none; }
+  .today-cycle .mini-ring .dial-mkt{ stroke-width:11; }
+  .today-cycle-hub{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .today-cycle-kicker, .today-cycle-ret{ font-size:var(--type-meta); color:var(--text-muted); }
+  .today-cycle-ret b{ font-weight:700; }
+  .today-cycle-ret .bull{ color:var(--bull-ink); }
+  .today-cycle-ret .bear{ color:var(--bear-ink); }
+  .today-cycle-season{ font-family:var(--font-serif); font-weight:500; font-size:var(--type-section); line-height:1.15; color:var(--text-primary); }
+  .today-cycle-stage{ font-family:var(--font-serif); font-weight:500; font-size:var(--type-row); line-height:1.1; color:var(--text-secondary); }
+  .today-cycle .peek-chev{ color:var(--text-muted); }
+  .trend-when{ font-weight:500; color:var(--text-muted); white-space:nowrap; }
   .wr-el + .wr-el{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
   .wr-el .trend-head{ --cat:var(--accent-ink); }
   .wr-link{ display:inline; margin:0; padding:0; border:0; background:none; font:inherit; font-weight:600; color:var(--accent-ink); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
@@ -868,7 +876,7 @@
   .aux-stat + .method-say{ margin-top:24px; }
   .method-card .more-row{ margin-top:20px; }
   .labs .more-row, .dx > .more-row{ margin-top:0; }
-  .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
+  .lab-sec{ --lab-row:53px; margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:var(--font-sans); }
   .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:var(--seg-track); border-radius:var(--radius-inner); }
@@ -973,7 +981,7 @@
   .ind-show{ width:100%; margin-top:24px; padding:14px 22px; }
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
-  .plain .cat-head{ padding:12px 16px; background:var(--surface); border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); }
+  .plain .cat-head{ min-height:calc(var(--lab-row) + 1px); padding:12px 16px; background:var(--surface); border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); }
   .plain ul{ background:var(--surface-2); }
   .plain .ind-cat-name{ font-family:var(--font-sans); font-style:normal; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); }
   .plain .lab-mark{ vertical-align:-3px; margin-right:6px; }
@@ -984,7 +992,7 @@
   .lab-door .peek-chev{ color:var(--text-muted); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--normal); border-bottom:1px solid var(--border); }
-  .lab-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; padding:11px 16px; cursor:default; }
+  .lab-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; min-height:var(--lab-row); padding:11px 16px; cursor:default; }
   button.lab-row{ cursor:pointer; }
   button.lab-row:hover{ background:color-mix(in srgb, var(--text-muted) 8%, transparent); }
   .lab-item:last-child{ border-bottom:0; }
@@ -1221,7 +1229,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.70 (841)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.71 (842)</span></p>
     </div>
   </div>
 
@@ -1386,8 +1394,8 @@
     return MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + " " + m[1];
   }
   function isoDay(s) {
-    var t = String(s || ""), iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t), shown3 = /^([A-Z][a-z]{2}) (\d{1,2}),? (\d{4})$/.exec(t);
-    var y = iso ? +iso[1] : shown3 ? +shown3[3] : 0, m = iso ? +iso[2] : shown3 ? MONTHS_SHORT.indexOf(shown3[1]) + 1 : 0, d = iso ? +iso[3] : shown3 ? +shown3[2] : 0;
+    var t = String(s || ""), iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t), shown2 = /^([A-Z][a-z]{2}) (\d{1,2}),? (\d{4})$/.exec(t);
+    var y = iso ? +iso[1] : shown2 ? +shown2[3] : 0, m = iso ? +iso[2] : shown2 ? MONTHS_SHORT.indexOf(shown2[1]) + 1 : 0, d = iso ? +iso[3] : shown2 ? +shown2[2] : 0;
     var at = new Date(Date.UTC(y, m - 1, d));
     return y && m >= 1 && at.getUTCMonth() === m - 1 && at.getUTCDate() === d ? at.toISOString().slice(0, 10) : "";
   }
@@ -1469,11 +1477,11 @@
   function hiCard(name, state2, text, body, phrase) {
     return '<div class="hi-card"><span class="hi-name ' + state2 + '">' + (phrase ? name : titleCase(name)) + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
   }
-  function dropWhatIsShown(full, shown3) {
-    if (!full || !shown3) return full || "";
+  function dropWhatIsShown(full, shown2) {
+    if (!full || !shown2) return full || "";
     var norm = function(x) {
       return x.replace(/\s+/g, " ").trim();
-    }, seen = norm(shown3);
+    }, seen = norm(shown2);
     var parts = full.split(new RegExp("(?<=[.!?])\\s+")), i = 0;
     while (i < parts.length && parts[i] && seen.indexOf(norm(parts[i])) !== -1) i++;
     return i ? parts.slice(i).join(" ").replace(/^\s+/, "") : full;
@@ -1691,9 +1699,9 @@
   function moreButton(more) {
     return '<button type="button" class="cyc-more dx-more" aria-expanded="false"' + (more ? "" : " hidden") + "><span>View more</span>" + CHEV + "</button>";
   }
-  function wireMore(host, rows, shown3) {
+  function wireMore(host, rows, shown2) {
     var btn = host.querySelector(".dx-more");
-    if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(rows)).slice(shown3));
+    if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(rows)).slice(shown2));
   }
   function viewMore(btn, extra) {
     var label = btn.querySelector("span"), open = false;
@@ -45216,14 +45224,14 @@
   var weather_report_default = {
     asOf: "2026-10-09",
     headline: "The 10-year climbs past every quarter since 2005",
-    lede: "The bond market moved first: the 10-year Treasury closed at 5.24% on 9 October, above every quarterly reading since 2005, a month after the Fed’s first hike since 2023. Prices are still heating, and the S&P 500 is up 14.4% this year.",
+    lede: "The bond market moved first: the 10-year Treasury closed at 5.24% on October 9, above every quarterly reading since 2005, a month after the Fed’s first hike since 2023. Prices are still heating, and the S&P 500 is up 14.4% this year.",
     story: "Born out of the 2022 correction, the AI Cycle rode the build-out of artificial intelligence, the story everyone wanted to own. It is a market priced for a boom inside an economy that feels like a slowdown: her valuations sit at the top of the record while her people’s confidence sits at the bottom of it, and the distance between the two is the story of this cycle so far.",
     elements: {
       weather: "Autumn, the stagflation kind. [Temperature](sheet-metric-temp) reads hot at 3.4% and is still heating, while the [Growth gap](sheet-sign-growth-gap) puts output a shade under its potential. The Fed has turned with it: the [Federal funds rate](sheet-sign-hormones) rose a quarter point in September, to 3.75–4.00%, its first hike since 2023. The [S&P 500](sheet-sign-market) has not flinched, up 14.4% this year.",
       activity: "The body is doing more with few new hands. [GDP growth](sheet-metric-gdp) holds a normal pace and [Productivity growth](sheet-sign-productivity-growth) runs above its trend, while [Job growth](sheet-sign-payrolls) has slowed below what her closed cycles usually managed and the [Unemployment rate](sheet-sign-activity) stays low.",
       mood: "Here is the split at the centre of this cycle. The [Buffett indicator](sheet-metric-buffett) stands at 256%, the highest on its record, and [Shiller CAPE](sheet-metric-valuation) is well above its range, yet the market prices in little [Fear](sheet-sign-sentiment). Households read it the other way: [Confidence](sheet-sign-confidence) is a tenth of a point above the record low it set in May.",
       desire: "Shoppers keep spending, and borrowing more: [Discretionary spending](sheet-sign-desire) and [Retail sales](sheet-sign-retail) both sit in their normal ranges, and [Consumer credit](sheet-sign-consumer-credit) is up 2.7% on a year earlier. The strain is in the index itself. The ten largest stocks now make up 40.6% of the S&P 500, a concentrated index by its [Concentration risk](sheet-sign-concentration), and the [Equity risk premium](sheet-sign-premium) has thinned.",
-      circulation: "The bond market carries the sharpest reading. The [US 10-year Treasury](sheet-sign-pressure) closed at 5.24% on 9 October, above every quarterly reading since 2005. Money still turns slowly: the [Pulse](sheet-sign-pulse) is weak while [Volume](sheet-sign-volume) holds.",
+      circulation: "The bond market carries the sharpest reading. The [US 10-year Treasury](sheet-sign-pressure) closed at 5.24% on October 9, above every quarterly reading since 2005. Money still turns slowly: the [Pulse](sheet-sign-pulse) is weak while [Volume](sheet-sign-volume) holds.",
       stress: "Households carry little debt against their income, but the [Savings rate](sheet-sign-saving) is 2.8%, a thin cushion, and [Margin debt](sheet-sign-margin) is growing faster than its usual range. The heavier load is the state’s: [Federal debt](sheet-metric-debt) is elevated and the [Federal budget](sheet-marker-deficit) runs a large deficit while the economy is still growing."
     }
   };
@@ -52800,20 +52808,119 @@
     document.addEventListener("click", rateCycle, true);
     drawChart(HOME_ID);
   }
-  var STORY_ID = "sheet-story";
+  function dialRing(m) {
+    var era = m.era;
+    function polar(r, deg) {
+      var a = (deg - 90) * Math.PI / 180;
+      return [ (r * Math.cos(a)).toFixed(2), (r * Math.sin(a)).toFixed(2) ];
+    }
+    function arcPath(r, a02, a12) {
+      if (a12 - a02 >= 359.9) a12 = a02 + 359.9;
+      var p0 = polar(r, a02), p1 = polar(r, a12), large = a12 - a02 > 180 ? 1 : 0;
+      return "M" + p0[0] + " " + p0[1] + " A" + r + " " + r + " 0 " + large + " 1 " + p1[0] + " " + p1[1];
+    }
+    var R = 90;
+    var START = 2.5, LEAD = 3, GAP = 5, ORIGIN = START - 1.2, SEAM_END = 360 + START - GAP;
+    var MARGIN = 1.2, MIN_CORE = .6;
+    var ARC = SEAM_END - ORIGIN + MARGIN - LEAD, degPerYear = ARC / m.dialYears;
+    var quarterDeg = degPerYear / 4;
+    var MOON_W = 7;
+    var moonW = Math.max(5.5, Math.min(MOON_W, R * (quarterDeg - 2 * MARGIN - MIN_CORE) * Math.PI / 180));
+    var trackW = moonW + 5, capDegT = trackW / 2 / R * 180 / Math.PI;
+    var capDegM = moonW / 2 / R * 180 / Math.PI;
+    var parts = [ '<path class="dial-track" d="' + arcPath(R, START - LEAD + capDegT, SEAM_END - capDegT) + '"></path>' ];
+    var quarters = [];
+    var segs = m.track.filter(function(seg) {
+      return !seg.isNow && seg.to > seg.from;
+    });
+    var insetDeg = capDegM + MARGIN, runs = [];
+    segs.forEach(function(seg) {
+      var last = runs[runs.length - 1];
+      if (!last || seasonGroup(last[last.length - 1].seg.season) !== seasonGroup(seg.season)) runs.push(last = []);
+      last.push({
+        seg: seg,
+        a0: ORIGIN + seg.from * degPerYear,
+        a1: ORIGIN + seg.to * degPerYear
+      });
+    });
+    runs.forEach(function(run) {
+      var r0 = run[0].a0, r1 = run[run.length - 1].a1;
+      var v0 = r0 + insetDeg, v1 = r1 - insetDeg;
+      if (v1 - v0 < MIN_CORE) {
+        var mid = (r0 + r1) / 2;
+        v0 = mid - MIN_CORE / 2;
+        v1 = mid + MIN_CORE / 2;
+      }
+      run.forEach(function(q2, k) {
+        var s0 = v0 + (v1 - v0) * k / run.length, s1 = v0 + (v1 - v0) * (k + 1) / run.length;
+        var step = seasonGroup(q2.seg.season), i = quarters.length, last = k === run.length - 1;
+        quarters.push({
+          seg: q2.seg,
+          a0: q2.a0,
+          a1: q2.a1,
+          mid: (q2.a0 + q2.a1) / 2
+        });
+        if (k === 0) parts.push('<path class="dial-moon cap ' + step + '" data-cap="' + i + '" d="' + arcPath(R, v0, v0 + .5) + '"></path>');
+        if (last) parts.push('<path class="dial-moon cap ' + step + '" data-cap="' + i + '" d="' + arcPath(R, v1 - .5, v1) + '"></path>');
+        parts.push('<path class="dial-moon ' + step + '" data-q="' + i + '" d="' + arcPath(R, s0, last ? s1 : s1 + .35) + '"></path>');
+      });
+    });
+    var RM = 75, peakMark = "";
+    for (var y = era.from; y <= m.endYear; y++) {
+      var isYtd = m.ongoing && y === calendarTodayY, ret = sp500AnnualReturns[y];
+      if (ret == null) continue;
+      var capDeg = 3 / RM * 180 / Math.PI + 1.2;
+      var a0 = ORIGIN + (y - era.from) * degPerYear + capDeg;
+      var a1 = ORIGIN + (isYtd ? m.elapsedYears : y - era.from + 1) * degPerYear - capDeg;
+      if (a1 <= a0) continue;
+      parts.push('<path class="dial-mkt ' + (ret >= 0 ? "up" : "down") + (isYtd ? " ytd" : "") + '" data-year="' + y + '" d="' + arcPath(RM, a0, a1) + '"></path>');
+      if (y === m.peakYear) {
+        var pk = polar(RM, (a0 + a1) / 2);
+        peakMark = '<g class="dial-peak ' + (ret >= 0 ? "up" : "down") + '" data-year="' + y + '" transform="translate(' + pk[0] + " " + pk[1] + ')"><circle class="disc" r="5.2"></circle><circle class="dot" r="1.9"></circle></g>';
+      }
+    }
+    if (peakMark) parts.push(peakMark);
+    var lastMoonEnd = ORIGIN + m.track.filter(function(x) {
+      return !x.isNow;
+    }).reduce(function(mx, x) {
+      return Math.max(mx, x.to);
+    }, 0) * degPerYear;
+    if (m.ongoing) {
+      var degPerQ = degPerYear / 4;
+      var dotFrom = ORIGIN + m.elapsedYears * degPerYear;
+      var dotTo = SEAM_END - 1;
+      var dotN = Math.round((dotTo - dotFrom) / degPerQ);
+      for (var q = 0; q < dotN; q++) {
+        var qp = polar(RM, dotFrom + (dotTo - dotFrom) * (q + .5) / dotN);
+        parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');
+      }
+    }
+    return {
+      parts: parts,
+      quarters: quarters,
+      polar: polar,
+      R: R,
+      SEAM_END: SEAM_END,
+      lastMoonEnd: lastMoonEnd,
+      moonW: moonW,
+      trackW: trackW
+    };
+  }
+  var MINI_BOLD = 1.7;
+  function miniRing(m) {
+    var g = dialRing(m);
+    return '<svg class="cycle-dial mini-ring" viewBox="-108 -108 216 216" aria-hidden="true" style="--moon-w:' + (g.moonW * MINI_BOLD).toFixed(2) + ";--track-w:" + (g.trackW * MINI_BOLD).toFixed(2) + '">' + g.parts.join("").replace(/ data-(q|cap|year)="[^"]*"/g, "") + "</svg>";
+  }
   var MONTH_NAMES = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
-  var shown2 = {
-    cycle: ""
-  };
   function dateWords(iso) {
     var d = iso.split("-").map(Number);
-    return (d[2] ? d[2] + " " : "") + MONTH_NAMES[d[1] - 1] + " " + d[0];
+    return MONTH_NAMES[d[1] - 1] + " " + (d[2] ? d[2] + ", " : "") + d[0];
   }
   function riskDoor(t, c) {
     return ' data-open="' + IND + '" data-title="Elements" data-ind-cat="" data-ind-tier="' + t + '" data-ind-cycle="' + c.name + '"';
   }
   function riskFactors(c) {
-    return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk " + (c.ongoing ? "today" : "in this cycle") + ".");
+    return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk today.");
   }
   function prose(t, bare) {
     return t.replace(/\[([^\]]+)\]\((sheet-[a-z0-9-]+)\)/g, function(_, label, id) {
@@ -52831,7 +52938,23 @@
     return '<span class="wr-head">' + head + '</span><span class="wr-by">' + by + "</span>";
   }
   function storyCard(m) {
-    return trendDoor(STORY_ID, "Cycle Story", bookSvg(), "Cycle Story", lead(m.era.name, cycLabel(m.era).years) + trendText(prose(storyOf(m.era), true), "ai-clamp") + learnMore(void 0, "Read the story"), ' data-story-cycle="' + m.era.name + '"');
+    return trendBox(bookSvg(), "<span>" + m.era.name + ' <span class="trend-when">· ' + cycLabel(m.era).years + "</span></span>", trendText(prose(storyOf(m.era)), "ai-clamp") + learnMore(' aria-expanded="false" data-story-more="1"', "Read more"));
+  }
+  function wireStory(host) {
+    var btn = host.querySelector("[data-story-more]"), text = btn && btn.previousElementSibling;
+    if (!btn || !text) return;
+    var b = btn, t = text, open = false;
+    function fit() {
+      if (!open && t.clientHeight) b.hidden = t.scrollHeight <= t.clientHeight + 1;
+    }
+    b.addEventListener("click", function() {
+      open = !open;
+      t.classList.toggle("ai-clamp", !open);
+      b.setAttribute("aria-expanded", String(open));
+      b.textContent = open ? "Read less" : "Read more";
+    });
+    fit();
+    if (typeof ResizeObserver === "function") new ResizeObserver(fit).observe(t);
   }
   function elements() {
     return dxSys(" wr-els", categoriesShown().map(function(c) {
@@ -52839,38 +52962,16 @@
       return t ? '<div class="wr-el">' + trendHead(CAT_MARK[c.key](), c.title, "") + trendText(prose(t)) + "</div>" : "";
     }).join(""));
   }
-  function storyBox(c) {
-    return trendBox(bookSvg(), "Cycle Story", trendText(prose(storyOf(c))));
+  function cycleCard() {
+    var m = nowModel, meta = wheelMeta[m.season], ret = sp500AnnualReturns[calendarTodayY];
+    return '<button type="button" class="trend-card today-cycle" data-go-tab="cycle" aria-label="Open the current cycle">' + miniRing(m) + '<span class="today-cycle-hub"><span class="today-cycle-kicker">' + m.era.name + " · Year " + m.yearIndex + '</span><span class="today-cycle-season">' + meta.name + (meta.theme ? ' <span class="today-cycle-stage">· ' + meta.theme + "</span>" : "") + "</span>" + (ret != null ? '<span class="today-cycle-ret"><b class="' + (ret >= 0 ? "bull" : "bear") + '">' + fmtSigned(ret, 1) + "%</b> in " + calendarTodayY + "</span>" : "") + "</span>" + CHEV + "</button>";
   }
   function todayHtml() {
     var r = now.report, c = openCycle();
-    return trendBox(weatherSvg(), "Weather Report", lead(prose(r.headline, true), edition()) + trendText(prose(r.lede))) + riskFactors(c) + elements();
-  }
-  function storyHtml(c) {
-    return dxSys(" wr-top", '<h2 class="wr-title">' + c.name + '</h2><p class="wr-date">' + cycLabel(c).years + "</p>") + riskFactors(c) + storyBox(c);
+    return trendBox(weatherSvg(), "Weather Report", lead(prose(r.headline, true), edition()) + trendText(prose(r.lede))) + cycleCard() + riskFactors(c) + elements();
   }
   function drawToday() {
     put("today-home", todayHtml());
-  }
-  function drawStory() {
-    put(STORY_ID + "-body", storyHtml(cycleByName(shown2.cycle) || openCycle()));
-  }
-  function redrawReport() {
-    drawToday();
-    var s = byIdMaybe(STORY_ID);
-    if (s && !s.hidden) drawStory();
-  }
-  function pickStory(e) {
-    var b = e.target.closest && e.target.closest("[data-story-cycle]");
-    if (b) shown2.cycle = b.getAttribute("data-story-cycle") || "";
-  }
-  function mountReport() {
-    var sheet = metricSheet(STORY_ID);
-    sheet.innerHTML = '<div class="wr-page" id="' + STORY_ID + '-body"></div>';
-    need("panel-cycle").appendChild(sheet);
-    sheetRenderers[STORY_ID] = drawStory;
-    document.addEventListener("click", pickStory, true);
-    drawToday();
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -52925,6 +53026,7 @@
     var host = document.getElementById("diagnosis");
     if (host && m) {
       host.innerHTML = diagnosisHtml(m);
+      wireStory(host);
       wireMore(host, ".dx-years .dx-year", PREVIEW);
       fitYearDots();
     }
@@ -52946,7 +53048,7 @@
     host.className = "dx";
     host.id = "diagnosis";
     home.insertBefore(host, home.firstChild);
-    mountReport();
+    drawToday();
     buildCycleChart();
   }
   function buildDiagnosis() {
@@ -52961,103 +53063,20 @@
     buildDiagnosis();
   }
   function drawDial(m) {
-    var era = m.era;
-    function polar(r, deg) {
-      var a = (deg - 90) * Math.PI / 180;
-      return [ (r * Math.cos(a)).toFixed(2), (r * Math.sin(a)).toFixed(2) ];
-    }
-    function arcPath(r, a02, a12) {
-      if (a12 - a02 >= 359.9) a12 = a02 + 359.9;
-      var p0 = polar(r, a02), p1 = polar(r, a12), large = a12 - a02 > 180 ? 1 : 0;
-      return "M" + p0[0] + " " + p0[1] + " A" + r + " " + r + " 0 " + large + " 1 " + p1[0] + " " + p1[1];
-    }
-    var R = 90;
-    var START = 2.5, LEAD = 3, GAP = 5, ORIGIN = START - 1.2, SEAM_END = 360 + START - GAP;
-    var MARGIN = 1.2, MIN_CORE = .6;
-    var ARC = SEAM_END - ORIGIN + MARGIN - LEAD, degPerYear = ARC / m.dialYears;
-    var quarterDeg = degPerYear / 4;
-    var MOON_W = 7;
-    var moonW = Math.max(5.5, Math.min(MOON_W, R * (quarterDeg - 2 * MARGIN - MIN_CORE) * Math.PI / 180));
-    var trackW = moonW + 5, capDegT = trackW / 2 / R * 180 / Math.PI;
-    var capDegM = moonW / 2 / R * 180 / Math.PI;
-    var parts = [ '<path class="dial-track" d="' + arcPath(R, START - LEAD + capDegT, SEAM_END - capDegT) + '"></path>' ];
-    var quarters = [];
-    var segs = closedSegs(m);
-    var insetDeg = capDegM + MARGIN, runs = [];
-    segs.forEach(function(seg) {
-      var last = runs[runs.length - 1];
-      if (!last || seasonGroup(last[last.length - 1].seg.season) !== seasonGroup(seg.season)) runs.push(last = []);
-      last.push({
-        seg: seg,
-        a0: ORIGIN + seg.from * degPerYear,
-        a1: ORIGIN + seg.to * degPerYear
-      });
-    });
-    runs.forEach(function(run) {
-      var r0 = run[0].a0, r1 = run[run.length - 1].a1;
-      var v0 = r0 + insetDeg, v1 = r1 - insetDeg;
-      if (v1 - v0 < MIN_CORE) {
-        var mid = (r0 + r1) / 2;
-        v0 = mid - MIN_CORE / 2;
-        v1 = mid + MIN_CORE / 2;
-      }
-      run.forEach(function(q2, k) {
-        var s0 = v0 + (v1 - v0) * k / run.length, s1 = v0 + (v1 - v0) * (k + 1) / run.length;
-        var step = seasonGroup(q2.seg.season), i = quarters.length, last = k === run.length - 1;
-        quarters.push({
-          seg: q2.seg,
-          a0: q2.a0,
-          a1: q2.a1,
-          mid: (q2.a0 + q2.a1) / 2
-        });
-        if (k === 0) parts.push('<path class="dial-moon cap ' + step + '" data-cap="' + i + '" d="' + arcPath(R, v0, v0 + .5) + '"></path>');
-        if (last) parts.push('<path class="dial-moon cap ' + step + '" data-cap="' + i + '" d="' + arcPath(R, v1 - .5, v1) + '"></path>');
-        parts.push('<path class="dial-moon ' + step + '" data-q="' + i + '" d="' + arcPath(R, s0, last ? s1 : s1 + .35) + '"></path>');
-      });
-    });
-    var RM = 75, peakMark = "";
-    for (var y = era.from; y <= m.endYear; y++) {
-      var isYtd = m.ongoing && y === calendarTodayY, ret = sp500AnnualReturns[y];
-      if (ret == null) continue;
-      var capDeg = 3 / RM * 180 / Math.PI + 1.2;
-      var a0 = ORIGIN + (y - era.from) * degPerYear + capDeg;
-      var a1 = ORIGIN + (isYtd ? m.elapsedYears : y - era.from + 1) * degPerYear - capDeg;
-      if (a1 <= a0) continue;
-      parts.push('<path class="dial-mkt ' + (ret >= 0 ? "up" : "down") + (isYtd ? " ytd" : "") + '" data-year="' + y + '" d="' + arcPath(RM, a0, a1) + '"></path>');
-      if (y === m.peakYear) {
-        var pk = polar(RM, (a0 + a1) / 2);
-        peakMark = '<g class="dial-peak ' + (ret >= 0 ? "up" : "down") + '" data-year="' + y + '" transform="translate(' + pk[0] + " " + pk[1] + ')"><circle class="disc" r="5.2"></circle><circle class="dot" r="1.9"></circle></g>';
-      }
-    }
-    if (peakMark) parts.push(peakMark);
-    var lastMoonEnd = ORIGIN + m.track.filter(function(x) {
-      return !x.isNow;
-    }).reduce(function(mx, x) {
-      return Math.max(mx, x.to);
-    }, 0) * degPerYear;
+    var g = dialRing(m), parts = g.parts, R = g.R, polar = g.polar, lastMoonEnd = g.lastMoonEnd, SEAM_END = g.SEAM_END;
     var BADGE_R = 13, BADGE_AT = R + 3, badgeHalf = BADGE_R / BADGE_AT * 180 / Math.PI;
     var badgeDeg = lastMoonEnd + (BADGE_R + 3.5) / R * 180 / Math.PI;
     if (badgeDeg + badgeHalf > SEAM_END) badgeDeg = 360;
     var bp = polar(BADGE_AT, badgeDeg);
     parts.push('<g class="dial-today-badge" transform="translate(' + bp[0] + " " + bp[1] + ')" style="pointer-events:auto"><circle r="' + BADGE_R + '"></circle><text class="lbl" y="-3.6">YEAR</text><text class="num" y="7.4">' + m.yearIndex + "</text></g>");
-    if (m.ongoing) {
-      var degPerQ = degPerYear / 4;
-      var dotFrom = ORIGIN + m.elapsedYears * degPerYear;
-      var dotTo = SEAM_END - 1;
-      var dotN = Math.round((dotTo - dotFrom) / degPerQ);
-      for (var q = 0; q < dotN; q++) {
-        var qp = polar(RM, dotFrom + (dotTo - dotFrom) * (q + .5) / dotN);
-        parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');
-      }
-    }
     var dialEl = need("cycle-dial");
-    dialEl.style.setProperty("--moon-w", moonW.toFixed(2));
-    dialEl.style.setProperty("--track-w", trackW.toFixed(2));
-    dialEl.style.setProperty("--moon-w-active", (moonW + 5).toFixed(2));
+    dialEl.style.setProperty("--moon-w", g.moonW.toFixed(2));
+    dialEl.style.setProperty("--track-w", g.trackW.toFixed(2));
+    dialEl.style.setProperty("--moon-w-active", (g.moonW + 5).toFixed(2));
     dialEl.innerHTML = parts.join("");
     dialState = {
       m: m,
-      quarters: quarters,
+      quarters: g.quarters,
       badgeDeg: badgeDeg,
       badgeAt: BADGE_AT,
       polar: polar,
@@ -53179,7 +53198,7 @@
         el.classList.add("active");
       });
     }
-    var shown3 = false;
+    var shown2 = false;
     function readTarget(el) {
       var t = el.closest && el.closest("[data-q], [data-year]");
       if (!t) return false;
@@ -53192,12 +53211,12 @@
         mark2(null);
         hubShowYear(+(t.getAttribute("data-year") || ""));
       }
-      shown3 = true;
+      shown2 = true;
       return true;
     }
     function reset() {
-      if (scrubbing || !dialState || !shown3) return;
-      shown3 = false;
+      if (scrubbing || !dialState || !shown2) return;
+      shown2 = false;
       mark2(dialState.parked);
       hubShowDefault();
     }
@@ -53215,7 +53234,7 @@
     document.addEventListener("click", function(e) {
       if (!(e.target instanceof Node) || dial.contains(e.target) || hub.contains(e.target)) return;
       if (!scrubbing && dialState && dialState.parked != null) {
-        shown3 = false;
+        shown2 = false;
         goTo(-1);
         return;
       }
@@ -53296,7 +53315,7 @@
       var i = dialKeyStep(e.key);
       if (i == null) return;
       e.preventDefault();
-      shown3 = false;
+      shown2 = false;
       goTo(i);
       dialSay();
     });
@@ -55829,22 +55848,11 @@
   function wireTabKeys() {
     rovingKeys(one(".tabbar"), ".tab-btn", "aria-selected");
   }
-  function wireTabShrink() {
-    var bar = one(".tabbar"), last = window.scrollY, queued = false;
-    function settle() {
-      queued = false;
-      var y = window.scrollY, dy = y - last;
-      if (Math.abs(dy) < 6) return;
-      bar.classList.toggle("small", dy > 0 && y > 40);
-      last = y;
-    }
-    window.addEventListener("scroll", function() {
-      if (!queued) {
-        queued = true;
-        requestAnimationFrame(settle);
-      }
-    }, {
-      passive: true
+  function wireTabDoors() {
+    document.addEventListener("click", function(e) {
+      var door = e.target.closest && e.target.closest("[data-go-tab]");
+      var tab = door && document.querySelector('.tab-btn[data-tab="' + door.getAttribute("data-go-tab") + '"]');
+      if (tab) tab.click();
     });
   }
   function wireMenu() {
@@ -55996,8 +56004,8 @@
     renderTopbar();
     GYN.step("wireTabKeys", wireTabKeys, "wire");
     wireTabKeys();
-    GYN.step("wireTabShrink", wireTabShrink, "wire");
-    wireTabShrink();
+    GYN.step("wireTabDoors", wireTabDoors, "wire");
+    wireTabDoors();
     GYN.step("wireMenu", wireMenu, "wire");
     wireMenu();
   }
@@ -56020,6 +56028,7 @@
   function repaintDerived() {
     forgetLabs();
     repaintDiagnosis();
+    drawToday();
     [ "chart-home", "sheet-find" ].forEach(function(id) {
       var el = byIdMaybe(id);
       if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id]();
@@ -56029,7 +56038,7 @@
     onLive("fedFunds", repaintPolicy);
     onLive("yieldCurve", repaintPressureChart);
     onLive("capeValue", syncCape);
-    onLive("weatherReport", redrawReport);
+    onLive("weatherReport", drawToday);
     onLive("*", repaintDerived);
     exposeLive();
     GYN.step("checkLiveCoverage", checkLiveCoverage, "check");

@@ -133,16 +133,12 @@ function renderTopbar(){
   });
 }
 function wireTabKeys(){ rovingKeys(one(".tabbar"), ".tab-btn", "aria-selected"); }
-function wireTabShrink(){
-  var bar = one(".tabbar"), last = window.scrollY, queued = false;
-  function settle(){
-    queued = false;
-    var y = window.scrollY, dy = y - last;
-    if (Math.abs(dy) < 6) return;
-    bar.classList.toggle("small", dy > 0 && y > 40);
-    last = y;
-  }
-  window.addEventListener("scroll", function(){ if (!queued){ queued = true; requestAnimationFrame(settle); } }, { passive: true });
+function wireTabDoors(){
+  document.addEventListener("click", function(e){
+    var door = (e.target as Element).closest && (e.target as Element).closest("[data-go-tab]");
+    var tab = door && document.querySelector<HTMLElement>('.tab-btn[data-tab="' + door.getAttribute("data-go-tab") + '"]');
+    if (tab) tab.click();
+  });
 }
 // ---- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----
 function wireMenu(){
@@ -233,8 +229,8 @@ export function bootTabsMenu(){
   renderTopbar();
   GYN.step("wireTabKeys", wireTabKeys, "wire");
   wireTabKeys();
-  GYN.step("wireTabShrink", wireTabShrink, "wire");
-  wireTabShrink();
+  GYN.step("wireTabDoors", wireTabDoors, "wire");
+  wireTabDoors();
   GYN.step("wireMenu", wireMenu, "wire");
   wireMenu();
 }

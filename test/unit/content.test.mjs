@@ -11,7 +11,7 @@ import { topTenHistory, topTenReadings } from '../../src/js/concentration.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory, topTenRecent } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
-import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
+import { nowModel, growthWord, cycleNowNote, cycLabel } from '../../src/js/model.ts';
 import { fmtSigned, isoDay } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/reading.ts';
@@ -143,14 +143,13 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
-test('the dial is titled by its cycle, its legend speaks in signs, and the Cycle Story under it opens the cycle\u2019s story', () => {
+test('the dial is titled by its cycle, its legend speaks in signs, and the cycle\u2019s story under it reads in place', () => {
   assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
   const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
   ['Prices &lt; 1%', 'Prices \u2264 3%', 'Prices &gt; 3%', 'Prices \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
   const first = document.querySelector('#diagnosis .trend-card');
-  assert.equal(first.querySelector('.trend-head').textContent, 'Cycle Story');
-  assert.equal(first.dataset.open, 'sheet-story');
-  assert.equal(first.querySelector('.wr-head').textContent, nowModel.era.name);
+  assert.equal(first.querySelector('.trend-head').textContent, nowModel.era.name + ' \u00b7 ' + cycLabel(nowModel.era).years);
+  assert.equal(first.dataset.open, undefined);
   assert.equal(first.querySelector('.ai-clamp').textContent, now.report.story);
   assert.equal(document.querySelector('[data-open="sheet-ai-insights"]'), null);
 });
@@ -287,7 +286,7 @@ test('a past cycle shows its own record on the Diagnosis, and Back restores toda
   assert.equal(chevs(), 0);
   document.querySelector('#calendar-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(heads(), 'Cycle Story');
+  assert.equal(heads(), 'Big Tech Cycle \u00b7 2009\u20132018');
   assert.equal(chevs(), 0);
   assert.equal(lede(), ui.eraOpen.blurb);
   ui.eraPageBack();

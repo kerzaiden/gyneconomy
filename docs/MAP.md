@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,794 lines** in 43 files, about 600 KB, roughly **170 thousand tokens**. No session can
+The source is **8,822 lines** in 44 files, about 602 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `7293c97` on 2026-10-11.
+Generated from commit `0fe4986` on 2026-10-11.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `7293c97` on 2026-10-11.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,153 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,161 | the whole stylesheet, every token and rule |
 | `page-body.html` | 247 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| `js/main.ts` | 39 modules | the entry: imports every module and calls their boots in order |
+| `js/main.ts` | 40 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **39** modules, **809** top-level functions, **125** top-level vars, **389** exported names, **20** boots.
+Counts: **40** modules, **807** top-level functions, **124** top-level vars, **391** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -41,17 +41,18 @@ Counts: **39** modules, **809** top-level functions, **125** top-level vars, **3
 | `js/render-core.ts` | 157 | 22 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 357 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings` |
 | `js/diagnosis.ts` | 84 | 11 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
-| `js/dial-cycle.ts` | 377 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/dial-cycle.ts` | 313 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dial-ring`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 141 | 12 | `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `render-core`, `render-pages` |
-| `js/tabs-menu.ts` | 241 | 15 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
-| `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
+| `js/tabs-menu.ts` | 237 | 15 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
+| `js/repaint.ts` | 40 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 60 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
-| `js/ai-insights.ts` | 61 | 20 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `render-core`, `roster` |
+| `js/ai-insights.ts` | 66 | 14 | `cycle-analysis`, `data`, `dial-ring`, `dom`, `format`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 261 | 35 | `format` |
 | `js/concentration.ts` | 48 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 494 | 136 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `roster` |
+| `js/dial-ring.ts` | 82 | 3 | `data`, `model`, `refresh-season` |
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 75 | 13 | `data`, `dom`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster`, `wave-chart` |
 | `js/format.ts` | 106 | 44 | — |
@@ -91,12 +92,12 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 12 | `bootRenderCore` | `js/render-core.ts:151`–156 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:348`–353 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:80`–83 |
-| 15 | `bootDialCycle` | `js/dial-cycle.ts:355`–376 |
+| 15 | `bootDialCycle` | `js/dial-cycle.ts:291`–312 |
 | 16 | `bootAnalysis` | `js/analysis.ts:74`–78 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:135`–140 |
-| 19 | `bootTabsMenu` | `js/tabs-menu.ts:230`–240 |
-| 20 | `bootRepaint` | `js/repaint.ts:25`–38 |
+| 19 | `bootTabsMenu` | `js/tabs-menu.ts:226`–236 |
+| 20 | `bootRepaint` | `js/repaint.ts:26`–39 |
 
 ## Script, module by module
 
@@ -669,7 +670,7 @@ falls in. **export** marks a name other modules import.
 
 ### `js/dial-cycle.ts`
 
-#### the dial: one ring of moons, the market band inside, the year badge, the dots of a typical cycle ahead
+#### the dial: the ring, the year badge, and the hub
 
 | Line | Name | Anchor |
 |---|---|---|
@@ -679,47 +680,47 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 103 | `wireThemeChoice` | `function wireThemeChoice(` |
+| 39 | `wireThemeChoice` | `function wireThemeChoice(` |
 
 #### the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the
 
 | Line | Name | Anchor |
 |---|---|---|
-| 121 | `renderCycleKicker` | `function renderCycleKicker(` |
+| 57 | `renderCycleKicker` | `function renderCycleKicker(` |
 
 #### the hub: the reading inside the circle
 
 | Line | Name | Anchor |
 |---|---|---|
-| 133 | `hubSet` | `function hubSet(` |
-| 141 | `hubOpen` | `function hubOpen(` |
-| 147 | `hubShowDefault` | `function hubShowDefault(` |
-| 153 | `hubShowQuarter` | `function hubShowQuarter(` |
-| 158 | `hubShowYear` | `function hubShowYear(` |
-| 168 | `one` · export | `function one(` |
-| 169 | `cycleView` · export | `function cycleView(` |
-| 170 | `renderCycleDial` | `function renderCycleDial(` |
-| 253 | `dialKeyStep` | `function dialKeyStep(` |
-| 261 | `dialSay` | `function dialSay(` |
+| 69 | `hubSet` | `function hubSet(` |
+| 77 | `hubOpen` | `function hubOpen(` |
+| 83 | `hubShowDefault` | `function hubShowDefault(` |
+| 89 | `hubShowQuarter` | `function hubShowQuarter(` |
+| 94 | `hubShowYear` | `function hubShowYear(` |
+| 104 | `one` · export | `function one(` |
+| 105 | `cycleView` · export | `function cycleView(` |
+| 106 | `renderCycleDial` | `function renderCycleDial(` |
+| 189 | `dialKeyStep` | `function dialKeyStep(` |
+| 197 | `dialSay` | `function dialSay(` |
 
 #### the whole view, for one cycle
 
 | Line | Name | Anchor |
 |---|---|---|
-| 267 | `renderCycleView` · export | `function renderCycleView(` |
-| 272 | `showEra` | `function showEra(` |
-| 276 | `showCycle` · export | `function showCycle(` |
+| 203 | `renderCycleView` · export | `function renderCycleView(` |
+| 208 | `showEra` | `function showEra(` |
+| 212 | `showCycle` · export | `function showCycle(` |
 
 #### A cycle's season strip (carried by the one cycle row)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 278 | `aheadWord` | `function aheadWord(` |
-| 279 | `seasonStripHtml` · export | `function seasonStripHtml(` |
-| 296 | `marketStripHtml` · export | `function marketStripHtml(` |
-| 322 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
-| 323 | `settleStrips` · export | `function settleStrips(` |
-| 347 | `settleAll` · export | `function settleAll(` |
+| 214 | `aheadWord` | `function aheadWord(` |
+| 215 | `seasonStripHtml` · export | `function seasonStripHtml(` |
+| 232 | `marketStripHtml` · export | `function marketStripHtml(` |
+| 258 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
+| 259 | `settleStrips` · export | `function settleStrips(` |
+| 283 | `settleAll` · export | `function settleAll(` |
 
 ### `js/analysis.ts`
 
@@ -820,19 +821,19 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 106 | `renderTopbar` | `function renderTopbar(` |
 | 135 | `wireTabKeys` | `function wireTabKeys(` |
-| 136 | `wireTabShrink` | `function wireTabShrink(` |
+| 136 | `wireTabDoors` | `function wireTabDoors(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 148 | `wireMenu` | `function wireMenu(` |
+| 144 | `wireMenu` | `function wireMenu(` |
 
 #### Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its
 
 | Line | Name | Anchor |
 |---|---|---|
-| 222 | `bootGuide` | `function bootGuide(` |
+| 218 | `bootGuide` | `function bootGuide(` |
 
 ### `js/repaint.ts`
 
@@ -860,30 +861,24 @@ falls in. **export** marks a name other modules import.
 
 ### `js/ai-insights.ts`
 
-#### Today: the Weather Report and the cycle's story; every cycle page: its Cycle Story and its risk factors against their own record
+#### Today: the Weather Report and its risk factors; every cycle page: its Cycle Story, read in place
 
 | Line | Name | Anchor |
 |---|---|---|
-| 11 | `STORY_ID` | `var STORY_ID =` |
-| 12 | `MONTH_NAMES` | `var MONTH_NAMES =` |
-| 13 | `shown` | `var shown =` |
-| 14 | `dateWords` | `function dateWords(` |
-| 15 | `riskDoor` | `function riskDoor(` |
-| 16 | `riskFactors` | `function riskFactors(` |
-| 19 | `prose` | `function prose(` |
-| 25 | `edition` | `function edition(` |
-| 26 | `storyOf` | `function storyOf(` |
-| 27 | `lead` | `function lead(` |
-| 28 | `storyCard` · export | `function storyCard(` |
-| 33 | `elements` | `function elements(` |
-| 39 | `storyBox` | `function storyBox(` |
-| 40 | `todayHtml` | `function todayHtml(` |
-| 45 | `storyHtml` | `function storyHtml(` |
-| 46 | `drawToday` | `function drawToday(` |
-| 47 | `drawStory` | `function drawStory(` |
-| 48 | `redrawReport` · export | `function redrawReport(` |
-| 49 | `pickStory` | `function pickStory(` |
-| 53 | `mountReport` · export | `function mountReport(` |
+| 14 | `MONTH_NAMES` | `var MONTH_NAMES =` |
+| 15 | `dateWords` | `function dateWords(` |
+| 16 | `riskDoor` | `function riskDoor(` |
+| 17 | `riskFactors` | `function riskFactors(` |
+| 20 | `prose` | `function prose(` |
+| 26 | `edition` | `function edition(` |
+| 27 | `storyOf` | `function storyOf(` |
+| 28 | `lead` | `function lead(` |
+| 29 | `storyCard` · export | `function storyCard(` |
+| 33 | `wireStory` · export | `function wireStory(` |
+| 47 | `elements` | `function elements(` |
+| 53 | `cycleCard` | `function cycleCard(` |
+| 60 | `todayHtml` | `function todayHtml(` |
+| 65 | `drawToday` · export | `function drawToday(` |
 
 ### `js/charts.ts`
 
@@ -1096,6 +1091,16 @@ falls in. **export** marks a name other modules import.
 | 478 | `wireCatDoors` | `function wireCatDoors(` |
 | 484 | `rateCycle` | `function rateCycle(` |
 | 488 | `buildCycleChart` · export | `function buildCycleChart(` |
+
+### `js/dial-ring.ts`
+
+#### the ring: a cycle's seasons as moons, its bull and bear years inside, the dots of a typical cycle ahead
+
+| Line | Name | Anchor |
+|---|---|---|
+| 9 | `dialRing` · export | `function dialRing(` |
+| 77 | `MINI_BOLD` | `var MINI_BOLD =` |
+| 78 | `miniRing` · export | `function miniRing(` |
 
 ### `js/era.ts`
 
@@ -1523,21 +1528,21 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 313 | season strip |
 | 343 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
 | 405 | tab bar (app-style segmented navigation) |
-| 444 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
-| 531 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 659 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 676 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 723 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 861 | View more: the button under Year by Year and Herstory |
-| 872 | The symptoms: a cycle's years against today |
-| 1,018 | yield curve charts |
-| 1,032 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,046 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,054 | un-inversion-to-recession historical lag panel |
-| 1,063 | the reading's tag |
-| 1,067 | info icon + popover (progressive disclosure for longer notes) |
-| 1,081 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,144 | footer |
+| 441 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
+| 528 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
+| 667 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 684 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 731 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 869 | View more: the button under Year by Year and Herstory |
+| 880 | The symptoms: a cycle's years against today |
+| 1,026 | yield curve charts |
+| 1,040 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,054 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,062 | un-inversion-to-recession historical lag panel |
+| 1,071 | the reading's tag |
+| 1,075 | info icon + popover (progressive disclosure for longer notes) |
+| 1,089 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,152 | footer |
 
 ## Markup landmarks
 
