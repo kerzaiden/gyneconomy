@@ -93,8 +93,8 @@ export function legendKey(rows: KeyRow[], o: { shape: string; cls: string; row?:
     return '<' + tag + (o.row ? ' class="' + o.row + '"' : "") + '>' + (r[3] || keySwatch(o.shape, r[0])) + r[1] + (r[2] ? '<small>' + r[2] + '</small>' : "") + '</' + tag + '>';
   }).join(o.inline ? " " : "") + '</' + box + '>';
 }
-export function readingNote(n: { title?: string; lead?: string; paras?: string[]; src?: Src[] }){
-  return (n.title != null ? '<h4>' + n.title + '</h4>' : '') + (n.lead != null ? '<p class="caption">' + n.lead + '</p>' : '') +
+export function readingNote(n: { title?: string; sub?: string; lead?: string; paras?: string[]; src?: Src[] }){
+  return (n.title != null ? '<h4>' + n.title + '</h4>' : '') + (n.sub != null ? '<div class="marker-sub">' + n.sub + '</div>' : '') + (n.lead != null ? '<p class="caption">' + n.lead + '</p>' : '') +
     (n.paras || []).map(function(p){ return '<p class="caption follow">' + p + '</p>'; }).join("") + (n.src ? srcBlock(n.src) : '');
 }
 export function srcBlock(list: Src[]){ return '<div class="src">' + srcHtml(list) + '</div>'; }

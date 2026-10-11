@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,782 lines** in 42 files, about 604 KB, roughly **171 thousand tokens**. No session can
+The source is **8,775 lines** in 42 files, about 603 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `9d5eadc` on 2026-10-11.
+Generated from commit `8d755ff` on 2026-10-11.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `9d5eadc` on 2026-10-11.
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **796** top-level functions, **124** top-level vars, **398** exported names, **20** boots.
+Counts: **38** modules, **798** top-level functions, **125** top-level vars, **398** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -35,13 +35,13 @@ Counts: **38** modules, **796** top-level functions, **124** top-level vars, **3
 | `js/data.ts` | 550 | 77 | `format`, `history-fred`, `live` |
 | `js/credit.ts` | 135 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
 | `js/model.ts` | 395 | 58 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
-| `js/history.ts` | 506 | 51 | `charts`, `data`, `dom`, `format`, `live`, `model` |
+| `js/history.ts` | 500 | 54 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 704 | 65 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 153 | 6 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 360 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings` |
 | `js/diagnosis.ts` | 84 | 12 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
-| `js/dial-cycle.ts` | 378 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/dial-cycle.ts` | 377 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 146 | 12 | `data`, `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `readings`, `render-core`, `render-pages` |
@@ -83,14 +83,14 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 5 | `bootData` | `js/data.ts:497`–549 |
 | 6 | `bootCredit` | `js/credit.ts:127`–134 |
 | 7 | `bootModel` | `js/model.ts:370`–394 |
-| 8 | `bootHistory` | `js/history.ts:482`–505 |
+| 8 | `bootHistory` | `js/history.ts:476`–499 |
 | 9 | `bootReadings` | `js/readings.ts:522`–570 |
 | 10 | `bootReadingRegistry` | `js/readings.ts:637`–703 |
 | 11 | `bootRoster` | `js/roster.ts:140`–152 |
 | 12 | `bootRenderCore` | `js/render-core.ts:150`–155 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:351`–356 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:80`–83 |
-| 15 | `bootDialCycle` | `js/dial-cycle.ts:356`–377 |
+| 15 | `bootDialCycle` | `js/dial-cycle.ts:355`–376 |
 | 16 | `bootAnalysis` | `js/analysis.ts:74`–78 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:139`–145 |
@@ -413,55 +413,58 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 24 | `DOTS` | `var DOTS =` |
-| 26 | `headPickRow` · export | `function headPickRow(` |
+| 26 | `TICK` | `var TICK =` |
+| 27 | `menuOption` | `function menuOption(` |
+| 28 | `menuName` | `function menuName(` |
+| 29 | `headPickRow` · export | `function headPickRow(` |
 | 32 | `histHead` · export | `function histHead(` |
 | 43 | `headDots` | `function headDots(` |
 | 48 | `headInfo` | `function headInfo(` |
 | 52 | `headBtn` | `function headBtn(` |
 | 55 | `headNote` | `function headNote(` |
 | 63 | `headMenuHtml` | `function headMenuHtml(` |
-| 88 | `paintHeadMenus` | `function paintHeadMenus(` |
-| 99 | `headMoreBtn` | `function headMoreBtn(` |
-| 103 | `headMenuFirst` | `function headMenuFirst(` |
-| 107 | `headMenuShut` | `function headMenuShut(` |
-| 112 | `histNote` · export | `function histNote(` |
-| 113 | `TIMELINE_STOPS` | `var TIMELINE_STOPS =` |
-| 119 | `timelineSpan` · export | `function timelineSpan(` |
-| 123 | `timelineFor` | `function timelineFor(` |
-| 137 | `windowScale` · export | `function windowScale(` |
-| 152 | `histReadEnsure` | `function histReadEnsure(` |
-| 172 | `geomFmt` | `function geomFmt(` |
-| 173 | `attrNum` | `function attrNum(` |
-| 174 | `histReadFill` | `function histReadFill(` |
-| 222 | `histAxisEnds` | `function histAxisEnds(` |
-| 233 | `histLegend` | `function histLegend(` |
-| 292 | `refitHistory` · export | `function refitHistory(` |
-| 302 | `geomX` | `function geomX(` |
-| 305 | `geomPick` | `function geomPick(` |
-| 311 | `TOUCH_HOLD` | `var TOUCH_HOLD =` |
-| 312 | `touchGate` | `function touchGate(` |
-| 331 | `wireHistHover` | `function wireHistHover(` |
-| 361 | `histShow` | `function histShow(` |
-| 370 | `histLive` | `function histLive(` |
-| 377 | `histKeysWire` | `function histKeysWire(` |
-| 391 | `mWindowFrom` · export | `function mWindowFrom(` |
-| 395 | `monthWindow` · export | `function monthWindow(` |
-| 399 | `qWindowFrom` · export | `function qWindowFrom(` |
-| 403 | `defFrom` · export | `function defFrom(` |
-| 407 | `tabSegs` | `function tabSegs(` |
-| 415 | `tabBar` · export | `function tabBar(` |
-| 418 | `modeBar` | `function modeBar(` |
-| 422 | `controlKeys` · export | `function controlKeys(` |
-| 426 | `controlKeysIn` | `function controlKeysIn(` |
-| 432 | `histControls` · export | `function histControls(` |
-| 440 | `controlsBox` | `function controlsBox(` |
-| 441 | `pageCycle` · export | `function pageCycle(` |
-| 446 | `cyclePicker` | `function cyclePicker(` |
-| 458 | `pickRow` | `function pickRow(` |
-| 462 | `nameAside` | `function nameAside(` |
-| 463 | `rangeBar` | `function rangeBar(` |
-| 467 | `headSigma` · export | `function headSigma(` |
-| 472 | `attachHistory` · export | `function attachHistory(` |
+| 83 | `paintHeadMenus` | `function paintHeadMenus(` |
+| 94 | `headMoreBtn` | `function headMoreBtn(` |
+| 98 | `headMenuFirst` | `function headMenuFirst(` |
+| 102 | `headMenuShut` | `function headMenuShut(` |
+| 107 | `histNote` · export | `function histNote(` |
+| 108 | `TIMELINE_STOPS` | `var TIMELINE_STOPS =` |
+| 114 | `timelineSpan` · export | `function timelineSpan(` |
+| 118 | `timelineFor` | `function timelineFor(` |
+| 132 | `windowScale` · export | `function windowScale(` |
+| 147 | `histReadEnsure` | `function histReadEnsure(` |
+| 167 | `geomFmt` | `function geomFmt(` |
+| 168 | `attrNum` | `function attrNum(` |
+| 169 | `histReadFill` | `function histReadFill(` |
+| 217 | `histAxisEnds` | `function histAxisEnds(` |
+| 228 | `histLegend` | `function histLegend(` |
+| 287 | `refitHistory` · export | `function refitHistory(` |
+| 297 | `geomX` | `function geomX(` |
+| 300 | `geomPick` | `function geomPick(` |
+| 306 | `TOUCH_HOLD` | `var TOUCH_HOLD =` |
+| 307 | `touchGate` | `function touchGate(` |
+| 326 | `wireHistHover` | `function wireHistHover(` |
+| 356 | `histShow` | `function histShow(` |
+| 365 | `histLive` | `function histLive(` |
+| 372 | `histKeysWire` | `function histKeysWire(` |
+| 386 | `mWindowFrom` · export | `function mWindowFrom(` |
+| 390 | `monthWindow` · export | `function monthWindow(` |
+| 394 | `qWindowFrom` · export | `function qWindowFrom(` |
+| 398 | `defFrom` · export | `function defFrom(` |
+| 402 | `tabSegs` | `function tabSegs(` |
+| 410 | `tabBar` · export | `function tabBar(` |
+| 413 | `modeBar` | `function modeBar(` |
+| 417 | `controlKeys` · export | `function controlKeys(` |
+| 421 | `controlKeysIn` | `function controlKeysIn(` |
+| 427 | `histControls` · export | `function histControls(` |
+| 435 | `controlsBox` | `function controlsBox(` |
+| 436 | `pageCycle` · export | `function pageCycle(` |
+| 441 | `cyclePicker` | `function cyclePicker(` |
+| 453 | `pickRow` | `function pickRow(` |
+| 456 | `nameAside` | `function nameAside(` |
+| 457 | `rangeBar` | `function rangeBar(` |
+| 461 | `headSigma` · export | `function headSigma(` |
+| 466 | `attachHistory` · export | `function attachHistory(` |
 
 ### `js/readings.ts`
 
@@ -680,35 +683,35 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 134 | `hubSet` | `function hubSet(` |
-| 142 | `hubOpen` | `function hubOpen(` |
-| 148 | `hubShowDefault` | `function hubShowDefault(` |
-| 154 | `hubShowQuarter` | `function hubShowQuarter(` |
-| 159 | `hubShowYear` | `function hubShowYear(` |
-| 169 | `one` · export | `function one(` |
-| 170 | `cycleView` · export | `function cycleView(` |
-| 171 | `renderCycleDial` | `function renderCycleDial(` |
-| 254 | `dialKeyStep` | `function dialKeyStep(` |
-| 262 | `dialSay` | `function dialSay(` |
+| 133 | `hubSet` | `function hubSet(` |
+| 141 | `hubOpen` | `function hubOpen(` |
+| 147 | `hubShowDefault` | `function hubShowDefault(` |
+| 153 | `hubShowQuarter` | `function hubShowQuarter(` |
+| 158 | `hubShowYear` | `function hubShowYear(` |
+| 168 | `one` · export | `function one(` |
+| 169 | `cycleView` · export | `function cycleView(` |
+| 170 | `renderCycleDial` | `function renderCycleDial(` |
+| 253 | `dialKeyStep` | `function dialKeyStep(` |
+| 261 | `dialSay` | `function dialSay(` |
 
 #### the whole view, for one cycle
 
 | Line | Name | Anchor |
 |---|---|---|
-| 268 | `renderCycleView` · export | `function renderCycleView(` |
-| 273 | `showEra` | `function showEra(` |
-| 277 | `showCycle` · export | `function showCycle(` |
+| 267 | `renderCycleView` · export | `function renderCycleView(` |
+| 272 | `showEra` | `function showEra(` |
+| 276 | `showCycle` · export | `function showCycle(` |
 
 #### A cycle's season strip (carried by the one cycle row)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 279 | `aheadWord` | `function aheadWord(` |
-| 280 | `seasonStripHtml` · export | `function seasonStripHtml(` |
-| 297 | `marketStripHtml` · export | `function marketStripHtml(` |
-| 323 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
-| 324 | `settleStrips` · export | `function settleStrips(` |
-| 348 | `settleAll` · export | `function settleAll(` |
+| 278 | `aheadWord` | `function aheadWord(` |
+| 279 | `seasonStripHtml` · export | `function seasonStripHtml(` |
+| 296 | `marketStripHtml` · export | `function marketStripHtml(` |
+| 322 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
+| 323 | `settleStrips` · export | `function settleStrips(` |
+| 347 | `settleAll` · export | `function settleAll(` |
 
 ### `js/analysis.ts`
 

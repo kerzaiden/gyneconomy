@@ -1,4 +1,4 @@
-import { type KeyRow, atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf, titleCase } from "./format.ts";
+import { type KeyRow, atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, readingNote, srcBlock, yearOf, titleCase } from "./format.ts";
 import { divergeChart, trendOf, trendPill, windowYears } from "./charts.ts";
 import { debtDollarsQuarterly, debtToday, grossDebtQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
@@ -78,7 +78,7 @@ function splitKey(s: SplitSpec): KeyRow[] {
   return [["hk-2", (s.goodAbove ? "Above " : "Below ") + line], ["hk-4", (s.goodAbove ? "Below " : "Above ") + line]];
 }
 function splitInfo(s: SplitSpec){
-  return s.info ? s.info() : '<h4>' + titleCase(s.name) + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
+  return s.info ? s.info() : readingNote({ title:titleCase(s.name), sub:s.row.sub }) + factsFrom(s.row.note) +
     (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
 }
 function periodTicks(vals: SeriesPt[]){

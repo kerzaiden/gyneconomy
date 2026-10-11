@@ -1,4 +1,4 @@
-import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, monthLabel, ordinal, qLabel, stateOf, tagFor, titleCase, yearOf } from "./format.ts";
+import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, monthLabel, ordinal, qLabel, readingNote, stateOf, tagFor, titleCase, yearOf } from "./format.ts";
 import { addSources, byId, focusQuiet, layer, moreRow } from "./dom.ts";
 import { divergeChart, trendOf, trendPill } from "./charts.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
@@ -90,7 +90,7 @@ function defineDeficit(){
       mid:-DEFICIT_LINE, line:"the 50-year average of " + fmtSigned(-DEFICIT_LINE, 1) + "%" }); }, src:longCycleSrc
   });
 }
-function valuationInfo(){ var cape = fileRow("cape"); return '<h4>' + titleCase(cape.marker) + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note); }
+function valuationInfo(){ var cape = fileRow("cape"); return readingNote({ title:titleCase(cape.marker), sub:cape.sub }) + factsFrom(cape.note); }
 function defineValuation(){
   var id = "sheet-metric-valuation";
   defineReading(id, {

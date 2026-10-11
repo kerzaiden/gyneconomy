@@ -1582,7 +1582,7 @@
     }).join(o.inline ? " " : "") + "</" + box + ">";
   }
   function readingNote(n) {
-    return (n.title != null ? "<h4>" + n.title + "</h4>" : "") + (n.lead != null ? '<p class="caption">' + n.lead + "</p>" : "") + (n.paras || []).map(function(p) {
+    return (n.title != null ? "<h4>" + n.title + "</h4>" : "") + (n.sub != null ? '<div class="marker-sub">' + n.sub + "</div>" : "") + (n.lead != null ? '<p class="caption">' + n.lead + "</p>" : "") + (n.paras || []).map(function(p) {
       return '<p class="caption follow">' + p + "</p>";
     }).join("") + (n.src ? srcBlock(n.src) : "");
   }
@@ -1825,8 +1825,8 @@
     }
     return idx;
   }
-  function expandBtn(fullHtml) {
-    return '<button type="button" class="expand-btn" data-detail-idx="' + detailSlot(fullHtml) + '" aria-label="Expand details">i</button>';
+  function expandBtn(fullHtml, label) {
+    return '<button type="button" class="' + (label ? "info-btn " : "") + 'expand-btn" data-detail-idx="' + detailSlot(fullHtml) + '" aria-label="' + (label || "Expand details") + '"' + (label ? ' title="' + label + '"' : "") + ">i</button>";
   }
   var detailSlots;
   function bootDom() {
@@ -47877,8 +47877,15 @@
   };
   var HIST_NOTE = {};
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
+  var TICK = '<span class="cycsel-tick" aria-hidden="true"></span>';
+  function menuOption(cls, attrs, inner) {
+    return '<button type="button" class="cycsel-opt' + cls + '" ' + attrs + ">" + inner + "</button>";
+  }
+  function menuName(label) {
+    return '<span class="cycsel-nm">' + label + "</span>";
+  }
   function headPickRow(on, attr, key, label) {
-    return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '"><span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + label + "</span></button>";
+    return menuOption(" bh-pick" + (on ? " on" : ""), 'aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '"', TICK + menuName(label));
   }
   function histHead(id) {
     var H = page.head[id];
@@ -47919,13 +47926,13 @@
         headSubFor = null;
         return headMenuHtml(id);
       }
-      return '<button type="button" class="cycsel-opt bh-back" data-head-grp="" aria-label="Back from ' + g.label + '">' + CHEV + '<span class="cycsel-nm">' + g.label + '</span></button><div class="bh-sep"></div>' + g.rows;
+      return menuOption(" bh-back", 'data-head-grp="" aria-label="Back from ' + g.label + '"', CHEV + menuName(g.label)) + '<div class="bh-sep"></div>' + g.rows;
     } else extra = groups.map(function(x) {
-      return '<button type="button" class="cycsel-opt bh-grp-row" data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + '</span><span class="cycsel-yr">' + (x.on ? x.value : "") + "</span>" + CHEV + "</button>";
+      return menuOption(" bh-grp-row", 'data-head-grp="' + x.key + '"', nameAside(x.label, x.on ? x.value : "") + CHEV);
     }).join("") + '<div class="bh-sep"></div>';
     var i = headNote(id);
     if (i == null) return extra;
-    return extra + '<button type="button" class="cycsel-opt bh-opt" data-detail-idx="' + i + '"><span class="cycsel-nm">About this reading</span></button>';
+    return extra + menuOption(" bh-opt", 'data-detail-idx="' + i + '"', menuName("About this reading"));
   }
   var headMenuFor = null;
   var headSubFor = null;
@@ -48454,10 +48461,10 @@
     }).join("") + "</div></div>";
   }
   function pickRow(on, attr, key, name, aside) {
-    return '<button type="button" class="cycsel-opt' + (on ? " on" : "") + '" role="option" aria-selected="' + on + '" ' + attr + '="' + key + '"><span class="cycsel-tick" aria-hidden="true"></span>' + nameAside(name, aside) + "</button>";
+    return menuOption(on ? " on" : "", 'role="option" aria-selected="' + on + '" ' + attr + '="' + key + '"', TICK + nameAside(name, aside));
   }
   function nameAside(name, aside) {
-    return '<span class="cycsel-nm">' + name + '</span><span class="cycsel-yr">' + aside + "</span>";
+    return menuName(name) + '<span class="cycsel-yr">' + aside + "</span>";
   }
   function rangeBar(id, ranges, active) {
     if (!ranges || ranges.length < 2) return "";
@@ -49072,7 +49079,10 @@
   }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
-    return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
+    return readingNote({
+      title: "Fear",
+      sub: "Cboe, " + now.vixRow.sub
+    }) + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
   }
   function marketWord(v) {
     if (v >= 0) return {
@@ -52549,12 +52559,12 @@
   function verdict(ok) {
     return mark(ok ? " ok" : " odd", ok ? "Typical" : "Atypical");
   }
-  var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var TICK2 = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function tone(ok) {
     return ok ? "t-ok" : "t-odd";
   }
   function mark(cls, name) {
-    return '<span class="stat-tick' + cls + '">' + TICK + "</span>" + name;
+    return '<span class="stat-tick' + cls + '">' + TICK2 + "</span>" + name;
   }
   function lenKey(rows) {
     return legendKey(rows, {
@@ -53135,8 +53145,7 @@
       cls: "legend-rows",
       row: "legend-row"
     }) + '<div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
-    var idx = detailSlot(html);
-    put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span><button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
+    put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + "</span>" + expandBtn(html, "Legend"));
   }
   function hubSet(dateHtml, meta, y, open) {
     put("season-wheel-hub-date", dateHtml);
@@ -54838,7 +54847,10 @@
     return [ [ "hk-2", (s.goodAbove ? "Above " : "Below ") + line ], [ "hk-4", (s.goodAbove ? "Below " : "Above ") + line ] ];
   }
   function splitInfo(s) {
-    return s.info ? s.info() : "<h4>" + titleCase(s.name) + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
+    return s.info ? s.info() : readingNote({
+      title: titleCase(s.name),
+      sub: s.row.sub
+    }) + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
   }
   function periodTicks(vals) {
     if (!vals.length || !(vals[0].q || vals[0].m)) return null;
@@ -55161,7 +55173,10 @@
   }
   function valuationInfo() {
     var cape = fileRow("cape");
-    return "<h4>" + titleCase(cape.marker) + '</h4><div class="marker-sub">' + cape.sub + "</div>" + factsFrom(cape.note);
+    return readingNote({
+      title: titleCase(cape.marker),
+      sub: cape.sub
+    }) + factsFrom(cape.note);
   }
   function defineValuation() {
     var id = "sheet-metric-valuation";

@@ -151,9 +151,9 @@ export function detailSlot(html: unknown){
   }
   return idx;
 }
-export function expandBtn(fullHtml: unknown){
-  return '<button type="button" class="expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
-         '" aria-label="Expand details">i</button>';
+export function expandBtn(fullHtml: unknown, label?: string){
+  return '<button type="button" class="' + (label ? "info-btn " : "") + 'expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
+         '" aria-label="' + (label || "Expand details") + '"' + (label ? ' title="' + label + '"' : "") + '>i</button>';
 }
 
 var detailSlots: Record<string, number>;

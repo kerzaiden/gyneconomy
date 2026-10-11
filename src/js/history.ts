@@ -23,11 +23,11 @@ export var page = {
 export var HIST_NOTE: Record<string, string | (() => string)> = {};
 var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
   '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
+var TICK = '<span class="cycsel-tick" aria-hidden="true"></span>';
+function menuOption(cls: string, attrs: string, inner: string){ return '<button type="button" class="cycsel-opt' + cls + '" ' + attrs + '>' + inner + '</button>'; }
+function menuName(label: string){ return '<span class="cycsel-nm">' + label + '</span>'; }
 export function headPickRow(on: boolean, attr: string, key: string, label: string){
-  return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
-    '" aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' +
-    '<span class="cycsel-tick" aria-hidden="true"></span>' +
-    '<span class="cycsel-nm">' + label + '</span></button>';
+  return menuOption(" bh-pick" + (on ? " on" : ""), 'aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '"', TICK + menuName(label));
 }
 export function histHead(id: string){
   var H = page.head[id];
@@ -68,20 +68,15 @@ function headMenuHtml(id: string): string {
   else if (headSubFor){
     var g = groups.filter(function(x){ return x.key === headSubFor; })[0];
     if (!g){ headSubFor = null; return headMenuHtml(id); }
-    return '<button type="button" class="cycsel-opt bh-back" data-head-grp="" aria-label="Back from ' + g.label + '">' +
-      CHEV + '<span class="cycsel-nm">' + g.label + '</span></button>' +
+    return menuOption(" bh-back", 'data-head-grp="" aria-label="Back from ' + g.label + '"', CHEV + menuName(g.label)) +
       '<div class="bh-sep"></div>' + g.rows;
   }
   else extra = groups.map(function(x){
-    return '<button type="button" class="cycsel-opt bh-grp-row" ' +
-      'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + '</span>' +
-      '<span class="cycsel-yr">' + (x.on ? x.value : "") + '</span>' + CHEV + '</button>';
+    return menuOption(" bh-grp-row", 'data-head-grp="' + x.key + '"', nameAside(x.label, x.on ? x.value : "") + CHEV);
   }).join("") + '<div class="bh-sep"></div>';
   var i = headNote(id);
   if (i == null) return extra;
-  return extra +
-    '<button type="button" class="cycsel-opt bh-opt" data-detail-idx="' +
-    i + '"><span class="cycsel-nm">About this reading</span></button>';
+  return extra + menuOption(" bh-opt", 'data-detail-idx="' + i + '"', menuName("About this reading"));
 }
 var headMenuFor: string | null = null;
 var headSubFor: string | null = null;
@@ -456,10 +451,9 @@ function cyclePicker(id: string, picked: string | null | undefined, minYear?: nu
     rows.map(function(c){ var L = cycLabel(c); return pickRow(c.name === cur.name, "data-cycle", c.name, L.name, L.years); }).join("") + '</div></div>';
 }
 function pickRow(on: boolean, attr: string, key: string, name: string, aside: string){
-  return '<button type="button" class="cycsel-opt' + (on ? " on" : "") + '" role="option" aria-selected="' + on + '" ' + attr + '="' + key + '">' +
-    '<span class="cycsel-tick" aria-hidden="true"></span>' + nameAside(name, aside) + '</button>';
+  return menuOption(on ? " on" : "", 'role="option" aria-selected="' + on + '" ' + attr + '="' + key + '"', TICK + nameAside(name, aside));
 }
-function nameAside(name: string, aside: string){ return '<span class="cycsel-nm">' + name + '</span><span class="cycsel-yr">' + aside + '</span>'; }
+function nameAside(name: string, aside: string){ return menuName(name) + '<span class="cycsel-yr">' + aside + '</span>'; }
 function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
   if (!ranges || ranges.length < 2) return "";
   return tabBar('data-range-for="' + id + '"', ranges.map(function(r){ return [r.key, r.label]; }), active, "data-range");

@@ -1,5 +1,5 @@
 import { facts, fmtSigned, hubLine, ledeHtml, legendKey, monthLabel, qLabel, srcBlock } from "./format.ts";
-import { byId, detailSlot, need, put, rovingKeys, ui } from "./dom.ts";
+import { byId, expandBtn, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
 import { CPI_TARGET, FED_TARGET_SRC, gdpSrc, HOLD_BAND, sp500AnnualReturns, TEMP_BAND_HI, TEMP_BAND_LO, typicalCycleSrc, typicalCycleYears } from "./data.ts";
@@ -127,8 +127,7 @@ function renderCycleKicker(){
     '<div class="legend-head">The market cycle</div>' +
     '<p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6\u00bd years across the long record. It is a typical length, not a forecast.</p>' +
     srcBlock(typicalCycleSrc);
-  var idx = detailSlot(html);
-  put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span><button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
+  put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span>' + expandBtn(html, "Legend"));
 }
 // ---- the hub: the reading inside the circle ----
 function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, open: HubOpen){
