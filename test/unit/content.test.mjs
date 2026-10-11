@@ -143,9 +143,11 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
-test('the dial is titled by its cycle, its legend speaks in signs, and the cycle\u2019s story under it reads in place', () => {
-  assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
-  const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
+test('the dial carries no title, only its legend icon, the legend speaks in signs, and the cycle\u2019s story under it reads in place', () => {
+  const kicker = document.getElementById('cycle-kicker');
+  assert.equal(kicker.textContent.trim(), '');
+  assert.equal(kicker.querySelector('.icon-btn').getAttribute('aria-label'), 'Legend');
+  const legend = detailTexts[+kicker.querySelector('.icon-btn').dataset.detailIdx];
   ['Prices &lt; 1%', 'Prices \u2264 3%', 'Prices &gt; 3%', 'Prices \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
   const first = document.querySelector('#diagnosis .trend-card');
   assert.equal(first.querySelector('.trend-head').textContent, nowModel.era.name + ' \u00b7 ' + cycLabel(nowModel.era).years);

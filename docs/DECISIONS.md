@@ -551,10 +551,10 @@ settles it; none is open after V668.
   seasons have, and the YEAR badge sits just after the last quarter that has a season (on the seam when the
   cycle fills the ring).** A season that has not been computed has not happened yet; Keren saw the bull bar
   run past the season bar. (V552, V554)
-- **The cycle card's title is the cycle's name (the AI Cycle today, the cycle shown on a Herstory page), with an (i)
-  that opens the one legend: the seasons' colours and the market band's colours; no season line or note sits beside
-  the wheel.** The centre already says the season, and the cycle's name says more than "Gyneconomy" did. (V176,
-  Sep 19, 2026; 0.6.6)
+- **The dial carries no title: at its top left sits only a legend icon (three dots, three lines), which opens the
+  one legend: the seasons' colours and the market band's colours; no season line or note sits beside the wheel.**
+  The cycle's name and years already head the story under the dial, so a name above it repeated them; the icon says
+  what it opens where an (i) did not. (V176, Sep 19, 2026; 0.6.6; Legend Icon)
 
 ### The market band and the peak
 

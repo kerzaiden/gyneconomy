@@ -12,6 +12,7 @@ import { cycleViewEl } from "./render-pages.ts";
 import { IND, nowWhen } from "./cycle-analysis.ts";
 import { dialRing } from "./dial-ring.ts";
 import type { DialQuarter } from "./dial-ring.ts";
+import { legendSvg } from "./marks.ts";
 
 type CycleModel = ReturnType<typeof cycleModel>;
 type DialState = { m: CycleModel; quarters: DialQuarter[]; badgeDeg: number; badgeAt: number; polar: (r: number, deg: number) => string[]; parked: number | null };
@@ -63,7 +64,7 @@ function renderCycleKicker(){
     '<div class="legend-head">The market cycle</div>' +
     '<p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6\u00bd years across the long record. It is a typical length, not a forecast.</p>' +
     srcBlock(typicalCycleSrc);
-  put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span>' + expandBtn(html, "Legend"));
+  put("cycle-kicker", expandBtn(html, "Legend", legendSvg()));
 }
 // ---- the hub: the reading inside the circle ----
 function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, open: HubOpen){
@@ -207,7 +208,6 @@ export function renderCycleView(m: CycleModel){
 }
 function showEra(era: Cycle){
   ui.shownEra = era;
-  put("cycle-kicker-name", era.name);
 }
 export function showCycle(era: Cycle){ if (ui.shownEra !== era) renderCycleView(cycleModel(era)); }
 // ---- A cycle's season strip (carried by the one cycle row) ----

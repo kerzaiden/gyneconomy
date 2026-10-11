@@ -305,7 +305,7 @@ async function openPage(p, url, sheet) {
     await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
-      return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(),
+      return d ? { kicker: document.getElementById('cycle-kicker').textContent.trim() === '' && !!document.querySelector('#cycle-kicker .icon-btn svg'), visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(),
                    doors: d.querySelectorAll('[data-open]:not([data-ind-when])').length,
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
@@ -317,7 +317,7 @@ async function openPage(p, url, sheet) {
     const today = await read();
     await sweep(p);
     (today && today.visible && today.title.startsWith(await p.evaluate(() => window.__GYN.cycle) + ' \u00b7 ') && today.cards === 0 &&
-     today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker === await p.evaluate(() => window.__GYN.cycle))
+     today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker)
       ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
     const ringDoor = await p.evaluate(() => { document.querySelector('.tab-btn[data-tab="today"]').click(); document.querySelector('#today-home .today-cycle').click();
@@ -366,7 +366,7 @@ async function openPage(p, url, sheet) {
     await filt(p, '[data-pick-period="' + await p.evaluate(() => window.__GYN.cycle) + '"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
-    (past && past.visible && past.title === 'Big Tech Cycle \u00b7 2009\u20132018' && past.kicker === 'Big Tech Cycle')
+    (past && past.visible && past.title === 'Big Tech Cycle \u00b7 2009\u20132018' && past.kicker)
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);

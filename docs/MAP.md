@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,845 lines** in 44 files, about 605 KB, roughly **172 thousand tokens**. No session can
+The source is **8,853 lines** in 44 files, about 605 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `da2304b` on 2026-10-11.
+Generated from commit `4880794` on 2026-10-11.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `da2304b` on 2026-10-11.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,162 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,168 | the whole stylesheet, every token and rule |
 | `page-body.html` | 247 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 40 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **40** modules, **811** top-level functions, **124** top-level vars, **392** exported names, **20** boots.
+Counts: **40** modules, **812** top-level functions, **124** top-level vars, **393** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -41,7 +41,7 @@ Counts: **40** modules, **811** top-level functions, **124** top-level vars, **3
 | `js/render-core.ts` | 157 | 22 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 357 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings` |
 | `js/diagnosis.ts` | 84 | 11 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
-| `js/dial-cycle.ts` | 313 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dial-ring`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/dial-cycle.ts` | 313 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dial-ring`, `dom`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 141 | 12 | `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `render-core`, `render-pages` |
@@ -61,7 +61,7 @@ Counts: **40** modules, **811** top-level functions, **124** top-level vars, **3
 | `js/indicators.ts` | 174 | 30 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 219 | 16 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/insights.ts` | 183 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
-| `js/marks.ts` | 58 | 27 | — |
+| `js/marks.ts` | 60 | 28 | — |
 | `js/pressure.ts` | 374 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `pulse-strips`, `reading`, `readings`, `rhythm`, `roster` |
 | `js/pulse-strips.ts` | 168 | 20 | `charts`, `data`, `format` |
 | `js/reading.ts` | 96 | 12 | `charts`, `dom`, `format`, `history`, `render-core`, `roster` |
@@ -674,41 +674,41 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 21 | `drawDial` | `function drawDial(` |
+| 22 | `drawDial` | `function drawDial(` |
 
 #### the Appearance row: System · Light · Dark, kept in localStorage; System clears the choice
 
 | Line | Name | Anchor |
 |---|---|---|
-| 39 | `wireThemeChoice` | `function wireThemeChoice(` |
+| 40 | `wireThemeChoice` | `function wireThemeChoice(` |
 
 #### the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the
 
 | Line | Name | Anchor |
 |---|---|---|
-| 57 | `renderCycleKicker` | `function renderCycleKicker(` |
+| 58 | `renderCycleKicker` | `function renderCycleKicker(` |
 
 #### the hub: the reading inside the circle
 
 | Line | Name | Anchor |
 |---|---|---|
-| 69 | `hubSet` | `function hubSet(` |
-| 77 | `hubOpen` | `function hubOpen(` |
-| 83 | `hubShowDefault` | `function hubShowDefault(` |
-| 89 | `hubShowQuarter` | `function hubShowQuarter(` |
-| 94 | `hubShowYear` | `function hubShowYear(` |
-| 104 | `one` · export | `function one(` |
-| 105 | `cycleView` · export | `function cycleView(` |
-| 106 | `renderCycleDial` | `function renderCycleDial(` |
-| 189 | `dialKeyStep` | `function dialKeyStep(` |
-| 197 | `dialSay` | `function dialSay(` |
+| 70 | `hubSet` | `function hubSet(` |
+| 78 | `hubOpen` | `function hubOpen(` |
+| 84 | `hubShowDefault` | `function hubShowDefault(` |
+| 90 | `hubShowQuarter` | `function hubShowQuarter(` |
+| 95 | `hubShowYear` | `function hubShowYear(` |
+| 105 | `one` · export | `function one(` |
+| 106 | `cycleView` · export | `function cycleView(` |
+| 107 | `renderCycleDial` | `function renderCycleDial(` |
+| 190 | `dialKeyStep` | `function dialKeyStep(` |
+| 198 | `dialSay` | `function dialSay(` |
 
 #### the whole view, for one cycle
 
 | Line | Name | Anchor |
 |---|---|---|
-| 203 | `renderCycleView` · export | `function renderCycleView(` |
-| 208 | `showEra` | `function showEra(` |
+| 204 | `renderCycleView` · export | `function renderCycleView(` |
+| 209 | `showEra` | `function showEra(` |
 | 212 | `showCycle` · export | `function showCycle(` |
 
 #### A cycle's season strip (carried by the one cycle row)
@@ -1352,16 +1352,17 @@ falls in. **export** marks a name other modules import.
 | 34 | `calendarSvg` · export | `function calendarSvg(` |
 | 35 | `bookSvg` · export | `function bookSvg(` |
 | 36 | `umbrellaSvg` · export | `function umbrellaSvg(` |
-| 38 | `slidersSvg` · export | `function slidersSvg(` |
-| 40 | `heartSvg` · export | `function heartSvg(` |
-| 42 | `weatherSvg` · export | `function weatherSvg(` |
-| 44 | `moodSvg` · export | `function moodSvg(` |
-| 45 | `sproutSvg` · export | `function sproutSvg(` |
-| 47 | `factorySvg` · export | `function factorySvg(` |
-| 48 | `circulationSvg` · export | `function circulationSvg(` |
-| 49 | `boltSvg` · export | `function boltSvg(` |
-| 50 | `marketSvg` · export | `function marketSvg(` |
-| 53 | `volatilitySvg` · export | `function volatilitySvg(` |
+| 38 | `legendSvg` · export | `function legendSvg(` |
+| 40 | `slidersSvg` · export | `function slidersSvg(` |
+| 42 | `heartSvg` · export | `function heartSvg(` |
+| 44 | `weatherSvg` · export | `function weatherSvg(` |
+| 46 | `moodSvg` · export | `function moodSvg(` |
+| 47 | `sproutSvg` · export | `function sproutSvg(` |
+| 49 | `factorySvg` · export | `function factorySvg(` |
+| 50 | `circulationSvg` · export | `function circulationSvg(` |
+| 51 | `boltSvg` · export | `function boltSvg(` |
+| 52 | `marketSvg` · export | `function marketSvg(` |
+| 55 | `volatilitySvg` · export | `function volatilitySvg(` |
 
 ### `js/pressure.ts`
 
@@ -1546,7 +1547,7 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 1,072 | the reading's tag |
 | 1,076 | info icon + popover (progressive disclosure for longer notes) |
 | 1,090 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,153 | footer |
+| 1,159 | footer |
 
 ## Markup landmarks
 

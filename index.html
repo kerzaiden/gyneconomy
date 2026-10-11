@@ -1127,6 +1127,12 @@
     transition:background 0.12s, color 0.12s, border-color 0.12s;
   }
   .expand-btn:hover{ background:var(--accent-wash); color:var(--accent-ink); border-color:var(--accent); }
+  .icon-btn{
+    display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:2px; margin:-2px 0 0 -4px;
+    border:0; border-radius:var(--radius); background:transparent; color:var(--text-secondary); transform:none; cursor:pointer; transition:color 0.12s;
+  }
+  .icon-btn svg{ width:100%; height:100%; }
+  .icon-btn:hover, .icon-btn[aria-expanded="true"]{ background:transparent; color:var(--accent-ink); }
 
   a{ text-decoration: none; }
   a:hover{ text-decoration: underline; }
@@ -1169,7 +1175,7 @@
   <div id="cycle-view">
 
     <div class="season-card">
-      <div class="cv-head season-head"><div class="cv-kicker" id="cycle-kicker">Gyneconomy</div></div>
+      <div class="cv-head season-head"><div class="cv-kicker" id="cycle-kicker"></div></div>
       <div class="season-wheel-wrap">
         <div class="season-wheel">
           <svg class="cycle-dial" id="cycle-dial" viewBox="-108 -108 216 216" aria-hidden="true" style="pointer-events:none"></svg>
@@ -1756,8 +1762,8 @@
     }
     return idx;
   }
-  function expandBtn(fullHtml, label) {
-    return '<button type="button" class="' + (label ? "info-btn " : "") + 'expand-btn" data-detail-idx="' + detailSlot(fullHtml) + '" aria-label="' + (label || "Expand details") + '"' + (label ? ' title="' + label + '"' : "") + ">i</button>";
+  function expandBtn(fullHtml, label, icon) {
+    return '<button type="button" class="' + (icon ? "icon-btn " : label ? "info-btn " : "") + 'expand-btn" data-detail-idx="' + detailSlot(fullHtml) + '" aria-label="' + (label || "Expand details") + '"' + (label ? ' title="' + label + '"' : "") + ">" + (icon || "i") + "</button>";
   }
   var detailSlots;
   function bootDom() {
@@ -49658,6 +49664,9 @@
   function umbrellaSvg() {
     return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17 0z" stroke-width="1.8"/><path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>');
   }
+  function legendSvg() {
+    return markSvg('<circle cx="5" cy="5.6" r="1.7" stroke-width="1.6"/><circle cx="5" cy="12" r="1.7" stroke-width="1.6"/><circle cx="5" cy="18.4" r="1.7" stroke-width="1.6"/><path d="M9.6 5.6h10.4M9.6 12h10.4M9.6 18.4h10.4" stroke-width="1.8"/>');
+  }
   function slidersSvg() {
     return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/><circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>');
   }
@@ -53152,7 +53161,7 @@
       cls: "legend-rows",
       row: "legend-row"
     }) + '<div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
-    put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + "</span>" + expandBtn(html, "Legend"));
+    put("cycle-kicker", expandBtn(html, "Legend", legendSvg()));
   }
   function hubSet(dateHtml, meta, y, open) {
     put("season-wheel-hub-date", dateHtml);
@@ -53371,7 +53380,6 @@
   }
   function showEra(era) {
     ui.shownEra = era;
-    put("cycle-kicker-name", era.name);
   }
   function showCycle(era) {
     if (ui.shownEra !== era) renderCycleView(cycleModel(era));
