@@ -609,14 +609,15 @@
   .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
   .wr-head{ display:block; margin-top:8px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.1; color:var(--text-primary); }
   .wr-page{ display:flex; flex-direction:column; gap:var(--gap); }
-  .today-cycle{ display:flex; align-items:center; gap:16px; padding:14px 16px; }
-  .today-cycle .mini-ring{ position:static; width:112px; height:112px; flex:none; }
+  .today-cycle{ display:flex; align-items:center; gap:14px; padding:12px 16px; }
+  .today-cycle .mini-ring{ position:static; width:56px; height:56px; flex:none; }
   .today-cycle .mini-ring *{ pointer-events:none; }
-  .today-cycle-hub{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .today-cycle .mini-ring .dial-mkt{ stroke-width:11; }
+  .today-cycle-hub{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
   .today-cycle-kicker{ font-size:var(--type-label); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); }
-  .today-cycle-date, .today-cycle-ret{ font-size:var(--type-meta); color:var(--text-secondary); }
-  .today-cycle-date b, .today-cycle-ret b{ font-weight:700; color:var(--text-primary); }
-  .today-cycle-season{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.05; color:var(--text-primary); }
+  .today-cycle-ret{ font-size:var(--type-meta); color:var(--text-secondary); }
+  .today-cycle-ret b{ font-weight:700; color:var(--text-primary); }
+  .today-cycle-season{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-section); line-height:1.15; color:var(--text-primary); }
   .today-cycle-stage{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-row); line-height:1.1; color:var(--text-secondary); }
   .today-cycle .peek-chev{ color:var(--text-muted); }
   .trend-when{ font-weight:500; color:var(--text-muted); white-space:nowrap; }
@@ -51776,9 +51777,10 @@
       trackW: trackW
     };
   }
+  var MINI_BOLD = 1.7;
   function miniRing(m) {
     var g = dialRing(m);
-    return '<svg class="cycle-dial mini-ring" viewBox="-108 -108 216 216" aria-hidden="true" style="--moon-w:' + g.moonW.toFixed(2) + ";--track-w:" + g.trackW.toFixed(2) + '">' + g.parts.join("").replace(/ data-(q|cap|year)="[^"]*"/g, "") + "</svg>";
+    return '<svg class="cycle-dial mini-ring" viewBox="-108 -108 216 216" aria-hidden="true" style="--moon-w:' + (g.moonW * MINI_BOLD).toFixed(2) + ";--track-w:" + (g.trackW * MINI_BOLD).toFixed(2) + '">' + g.parts.join("").replace(/ data-(q|cap|year)="[^"]*"/g, "") + "</svg>";
   }
   var MONTH_NAMES = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
   function dateWords(iso) {
@@ -51833,7 +51835,7 @@
   }
   function cycleCard() {
     var m = nowModel, meta = wheelMeta[m.season], ret = sp500AnnualReturns[calendarTodayY];
-    return '<button type="button" class="trend-card today-cycle" data-go-tab="cycle" aria-label="Open the current cycle">' + miniRing(m) + '<span class="today-cycle-hub"><span class="today-cycle-kicker">' + m.era.name + " · Year " + m.yearIndex + '</span><span class="today-cycle-date">' + hubTodayHtml() + '</span><span class="today-cycle-season">' + meta.name + "</span>" + (meta.theme ? '<span class="today-cycle-stage">' + meta.theme + "</span>" : "") + (ret != null ? '<span class="today-cycle-ret"><b>' + fmtSigned(ret, 1) + "%</b> " + calendarTodayY + "</span>" : "") + "</span>" + CHEV + "</button>";
+    return '<button type="button" class="trend-card today-cycle" data-go-tab="cycle" aria-label="Open the current cycle">' + miniRing(m) + '<span class="today-cycle-hub"><span class="today-cycle-kicker">' + m.era.name + " · Year " + m.yearIndex + '</span><span class="today-cycle-season">' + meta.name + (meta.theme ? ' <span class="today-cycle-stage">' + meta.theme + "</span>" : "") + "</span>" + (ret != null ? '<span class="today-cycle-ret">' + (ret >= 0 ? "Bull" : "Bear") + " year · <b>" + fmtSigned(ret, 1) + "%</b> in " + calendarTodayY + "</span>" : "") + "</span>" + CHEV + "</button>";
   }
   function todayHtml() {
     var r = now.report, c = openCycle();

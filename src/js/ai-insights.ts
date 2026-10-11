@@ -2,7 +2,7 @@ import { learnMore, put, trendBox, trendHead, trendText } from "./dom.ts";
 import { dxSys } from "./render-core.ts";
 import { bookSvg, weatherSvg } from "./marks.ts";
 import { CHEV, fmtSigned } from "./format.ts";
-import { calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
+import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
 import { marketCycles, now, sp500AnnualReturns } from "./data.ts";
 import { cycLabel, nowModel, openCycle } from "./model.ts";
 import { miniRing } from "./dial-ring.ts";
@@ -54,9 +54,8 @@ function cycleCard(){
   var m = nowModel, meta = wheelMeta[m.season], ret = sp500AnnualReturns[calendarTodayY];
   return '<button type="button" class="trend-card today-cycle" data-go-tab="cycle" aria-label="Open the current cycle">' + miniRing(m) +
     '<span class="today-cycle-hub"><span class="today-cycle-kicker">' + m.era.name + ' \u00b7 Year ' + m.yearIndex + '</span>' +
-    '<span class="today-cycle-date">' + hubTodayHtml() + '</span><span class="today-cycle-season">' + meta.name + '</span>' +
-    (meta.theme ? '<span class="today-cycle-stage">' + meta.theme + '</span>' : '') +
-    (ret != null ? '<span class="today-cycle-ret"><b>' + fmtSigned(ret, 1) + '%</b> ' + calendarTodayY + '</span>' : '') + '</span>' + CHEV + '</button>';
+    '<span class="today-cycle-season">' + meta.name + (meta.theme ? ' <span class="today-cycle-stage">' + meta.theme + '</span>' : '') + '</span>' +
+    (ret != null ? '<span class="today-cycle-ret">' + (ret >= 0 ? "Bull" : "Bear") + ' year \u00b7 <b>' + fmtSigned(ret, 1) + '%</b> in ' + calendarTodayY + '</span>' : '') + '</span>' + CHEV + '</button>';
 }
 function todayHtml(){
   var r = now.report, c = openCycle();

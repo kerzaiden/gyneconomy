@@ -74,7 +74,8 @@ export function dialRing(m: CycleModel){
   }
   return { parts:parts, quarters:quarters, polar:polar, R:R, SEAM_END:SEAM_END, lastMoonEnd:lastMoonEnd, moonW:moonW, trackW:trackW };
 }
+var MINI_BOLD = 1.7;
 export function miniRing(m: CycleModel){
   var g = dialRing(m);
-  return '<svg class="cycle-dial mini-ring" viewBox="-108 -108 216 216" aria-hidden="true" style="--moon-w:' + g.moonW.toFixed(2) + ';--track-w:' + g.trackW.toFixed(2) + '">' + g.parts.join("").replace(/ data-(q|cap|year)="[^"]*"/g, "") + '</svg>';
+  return '<svg class="cycle-dial mini-ring" viewBox="-108 -108 216 216" aria-hidden="true" style="--moon-w:' + (g.moonW * MINI_BOLD).toFixed(2) + ';--track-w:' + (g.trackW * MINI_BOLD).toFixed(2) + '">' + g.parts.join("").replace(/ data-(q|cap|year)="[^"]*"/g, "") + '</svg>';
 }

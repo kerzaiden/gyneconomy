@@ -8,13 +8,13 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `a9cc5c5` on 2026-10-11. **111 components**, **19 shared patterns**.
+Generated from commit `3e71d39` on 2026-10-11. **111 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`cycleCard`** | `.today-cycle` `.today-cycle-date` `.today-cycle-hub` `.today-cycle-kicker` `.today-cycle-ret` `.today-cycle-season` `.today-cycle-stage` | `ai-insights.ts:todayHtml` |
+| **`cycleCard`** | `.today-cycle` `.today-cycle-hub` `.today-cycle-kicker` `.today-cycle-ret` `.today-cycle-season` `.today-cycle-stage` | `ai-insights.ts:todayHtml` |
 | **`elements`** | `.wr-el` | `ai-insights.ts:todayHtml` |
 | **`lead`** | `.wr-by` `.wr-head` | `ai-insights.ts:todayHtml` |
 | **`prose`** | `.wr-link` | `ai-insights.ts:elements` |

@@ -175,7 +175,7 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   assert.deepEqual([...today.children].slice(0, 3).map(c => c.classList.contains('today-cycle') ? 'cycle' : c.querySelector('.lab-door') ? 'risk' : 'report'), ['report', 'cycle', 'risk']);
   assert.equal(ring.dataset.goTab, 'cycle');
   assert.equal(ring.querySelectorAll('.dial-moon').length, document.querySelectorAll('#cycle-dial .dial-moon').length, 'the card draws the dial’s own ring');
-  assert.equal(ring.querySelector('.today-cycle-season').textContent, document.getElementById('season-wheel-hub-theme').firstChild.textContent);
+  assert.equal(ring.querySelector('.today-cycle-season').firstChild.textContent.trim(), document.getElementById('season-wheel-hub-theme').firstChild.textContent);
   assert.ok(!today.textContent.includes(now.report.story), 'the cycle story stays on the cycle tab');
   assert.ok(risksOf(nowModel.era).length > 0);
   assert.deepEqual(ranked(today), risksOf(nowModel.era));
