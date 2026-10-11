@@ -2,11 +2,11 @@ import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml
 import { addSources, byId, focusQuiet, layer, moreRow } from "./dom.ts";
 import { divergeChart, trendOf, trendPill } from "./charts.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { CAPE_FAIR, capeHistory, DEFICIT_LINE, DEF_FROM_YEAR, deficitHistory, fileRow, labRow, longCycleSrc, now, syncCapeHistory, unempHistory } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, capeHistory, DEFICIT_LINE, DEF_FROM_YEAR, deficitHistory, fileRow, labRow, longCycleSrc, now, syncCapeHistory, unempHistory } from "./data.ts";
 import { currentEra, cycleSlice, growthWord, inflationFigure, nowModel, potentialGap, totalGrowthYears, totalRiseIn } from "./model.ts";
 import { controlKeys, defFrom, histControls, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, timelineSpan, timelineWindow } from "./history.ts";
 import { activityInfoHtml, deficitInfoHtml, gdpWord, growthInfoHtml, lagging, phaseClass, tempInfo, temperatureInfoHtml } from "./readings.ts";
-import { cpiHistoryChart, deficitChart, gdpHistoryChart, unempHistoryChart } from "./history-charts.ts";
+import { cpiHistoryChart, deficitChart, gdpHistoryChart, heatKey, unempHistoryChart } from "./history-charts.ts";
 import { gdpFigure, sheetRenderers, tempWord } from "./render-core.ts";
 import { growthDetail } from "./dial-cycle.ts";
 import { meterWord } from "./indicators.ts";
@@ -41,6 +41,7 @@ function defineTemp(){
   defineReading(id, {
     face:function(){ return [lagRow("Temperature").metric, tempWord(nowModel.reading)]; },
     info:function(){ return temperatureInfoHtml(lagRow("Temperature")); },
+    key:heatKey,
     controls:function(){ return histControls(id, { series:inflationHistory }); },
     history:function(){
       var w = monthWindow(id, inflationHistory), win = inflationHistory.slice(w.from, w.to), tri = totalRiseIn(win);
@@ -73,6 +74,7 @@ function defineActivity(){
   defineReading(id, {
     face:function(){ var ind = lagRow("Activity"); return [ind.metric, ind.tag ? ind.tag.text : ""]; },
     info:function(){ return activityInfoHtml(lagRow("Activity")); },
+    key:function(){ return [["hk-2", "Within " + ACT_BAND_LO + "\u2013" + ACT_BAND_HI + "%"], ["hk-4", "Below " + ACT_BAND_LO + "% or above " + ACT_BAND_HI + "%"], ["hk-x", "Above " + ACT_BAND_HI + "% with the Sahm rule triggered"]]; },
     controls:function(){ return histControls(id, { series:unempHistory }); },
     history:function(){
       var cyc = pageCycle(id), span = cyc ? actCycleMonths(cyc) : null;
@@ -90,6 +92,7 @@ function defineDeficit(){
   defineReading(id, {
     face:function(){ var row = labRow(id); return [row.flagValue, meterWord(row.meter)]; },
     info:deficitInfoHtml,
+    key:function(){ return [["hk-2", "A surplus"], ["hk-4", "A deficit"]]; },
     controls:function(){ return histControls(key, { depth:deficitHistory.length }); },
     history:function(){
       var cyc = pageCycle(key), idx = cyc ? [Math.max(0, cyc.from - DEF_FROM_YEAR), Math.min(deficitHistory.length, (cyc.to || calendarTodayY) - DEF_FROM_YEAR + 1)] : null;
