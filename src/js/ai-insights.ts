@@ -1,20 +1,21 @@
-import { byIdMaybe, learnMore, need, put, trendBox, trendDoor, trendHead, trendText } from "./dom.ts";
-import { dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
+import { learnMore, put, trendBox, trendHead, trendText } from "./dom.ts";
+import { dxSys } from "./render-core.ts";
 import { bookSvg, weatherSvg } from "./marks.ts";
-import { marketCycles, now } from "./data.ts";
-import { cycLabel, cycleByName, openCycle } from "./model.ts";
+import { CHEV, fmtSigned } from "./format.ts";
+import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
+import { marketCycles, now, sp500AnnualReturns } from "./data.ts";
+import { cycLabel, nowModel, openCycle } from "./model.ts";
+import { miniRing } from "./dial-ring.ts";
 import type { CycleModel } from "./model.ts";
 import { categoriesShown, ROSTER_BY } from "./roster.ts";
 import { CAT_MARK, IND, riskCard } from "./cycle-analysis.ts";
 
-// ---- Today: the Weather Report and the cycle's story; every cycle page: its Cycle Story and its risk factors against their own record ----
-export var STORY_ID = "sheet-story";
+// ---- Today: the Weather Report and its risk factors; every cycle page: its Cycle Story, read in place ----
 var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-var shown = { cycle:"" };
-function dateWords(iso: string){ var d = iso.split("-").map(Number); return (d[2] ? d[2] + " " : "") + MONTH_NAMES[d[1] - 1] + " " + d[0]; }
+function dateWords(iso: string){ var d = iso.split("-").map(Number); return MONTH_NAMES[d[1] - 1] + " " + (d[2] ? d[2] + ", " : "") + d[0]; }
 function riskDoor(t: string, c: Cycle){ return ' data-open="' + IND + '" data-title="Elements" data-ind-cat="" data-ind-tier="' + t + '" data-ind-cycle="' + c.name + '"'; }
 function riskFactors(c: Cycle){
-  return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk " + (c.ongoing ? "today" : "in this cycle") + ".");
+  return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk today.");
 }
 function prose(t: string){
   return t.replace(/\[([^\]]+)\]\((sheet-[a-z0-9-]+)\)/g, function(_, label: string, id: string){
@@ -26,9 +27,22 @@ function edition(){ return dateWords(now.report.asOf); }
 function storyOf(c: Cycle){ return c.ongoing ? now.report.story : c.blurb; }
 function lead(head: string, by: string){ return '<span class="wr-head">' + head + '</span><span class="wr-by">' + by + '</span>'; }
 export function storyCard(m: CycleModel){
-  return trendDoor(STORY_ID, "Cycle Story", bookSvg(), "Cycle Story",
-    lead(m.era.name, cycLabel(m.era).years) +
-    trendText(storyOf(m.era), "ai-clamp") + learnMore(undefined, "Read the story"), ' data-story-cycle="' + m.era.name + '"');
+  return trendBox(bookSvg(), '<span>' + m.era.name + ' <span class="trend-when">\u00b7 ' + cycLabel(m.era).years + '</span></span>',
+    trendText(storyOf(m.era), "ai-clamp") + learnMore(' aria-expanded="false" data-story-more="1"', "Read more"));
+}
+export function wireStory(host: HTMLElement){
+  var btn = host.querySelector<HTMLElement>("[data-story-more]"), text = btn && btn.previousElementSibling as HTMLElement | null;
+  if (!btn || !text) return;
+  var b = btn, t = text, open = false;
+  function fit(){ if (!open && t.clientHeight) b.hidden = t.scrollHeight <= t.clientHeight + 1; }
+  b.addEventListener("click", function(){
+    open = !open;
+    t.classList.toggle("ai-clamp", !open);
+    b.setAttribute("aria-expanded", String(open));
+    b.textContent = open ? "Read less" : "Read more";
+  });
+  fit();
+  if (typeof ResizeObserver === "function") new ResizeObserver(fit).observe(t);
 }
 function elements(){
   return dxSys(" wr-els", categoriesShown().map(function(c){
@@ -36,25 +50,16 @@ function elements(){
     return t ? '<div class="wr-el">' + trendHead(CAT_MARK[c.key](), c.title, "") + trendText(prose(t)) + '</div>' : "";
   }).join(""));
 }
-function storyBox(c: Cycle){ return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(c))); }
+function cycleCard(){
+  var m = nowModel, meta = wheelMeta[m.season], ret = sp500AnnualReturns[calendarTodayY];
+  return '<button type="button" class="trend-card today-cycle" data-go-tab="cycle" aria-label="Open the current cycle">' + miniRing(m) +
+    '<span class="today-cycle-hub"><span class="today-cycle-kicker">' + m.era.name + ' \u00b7 Year ' + m.yearIndex + '</span>' +
+    '<span class="today-cycle-season">' + meta.name + (meta.theme ? ' <span class="today-cycle-stage">\u00b7 ' + meta.theme + '</span>' : '') + '</span>' +
+    (ret != null ? '<span class="today-cycle-ret"><b class="' + (ret >= 0 ? "bull" : "bear") + '">' + fmtSigned(ret, 1) + '%</b> in ' + calendarTodayY + '</span>' : '') + '</span>' + CHEV + '</button>';
+}
 function todayHtml(){
   var r = now.report, c = openCycle();
   return trendBox(weatherSvg(), "Weather Report", lead(r.headline, edition()) + trendText(r.lede)) +
-    riskFactors(c) + elements();
+    cycleCard() + riskFactors(c) + elements();
 }
-function storyHtml(c: Cycle){ return dxSys(" wr-top", '<h2 class="wr-title">' + c.name + '</h2><p class="wr-date">' + cycLabel(c).years + '</p>') + riskFactors(c) + storyBox(c); }
 export function drawToday(){ put("today-home", todayHtml()); }
-function drawStory(){ put(STORY_ID + "-body", storyHtml(cycleByName(shown.cycle) || openCycle())); }
-export function redrawReport(){ drawToday(); var s = byIdMaybe(STORY_ID); if (s && !s.hidden) drawStory(); }
-function pickStory(e: Event){
-  var b = (e.target as Element).closest && (e.target as Element).closest("[data-story-cycle]");
-  if (b) shown.cycle = b.getAttribute("data-story-cycle") || "";
-}
-export function mountReport(){
-  var sheet = metricSheet(STORY_ID);
-  sheet.innerHTML = '<div class="wr-page" id="' + STORY_ID + '-body"></div>';
-  need("panel-cycle").appendChild(sheet);
-  sheetRenderers[STORY_ID] = drawStory;
-  document.addEventListener("click", pickStory, true);
-  drawToday();
-}

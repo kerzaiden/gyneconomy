@@ -140,31 +140,43 @@ test('every history chart is attached to its readout, so hover and keys reach it
   assert.deepEqual(loose, []);
 });
 
-test('Today is the Weather Report with risk factors and six elements; every cycle page opens its story and its own risk factors', async () => {
+test('Today is the Weather Report with risk factors and six elements; every cycle page reads its story in place', async () => {
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
-  const { cycleModel, nowModel } = await import('../../src/js/model.ts');
+  const { cycleModel, nowModel, cycLabel } = await import('../../src/js/model.ts');
   const { riskLabs } = await import('../../src/js/cycle-analysis.ts');
   const { marketCycles, now } = await import('../../src/js/data.ts');
   const { todayFace } = await import('../../src/js/reading.ts');
   const { ROSTER_BY } = await import('../../src/js/roster.ts');
   const card = () => document.querySelector('#diagnosis .trend-card');
-  const sheet = () => document.getElementById('sheet-story');
   const home = document.getElementById('chart-home');
   const heads = el => [...el.querySelectorAll('.dx-sys-head, .trend-head, .lab-door')].map(h => h.textContent);
-  const open = () => { card().click(); sheetRenderers['sheet-story'](); return sheet(); };
   const risksOf = c => riskLabs(marketCycles.indexOf(c)).map(l => l.name).sort();
   const ranked = el => [...el.querySelectorAll('.cat-risk .lab-row > div:first-child > b')].map(b => b.textContent.trim()).sort();
+  const reads = (c, story) => {
+    const k = card(), more = k.querySelector('[data-story-more]'), text = k.querySelector('.trend-text');
+    assert.equal(k.tagName, 'SECTION', c.name + ': the story opens no page');
+    assert.equal(k.querySelector('.trend-head').textContent, c.name + ' \u00b7 ' + cycLabel(c).years, c.name);
+    assert.equal(text.textContent, story, c.name);
+    assert.ok(text.classList.contains('ai-clamp') && more.textContent === 'Read more', c.name);
+    more.click();
+    assert.ok(!text.classList.contains('ai-clamp') && more.textContent === 'Read less' && more.getAttribute('aria-expanded') === 'true', c.name);
+    more.click();
+    assert.ok(text.classList.contains('ai-clamp') && more.textContent === 'Read more', c.name);
+    assert.equal(k.querySelector('.lab-door'), null, c.name + ': no risk factors on the cycle page');
+  };
   page.cycles['chart-home'] = nowModel.era.name; sheetRenderers['chart-home']();
   assert.deepEqual([...home.querySelectorAll('.dx-sys-head')].map(h => h.textContent), ['Cycle Statistics', 'Interest Rates', 'Elements']);
-  assert.equal(card().querySelector('.wr-head').textContent, nowModel.era.name);
+  reads(nowModel.era, now.report.story);
+  assert.equal(document.getElementById('sheet-story'), null);
   const today = document.getElementById('today-home');
   assert.deepEqual(heads(today), ['Weather Report', 'Risk Factors', ...CATEGORIES.slice().sort((a, b) => a.shown - b.shown).map(c => c.title)]);
   assert.equal(today.querySelector('.wr-head').textContent, now.report.headline);
+  const ring = today.querySelector('.today-cycle');
+  assert.deepEqual([...today.children].slice(0, 3).map(c => c.classList.contains('today-cycle') ? 'cycle' : c.querySelector('.lab-door') ? 'risk' : 'report'), ['report', 'cycle', 'risk']);
+  assert.equal(ring.dataset.goTab, 'cycle');
+  assert.equal(ring.querySelectorAll('.dial-moon').length, document.querySelectorAll('#cycle-dial .dial-moon').length, 'the card draws the dial’s own ring');
+  assert.equal(ring.querySelector('.today-cycle-season').firstChild.textContent.trim(), document.getElementById('season-wheel-hub-theme').firstChild.textContent);
   assert.ok(!today.textContent.includes(now.report.story), 'the cycle story stays on the cycle tab');
-  const story = open();
-  assert.deepEqual(heads(story), ['Risk Factors', 'Cycle Story']);
-  assert.equal(story.querySelector('.wr-title').textContent, nowModel.era.name);
-  assert.deepEqual(ranked(story), ranked(today));
   assert.ok(risksOf(nowModel.era).length > 0);
   assert.deepEqual(ranked(today), risksOf(nowModel.era));
   const ten = [...today.querySelectorAll('.cat-risk .lab-item')].find(b => b.textContent.startsWith('US 10-year Treasury'));
@@ -180,12 +192,8 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   assert.deepEqual(broken(today.innerHTML), []);
   for (const c of marketCycles.filter(c => !c.ongoing)) {
     renderDiagnosis(cycleModel(c));
-    assert.equal(card().querySelector('.ai-clamp').textContent, c.blurb, c.name);
-    const past = open();
-    assert.deepEqual(heads(past).filter(h => h !== 'Risk Factors'), ['Cycle Story'], c.name);
-    assert.equal(past.querySelector('.wr-title').textContent, c.name);
-    assert.deepEqual(ranked(past), risksOf(c).filter(n => ROSTER.some(R => R.name === n)), c.name + ' risks');
-    assert.deepEqual(broken(past.innerHTML), [], c.name);
+    reads(c, c.blurb);
+    assert.deepEqual(broken(card().outerHTML), [], c.name);
   }
   renderDiagnosis(nowModel);
   page.cycles['chart-home'] = null; sheetRenderers['chart-home']();

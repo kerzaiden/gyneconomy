@@ -3,77 +3,23 @@ import { byId, detailSlot, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
 import { CPI_TARGET, FED_TARGET_SRC, gdpSrc, HOLD_BAND, sp500AnnualReturns, TEMP_BAND_HI, TEMP_BAND_LO, typicalCycleSrc, typicalCycleYears } from "./data.ts";
-import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
+import { cycleModel, cycleYtdFraction } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
 import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
 import { fitYearDots, renderDiagnosis } from "./diagnosis.ts";
 import { cycleViewEl } from "./render-pages.ts";
 import { IND, nowWhen } from "./cycle-analysis.ts";
-import type { TrackSeg } from "./model.ts";
+import { dialRing } from "./dial-ring.ts";
+import type { DialQuarter } from "./dial-ring.ts";
 
 type CycleModel = ReturnType<typeof cycleModel>;
-type DialQuarter = { seg: TrackSeg; a0: number; a1: number; mid: number };
 type DialState = { m: CycleModel; quarters: DialQuarter[]; badgeDeg: number; badgeAt: number; polar: (r: number, deg: number) => string[]; parked: number | null };
 type HubOpen = { cat?: (typeof CATEGORIES)[number]; when: string } | null;
 
-// ---- the dial: one ring of moons, the market band inside, the year badge, the dots of a typical cycle ahead ----
+// ---- the dial: the ring, the year badge, and the hub ----
 function drawDial(m: CycleModel){
-  var era = m.era;
-  function polar(r: number, deg: number){ var a = (deg - 90) * Math.PI / 180; return [(r * Math.cos(a)).toFixed(2), (r * Math.sin(a)).toFixed(2)]; }
-  function arcPath(r: number, a0: number, a1: number){
-    if (a1 - a0 >= 359.9) a1 = a0 + 359.9;
-    var p0 = polar(r, a0), p1 = polar(r, a1), large = (a1 - a0) > 180 ? 1 : 0;
-    return "M" + p0[0] + " " + p0[1] + " A" + r + " " + r + " 0 " + large + " 1 " + p1[0] + " " + p1[1];
-  }
-  var R = 90;
-  var START = 2.5, LEAD = 3, GAP = 5, ORIGIN = START - 1.2, SEAM_END = 360 + START - GAP;
-  var MARGIN = 1.2, MIN_CORE = 0.6;
-  var ARC = SEAM_END - ORIGIN + MARGIN - LEAD, degPerYear = ARC / m.dialYears;
-  var quarterDeg = degPerYear / 4;
-  var MOON_W = 7;
-  var moonW = Math.max(5.5, Math.min(MOON_W, R * (quarterDeg - 2 * MARGIN - MIN_CORE) * Math.PI / 180));
-  var trackW = moonW + 5, capDegT = (trackW / 2) / R * 180 / Math.PI;
-  var capDegM = (moonW / 2) / R * 180 / Math.PI;
-  var parts = ['<path class="dial-track" d="' + arcPath(R, START - LEAD + capDegT, SEAM_END - capDegT) + '"></path>'];
-  var quarters: DialQuarter[] = [];
-
-  var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; });
-  var insetDeg = capDegM + MARGIN, runs: { seg: TrackSeg; a0: number; a1: number }[][] = [];
-  segs.forEach(function(seg){
-    var last = runs[runs.length - 1];
-    if (!last || seasonGroup(last[last.length - 1].seg.season) !== seasonGroup(seg.season)) runs.push(last = []);
-    last.push({ seg:seg, a0:ORIGIN + seg.from * degPerYear, a1:ORIGIN + seg.to * degPerYear });
-  });
-  runs.forEach(function(run){
-    var r0 = run[0].a0, r1 = run[run.length - 1].a1;
-    var v0 = r0 + insetDeg, v1 = r1 - insetDeg;
-    if (v1 - v0 < MIN_CORE){ var mid = (r0 + r1) / 2; v0 = mid - MIN_CORE / 2; v1 = mid + MIN_CORE / 2; }
-    run.forEach(function(q, k){
-      var s0 = v0 + (v1 - v0) * k / run.length, s1 = v0 + (v1 - v0) * (k + 1) / run.length;
-      var step = seasonGroup(q.seg.season), i = quarters.length, last = k === run.length - 1;
-      quarters.push({ seg:q.seg, a0:q.a0, a1:q.a1, mid:(q.a0 + q.a1) / 2 });
-      if (k === 0) parts.push('<path class="dial-moon cap ' + step + '" data-cap="' + i + '" d="' + arcPath(R, v0, v0 + 0.5) + '"></path>');
-      if (last) parts.push('<path class="dial-moon cap ' + step + '" data-cap="' + i + '" d="' + arcPath(R, v1 - 0.5, v1) + '"></path>');
-      parts.push('<path class="dial-moon ' + step + '" data-q="' + i + '" d="' + arcPath(R, s0, last ? s1 : s1 + 0.35) + '"></path>');
-    });
-  });
-  var RM = 75, peakMark = "";
-  for (var y = era.from; y <= m.endYear; y++){
-    var isYtd = m.ongoing && y === calendarTodayY, ret = sp500AnnualReturns[y];
-    if (ret == null) continue;
-    var capDeg = 3 / RM * 180 / Math.PI + 1.2;
-    var a0 = ORIGIN + (y - era.from) * degPerYear + capDeg;
-    var a1 = ORIGIN + (isYtd ? m.elapsedYears : (y - era.from + 1)) * degPerYear - capDeg;
-    if (a1 <= a0) continue;
-    parts.push('<path class="dial-mkt ' + (ret >= 0 ? "up" : "down") + (isYtd ? " ytd" : "") + '" data-year="' + y + '" d="' + arcPath(RM, a0, a1) + '"></path>');
-    if (y === m.peakYear){
-      var pk = polar(RM, (a0 + a1) / 2);
-      peakMark = '<g class="dial-peak ' + (ret >= 0 ? "up" : "down") + '" data-year="' + y + '" transform="translate(' + pk[0] + ' ' + pk[1] + ')"><circle class="disc" r="5.2"></circle><circle class="dot" r="1.9"></circle></g>';
-    }
-  }
-  if (peakMark) parts.push(peakMark);
-  var lastMoonEnd = ORIGIN + m.track.filter(function(x){ return !x.isNow; }).reduce(function(mx, x){ return Math.max(mx, x.to); }, 0) * degPerYear;
+  var g = dialRing(m), parts = g.parts, R = g.R, polar = g.polar, lastMoonEnd = g.lastMoonEnd, SEAM_END = g.SEAM_END;
   var BADGE_R = 13, BADGE_AT = R + 3, badgeHalf = BADGE_R / BADGE_AT * 180 / Math.PI;
   var badgeDeg = lastMoonEnd + (BADGE_R + 3.5) / R * 180 / Math.PI;
   if (badgeDeg + badgeHalf > SEAM_END) badgeDeg = 360;
@@ -81,22 +27,12 @@ function drawDial(m: CycleModel){
   // ---- horizontal centring (Keren, V414: "make sure the padding from the left and the right of the ----
   parts.push('<g class="dial-today-badge" transform="translate(' + bp[0] + ' ' + bp[1] + ')" style="pointer-events:auto">' +
     '<circle r="' + BADGE_R + '"></circle><text class="lbl" y="-3.6">YEAR</text><text class="num" y="7.4">' + m.yearIndex + '</text></g>');
-  if (m.ongoing){
-    var degPerQ = degPerYear / 4;
-    var dotFrom = ORIGIN + m.elapsedYears * degPerYear;
-    var dotTo = SEAM_END - 1;
-    var dotN = Math.round((dotTo - dotFrom) / degPerQ);
-    for (var q = 0; q < dotN; q++){
-      var qp = polar(RM, dotFrom + (dotTo - dotFrom) * (q + 0.5) / dotN);
-      parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');
-    }
-  }
   var dialEl = need("cycle-dial");
-  dialEl.style.setProperty("--moon-w", moonW.toFixed(2));
-  dialEl.style.setProperty("--track-w", trackW.toFixed(2));
-  dialEl.style.setProperty("--moon-w-active", (moonW + 5).toFixed(2));
+  dialEl.style.setProperty("--moon-w", g.moonW.toFixed(2));
+  dialEl.style.setProperty("--track-w", g.trackW.toFixed(2));
+  dialEl.style.setProperty("--moon-w-active", (g.moonW + 5).toFixed(2));
   dialEl.innerHTML = parts.join("");
-  dialState = { m:m, quarters:quarters, badgeDeg:badgeDeg, badgeAt:BADGE_AT, polar:polar, parked:null };
+  dialState = { m:m, quarters:g.quarters, badgeDeg:badgeDeg, badgeAt:BADGE_AT, polar:polar, parked:null };
   hubShowDefault();
 }
 // ---- the Appearance row: System · Light · Dark, kept in localStorage; System clears the choice ----
