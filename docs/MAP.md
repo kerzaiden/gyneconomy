@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,923 lines** in 42 files, about 610 KB, roughly **173 thousand tokens**. No session can
+The source is **8,963 lines** in 42 files, about 614 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `1e06e85` on 2026-10-11.
+Generated from commit `135a742` on 2026-10-11.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `1e06e85` on 2026-10-11.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,192 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,198 | the whole stylesheet, every token and rule |
 | `page-body.html` | 246 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **785** top-level functions, **123** top-level vars, **384** exported names, **20** boots.
+Counts: **38** modules, **789** top-level functions, **123** top-level vars, **387** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -39,7 +39,7 @@ Counts: **38** modules, **785** top-level functions, **123** top-level vars, **3
 | `js/readings.ts` | 719 | 66 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 153 | 6 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
-| `js/render-pages.ts` | 383 | 20 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
+| `js/render-pages.ts` | 385 | 20 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
 | `js/diagnosis.ts` | 84 | 12 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `refresh-season`, `render-core` |
 | `js/dial-cycle.ts` | 385 | 22 | `cycle-analysis`, `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
@@ -49,21 +49,21 @@ Counts: **38** modules, **785** top-level functions, **123** top-level vars, **3
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 62 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 106 | 28 | `cycle-analysis`, `data`, `dom`, `era`, `marks`, `model`, `reading`, `render-core`, `roster` |
-| `js/charts.ts` | 240 | 32 | — |
+| `js/charts.ts` | 248 | 33 | — |
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 477 | 133 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 75 | 13 | `data`, `dom`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster`, `wave-chart` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 330 | 15 | `charts`, `data`, `format`, `history`, `history-fred`, `readings`, `refresh-season` |
+| `js/history-charts.ts` | 342 | 17 | `charts`, `data`, `format`, `history`, `history-fred`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 32 | 14 | — |
-| `js/indicators.ts` | 170 | 29 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
-| `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
+| `js/indicators.ts` | 174 | 30 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
+| `js/inner-pages.ts` | 233 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/insights.ts` | 185 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/marks.ts` | 58 | 27 | — |
-| `js/pressure.ts` | 375 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `pulse-strips`, `reading`, `readings`, `rhythm`, `roster` |
+| `js/pressure.ts` | 379 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `pulse-strips`, `reading`, `readings`, `rhythm`, `roster` |
 | `js/pulse-strips.ts` | 168 | 20 | `charts`, `data`, `format` |
-| `js/reading.ts` | 95 | 12 | `charts`, `dom`, `format`, `history`, `render-core`, `roster` |
+| `js/reading.ts` | 96 | 12 | `charts`, `dom`, `format`, `history`, `render-core`, `roster` |
 | `js/rhythm.ts` | 47 | 8 | `data`, `format` |
 | `js/wave-chart.ts` | 102 | 25 | `format` |
 | `js/main.ts` | 44 | 0 | `analysis`, `credit`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
@@ -88,7 +88,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 10 | `bootReadingRegistry` | `js/readings.ts:652`–718 |
 | 11 | `bootRoster` | `js/roster.ts:140`–152 |
 | 12 | `bootRenderCore` | `js/render-core.ts:150`–155 |
-| 13 | `bootRenderPages` | `js/render-pages.ts:374`–379 |
+| 13 | `bootRenderPages` | `js/render-pages.ts:376`–381 |
 | 14 | `bootDiagnosis` | `js/diagnosis.ts:80`–83 |
 | 15 | `bootDialCycle` | `js/dial-cycle.ts:363`–384 |
 | 16 | `bootAnalysis` | `js/analysis.ts:74`–78 |
@@ -611,32 +611,32 @@ falls in. **export** marks a name other modules import.
 | 160 | `spreadLabel` | `function spreadLabel(` |
 | 164 | `spreadsHead` | `function spreadsHead(` |
 | 176 | `defineSpreads` | `function defineSpreads(` |
-| 201 | `spreadInsights` | `function spreadInsights(` |
+| 202 | `spreadInsights` | `function spreadInsights(` |
 
 #### RENDER: Hormones
 
 | Line | Name | Anchor |
 |---|---|---|
-| 227 | `ffCycleMonths` | `function ffCycleMonths(` |
-| 235 | `hormonesInfo` | `function hormonesInfo(` |
-| 249 | `ffPeaks` | `function ffPeaks(` |
-| 262 | `lowerRun` | `function lowerRun(` |
-| 267 | `hormonesInsight` | `function hormonesInsight(` |
-| 289 | `defineHormones` | `function defineHormones(` |
+| 228 | `ffCycleMonths` | `function ffCycleMonths(` |
+| 236 | `hormonesInfo` | `function hormonesInfo(` |
+| 250 | `ffPeaks` | `function ffPeaks(` |
+| 263 | `lowerRun` | `function lowerRun(` |
+| 268 | `hormonesInsight` | `function hormonesInsight(` |
+| 290 | `defineHormones` | `function defineHormones(` |
 
 #### RENDER: Volatility — the VIX since 1986, and the shape of its curve today
 
 | Line | Name | Anchor |
 |---|---|---|
-| 306 | `defineVolatility` | `function defineVolatility(` |
-| 338 | `volatilityHighlights` | `function volatilityHighlights(` |
+| 308 | `defineVolatility` | `function defineVolatility(` |
+| 340 | `volatilityHighlights` | `function volatilityHighlights(` |
 
 #### Per-cycle growth helpers (the cycle view and Herstory both use them)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 366 | `setTopbar` · export | `function setTopbar(` |
-| 380 | `defineSubjectReadings` · export | `function defineSubjectReadings(` |
+| 368 | `setTopbar` · export | `function setTopbar(` |
+| 382 | `defineSubjectReadings` · export | `function defineSubjectReadings(` |
 
 ### `js/diagnosis.ts`
 
@@ -898,29 +898,30 @@ falls in. **export** marks a name other modules import.
 | 91 | `histFrame` · export | `function histFrame(` |
 | 98 | `xLabel` · export | `function xLabel(` |
 | 101 | `yLabel` · export | `function yLabel(` |
-| 104 | `crossLine` · export | `function crossLine(` |
-| 107 | `zeroRule` · export | `function zeroRule(` |
-| 110 | `meanRule` · export | `function meanRule(` |
-| 112 | `publishGeom` · export | `function publishGeom(` |
-| 113 | `histBar` · export | `function histBar(` |
-| 116 | `histTip` · export | `function histTip(` |
-| 117 | `avgRule` · export | `function avgRule(` |
-| 120 | `vhOpen` · export | `function vhOpen(` |
-| 121 | `autoTicks` | `function autoTicks(` |
-| 129 | `chartAxes` · export | `function chartAxes(` |
-| 153 | `divergeChart` · export | `function divergeChart(` |
+| 105 | `histKey` · export | `function histKey(` |
+| 108 | `crossLine` · export | `function crossLine(` |
+| 111 | `zeroRule` · export | `function zeroRule(` |
+| 114 | `meanRule` · export | `function meanRule(` |
+| 116 | `publishGeom` · export | `function publishGeom(` |
+| 117 | `histBar` · export | `function histBar(` |
+| 120 | `histTip` · export | `function histTip(` |
+| 121 | `avgRule` · export | `function avgRule(` |
+| 124 | `vhOpen` · export | `function vhOpen(` |
+| 125 | `autoTicks` | `function autoTicks(` |
+| 133 | `chartAxes` · export | `function chartAxes(` |
+| 161 | `divergeChart` · export | `function divergeChart(` |
 
 #### A series' highest reading within a span
 
 | Line | Name | Anchor |
 |---|---|---|
-| 189 | `PEEK_MARKS` | `var PEEK_MARKS =` |
-| 190 | `PEEK_W` | `var PEEK_W =` |
-| 191 | `PEEK_H` | `var PEEK_H =` |
-| 192 | `colPeek` · export | `function colPeek(` |
-| 209 | `windowYears` · export | `function windowYears(` |
-| 217 | `refName` | `function refName(` |
-| 221 | `beatPath` · export | `function beatPath(` |
+| 197 | `PEEK_MARKS` | `var PEEK_MARKS =` |
+| 198 | `PEEK_W` | `var PEEK_W =` |
+| 199 | `PEEK_H` | `var PEEK_H =` |
+| 200 | `colPeek` · export | `function colPeek(` |
+| 217 | `windowYears` · export | `function windowYears(` |
+| 225 | `refName` | `function refName(` |
+| 229 | `beatPath` · export | `function beatPath(` |
 
 ### `js/concentration.ts`
 
@@ -1165,14 +1166,16 @@ falls in. **export** marks a name other modules import.
 | 135 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
 | 138 | `mortgageHistoryChart` · export | `function mortgageHistoryChart(` |
 | 141 | `rateFence` · export | `function rateFence(` |
-| 145 | `rateShades` · export | `function rateShades(` |
-| 149 | `rateColumnsChart` | `function rateColumnsChart(` |
-| 192 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 230 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 277 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 318 | `m2Step` | `function m2Step(` |
-| 322 | `heatEdges` | `function heatEdges(` |
-| 326 | `heatStep` | `function heatStep(` |
+| 145 | `rateKey` · export | `function rateKey(` |
+| 149 | `heatKey` · export | `function heatKey(` |
+| 155 | `m2Key` · export | `function m2Key(` |
+| 161 | `rateColumnsChart` | `function rateColumnsChart(` |
+| 204 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 242 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 289 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 330 | `m2Step` | `function m2Step(` |
+| 334 | `heatEdges` | `function heatEdges(` |
+| 338 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 
@@ -1215,26 +1218,27 @@ falls in. **export** marks a name other modules import.
 | 60 | `withCredit` | `function withCredit(` |
 | 67 | `productivityPage` | `function productivityPage(` |
 | 70 | `splitSpec` | `function splitSpec(` |
-| 76 | `splitInfo` | `function splitInfo(` |
-| 80 | `periodTicks` | `function periodTicks(` |
-| 85 | `periodOfSeries` | `function periodOfSeries(` |
-| 86 | `splitHistory` | `function splitHistory(` |
-| 97 | `defineSplits` · export | `function defineSplits(` |
+| 76 | `splitKey` | `function splitKey(` |
+| 80 | `splitInfo` | `function splitInfo(` |
+| 84 | `periodTicks` | `function periodTicks(` |
+| 89 | `periodOfSeries` | `function periodOfSeries(` |
+| 90 | `splitHistory` | `function splitHistory(` |
+| 101 | `defineSplits` · export | `function defineSplits(` |
 
 #### The split indicators' insights
 
 | Line | Name | Anchor |
 |---|---|---|
-| 107 | `buffettInsight` | `function buffettInsight(` |
-| 122 | `debtInsight` | `function debtInsight(` |
-| 137 | `signedFig` | `function signedFig(` |
-| 138 | `lineInsight` | `function lineInsight(` |
-| 141 | `productivityInsight` | `function productivityInsight(` |
-| 145 | `confidenceInsight` | `function confidenceInsight(` |
-| 149 | `desireInsight` | `function desireInsight(` |
-| 153 | `premiumInsight` | `function premiumInsight(` |
-| 157 | `ORDINAL` | `var ORDINAL =` |
-| 158 | `marketInsight` | `function marketInsight(` |
+| 111 | `buffettInsight` | `function buffettInsight(` |
+| 126 | `debtInsight` | `function debtInsight(` |
+| 141 | `signedFig` | `function signedFig(` |
+| 142 | `lineInsight` | `function lineInsight(` |
+| 145 | `productivityInsight` | `function productivityInsight(` |
+| 149 | `confidenceInsight` | `function confidenceInsight(` |
+| 153 | `desireInsight` | `function desireInsight(` |
+| 157 | `premiumInsight` | `function premiumInsight(` |
+| 161 | `ORDINAL` | `var ORDINAL =` |
+| 162 | `marketInsight` | `function marketInsight(` |
 
 ### `js/inner-pages.ts`
 
@@ -1247,19 +1251,19 @@ falls in. **export** marks a name other modules import.
 | 34 | `lagRow` | `function lagRow(` |
 | 35 | `monthWindow` | `function monthWindow(` |
 | 39 | `defineTemp` | `function defineTemp(` |
-| 54 | `defineGdp` | `function defineGdp(` |
-| 71 | `defineActivity` | `function defineActivity(` |
-| 88 | `defineDeficit` | `function defineDeficit(` |
-| 104 | `valuationInfo` | `function valuationInfo(` |
-| 105 | `defineValuation` | `function defineValuation(` |
-| 126 | `defineInnerReadings` · export | `function defineInnerReadings(` |
-| 131 | `wireMetricPageControls` | `function wireMetricPageControls(` |
-| 159 | `valuationHighlights` | `function valuationHighlights(` |
-| 171 | `tempHighlights` | `function tempHighlights(` |
-| 186 | `gdpHighlights` | `function gdpHighlights(` |
-| 201 | `shutPickers` | `function shutPickers(` |
-| 207 | `wireControlKeys` | `function wireControlKeys(` |
-| 226 | `wirePageControls` · export | `function wirePageControls(` |
+| 55 | `defineGdp` | `function defineGdp(` |
+| 72 | `defineActivity` | `function defineActivity(` |
+| 90 | `defineDeficit` | `function defineDeficit(` |
+| 107 | `valuationInfo` | `function valuationInfo(` |
+| 108 | `defineValuation` | `function defineValuation(` |
+| 129 | `defineInnerReadings` · export | `function defineInnerReadings(` |
+| 134 | `wireMetricPageControls` | `function wireMetricPageControls(` |
+| 162 | `valuationHighlights` | `function valuationHighlights(` |
+| 174 | `tempHighlights` | `function tempHighlights(` |
+| 189 | `gdpHighlights` | `function gdpHighlights(` |
+| 204 | `shutPickers` | `function shutPickers(` |
+| 210 | `wireControlKeys` | `function wireControlKeys(` |
+| 229 | `wirePageControls` · export | `function wirePageControls(` |
 
 ### `js/insights.ts`
 
@@ -1333,28 +1337,28 @@ falls in. **export** marks a name other modules import.
 | 70 | `flowRow` | `function flowRow(` |
 | 71 | `pulseHistory` | `function pulseHistory(` |
 | 78 | `defineFlow` | `function defineFlow(` |
-| 104 | `ylmYearMarks` | `function ylmYearMarks(` |
-| 123 | `ylmColumns` | `function ylmColumns(` |
-| 143 | `ylmFitLine` | `function ylmFitLine(` |
-| 155 | `pressureHead` | `function pressureHead(` |
-| 167 | `definePressure` | `function definePressure(` |
+| 106 | `ylmYearMarks` | `function ylmYearMarks(` |
+| 125 | `ylmColumns` | `function ylmColumns(` |
+| 145 | `ylmFitLine` | `function ylmFitLine(` |
+| 157 | `pressureHead` | `function pressureHead(` |
+| 169 | `definePressure` | `function definePressure(` |
 
 #### Pressure's Insights
 
 | Line | Name | Anchor |
 |---|---|---|
-| 289 | `pressureInsights` | `function pressureInsights(` |
+| 292 | `pressureInsights` | `function pressureInsights(` |
 
 #### RENDER: the 30-year mortgage rate — what a household pays for money, monthly since 1971
 
 | Line | Name | Anchor |
 |---|---|---|
-| 323 | `MORTGAGE_BACK` | `var MORTGAGE_BACK =` |
-| 329 | `mortgageLast` | `function mortgageLast(` |
-| 330 | `mortgageInfo` | `function mortgageInfo(` |
-| 342 | `mortgageInsight` | `function mortgageInsight(` |
-| 354 | `defineMortgage` | `function defineMortgage(` |
-| 372 | `defineMarketReadings` · export | `function defineMarketReadings(` |
+| 326 | `MORTGAGE_BACK` | `var MORTGAGE_BACK =` |
+| 332 | `mortgageLast` | `function mortgageLast(` |
+| 333 | `mortgageInfo` | `function mortgageInfo(` |
+| 345 | `mortgageInsight` | `function mortgageInsight(` |
+| 357 | `defineMortgage` | `function defineMortgage(` |
+| 376 | `defineMarketReadings` · export | `function defineMarketReadings(` |
 
 ### `js/pulse-strips.ts`
 
@@ -1389,23 +1393,23 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 22 | `defineReading` · export | `function defineReading(` |
-| 23 | `readingFor` · export | `function readingFor(` |
-| 28 | `todayFace` · export | `function todayFace(` |
-| 32 | `historyHtml` | `function historyHtml(` |
-| 37 | `drawReading` | `function drawReading(` |
-| 46 | `chartShell` · export | `function chartShell(` |
-| 49 | `paintInsight` · export | `function paintInsight(` |
-| 50 | `mountReadings` · export | `function mountReadings(` |
-| 62 | `redrawReading` · export | `function redrawReading(` |
+| 23 | `defineReading` · export | `function defineReading(` |
+| 24 | `readingFor` · export | `function readingFor(` |
+| 29 | `todayFace` · export | `function todayFace(` |
+| 33 | `historyHtml` | `function historyHtml(` |
+| 38 | `drawReading` | `function drawReading(` |
+| 47 | `chartShell` · export | `function chartShell(` |
+| 50 | `paintInsight` · export | `function paintInsight(` |
+| 51 | `mountReadings` · export | `function mountReadings(` |
+| 63 | `redrawReading` · export | `function redrawReading(` |
 
 #### One record, read the same way on every page
 
 | Line | Name | Anchor |
 |---|---|---|
-| 69 | `recordPoints` · export | `function recordPoints(` |
-| 75 | `recordInsight` · export | `function recordInsight(` |
-| 88 | `indicatorInsight` · export | `function indicatorInsight(` |
+| 70 | `recordPoints` · export | `function recordPoints(` |
+| 76 | `recordInsight` · export | `function recordInsight(` |
+| 89 | `indicatorInsight` · export | `function indicatorInsight(` |
 
 ### `js/rhythm.ts`
 
@@ -1484,16 +1488,16 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 660 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
 | 685 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
 | 733 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 876 | View more: the button under Year by Year and Herstory |
-| 888 | The symptoms: a cycle's years against today |
-| 1,037 | yield curve charts |
-| 1,061 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,080 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,093 | un-inversion-to-recession historical lag panel |
-| 1,102 | the reading's tag |
-| 1,106 | info icon + popover (progressive disclosure for longer notes) |
-| 1,120 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,183 | footer |
+| 882 | View more: the button under Year by Year and Herstory |
+| 894 | The symptoms: a cycle's years against today |
+| 1,043 | yield curve charts |
+| 1,067 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,086 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,099 | un-inversion-to-recession historical lag panel |
+| 1,108 | the reading's tag |
+| 1,112 | info icon + popover (progressive disclosure for longer notes) |
+| 1,126 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,189 | footer |
 
 ## Markup landmarks
 

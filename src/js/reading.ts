@@ -1,6 +1,6 @@
 import { auxStat, hiCard, highlightsHtml, lede, pointLabel } from "./format.ts";
 import { addSources, byIdMaybe, put } from "./dom.ts";
-import { histBar, histTip } from "./charts.ts";
+import { type KeyRow, histBar, histKey, histTip } from "./charts.ts";
 import { attachHistory, headSigma, histHead, histNote, refitHistory } from "./history.ts";
 import { keyed, ROSTER } from "./roster.ts";
 import { drawsPage, metricSheet, sheetRenderers, timingPill } from "./render-core.ts";
@@ -11,6 +11,7 @@ export type History = { chart: (w: number) => string; geom: string; trend: strin
 export type Reading = {
   face: () => [string, string];
   info: () => string;
+  key?: () => KeyRow[];
   controls: () => string;
   history: (W: number) => History;
   insight: () => string;
@@ -53,7 +54,7 @@ export function mountReadings(host: HTMLElement){
     sheet.classList.add("cat-" + R.cat);
     sheet.innerHTML = timingPill(R.timing) + '<div id="' + R.id + '-chart"></div><div id="' + R.id + '-highlights"></div>';
     host.appendChild(sheet);
-    histNote(R.hk || R.id, r.info);
+    histNote(R.hk || R.id, function(){ return r.info() + (r.key ? histKey(r.key()) : ""); });
     drawsPage(R.id, function(W?: number){ drawReading(R, W); });
     paintInsight(R);
     if (r.src) addSources(r.src);

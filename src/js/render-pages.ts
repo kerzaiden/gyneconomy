@@ -8,7 +8,7 @@ import { curveAsOf, curveNoteFull, FENCE_SRC, fedFundsRange, now, policyDirectio
 import { cycleQtrIdx, cycleSlice } from "./model.ts";
 import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, timelineWindow } from "./history.ts";
 import { curveVerdict, fearCurve, horizonInfoHtml, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
-import { fedFundsHistoryChart, rateShades } from "./history-charts.ts";
+import { fedFundsHistoryChart, rateKey } from "./history-charts.ts";
 import { chartShell, defineReading, redrawReading } from "./reading.ts";
 type SpreadSeries = { title: string; lede: string; data: typeof t10y3mHistory; detail: string; sources: Src[] };
 type VolPoint = (typeof volatilityHistory)[number];
@@ -182,6 +182,7 @@ function defineSpreads(){
     face:function(){ var s = horizonRead.spread; return [(s < 0 ? "\u2212" : "+") + Math.abs(s).toFixed(2), horizonRead.word]; },
     asOf:curveAsOf,
     info:function(){ return horizonInfoHtml(spreadPick, spreadDetail(spreadPick)); },
+    key:function(){ return [["hk-2", "Normal: the spread above zero"], ["hk-4", "Inverted: the spread below zero"]]; },
     controls:function(){ return histControls(key, { depth:Math.floor(hznData().length / 4) }, hznY0); },
     history:function(){
       var data = hznData(), cyc = pageCycle(key, hznY0), idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
@@ -244,7 +245,7 @@ function hormonesInfo(){ return '<h4>Effective Federal Funds Rate</h4>' + factsF
     "\u2014 that month ran partly under the previous target. " +
     "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " +
     "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " +
-    "both is the reason this one stands on zero rather than on its own minimum. " + rateShades(fedFundsHistory) + " " +
+    "both is the reason this one stands on zero rather than on its own minimum. " +
     "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.") + srcBlock([FENCE_SRC]); }
 function ffPeaks(){
   var out: typeof fedFundsHistory = [], mode = "up", ext = fedFundsHistory[0];
@@ -291,6 +292,7 @@ function defineHormones(){
   defineReading("sheet-sign-hormones", {
     face:function(){ return [fedFundsRange(), policyDirection()]; },
     info:hormonesInfo,
+    key:function(){ return rateKey(fedFundsHistory); },
     controls:function(){ return histControls(key, { series:fedFundsHistory }, FF_Y0); },
     history:function(){
       var cyc = pageCycle(key), span = cyc ? ffCycleMonths(cyc) : null;

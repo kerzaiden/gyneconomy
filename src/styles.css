@@ -634,7 +634,7 @@
   .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
   .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
   .ps-beat{ fill:none; stroke:var(--hist-5); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
-  .ps-beat.odd, .ps-beat.flat{ stroke:var(--hist-4); }
+  .ps-beat.odd, .ps-beat.flat{ stroke:var(--hist-x); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
   .ps-scroll{ position:absolute; left:0; right:0; overflow-y:auto; scrollbar-width:none; }
@@ -808,6 +808,12 @@
   .ff-col.fx{ stroke:var(--hist-x); }
   .dv-bar.over{ stroke:var(--hist-4); } .dv-bar.under{ stroke:var(--hist-2); }
   .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
+  .bt-yl.bt-ref{ fill:var(--text-primary); font-weight:600; }
+  .hist-key{ list-style:none; margin:12px 0 0; padding:0; display:grid; gap:6px; font-size:var(--type-meta); color:var(--text-secondary); }
+  .hist-key li{ display:flex; align-items:flex-start; gap:8px; line-height:1.4; }
+  .hk{ flex:none; width:14px; height:9px; margin-top:4px; border-radius:3px; }
+  .hk-0{ background:var(--hist-0); } .hk-1{ background:var(--hist-1); } .hk-2{ background:var(--hist-2); } .hk-3{ background:var(--hist-3); } .hk-4{ background:var(--hist-4); } .hk-5{ background:var(--hist-5); } .hk-x{ background:var(--hist-x); }
+  .hk-ramp{ background:linear-gradient(90deg, var(--hist-0), var(--hist-2), var(--hist-4), var(--hist-5)); }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
   .bt-xl, .bt-yl{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); fill:var(--text-muted); }
 

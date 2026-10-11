@@ -631,7 +631,7 @@
   .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
   .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
   .ps-beat{ fill:none; stroke:var(--hist-5); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
-  .ps-beat.odd, .ps-beat.flat{ stroke:var(--hist-4); }
+  .ps-beat.odd, .ps-beat.flat{ stroke:var(--hist-x); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
   .ps-scroll{ position:absolute; left:0; right:0; overflow-y:auto; scrollbar-width:none; }
@@ -802,6 +802,12 @@
   .ff-col.fx{ stroke:var(--hist-x); }
   .dv-bar.over{ stroke:var(--hist-4); } .dv-bar.under{ stroke:var(--hist-2); }
   .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
+  .bt-yl.bt-ref{ fill:var(--text-primary); font-weight:600; }
+  .hist-key{ list-style:none; margin:12px 0 0; padding:0; display:grid; gap:6px; font-size:var(--type-meta); color:var(--text-secondary); }
+  .hist-key li{ display:flex; align-items:flex-start; gap:8px; line-height:1.4; }
+  .hk{ flex:none; width:14px; height:9px; margin-top:4px; border-radius:3px; }
+  .hk-0{ background:var(--hist-0); } .hk-1{ background:var(--hist-1); } .hk-2{ background:var(--hist-2); } .hk-3{ background:var(--hist-3); } .hk-4{ background:var(--hist-4); } .hk-5{ background:var(--hist-5); } .hk-x{ background:var(--hist-x); }
+  .hk-ramp{ background:linear-gradient(90deg, var(--hist-0), var(--hist-2), var(--hist-4), var(--hist-5)); }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
   .bt-xl, .bt-yl{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); fill:var(--text-muted); }
 
@@ -45151,6 +45157,11 @@
   function yLabel(x, y, text, anchor, cls) {
     return '<text class="bt-yl' + (cls ? " " + cls : "") + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + "</text>";
   }
+  function histKey(rows) {
+    return '<ul class="hist-key">' + rows.map(function(r) {
+      return '<li><i class="hk ' + r[0] + '"></i>' + r[1] + "</li>";
+    }).join("") + "</ul>";
+  }
   function crossLine(top, bot) {
     return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
   }
@@ -45204,9 +45215,15 @@
     ticks.forEach(function(v) {
       var ty = parseFloat(o.y(v));
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;
+      if ((o.marks || []).some(function(m) {
+        return Math.abs(ty - parseFloat(o.y(m))) < 12;
+      })) return;
       if ((o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9) && (o.base == null || Math.abs(ty - parseFloat(o.base)) > .5)) out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + "," + ty.toFixed(1) + "L" + fx1.toFixed(1) + "," + ty.toFixed(1) + '"/>');
       var ly = ty - 5;
       out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, ly, o.fmt(v), "middle"));
+    });
+    (o.marks || []).forEach(function(m) {
+      out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, parseFloat(o.y(m)) - 5, (o.markFmt || o.fmt)(m), "middle", "bt-ref"));
     });
     if (o.base != null) out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + "," + o.base + "L" + fx1.toFixed(1) + "," + o.base + '"/>');
     return out.join("");
@@ -45236,7 +45253,8 @@
       top: padT - AXIS.LEG - AXIS.READ,
       bot: padT + ih,
       base: padT + ih,
-      skipNear: midY,
+      marks: [ o.mid ],
+      markFmt: o.fmt,
       step: o.step,
       fmt: o.tickFmt || o.fmt
     }) ];
@@ -49127,6 +49145,10 @@
       x1: R,
       base: Y(0),
       noGridAt: 0,
+      marks: [ DEF_1983 ],
+      markFmt: function(v) {
+        return fmtSigned(v, 1) + "%";
+      },
       top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(at) {
@@ -49245,6 +49267,7 @@
       x1: R,
       base: LO <= 0 && HI >= 0 ? Y(0) : B,
       noGridAt: 0,
+      marks: [ NROU_NOW ],
       top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
@@ -49310,8 +49333,20 @@
     }), q1 = quartile(vs, .25), q3 = quartile(vs, .75);
     return q3 + 1.5 * (q3 - q1);
   }
-  function rateShades(series) {
-    return "The columns shade from yellow to red by height, six equal steps of the range in view; plum marks only the months past " + rateFence(series).toFixed(2) + "%, Tukey’s fence of the whole record, the standard rule for an outlier.";
+  function rateKey(series) {
+    return [ [ "hk-ramp", "Lowest to highest of the range in view, in six equal steps" ], [ "hk-x", "Past " + rateFence(series).toFixed(2) + "%, Tukey’s fence of the whole record: an outlier" ] ];
+  }
+  function heatKey() {
+    var top = heatEdges(), p = function(v) {
+      return v.toFixed(1) + "%";
+    };
+    return [ [ "hk-x", "Below " + p(TEMP_BAND_LO) + ", under the range" ], [ "hk-0", p(TEMP_BAND_LO) + " to " + p(CPI_TARGET) + ", under the Fed’s target" ], [ "hk-1", p(CPI_TARGET) + " to " + p(TEMP_BAND_HI) + ", the top of the range" ], [ "hk-2", p(TEMP_BAND_HI) + " to " + p(top[0]) + ", up to the record’s 90th percentile" ], [ "hk-3", p(top[0]) + " to " + p(top[1]) + ", its 90th to 95th" ], [ "hk-4", "Above " + p(top[1]) + ", its hottest twentieth" ] ];
+  }
+  function m2Key() {
+    var p = function(v) {
+      return v.toFixed(1) + "%";
+    };
+    return [ [ "hk-x", "Below 0%: the money stock shrinking" ], [ "hk-4", "0% to " + p(M2_PACE_LO) + ", the record’s slowest tenth" ], [ "hk-3", p(M2_PACE_LO) + " to " + p(M2_NORM) + ", the long-run pace" ], [ "hk-2", p(M2_NORM) + " to " + p(M2_PACE_HI) + ", up to its fastest tenth" ], [ "hk-1", p(M2_PACE_HI) + " to " + p(M2_FLOOD) + ", the fastest before 2020" ], [ "hk-0", "Above " + p(M2_FLOOD) + ": the flood" ] ];
   }
   function rateColumnsChart(series, geom, what, Wpx, from, o) {
     o = o || {};
@@ -49418,6 +49453,7 @@
       x1: R,
       base: LO <= 0 && HI >= 0 ? Y(0) : B,
       noGridAt: 0,
+      marks: [ CPI_TARGET ],
       top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
@@ -49495,6 +49531,7 @@
       x1: R,
       base: LO <= 0 && HI >= 0 ? Y(0) : B,
       noGridAt: 0,
+      marks: [ GDP_NORM ],
       top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
@@ -49574,6 +49611,7 @@
       x1: R,
       base: LO <= 0 && HI >= 0 ? Y(0) : B,
       noGridAt: 0,
+      marks: [ M2_NORM ],
       top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
@@ -49695,7 +49733,9 @@
       sheet.classList.add("cat-" + R.cat);
       sheet.innerHTML = timingPill(R.timing) + '<div id="' + R.id + '-chart"></div><div id="' + R.id + '-highlights"></div>';
       host.appendChild(sheet);
-      histNote(R.hk || R.id, r.info);
+      histNote(R.hk || R.id, function() {
+        return r.info() + (r.key ? histKey(r.key()) : "");
+      });
       drawsPage(R.id, function(W) {
         drawReading(R, W);
       });
@@ -50016,6 +50056,9 @@
       info: function() {
         return horizonInfoHtml(spreadPick, spreadDetail(spreadPick));
       },
+      key: function() {
+        return [ [ "hk-2", "Normal: the spread above zero" ], [ "hk-4", "Inverted: the spread below zero" ] ];
+      },
       controls: function() {
         return histControls(key, {
           depth: Math.floor(hznData().length / 4)
@@ -50085,7 +50128,7 @@
     return a === -1 ? null : [ a, b ];
   }
   function hormonesInfo() {
-    return "<h4>Effective Federal Funds Rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole yield curve is quoted against, which is why it reads first on this page and the Treasury levels below read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, so the two are different figures and the page says which is which: the range is the decision, the chart is where money traded. Target " + fedFundsRange() + (now.fedFunds.asOf ? ", set " + now.fedFunds.asOf : "") + (now.fedFunds.vote ? " on a " + now.fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date — that month ran partly under the previous target. The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June 1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds both is the reason this one stands on zero rather than on its own minimum. " + rateShades(fedFundsHistory) + " Source: Federal Reserve H.15 via FRED, series FEDFUNDS.") + srcBlock([ FENCE_SRC ]);
+    return "<h4>Effective Federal Funds Rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole yield curve is quoted against, which is why it reads first on this page and the Treasury levels below read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, so the two are different figures and the page says which is which: the range is the decision, the chart is where money traded. Target " + fedFundsRange() + (now.fedFunds.asOf ? ", set " + now.fedFunds.asOf : "") + (now.fedFunds.vote ? " on a " + now.fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date — that month ran partly under the previous target. The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June 1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds both is the reason this one stands on zero rather than on its own minimum. Source: Federal Reserve H.15 via FRED, series FEDFUNDS.") + srcBlock([ FENCE_SRC ]);
   }
   function ffPeaks() {
     var out = [], mode = "up", ext = fedFundsHistory[0];
@@ -50134,6 +50177,9 @@
         return [ fedFundsRange(), policyDirection() ];
       },
       info: hormonesInfo,
+      key: function() {
+        return rateKey(fedFundsHistory);
+      },
       controls: function() {
         return histControls(key, {
           series: fedFundsHistory
@@ -53065,6 +53111,9 @@
       info: function() {
         return pulseInfoHtml(flowRow("Pulse")) + stripsInfo() + rhythmInfo();
       },
+      key: function() {
+        return [ [ "hk-5", "A regular beat" ], [ "hk-x", "An odd quarter: velocity moved past Tukey’s fence of its quarterly changes, flat where it fell past the far-out fence" ] ];
+      },
       controls: function() {
         return histControls("pulse-range", {
           depth: Math.floor(m2vHistory.length / 4)
@@ -53090,6 +53139,7 @@
       info: function() {
         return volumeInfoHtml(flowRow("Volume"));
       },
+      key: m2Key,
       controls: function() {
         return histControls("volume-range", {
           depth: Math.floor((m2Yoy.length - 4) / 4)
@@ -53384,6 +53434,9 @@
       info: function() {
         return "<h4>" + titleCase(matTitle()) + "</h4>" + factsFrom(matDetail());
       },
+      key: function() {
+        return [ [ "hk-2", "Normal: the 10-year above the 3-month" ], [ "hk-4", "Inverted: the 10-year below the 3-month" ] ];
+      },
       controls: function() {
         return histControls("pressure-range", {
           depth: Math.floor(quarters.length / 4)
@@ -53457,7 +53510,7 @@
     };
     return "<h4>30-Year Mortgage Rate</h4>" + factsFrom("The average rate on a new 30-year fixed-rate mortgage, as Freddie Mac surveys lenders each week; the chart is the monthly average of the weeks surveyed, " + last.v.toFixed(2) + "% in " + atMonth(last) + ", whose last month holds only the weeks published so far. It is the price of money where most households meet it: lenders price it off the 10-year Treasury and add a spread for their risk and costs. It is what a new loan costs, not what households pay: most mortgages are fixed, so a higher rate reaches the Debt-to-income ratio only as people move or refinance. The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) + " points against twelve months earlier. Steady is within " + pt(T.still) + " points and quickly is past " + pt(T.fast) + ", the lower and upper quartiles of every twelve-month move since " + atMonth({
       m: T.from
-    }) + ". No band is drawn: as with the Treasury yields, no published convention says where a mortgage rate turns high. " + rateShades(mortgageHistory)) + srcBlock(MORTGAGE_SRC.concat([ FENCE_SRC ]));
+    }) + ". No band is drawn: as with the Treasury yields, no published convention says where a mortgage rate turns high; the colour key below marks only the record’s own outliers.") + srcBlock(MORTGAGE_SRC.concat([ FENCE_SRC ]));
   }
   function mortgageInsight() {
     var h = mortgageHistory, last = mortgageLast(), pct2 = function(v) {
@@ -53485,6 +53538,9 @@
         return mortgageLast().m;
       },
       info: mortgageInfo,
+      key: function() {
+        return rateKey(mortgageHistory);
+      },
       controls: function() {
         return histControls(key, {
           series: h
@@ -53682,6 +53738,10 @@
     s.midLabel = P.line + ", " + (P.tick || P.fmt)(midOf(R));
     return s;
   }
+  function splitKey(s) {
+    var line = s.midLabel + " (" + s.fmt(s.mid) + ")";
+    return [ [ "hk-2", (s.goodAbove ? "Above " : "Below ") + line ], [ "hk-4", (s.goodAbove ? "Below " : "Above ") + line ] ];
+  }
   function splitInfo(s) {
     return s.info ? s.info() : "<h4>" + titleCase(s.name) + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
   }
@@ -53738,6 +53798,9 @@
         asOf: pages[R.id].asOf,
         info: function() {
           return splitInfo(s);
+        },
+        key: function() {
+          return splitKey(s);
         },
         controls: function() {
           return histControls(R.id, {
@@ -53868,6 +53931,7 @@
       info: function() {
         return temperatureInfoHtml(lagRow("Temperature"));
       },
+      key: heatKey,
       controls: function() {
         return histControls(id, {
           series: inflationHistory
@@ -53943,6 +54007,9 @@
       info: function() {
         return activityInfoHtml(lagRow("Activity"));
       },
+      key: function() {
+        return [ [ "hk-2", "Within " + ACT_BAND_LO + "–" + ACT_BAND_HI + "%" ], [ "hk-4", "Below " + ACT_BAND_LO + "% or above " + ACT_BAND_HI + "%" ], [ "hk-x", "Above " + ACT_BAND_HI + "% with the Sahm rule triggered" ] ];
+      },
       controls: function() {
         return histControls(id, {
           series: unempHistory
@@ -53986,6 +54053,9 @@
         return [ row.flagValue, meterWord(row.meter) ];
       },
       info: deficitInfoHtml,
+      key: function() {
+        return [ [ "hk-2", "A surplus" ], [ "hk-4", "A deficit" ] ];
+      },
       controls: function() {
         return histControls(key, {
           depth: deficitHistory.length

@@ -1,6 +1,6 @@
 type HistOpts = { to?: number | null; cycle?: boolean };
 import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex, quartile } from "./format.ts";
-import { type HistFrame, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
+import { type HistFrame, type KeyRow, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
 import { fedFundsHistory, mortgageHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, m2Yoy, NROU_NOW, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
@@ -39,7 +39,7 @@ export function deficitChart(Wpx: number, from: number, to?: number | null){
   var defTicks: number[] = [];
   for (var g = Math.ceil(LO / step) * step; g <= HI + 1e-9; g += step)
     defTicks.push(Math.abs(g) < 1e-9 ? 0 : g);
-  out.push(chartAxes({ ticks:defTicks, y:Y, x0:L, x1:R, base:Y(0), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
+  out.push(chartAxes({ ticks:defTicks, y:Y, x0:L, x1:R, base:Y(0), noGridAt:0, marks:[DEF_1983], markFmt:function(v: number){ return fmtSigned(v, 1) + "%"; }, top:(T - AXIS.LEG - AXIS.READ), bot:B,
     fmt:function(at: number){ return fmtSigned(at, step < 1 ? 1 : 0) + "%"; } }));
   var steps = [1, 2, 5, 10, 20, 25], yrStep = 25, si, yy, cnt;
   for (si = 0; si < steps.length; si++){
@@ -108,7 +108,7 @@ export function unempHistoryChart(Wpx: number, from: number, o?: HistOpts){
   var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
+  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, marks:[NROU_NOW], top:(T - AXIS.LEG - AXIS.READ), bot:B,
     fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
   var sw = colWidth((R - L) / n);
@@ -142,9 +142,21 @@ export function rateFence(series: MonthPoint[]){
   var vs = series.map(function(d){ return d.v; }), q1 = quartile(vs, 0.25), q3 = quartile(vs, 0.75);
   return q3 + 1.5 * (q3 - q1);
 }
-export function rateShades(series: MonthPoint[]){
-  return "The columns shade from yellow to red by height, six equal steps of the range in view; plum marks only the months past " +
-    rateFence(series).toFixed(2) + "%, Tukey\u2019s fence of the whole record, the standard rule for an outlier.";
+export function rateKey(series: MonthPoint[]): KeyRow[] {
+  return [["hk-ramp", "Lowest to highest of the range in view, in six equal steps"],
+          ["hk-x", "Past " + rateFence(series).toFixed(2) + "%, Tukey\u2019s fence of the whole record: an outlier"]];
+}
+export function heatKey(): KeyRow[] {
+  var top = heatEdges(), p = function(v: number){ return v.toFixed(1) + "%"; };
+  return [["hk-x", "Below " + p(TEMP_BAND_LO) + ", under the range"], ["hk-0", p(TEMP_BAND_LO) + " to " + p(CPI_TARGET) + ", under the Fed\u2019s target"],
+          ["hk-1", p(CPI_TARGET) + " to " + p(TEMP_BAND_HI) + ", the top of the range"], ["hk-2", p(TEMP_BAND_HI) + " to " + p(top[0]) + ", up to the record\u2019s 90th percentile"],
+          ["hk-3", p(top[0]) + " to " + p(top[1]) + ", its 90th to 95th"], ["hk-4", "Above " + p(top[1]) + ", its hottest twentieth"]];
+}
+export function m2Key(): KeyRow[] {
+  var p = function(v: number){ return v.toFixed(1) + "%"; };
+  return [["hk-x", "Below 0%: the money stock shrinking"], ["hk-4", "0% to " + p(M2_PACE_LO) + ", the record\u2019s slowest tenth"],
+          ["hk-3", p(M2_PACE_LO) + " to " + p(M2_NORM) + ", the long-run pace"], ["hk-2", p(M2_NORM) + " to " + p(M2_PACE_HI) + ", up to its fastest tenth"],
+          ["hk-1", p(M2_PACE_HI) + " to " + p(M2_FLOOD) + ", the fastest before 2020"], ["hk-0", "Above " + p(M2_FLOOD) + ": the flood"]];
 }
 function rateColumnsChart(series: MonthPoint[], geom: string, what: string, Wpx: number, from: number, o?: HistOpts){
   o = o || {};
@@ -201,7 +213,7 @@ export function cpiHistoryChart(Wpx: number, from: number, o?: HistOpts){
   var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0), avgShown = null;
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
+  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, marks:[CPI_TARGET], top:(T - AXIS.LEG - AXIS.READ), bot:B,
     fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
   var sw = colWidth((R - L) / n);
@@ -239,7 +251,7 @@ export function gdpHistoryChart(Wpx: number, from: number, o?: HistOpts){
   var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
+  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, marks:[GDP_NORM], top:(T - AXIS.LEG - AXIS.READ), bot:B,
     fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   if (o.cycle){
     var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
@@ -285,7 +297,7 @@ export function m2GrowthChart(Wpx: number, from: number, to?: number | null){
   var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
+  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, marks:[M2_NORM], top:(T - AXIS.LEG - AXIS.READ), bot:B,
     fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
     var i = (yr - y0) * 4; if (i < 0 || i >= n) return;

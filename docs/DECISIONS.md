@@ -1343,16 +1343,19 @@ settles it; none is open after V668.
   (`--hist-x`) kept for extremes.** A history with two states (a reading's good side or bad side of its line, a
   normal or inverted curve, expansion surplus or deficit, a regular or odd beat) draws the easy one yellow
   (`--hist-2`) and the hard one orange (`--hist-4`), as the Interest Rates chart draws rates yellow and prices
-  orange; a history coloured by level (Temperature, Hormones, Mortgage, Volume) steps along the ramp. Plum marks
-  only an extreme with a source: the Sahm trigger, money contracting, CPI below the range, and on the two rate
+  orange; Pulse, already a special reading, keeps two colours only, red for a regular beat and plum for an odd
+  one (past Tukey's fence of its quarterly changes); a history coloured by level (Temperature, Hormones, Mortgage, Volume) steps along the ramp. Plum marks
+  only an extreme with a source: the Sahm trigger, money contracting, CPI below the range, Pulse's odd beats, and on the two rate
   histories the months past Tukey's fence of the whole record. The red step is a softer red, of the trend pill's
   family: plum at the top of every level ramp was too dark a jump (Keren). One code reads the same way on every
   page; the state each column is in is still decided by each page's own rule, and Cycle Statistics' verdict
-  bars keep the tier colours. (History Colours, History Red)
+  bars keep the tier colours. Every coloured history's (i) ends with a key saying what each colour means, with
+  its numbers: a code nobody can read is decoration. (History Colours, History Red)
 
 - **Every history's columns stand on zero and grow up from it (down only for a negative value); a reading's
   line (a median, an average, a target) is drawn across them, never hung from.** Columns hung from a median read
-  backwards: a savings rate of 2.8% drew the longest column. (History Red)
+  backwards: a savings rate of 2.8% drew the longest column. Every dashed reference line carries its value on
+  the axis beside it; a line without its number is a riddle (Keren). (History Red)
 
 - **Growth's history is real GDP year over year, quarterly from 1988, as columns from zero, all in one colour
   (`hist-2`).** The season already says the regime, so a second colour per column repeated it and made the

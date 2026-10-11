@@ -4,7 +4,7 @@ type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
 type YScale = (v: number) => number | string;
 type FitOpts = { fit?: Fit; fmt: (v: number) => string };
 type XLabelOpts = { xLabel?: ((d: never, i: number) => string) | null; _years?: number[] };
-type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; noGridAt?: number | null; base?: number | string | null; gutter?: number };
+type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; marks?: number[]; markFmt?: (v: number) => string; noGridAt?: number | null; base?: number | string | null; gutter?: number };
 type DivergeDatum = { v: number | null; y?: number; [k: string]: unknown };
 type DivergeOpts = XLabelOpts & FitOpts & { vals: DivergeDatum[]; mid: number; midLabel?: string; tickFmt?: (v: number) => string; step?: number; goodAbove?: boolean; at?: ChartGeom["at"]; alt?: string };
 export type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: number; T: number; B: number };
@@ -101,6 +101,10 @@ export function xLabel(x: number | string, text: string | number, y: number | st
 export function yLabel(x: number, y: number, text: string | number, anchor: string, cls?: string){
   return '<text class="bt-yl' + (cls ? " " + cls : "") + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + '</text>';
 }
+export type KeyRow = [string, string];
+export function histKey(rows: KeyRow[]){
+  return '<ul class="hist-key">' + rows.map(function(r){ return '<li><i class="hk ' + r[0] + '"></i>' + r[1] + '</li>'; }).join("") + '</ul>';
+}
 export function crossLine(top: number | string, bot: number | string){
   return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
 }
@@ -140,11 +144,15 @@ export function chartAxes(o: AxesOpts){
   ticks.forEach(function(v){
     var ty = parseFloat(o.y(v) as string);
     if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;
+    if ((o.marks || []).some(function(m){ return Math.abs(ty - parseFloat(o.y(m) as string)) < 12; })) return;
     if ((o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9) &&
         (o.base == null || Math.abs(ty - parseFloat(o.base as string)) > 0.5))
       out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + ',' + ty.toFixed(1) + 'L' + fx1.toFixed(1) + ',' + ty.toFixed(1) + '"/>');
     var ly = ty - 5;
     out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, ly, o.fmt(v), "middle"));
+  });
+  (o.marks || []).forEach(function(m){
+    out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, parseFloat(o.y(m) as string) - 5, (o.markFmt || o.fmt)(m), "middle", "bt-ref"));
   });
   if (o.base != null)
     out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + ',' + o.base + 'L' + fx1.toFixed(1) + ',' + o.base + '"/>');
@@ -161,7 +169,7 @@ export function divergeChart(o: DivergeOpts, W?: number){
   var midY = parseFloat(y(o.mid)), zeroY = parseFloat(y(0));
   var n = o.vals.length, slot = iw / n, sw = colWidth(slot);
   var out = [chartAxes({ lo:bot, hi:top, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG - AXIS.READ), bot:(padT + ih),
-                         base:(padT + ih), skipNear:midY, step:o.step, fmt:(o.tickFmt || o.fmt) })];
+                         base:(padT + ih), marks:[o.mid], markFmt:o.fmt, step:o.step, fmt:(o.tickFmt || o.fmt) })];
   out.push('<path class="dv-mid" d="M' + padL + ',' + midY.toFixed(1) + 'L' + (W - padR) + ',' + midY.toFixed(1) + '"/>');
   o.vals.forEach(function(d, i){
     if (d.v == null){ out.push('<path class="dv-bar hcol" d=""/>'); return; }
