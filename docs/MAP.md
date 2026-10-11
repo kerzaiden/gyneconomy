@@ -8,7 +8,7 @@ read it whole, so this file exists to get you to the right two hundred lines.
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `9c59b24` on 2026-10-11.
+Generated from commit `bbc12de` on 2026-10-11.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `9c59b24` on 2026-10-11.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,164 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,165 | the whole stylesheet, every token and rule |
 | `page-body.html` | 247 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 40 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **40** modules, **808** top-level functions, **125** top-level vars, **392** exported names, **20** boots.
+Counts: **40** modules, **808** top-level functions, **124** top-level vars, **392** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -52,7 +52,7 @@ Counts: **40** modules, **808** top-level functions, **125** top-level vars, **3
 | `js/charts.ts` | 261 | 35 | `format` |
 | `js/concentration.ts` | 48 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 497 | 138 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `roster` |
-| `js/dial-ring.ts` | 82 | 3 | `data`, `model`, `refresh-season` |
+| `js/dial-ring.ts` | 81 | 2 | `data`, `model`, `refresh-season` |
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 75 | 13 | `data`, `dom`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster`, `wave-chart` |
 | `js/format.ts` | 106 | 44 | — |
@@ -1101,8 +1101,7 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 9 | `dialRing` · export | `function dialRing(` |
-| 77 | `MINI_BOLD` | `var MINI_BOLD =` |
-| 78 | `miniRing` · export | `function miniRing(` |
+| 77 | `miniRing` · export | `function miniRing(` |
 
 ### `js/era.ts`
 
@@ -1532,19 +1531,19 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 408 | tab bar (app-style segmented navigation) |
 | 444 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
 | 531 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 670 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 687 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 734 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 872 | View more: the button under Year by Year and Herstory |
-| 883 | The symptoms: a cycle's years against today |
-| 1,029 | yield curve charts |
-| 1,043 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,057 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,065 | un-inversion-to-recession historical lag panel |
-| 1,074 | the reading's tag |
-| 1,078 | info icon + popover (progressive disclosure for longer notes) |
-| 1,092 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,155 | footer |
+| 671 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 688 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 735 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 873 | View more: the button under Year by Year and Herstory |
+| 884 | The symptoms: a cycle's years against today |
+| 1,030 | yield curve charts |
+| 1,044 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,058 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,066 | un-inversion-to-recession historical lag panel |
+| 1,075 | the reading's tag |
+| 1,079 | info icon + popover (progressive disclosure for longer notes) |
+| 1,093 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,156 | footer |
 
 ## Markup landmarks
 
