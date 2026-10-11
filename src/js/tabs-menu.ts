@@ -23,7 +23,7 @@ function seasonGrid(){
   var row = function(name: string){ return '<div class="sg-row">' + name + '</div>'; };
   var heating = function(k: Season){ return wheelMeta[k].theme + ' <span aria-label="heating">\u2192</span>'; };
   var cooling = function(k: Season){ return '<span aria-label="cooling">\u2190</span> ' + wheelMeta[k].theme; };
-  return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("Neutral", "1\u20133%") + head("Hot", "above 3%") +
+  return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("Warm", "1\u20133%") + head("Hot", "above 3%") +
     row("Expansion") + seasonCell("spring", 2, [heating("spring"), cooling("springdeflation")]) + seasonCell("summer", 1, [heating("summer")]) +
     row("Contraction") + seasonCell("winter", 1, [wheelMeta.winter.theme]) + seasonCell("autumn", 2, [heating("lateautumn"), cooling("autumn")]) + '</div>';
 }

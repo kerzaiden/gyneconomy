@@ -55670,7 +55670,7 @@
     var cooling = function(k) {
       return '<span aria-label="cooling">←</span> ' + wheelMeta[k].theme;
     };
-    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("Neutral", "1–3%") + head("Hot", "above 3%") + row("Expansion") + seasonCell("spring", 2, [ heating("spring"), cooling("springdeflation") ]) + seasonCell("summer", 1, [ heating("summer") ]) + row("Contraction") + seasonCell("winter", 1, [ wheelMeta.winter.theme ]) + seasonCell("autumn", 2, [ heating("lateautumn"), cooling("autumn") ]) + "</div>";
+    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("Warm", "1–3%") + head("Hot", "above 3%") + row("Expansion") + seasonCell("spring", 2, [ heating("spring"), cooling("springdeflation") ]) + seasonCell("summer", 1, [ heating("summer") ]) + row("Contraction") + seasonCell("winter", 1, [ wheelMeta.winter.theme ]) + seasonCell("autumn", 2, [ heating("lateautumn"), cooling("autumn") ]) + "</div>";
   }
   function cycleModelLine() {
     var closed = marketCycles.filter(function(c) {
