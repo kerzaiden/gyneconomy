@@ -589,7 +589,7 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const feel = await p.evaluate(() => {
       const s = document.getElementById('today-home');
-      return { head: document.getElementById('topbar-title').textContent, shown: !!s.offsetParent, risks: s.querySelectorAll('.ai-rank').length, els: s.querySelectorAll('.wr-el').length };
+      return { head: document.getElementById('topbar-title').textContent, shown: !!s.offsetParent, risks: s.querySelectorAll('.cat-risk .lab-item').length, els: s.querySelectorAll('.wr-el').length };
     });
     await click(p, '#today-home .wr-link[data-open="sheet-sign-pressure"]'); await settle(p);
     feel.link = await p.evaluate(() => document.getElementById('topbar-title').textContent);

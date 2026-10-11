@@ -601,17 +601,6 @@
   .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-  .ai-pic{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
-  .ai-cap{ display:block; margin-top:8px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
-  .ai-rank{ --tier:var(--critical); width:100%; margin:0; background:none; border:0; text-align:left; font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; display:grid; grid-template-columns:1fr auto; align-items:baseline; column-gap:10px; padding:8px 0; border-top:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
-  .ai-pic .more-row{ margin-top:12px; }
-  .ai-rank:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
-  .ai-rank:first-child{ border-top:0; padding-top:0; }
-  .ai-rank span{ font-weight:600; }
-  .ai-rank .ai-when{ font-weight:400; font-size:var(--type-meta); color:var(--text-muted); }
-  .ai-rank b{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
-  .ai-rank.t-abnormal b{ color:var(--critical-ink); }
-  .ai-rank > small{ grid-column:1 / -1; margin-top:2px; font-size:var(--type-meta); line-height:1.45; color:var(--text-secondary); }
   .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
   .wr-head{ display:block; margin-top:8px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.1; color:var(--text-primary); }
   .wr-page{ display:flex; flex-direction:column; gap:var(--gap); }
@@ -883,7 +872,7 @@
   .dx-more:hover{ background:transparent; }
 
   .cat-weather{ --cat:var(--season-summer); } .cat-activity{ --cat:var(--earth); } .cat-circulation{ --cat:var(--ff-blue); }
-  .cat-mood{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
+  .cat-mood, .cat-risk{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
   .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
@@ -1008,6 +997,11 @@
   .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); }
   .plain .lab-mark{ vertical-align:-3px; margin-right:6px; }
   .plain .lab-mark svg{ width:16px; height:16px; }
+  .lab-door{ width:100%; border:0; border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); font-family:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .lab-door:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .plain .lab-door .ind-cat-name{ font-size:var(--type-reading); font-weight:700; color:var(--accent); }
+  .plain .lab-door .lab-mark svg{ width:18px; height:18px; }
+  .lab-door .peek-chev{ color:var(--text-muted); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--normal); border-bottom:1px solid var(--border); }
   .lab-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; padding:11px 16px; cursor:default; }
@@ -1266,7 +1260,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.9.67 (838)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.9.68 (839)</span></p>
     </div>
   </div>
 
@@ -51164,7 +51158,7 @@
   }
   function labSec(k, ls, at) {
     var title = catTitle(k), name = catName(k);
-    return foldSec(k, title, '<button type="button" class="lab-cat" data-ind-cat="' + k + '">' + name + "</button>", ls, at);
+    return foldSec(k, title, labCat(' data-ind-cat="' + k + '"', name), ls, at);
   }
   function subSec(k, sub, ls, at) {
     return foldSec(k, sub, markName(SUB_MARK[sub], sub), ls, at);
@@ -51476,8 +51470,31 @@
   function markName(mark2, name) {
     return '<span class="lab-mark">' + mark2() + "</span>" + name;
   }
+  function labCat(attrs, name) {
+    return '<button type="button" class="lab-cat"' + attrs + ">" + name + "</button>";
+  }
+  function noneLine(text, attrs) {
+    return '<p class="search-none"' + attrs + ">" + text + "</p>";
+  }
+  function labBox(inner) {
+    return '<div class="lab-box">' + inner + "</div>";
+  }
   function countTag(n) {
     return '<small class="lab-n" aria-label="' + n + ' readings">' + n + "</small>";
+  }
+  function riskCard(i, attrs, none) {
+    var at = atCycle(i), ls = riskLabs(i).filter(function(l) {
+      return ROSTER_BY[l.id];
+    });
+    return labBox(catHeadCard("lab-sec plain", "risk", {
+      tag: "button",
+      cls: "lab-head lab-door ",
+      attrs: ' type="button"' + attrs,
+      name: markName(diceSvg, "Risk Factors"),
+      aside: CHEV
+    }, "<ul>" + ls.map(function(l) {
+      return labItem(l, at);
+    }).join("") + "</ul>" + (ls.length ? "" : noneLine(none, ""))));
   }
   function insightsHome(i) {
     var j = judged(atCycle(i));
@@ -51514,7 +51531,7 @@
     var j = judged(at).filter(function(l) {
       return l.cat !== "cycle";
     }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
-    host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs"><div class="lab-box">' + bySystem(at, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
+    host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs">' + labBox(bySystem(at, j, findOf(id).cat)) + noneLine("No reading matches.", " hidden") + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
     narrow(host, id);
   }
   var IND = "sheet-find";
@@ -51650,105 +51667,18 @@
   }
   var STORY_ID = "sheet-story";
   var MONTH_NAMES = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
-  var EVERY = {
-    q: "quarterly",
-    qi: "quarterly",
-    m: "monthly",
-    y: "yearly",
-    yi: "yearly"
-  };
   var shown2 = {
     cycle: ""
   };
-  function labOf(id) {
-    return labs().filter(function(l) {
-      return l.id === id;
-    })[0];
-  }
   function dateWords(iso) {
     var d = iso.split("-").map(Number);
     return (d[2] ? d[2] + " " : "") + MONTH_NAMES[d[1] - 1] + " " + d[0];
   }
-  function keyWords(k) {
-    var m = /^(\d{4})-(\d{2})/.exec(k);
-    return m ? MONTH_NAMES[+m[2] - 1] + " " + m[1] : /^\d{4} Q\d$/.test(k) ? k.slice(5) + " " + k.slice(0, 4) : k;
-  }
-  function keyYear(k) {
-    return +k.slice(0, 4);
-  }
-  function freshAt(R, l, h) {
-    var r = readingFor(R.id), last = h[h.length - 1], v = todayValue(R), day = r.asOf ? r.asOf() : "";
-    return day && last && l.print(v) !== l.print(last.v) ? {
-      k: day,
-      v: v
-    } : null;
-  }
-  function recordWords(s) {
-    var most = s.up ? "Highest" : "Lowest", side2 = s.up ? "high" : "low";
-    return !s.last ? most + " on record, which starts in " + keyWords(s.h[0].k) : (keyYear(s.last.k) <= keyYear(s.at.k) - 2 ? most + " since " + keyWords(s.last.k) + "; its" : "Its") + " " + side2 + " since " + keyWords(s.h[0].k) + " is " + s.l.print(s.rec.v) + ", in " + keyWords(s.rec.k);
-  }
-  function freshWords(s) {
-    var side2 = s.up ? "high" : "low", every = EVERY[s.k] + " reading", rec = s.l.print(s.rec.v) + ", in " + keyWords(s.rec.k);
-    return !s.last ? (s.up ? "Above" : "Below") + " every " + every + " since " + keyWords(s.h[0].k) + "; the " + (s.up ? "highest" : "lowest") + " was " + rec : "No " + every + " has been this " + side2 + " since " + keyWords(s.last.k) + "; its " + side2 + " since " + keyWords(s.h[0].k) + " is " + rec;
-  }
-  function standing(R, i) {
-    var c = marketCycles[i], l = labOf(R.id), end = c.ongoing ? Infinity : c.to, up = l.per[i] > l.norm.hi;
-    var past = function(a, b) {
-      return up ? a >= b : a <= b;
-    };
-    var h = keyed(R.hist).filter(function(d) {
-      return d.v != null && keyYear(d.k) <= end;
-    });
-    var mine = h.filter(function(d) {
-      return keyYear(d.k) >= c.from;
-    }), fresh = c.ongoing ? freshAt(R, l, h) : null;
-    var at = fresh || (c.ongoing ? mine[mine.length - 1] : mine.reduce(function(a, d) {
-      return a && past(a.v, d.v) ? a : d;
-    }, mine[0]));
-    var prior = fresh ? h : at ? h.slice(0, h.indexOf(at)) : [];
-    if (!at || prior.length < 12) return null;
-    var beyond = prior.filter(function(d) {
-      return past(d.v, at.v);
-    }), last = beyond[beyond.length - 1];
-    var s = {
-      h: h,
-      at: at,
-      last: last,
-      rec: prior.reduce(function(a, d) {
-        return past(a.v, d.v) ? a : d;
-      }),
-      up: up,
-      l: l,
-      k: R.hist.k
-    };
-    return {
-      R: R,
-      v: l.print(at.v),
-      when: fresh ? dateWords(at.k) : keyWords(at.k),
-      words: fresh ? freshWords(s) : recordWords(s),
-      record: !last,
-      to: up ? "to-up" : "to-down"
-    };
-  }
   function riskDoor(t, c) {
     return ' data-open="' + IND + '" data-title="Elements" data-ind-cat="" data-ind-tier="' + t + '" data-ind-cycle="' + c.name + '"';
   }
-  function riskRows(i, t) {
-    return riskLabs(i, t).map(function(l) {
-      return ROSTER_BY[l.id];
-    }).filter(Boolean).map(function(R) {
-      return standing(R, i);
-    }).filter(function(x) {
-      return x != null;
-    }).sort(function(a, b) {
-      return Number(b.record) - Number(a.record);
-    }).map(function(x) {
-      return '<button type="button" class="ai-rank ' + x.to + " t-" + t + '"' + riskDoor(t, marketCycles[i]) + "><span>" + x.R.name + ' <small class="ai-when">' + x.when + "</small></span><b>" + x.v + '<i class="lab-to" aria-hidden="true"></i></b><small>' + x.words + ".</small></button>";
-    }).join("");
-  }
   function riskFactors(c) {
-    var i = marketCycles.indexOf(c), rows = riskRows(i, "abnormal"), n = riskLabs(i, "borderline").length;
-    return dxSys("", dxHead(diceSvg(), "Risk Factors", riskDoor("abnormal", c)) + '<div class="ai-pic">' + (rows || '<small class="ai-cap">Nothing reads as Risk ' + (c.ongoing ? "today" : "in this cycle") + ".</small>") + (n ? moreDoor(riskDoor("borderline", c), n + (n > 1 ? " readings need" : " reading needs") + " attention") : "") + "</div>");
+    return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk " + (c.ongoing ? "today" : "in this cycle") + ".");
   }
   function prose(t) {
     return t.replace(/\[([^\]]+)\]\((sheet-[a-z0-9-]+)\)/g, function(_, label, id) {
@@ -51779,7 +51709,7 @@
   }
   function todayHtml() {
     var r = now.report, c = openCycle();
-    return trendBox(weatherSvg(), "Weather Report", lead(r.headline, edition()) + trendText(r.lede)) + riskFactors(c) + elements() + storyBox(c);
+    return trendBox(weatherSvg(), "Weather Report", lead(r.headline, edition()) + trendText(r.lede)) + riskFactors(c) + elements();
   }
   function storyHtml(c) {
     return dxSys(" wr-top", '<h2 class="wr-title">' + c.name + '</h2><p class="wr-date">' + cycLabel(c).years + "</p>") + riskFactors(c) + storyBox(c);
