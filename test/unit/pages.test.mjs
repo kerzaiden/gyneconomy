@@ -140,7 +140,7 @@ test('every history chart is attached to its readout, so hover and keys reach it
   assert.deepEqual(loose, []);
 });
 
-test('Today is the Weather Report with risk factors and six elements, then the Cycle Story; every cycle page opens its story and its own risk factors', async () => {
+test('Today is the Weather Report with risk factors and six elements; every cycle page opens its story and its own risk factors', async () => {
   const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
   const { cycleModel, nowModel } = await import('../../src/js/model.ts');
   const { riskLabs } = await import('../../src/js/cycle-analysis.ts');
@@ -150,30 +150,29 @@ test('Today is the Weather Report with risk factors and six elements, then the C
   const card = () => document.querySelector('#diagnosis .trend-card');
   const sheet = () => document.getElementById('sheet-story');
   const home = document.getElementById('chart-home');
-  const heads = el => [...el.querySelectorAll('.dx-sys-head, .trend-head')].map(h => h.textContent);
+  const heads = el => [...el.querySelectorAll('.dx-sys-head, .trend-head, .lab-cat')].map(h => h.textContent);
   const open = () => { card().click(); sheetRenderers['sheet-story'](); return sheet(); };
   const risksOf = c => riskLabs(marketCycles.indexOf(c)).map(l => l.name).sort();
-  const ranked = el => [...el.querySelectorAll('.ai-rank > span')].map(s => s.firstChild.textContent.trim()).sort();
+  const ranked = el => [...el.querySelectorAll('.cat-risk .lab-row > div:first-child > b')].map(b => b.textContent.trim()).sort();
   page.cycles['chart-home'] = nowModel.era.name; sheetRenderers['chart-home']();
   assert.deepEqual([...home.querySelectorAll('.dx-sys-head')].map(h => h.textContent), ['Cycle Statistics', 'Interest Rates', 'Elements']);
   assert.equal(card().querySelector('.wr-head').textContent, nowModel.era.name);
   const today = document.getElementById('today-home');
-  assert.deepEqual(heads(today), ['Weather Report', 'Risk Factors', ...CATEGORIES.slice().sort((a, b) => a.shown - b.shown).map(c => c.title), 'Cycle Story']);
+  assert.deepEqual(heads(today), ['Weather Report', 'Risk Factors', ...CATEGORIES.slice().sort((a, b) => a.shown - b.shown).map(c => c.title)]);
   assert.equal(today.querySelector('.wr-head').textContent, now.report.headline);
-  assert.ok(today.lastElementChild.textContent.includes(now.report.story));
+  assert.ok(!today.textContent.includes(now.report.story), 'the cycle story stays on the cycle tab');
   const story = open();
   assert.deepEqual(heads(story), ['Risk Factors', 'Cycle Story']);
   assert.equal(story.querySelector('.wr-title').textContent, nowModel.era.name);
   assert.deepEqual(ranked(story), ranked(today));
   assert.ok(risksOf(nowModel.era).length > 0);
   assert.deepEqual(ranked(today), risksOf(nowModel.era));
-  assert.ok([...today.querySelectorAll('.ai-rank > small')].every(x => /^((Highest|Lowest) on record, which starts in|(Highest|Lowest) since|Its (high|low) since|(Above|Below) every (quarterly|monthly|yearly) reading since|No (quarterly|monthly|yearly) reading has been this (high|low) since) /.test(x.textContent)), 'each risk factor says where it stands in its own record');
-  const ten = [...today.querySelectorAll('.ai-rank')].find(b => b.textContent.startsWith('US 10-year Treasury'));
-  assert.equal(ten.querySelector('b').textContent, todayFace(ROSTER_BY['sheet-sign-pressure']).text, 'one figure, one number: the risk factor reads today’s close');
+  const ten = [...today.querySelectorAll('.cat-risk .lab-item')].find(b => b.textContent.startsWith('US 10-year Treasury'));
+  assert.equal(ten.querySelector('.lab-res b').textContent, todayFace(ROSTER_BY['sheet-sign-pressure']).text, 'one figure, one number: the risk factor reads today’s close');
   const links = [...today.querySelectorAll('.wr-link')];
   assert.ok(links.length >= 12 && links.every(a => ROSTER_BY[a.dataset.open] && a.dataset.title === ROSTER_BY[a.dataset.open].name), 'every link opens its reading');
-  assert.equal(today.querySelector('.ai-pic .more-row').dataset.indCycle, nowModel.era.name);
-  today.querySelector('.ai-pic .more-row[data-ind-tier="borderline"]').click();
+  assert.equal(today.querySelector('.lab-box + .more-row').dataset.indCycle, nowModel.era.name);
+  today.querySelector('.lab-box + .more-row[data-ind-tier="borderline"]').click();
   sheetRenderers['sheet-find']();
   const left = [...document.querySelectorAll('#sheet-find .lab-item')].filter(li => !li.hidden);
   assert.ok(left.length && left.every(li => li.classList.contains('t-borderline')), 'a risk factor opens Elements on its tier');
@@ -185,7 +184,7 @@ test('Today is the Weather Report with risk factors and six elements, then the C
     const past = open();
     assert.deepEqual(heads(past).filter(h => h !== 'Risk Factors'), ['Cycle Story'], c.name);
     assert.equal(past.querySelector('.wr-title').textContent, c.name);
-    assert.equal(past.querySelectorAll('.ai-rank').length, ranked(past).filter(n => risksOf(c).includes(n)).length, c.name + ' risks');
+    assert.deepEqual(ranked(past), risksOf(c).filter(n => ROSTER.some(R => R.name === n)), c.name + ' risks');
     assert.deepEqual(broken(past.innerHTML), [], c.name);
   }
   renderDiagnosis(nowModel);
@@ -198,6 +197,15 @@ test('the shipped edition passes the routine’s own check, and the check catche
   const F = { categories: CATEGORIES.map(c => c.key), ids: ROSTER.map(R => R.id), numbers: null };
   const doc = { kind: 'object', ...now.report };
   assert.deepEqual(check(doc, F), []);
+  const { standing } = await import('../../tools/report.mjs');
+  const { nowModel } = await import('../../src/js/model.ts');
+  const { labs, riskLabs } = await import('../../src/js/cycle-analysis.ts');
+  const { marketCycles } = await import('../../src/js/data.ts');
+  const { keyed, ROSTER_BY } = await import('../../src/js/roster.ts');
+  const { readingFor } = await import('../../src/js/reading.ts');
+  const { todayValue } = await import('../../src/js/era.ts');
+  const i = marketCycles.indexOf(nowModel.era), stands = riskLabs(i).map(l => standing(ROSTER_BY[l.id], nowModel.era, i, labs().find(x => x.id === l.id), { keyed, readingFor, todayValue })).filter(Boolean);
+  assert.ok(stands.length && stands.every(x => /^((Highest|Lowest) on record, which starts in|(Highest|Lowest) since|Its (high|low) since|(Above|Below) every (quarterly|monthly|yearly) reading since|No (quarterly|monthly|yearly) reading has been this (high|low) since) /.test(x.words)), 'the routine reads where each risk factor stands in its own record');
   const bad = { ...doc, lede: 'Rates will rise.', elements: { ...doc.elements, mood: 'See [Fear](sheet-nope).' } };
   assert.deepEqual(check(bad, F).map(b => b.split(' ')[0] + ' ' + b.split(' ')[1]), ['lede forecasts:', 'element mood']);
   assert.deepEqual(check({ ...doc, headline: 'Prices at 9.9%, the S&P 500 in Q2 2026' }, { ...F, numbers: ['3.4'] }).filter(b => b.startsWith('headline')), ['headline says 9.9, which no figure in the app shows']);

@@ -105,13 +105,14 @@ settles it; none is open after V668.
   Activity, Mood, Desire, Circulation, Stress), with each reading it names linking to its page, and Risk Factors
   inside it. The element insights of every cycle are gone, and so is the AI Insights sparkle. The report is news and
   the cycle's story is not, so the story left it: Today is the dated edition (headline, date and lede, then Risk
-  Factors and the six elements), then the Cycle Story of the cycle under way. Closest Moments stays retired: the
+  Factors and the six elements). The Cycle Story is not on Today: it is general, not news, and belongs to the
+  Cycle tab. Closest Moments stays retired: the
   moments that resemble today are found by what needs attention, the way financial media say "highest since", which
   Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report, Today Tab)
 - **The Cycle Story card follows the dial on every cycle page, the book its mark: the cycle's name, its years under
   it, three lines of its story, then "Read the story", and the whole card opens the story's page: the cycle's Risk
   Factors, then its story.** A past cycle keeps its story and its own risk factors, and because every cycle page is one
-  page, today's cycle carries the same card, the story Today closes on. The Weather Report on Today dates its edition
+  page, today's cycle carries the same card. The Weather Report on Today dates its edition
   in full ("9 October 2026"), never "Updated": a report is plainly as of its date. Risk Factors follow the lede, and
   the lede carries only what moved and never restates the story. (Weather Report, Today Tab)
 - **A new edition is written only when there is news, checked every weekday evening, by a scheduled Claude routine
@@ -593,19 +594,15 @@ settles it; none is open after V668.
   may say the figure; the check holds it to the app's own, and a Fed decision is itself news that brings a new edition.
   The emotional reading of each cycle has not been worked out yet; the lede's opening, "Born out of the 2022
   correction", which Keren liked, stays. (0.6.6, 0.6.12, 0.6.13, AI Insights Everywhere)
-- **Risk Factors lists every result Cycle Statistics reads as Risk, each with its value and where it stands in
-  its own record, in today's Weather Report and on each cycle's Cycle Story page.** A bar of the share of past readings below it said little about why
-  a reading is at risk; Keren wants where we are, the way financial media put it: the highest on record, or
-  the highest since a date, and the record and when it was set. Each line names where its record starts, since
-  some records are short. The open cycle reads today's figure, the one its card shows (one figure, one number: the
-  10-year's close, not its last quarter's average); where that figure is fresher than its record, the line says where
-  it stands against every reading of the record's own period ("above every quarterly reading since Q1 2005") and is
-  dated by the day it was taken. A closed cycle reads its most extreme value inside the cycle, against the record
-  before it. It reads the Analysis judgement, never its own. Each row reads like an
-  Elements row, in market language: the name with its date, the value in red with its triangle, the record on a
-  line below, and no footnote, since Elements already explains the judgement. Tapping it opens that cycle's
-  Elements filtered to Risk; a last row counts the readings at Attention and opens Elements on them.
-  (0.6.13, AI Insights Everywhere, Element Insights, Weather Report)
+- **Risk Factors lists every reading Cycle Statistics reads as Risk, on Today and on each cycle's Cycle Story page,
+  in the Elements card's design: a white title with the dice, then the readings on apricot rows, each with its
+  word and tier, its value in red with its triangle, and its range.** A design readers already know from Elements
+  reads at a glance; the record lines and dates added little beside the edition's own text. The title opens that
+  cycle's Elements filtered to Risk, a row opens its reading, and a row under the card counts the readings at
+  Attention and opens Elements on them (its place is still open). Where each reading stands in its own record
+  ("highest since", "above every quarterly reading since Q1 2005") is still worked out, for the Weather Report
+  routine's facts, so an edition can say it. (0.6.13, AI Insights Everywhere, Element Insights, Weather Report,
+  Today Risk Factors)
 
 ### Analysis
 

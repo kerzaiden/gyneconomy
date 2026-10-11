@@ -642,7 +642,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   story, with `{peak}` and `{month}` filled from `cyclePeak`.
 - **The Weather Report and the Cycle Story** (Weather Report, Today Tab, `ai-insights`): `drawToday` fills
   `#today-home`, the Today tab, with the edition in `now.report` (headline and date, lede, Risk Factors, one `.wr-el`
-  per category in `categoriesShown` order), then the open cycle's Cycle Story. `storyCard(m)` follows the dial on
+  per category in `categoriesShown` order). `storyCard(m)` follows the dial on
   every cycle page, a `trendDoor` to `sheet-story` carrying `data-story-cycle`, which a capturing click listener
   (`pickStory`) reads before the page opens, so `drawStory` draws the cycle the card was on: its name and years, its
   Risk Factors and its story (`storyOf`: the open cycle's `now.report.story`, a closed cycle's `blurb`). The words are
@@ -652,10 +652,11 @@ emotion at the closing month, its years, and what followed a year later. Every l
   it), checked by `reportOk` (headline, lede, story and every element present, links only to `sheet-` ids, and like
   every live document no `<`, `>` or straight quote); it arrives from the artifact's database as `data/weatherReport`
   and on the site from `data/report.json` (`fetchSiteData` reads it beside `live.json`), and `redrawReport` repaints
-  Today and an open story page while the `*` painter redraws the card. `tools/report.mjs` reads the risk factors
-  from `#today-home` after `drawToday`.
-  Risk Factors (`riskFactors(c)`) lists `riskLabs`, the one judgement, each placed in its own record by `standing`;
-  its doors carry `data-ind-cycle`, which `pickCat` reads to open Elements on that cycle and tier. A closed cycle
+  Today and an open story page while the `*` painter redraws the card.
+  Risk Factors (`riskFactors(c)`) is `riskCard` in `cycle-analysis`: the Elements card (`catHeadCard`, `labItem`) over
+  `riskLabs`, the one judgement, for that cycle; its doors carry `data-ind-cycle`, which `pickCat` reads to open
+  Elements on that cycle and tier. Where each one stands in its own record is the Weather Report routine's fact,
+  not the page's: `standing` in `tools/report.mjs` places it. A closed cycle
   reads its most extreme value inside the cycle against the record before it. The open cycle reads `todayValue`, the
   figure its card shows: when that prints differently from the record's last point and the reading declares `asOf`
   (`Reading.asOf`, an ISO day or month: the Treasury curve's date for the 10-year and the spreads, the VIX close's
