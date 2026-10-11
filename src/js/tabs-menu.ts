@@ -1,43 +1,24 @@
-import { facts, ledeHtml, legendKey, listed, srcBlock } from "./format.ts";
-import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
+import { facts, legendKey, listed, srcBlock } from "./format.ts";
+import { byId, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { CLOCK_SRC, FED_TARGET_SRC, frameworkRows, HOLD_BAND, marketCycles, typicalCycleSrc } from "./data.ts";
-import { cpiNow, currentEra, currentSeason, GNP_TREND, inflationFigure, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
+import { cpiNow, currentEra, currentSeason, inflationFigure, recessionRecord, seasonGroup } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { FRAMEWORK_SRC, sourceShelves } from "./sources.ts";
 import { categoriesShown, ROSTER, TIMING } from "./roster.ts";
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
-function seasonGrid(){
-  var cell = function(group: string, span: number, name: string, kinds: string[]){
-    return '<div class="sg-cell ' + group + (span > 1 ? ' wide' : '') + '"><b>' + name + '</b>' + kinds.map(function(k){ return '<small>' + k + '</small>'; }).join("") + '</div>';
-  };
-  var head = function(name: string, sub: string){ return '<div class="sg-head"><b>' + name + '</b><small>' + sub + '</small></div>'; };
-  return '<div class="season-grid">' + '<span></span>' + head("Cold", "below 1%") + head("In range", "1\u20133%") + head("Hot", "above 3%") +
-    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating", "Disinflation \u00b7 cooling, any level"]) + cell("summer", 1, "Summer", ["Inflation \u00b7 heating or steady"]) +
-    head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 hot, heating or steady", "Disinflation \u00b7 warm, or hot and cooling"]) +
-  '</div>';
-}
 function recessionLine(){
   var r = recessionRecord();
-  return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of the " + r.total + " quarters of the " + r.recessions + " NBER recessions fell in Autumn or Winter (" + r.autumn + " Autumn, " + r.winter + " Winter), seasons that hold " + r.share + "% of all quarters.";
+  return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of " + r.total + " NBER recession quarters fell in Autumn or Winter, seasons that hold " + r.share + "% of all quarters.";
 }
-function sideFacts(){
-  return [
-    "<b>Direction</b>: the twelve-month trend of inflation, cooling, steady or heating. A trend that moves less than about a quarter point over the year is steady.",
-    "<b>Expansion</b>: cooling at any level is Spring \u00b7 disinflation; heating while cold or warm is Spring \u00b7 reflation; hot and heating or steady is Summer \u00b7 inflation. Steady while cold or warm keeps the prior direction.",
-    "<b>Contraction</b>: hot and heating or steady is Autumn \u00b7 stagflation; hot and cooling, or warm in any direction, is Autumn \u00b7 disinflation; cold in any direction is Winter \u00b7 deflation. Each of the 18 combinations has its season."
-  ];
-}
-function seasonModelNote(){
-  return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([
-    "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock\u2019s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 growth is Balke and Gordon\u2019s quarterly real GNP, read against its own trend over the same peaks (" + GNP_TREND.toFixed(1) + "% a year).",
-    "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
-    "<b>Price level</b>: inflation on CPI before 2000 and PCE since. The middle of each bar is the 1\u20133% band, a point either side of the Fed\u2019s 2% target: below it is cold (blue), within it warm (yellow), above it hot (red). The Fed publishes the point, in force since January 2012, not a band; the band is part of the Season Model\u2019s structure. Like a shower, the band is the water you can stand in: not too hot, not too cold.",
-    ...sideFacts(),
-    recessionLine(),
-    seasonWhy
+function seasonNotes(){
+  return facts([
+    "<b>Growth gap</b>: real GDP growth over a year against its potential, the CBO\u2019s since 1950; within \u00b1" + HOLD_BAND + " points the regime holds.",
+    "<b>Price level</b>: CPI before 2000, PCE since; 1\u20133% is a point either side of the Fed\u2019s 2% target.",
+    "<b>Direction</b>: inflation\u2019s twelve-month trend; under about a quarter point a year is steady.",
+    recessionLine()
   ]) + srcBlock([CLOCK_SRC[0], FED_TARGET_SRC]);
 }
 function rangePos(v: number){
@@ -54,12 +35,7 @@ function renderCycleModel(){
   put("cycle-model-line", cycleModelLine());
   put("cycle-model-key", legendKey([["mkt-up", "Bull year", "the market closed up"], ["mkt-down", "Bear year", "the market closed down"],
     ["mkt-up ytd", "Year in progress", "not yet closed"], ["", "Peak year", "the cycle\u2019s highest return", PEAK_MARK]], { shape:"bar", cls:"legend-rows", row:"legend-row" }));
-  put("cycle-model-kicker", "The Cycle Model" + expandBtn('<h4>The Cycle Model</h4>' +
-    ledeHtml("The dial draws one cycle in two rings: its seasons, quarter by quarter, and the S&amp;P 500\u2019s years, bull or bear.") + facts([
-      "<b>Length</b>: the app measures each cycle from its own record, first bull year to the bear year that ends it. Published histories agree: a bull market and the bear market that ends it have run about 5 to 6\u00bd years since the 1940s.",
-      "<b>Peak year</b>: the year of the cycle\u2019s highest S&amp;P 500 total return.",
-      "<b>A typical length, not a forecast</b>: no cycle is obliged to run its average."
-    ]) + srcBlock(typicalCycleSrc)));
+  put("cycle-model-notes", '<p>Published histories agree: a bull market and the bear market that ends it have run about 5 to 6\u00bd years since the 1940s. A typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc));
 }
 function wireIdea(){
   viewMore(need("idea-more"), [].slice.call(need("idea-prose").querySelectorAll("p[hidden]")));
@@ -91,19 +67,11 @@ function renderSeasonRows(){
         '<span class="range-cell" title="' + r.range + (now ? ' · PCE ' + inflationFigure(cpiNow) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
     }).join(""));
   renderCycleModel();
-  put("seasons-kicker", "The Season Model" + expandBtn(
-    seasonModelNote()));
+  put("seasons-notes", seasonNotes());
 
   put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' +
     frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join(""));
-  put("framework-kicker", "The framework" + expandBtn(
-    '<h4>The Seasonal Behaviour Framework</h4>' +
-    ledeHtml("Every reading in this app is one of the book\u2019s seven signs, each paired with its bodily counterpart and sorted by when it speaks.") + facts([
-      "<b>Leading</b> signs turn first: rising estrogen and the change in cervical fluid come days before ovulation, as credit growth and the yield curve move before the economy. The yield curve and consumer expectations are both components of the Conference Board\u2019s Leading Economic Index.",
-      "<b>Coincident</b> signs report the present: desire peaks in the fertile window itself, as appetite shows in what households are buying now.",
-      "<b>Lagging</b> signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway."
-    ]) +
-    srcBlock(FRAMEWORK_SRC)));
+  put("framework-notes", '<p>Every reading in this app is one of the book\u2019s seven signs, paired with its bodily counterpart: leading signs turn first, coincident ones report the present, lagging ones confirm afterwards.</p>' + srcBlock(FRAMEWORK_SRC));
 }
 // ---- How to Read: where each reading sits and when it speaks, from the roster ----
 function placeLine(c: { key: string; title: string }){

@@ -1,4 +1,4 @@
-import { fmtSigned, qLabel, yearOf } from "./format.ts";
+import { yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { confidenceHistory, gnpQuarterlyBefore, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
@@ -155,27 +155,9 @@ export function cycleModel(era: Cycle){
   return { era:era, ongoing:ongoing, endYear:endYear, elapsedYears:elapsedYears, yearIndex:yearIndex, dialYears:dialYears, peakYear:years.peakYear, cumByYear:years.cumByYear,
            endMonth:endMonth, cpi:cpi, reading:reading, season:season, track:track, growth:eraGrowth(era) };
 }
-var seasonRuleSentence: Record<Season, string> = {
-  spring:"Expansion with prices heating, within or below the range, is reflation — Spring.",
-  springdeflation:"Expansion with prices cooling, at any level, is Spring — disinflation.",
-  summer:"Expansion with prices above the range — hot — and heating or steady is inflation, Summer.",
-  autumn:"Contraction with prices within the range, or hot and cooling, is disinflation — Autumn.",
-  lateautumn:"Contraction with prices above the range — hot — and heating or steady is Autumn — stagflation.",
-  winter:"Contraction with prices below the range — cold — is deflation, Winter."
-};
 export function potentialGap(r: ModelReading){
   var gap = r.gdpLatest.v - r.potential;
   return Math.abs(gap) <= HOLD_BAND ? "within " + HOLD_BAND + " points of" : gap > 0 ? "above" : "below";
-}
-function seasonWhyFor(m: CycleModel){
-  var r = m.reading;
-  return "Today the economy is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " +
-    pricesWord(r) + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + inflationFigure(r.cpiNow) + "%). " +
-    seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
-}
-function pricesWord(r: ModelReading){
-  var word = function(d: string){ return d === "rising" ? "heating" : d === "falling" ? "cooling" : "steady"; };
-  return word(r.cpiDirection) + (r.heading !== r.cpiDirection ? ", so still " + word(r.heading) : "");
 }
 export function inflationFigure(v: number){
   var s = (Math.round(v * 10) / 10 || 0).toFixed(1);
@@ -362,7 +344,7 @@ export function eraMarketTotal(cyc: Cycle){
 export function forgetMood(){ moodLists = null; moodCache = null; }
 
 export type CycleModel = ReturnType<typeof cycleModel>;
-export var cycleYtdFraction: number, nowModel: CycleModel, cpiNow: number, currentSeason: Season, seasonWhy: string, currentEra: Cycle;
+export var cycleYtdFraction: number, nowModel: CycleModel, cpiNow: number, currentSeason: Season, currentEra: Cycle;
 var seasonTrackAll: TrackEntry[], seasonTrackYears: TrackEntry[], seasonTrack: TrackEntry[], regimeByQ: Record<string, string>, seasonByQ: Record<string, string>, readingNow: ModelReading;
 
 function seasonEarly(){
@@ -413,6 +395,5 @@ export function bootModel(){
   readingNow = nowModel.reading;
   cpiNow = readingNow.cpiNow;
   currentSeason = nowModel.season;
-  seasonWhy = seasonWhyFor(nowModel);
   addSources(gdpSrc);
 }

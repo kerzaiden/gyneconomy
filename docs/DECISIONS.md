@@ -306,19 +306,22 @@ settles it; none is open after V668.
 - **Every section of About Gyneconomy is one container with its title inside, as the Cycle Model is; The Idea
   shows its first paragraph and a View more for the rest; the Season Model's rows carry no header row.** Keren
   wanted The Idea built like the Cycle Model, all of it one container, and found the "Season" header unnecessary.
-  Its (i) opens on one plain line and a two-by-three table (growth against potential by cold, in range and hot), so
-  the model can be told word for word. (0.8.1, Oct 5, 2026)
+  (0.8.1, Oct 5, 2026)
+- **About Gyneconomy has no (i): it is already the page that explains, so each container ends on its own brief
+  notes, a line or a few bold-led bullets with their sources, and the containers keep the app's spacing (the page
+  gap between them, 16px inside).** Keren did not want an info button inside an info page, nor many buttons to
+  reach the data. The two-by-three season table and the "Today" paragraph went with the Season Model's (i): the
+  rows already show every season and mark today's. (Legend Icon)
 - **The Cycle Model speaks in bull and bear years, and says how many cycles the record holds and how long they
   run on average, computed from the app's own closed cycles.** A cycle runs from its first bull year to the bear
   year that ends it; the average length gives a reader a notion of how the whole app is built. (0.8.1, Oct 5, 2026)
-- **The Framework's container holds only its table, full width; the paragraph on the seven signs is its (i)'s one
-  line, with the leading, coincident and lagging examples as bullets,** so the page does not repeat itself. The
-  Season Model's (i) uses the precise terms, concisely, as Keren asked: growth gap, sensitivity, price level,
-  direction (transition seasons only), and its table shows all 18 combinations. The growth gap (Keren's name) is
+- **The Framework's container holds its table, full width, and one line under it on the seven signs and when each
+  kind speaks,** so the page does not repeat itself. The Season Model's notes use the precise terms, concisely, as
+  Keren asked: growth gap (with its sensitivity), price level and direction. The growth gap (Keren's name) is
   growth against potential growth (the Investment Clock's growth above or below trend), not the output gap, which
   measures the level: tested on 1953–2026, the output gap put 31 of 39 recession quarters in Autumn or Winter
   against the growth gap's 38 (season-model/output-gap-test.md), so the app does not carry the output gap. For
-  credibility, the (i) credits the Investment Clock (Merrill Lynch, 2004) for the growth question. It closes on its
+  credibility, the notes credit the Investment Clock (Merrill Lynch, 2004) for the growth question. They close on its
   record against NBER recessions since 1953, by season: the recession quarters that fell in Autumn or Winter against
   those seasons' share of all quarters, computed by `recessionRecord` from the app's own seasons. Keren holds that
   stating this record adds much of the model's credibility. Contractions without a recession are not counted against
@@ -483,8 +486,8 @@ settles it; none is open after V668.
   dial's (Bull year, Bear year, Year in progress, Peak year), and the Season Model below it carries the seasons'
   colours and rules.** The legend was the Season Model told a second time, and the two had parted: its price-only
   signs left out growth (Spring ≤ 3% missed Spring · Disinflation above 3%), and its 5 to 6½ years stood beside the
-  app's own average. The Cycle Model's (i) gives the published 5 to 6½ years (First Trust, Fisher) as agreement
-  with the app's own record, a typical length and not a forecast; the Season Model's (i) cites the Fed for the 2%
+  app's own average. The Cycle Model's notes give the published 5 to 6½ years (First Trust, Fisher) as agreement
+  with the app's own record, a typical length and not a forecast; the Season Model's notes cite the Fed for the 2%
   point. The back arrow returns to the dial when About was opened from it. (0.6.6; Legend Icon)
 - **The ring closes on itself but for a small seam at 12 o'clock; don't re-add the coral drop in the seam
   (Clue's day-1 mark).** The small gap closes the cycle between its start and end; the drop added too much. (V199,
