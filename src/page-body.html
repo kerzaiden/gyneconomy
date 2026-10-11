@@ -6,7 +6,7 @@
     <button type="button" class="menu-btn back-btn" id="topbar-back" aria-label="Back to all cycles" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
     </button>
-    <h1 class="topbar-title" id="topbar-title" tabindex="-1">Current Cycle</h1>
+    <h1 class="topbar-title" id="topbar-title" tabindex="-1">Today</h1>
     <button type="button" class="menu-btn" id="menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="more-menu">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 12h11M4 17h16"/></svg>
     </button>
@@ -14,16 +14,20 @@
 
   <nav class="tabnav" aria-label="Sections">
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
-      <button type="button" class="tab-btn active" data-tab="cycle" role="tab" id="tab-cycle" aria-controls="panel-cycle" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
+      <button type="button" class="tab-btn active" data-tab="today" role="tab" id="tab-today" aria-controls="panel-today" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.8 3.4v1.3M19.3 5.1l-.95.95M20.9 8.6h-1.3M19.3 12.1l-.95-.95M12.3 5.1l.95.95"/><path d="M12.75 8.06A3.1 3.1 0 1 1 15.26 11.65"/><path d="M7.8 19.2h6.9a3.2 3.2 0 0 0 .25-6.4 4.8 4.8 0 0 0-9.05-.95 3.7 3.7 0 0 0 1.9 7.35z"/></svg><span>Today</span></button>
+      <button type="button" class="tab-btn" data-tab="cycle" role="tab" id="tab-cycle" aria-controls="panel-cycle" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
       <button type="button" class="tab-btn" data-tab="chart" role="tab" id="tab-chart" aria-controls="panel-chart" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
-      <button type="button" class="tab-btn" data-tab="analysis" role="tab" id="tab-analysis" aria-controls="panel-analysis" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg><span>Herstory</span></button>
       <button type="button" class="tab-btn" data-tab="portfolio" role="tab" id="tab-portfolio" aria-controls="panel-portfolio" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
     </div>
   </nav>
 
   <main id="main">
 
-  <div class="tab-panel" data-tab="cycle" id="panel-cycle" role="tabpanel" aria-labelledby="tab-cycle">
+  <div class="tab-panel" data-tab="today" id="panel-today" role="tabpanel" aria-labelledby="tab-today">
+    <div id="today-home" class="wr-page"></div>
+  </div>
+
+  <div class="tab-panel" data-tab="cycle" id="panel-cycle" role="tabpanel" aria-labelledby="tab-cycle" hidden>
   <div id="cycle-view">
 
     <div class="season-card">
@@ -52,17 +56,12 @@
   </div>
   </div>
 
-  <div class="tab-panel" data-tab="analysis" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
-    <div id="calendar-list">
-      <div id="cycle-list"></div>
-    </div>
-    <div id="calendar-cycle" hidden></div>
-  </div>
-
   <div class="tab-panel" data-tab="portfolio" id="panel-portfolio" role="tabpanel" aria-labelledby="tab-portfolio" hidden></div>
 
   <div class="tab-panel" data-tab="chart" id="panel-chart" role="tabpanel" aria-labelledby="tab-chart" hidden>
     <div id="chart-home"></div>
+    <div id="calendar-list"></div>
+    <div id="calendar-cycle" hidden></div>
   </div>
 
   <div class="more-menu" id="more-menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
@@ -135,7 +134,7 @@
 
       <h3 class="menu-section">The Tabs</h3>
       <div class="menu-card menu-prose">
-        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Statistics</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Search</b> lists every reading by category — Weather, Mood, Circulation and Activity — with a filter by timing; the season model and the manuscript's framework table are under About Gyneconomy.</p>
+        <p><b>Today</b> opens the app: the Weather Report, the market as it stands, with its risk factors and a line on each element, then the story of the cycle under way. <b>Cycle</b> is the wheel above, with the cycle’s story and its years. <b>Analysis</b> holds Cycle Statistics, interest rates and every reading by element, and at its foot <b>Herstory</b>, every cycle since 1928; tap one to read it on the same page as today’s. <b>Portfolio</b> offers All Weather and the Investment Clock.</p>
       </div>
     </div>
   </div>

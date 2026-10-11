@@ -1,20 +1,22 @@
 import { CHEV } from "./format.ts";
-import { addSources, need, ui } from "./dom.ts";
+import { addSources, moreButton, need, ui, wireMore } from "./dom.ts";
 import { GYN, repaintLive } from "./live.ts";
 import { marketCycles, sp500AnnualReturnSource, typicalCycleSrc } from "./data.ts";
 import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel } from "./model.ts";
 import { page } from "./history.ts";
-import { econChips } from "./render-core.ts";
+import { dxHead, dxSys, econChips } from "./render-core.ts";
 import { setTopbar } from "./render-pages.ts";
 import { cycleView, marketStripHtml, renderCycleView, seasonStripHtml, settleStrips, showCycle } from "./dial-cycle.ts";
+import { herstorySvg } from "./marks.ts";
+import { PREVIEW } from "./diagnosis.ts";
 
 type Strip = ReturnType<typeof seasonStripHtml>;
 
-// ---- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----
+// ---- RENDER: Herstory, the list of cycles at the foot of Analysis; tapping one opens the cycle view for it ----
 function cycleRowsHtml(){
   var strips: Record<number, Strip> = {};
   marketCycles.forEach(function(c){ strips[c.from] = seasonStripHtml(c); });
-  return marketCycles.slice().reverse().map(function(cyc){
+  return dxSys(" dx-years", dxHead(herstorySvg(), "Herstory") + marketCycles.slice().reverse().map(function(cyc){
     var total = eraMarketTotal(cyc), strip = strips[cyc.from];
     var head = '<span class="era-name">' + cyc.name + '</span>' +
       '<span class="era-years">' + cycLabel(cyc).years + ' <b>(' + strip.years + 'Y)</b></span>' + CHEV;
@@ -22,14 +24,14 @@ function cycleRowsHtml(){
     var foot = econChips(eraGrowth(cyc).total, eraInflation(cyc).total, total, 0, !!cyc.ongoing, "");
     return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div>' +
           '<div class="era-bands">' + bands + '</div>' + foot + '</div>';
-  }).join('');
+  }).join('') + moreButton(marketCycles.length > PREVIEW));
 }
 function renderCycleList(){
-  var list = need("cycle-list");
+  var list = need("calendar-list"), home = need("chart-home"), detail = need("calendar-cycle");
   list.innerHTML = cycleRowsHtml();
+  wireMore(list, ".era-row", PREVIEW);
   settleStrips();
-
-  var listWrap = need("calendar-list"), detail = need("calendar-cycle");
+  function showHome(on: boolean){ list.hidden = !on; home.hidden = !on; detail.hidden = on; }
   function open(from: number, y?: number){
     var era = marketCycles.filter(function(c){ return c.from === from; })[0];
     if (!era) return;
@@ -38,18 +40,18 @@ function renderCycleList(){
       if (tab){ tab.click(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
     }
     enterEra(era, detail);
-    listWrap.hidden = true; detail.hidden = false;
+    showHome(false);
     setTopbar(era.name, (ui.eraPageBack = back));
     window.scrollTo({ top: y || 0, behavior: y ? "auto" : "smooth" });
   }
   function back(){
-    leaveEra(); detail.hidden = true; listWrap.hidden = false;
-    setTopbar("Herstory", null);
+    leaveEra(); showHome(true);
+    setTopbar("Analysis", null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   list.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest(".era-row"); if (row) open(parseInt(row.getAttribute("data-era") || "", 10)); });
   list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && (e.target as Element).classList.contains("era-row")){ e.preventDefault(); open(parseInt((e.target as Element).getAttribute("data-era") || "", 10)); } });
-  GYN.on("calendarReset", function(){ leaveEra(); detail.hidden = true; listWrap.hidden = false; ui.topbarBack = null; need("topbar-back").hidden = true; });
+  GYN.on("calendarReset", function(){ if (ui.eraOpen) setTopbar("Analysis", null); leaveEra(); showHome(true); });
   addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
 }
 // ---- A closed cycle, shown on the Cycle tab's own page ----

@@ -362,7 +362,7 @@ function volatilityHighlights(y0: number){
     hiCard("Against the Record", "", recTxt),
     hiCard("What the Shape Is Saying" + expandBtn(factsFrom(curveNoteFull)), stateOf(shape), shapeTxt)]);
 }
-// ---- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----
+// ---- Per-cycle growth helpers (the cycle view and Herstory both use them) ----
 export function setTopbar(title: string, onBack?: (() => void) | null){
   need("topbar-title").textContent = title;
   ui.topbarBack = onBack || null;

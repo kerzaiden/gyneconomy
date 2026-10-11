@@ -84,6 +84,13 @@ export function moreRow(fullHtml: string | null | undefined, label?: string){
 export function moreDoor(attrs: string, label: string, mark?: string){
   return '<button type="button" class="more-row"' + attrs + '><span' + (mark ? ' class="more-lead"><span class="more-mark" aria-hidden="true">' + mark + '</span>' : '>') + label + '</span>' + CHEV + '</button>';
 }
+export function moreButton(more: boolean){
+  return '<button type="button" class="cyc-more dx-more" aria-expanded="false"' + (more ? "" : " hidden") + '><span>View more</span>' + CHEV + '</button>';
+}
+export function wireMore(host: HTMLElement, rows: string, shown: number){
+  var btn = host.querySelector<HTMLElement>(".dx-more");
+  if (btn && !btn.hidden) viewMore(btn, [].slice.call(host.querySelectorAll(rows)).slice(shown));
+}
 export function viewMore(btn: HTMLElement, extra: HTMLElement[]){
   var label = btn.querySelector("span"), open = false;
   function apply(){

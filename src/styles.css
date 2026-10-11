@@ -416,7 +416,8 @@
   .wrap{ --tabbar-lift:max(10px, calc(env(safe-area-inset-bottom, 0px) - 12px)); padding-bottom:calc(62px + var(--tabbar-lift) + var(--gap-top)); }
   .tabnav{ margin-bottom:0; }
   @media (min-width:1100px){
-    .tabbar{ top:74px; bottom:auto; left:calc(50% - var(--page-w) / 2 + 20px - var(--gap) - 220px); right:auto; margin:0; width:220px; flex-direction:column; gap:4px; padding:8px;
+    .tabnav{ position:sticky; top:8px; z-index:40; height:0; }
+    .tabbar{ position:absolute; top:2px; bottom:auto; left:calc(-1 * (var(--gap) + 220px)); right:auto; margin:0; width:220px; flex-direction:column; gap:4px; padding:8px;
       border-radius:var(--radius); background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow); -webkit-backdrop-filter:none; backdrop-filter:none; }
     .tab-btn.active{ background:var(--surface-2); }
     .tab-btn{ flex:none; flex-direction:row; justify-content:flex-start; gap:12px; padding:10px 14px; font-size:var(--type-interface); border-radius:calc(var(--radius) - 6px); }
@@ -449,10 +450,11 @@
   .ind-cat-name small{ font-family:"Public Sans",sans-serif; font-style:normal; font-weight:400; font-size:var(--type-label); color:var(--text-muted); }
   .ind-card, .lab-box{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
 
-  #cycle-view, #calendar-list{ display:flex; flex-direction:column; gap:16px; }
+  #cycle-view{ display:flex; flex-direction:column; gap:16px; }
   .era-row{ cursor:pointer; }
-  .era-row:hover{ background:var(--surface-2); }
-  .era-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .era-row:hover .era-name{ color:var(--accent-ink); }
+  .era-row:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+  .era-row[hidden]{ display:none; }
   .menu-btn[hidden]{ display:none; }
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--good); }
   .growth-col.down{ stroke:var(--season-summer); }
@@ -620,7 +622,6 @@
   .wr-head{ display:block; margin-top:8px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-reading-head); line-height:1.1; color:var(--text-primary); }
   .wr-page{ display:flex; flex-direction:column; gap:var(--gap); }
   .wr-top .wr-title, .wr-top .wr-date{ text-align:center; }
-  .wr-top .trend-text{ margin-top:14px; }
   .wr-title{ margin:0 0 6px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-page-title); line-height:1.1; color:var(--text-primary); }
   .wr-date{ margin:0; font-size:var(--type-meta); color:var(--text-secondary); }
   .wr-el + .wr-el{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
@@ -874,7 +875,7 @@
     .peek-chart svg{ height:calc(var(--mini-h) + 11px); }
   }
 
-  /* ---- Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary ---- */
+  /* ---- View more: the button under Year by Year and Herstory ---- */
   .cyc-more{ display:flex; align-items:center; justify-content:flex-start; gap:8px; width:100%;
     border:0; border-top:1px solid var(--border); background:transparent; padding:13px 14px 12px;
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:600;
@@ -884,8 +885,8 @@
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transform:rotate(90deg); transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(-90deg); }
   .cyc-more[hidden]{ display:none; }
-  .dx-years-more{ width:calc(100% + 36px); margin:0 -18px; padding:13px 18px 0; }
-  .dx-years-more:hover{ background:transparent; }
+  .dx-more{ width:calc(100% + 36px); margin:0 -18px; padding:13px 18px 0; }
+  .dx-more:hover{ background:transparent; }
   /* ---- The symptoms: a cycle's years against today ---- */
   .cat-weather{ --cat:var(--season-summer); } .cat-activity{ --cat:var(--earth); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-desire{ --cat:var(--bleed-mid); } .cat-stress{ --cat:var(--gold); }
@@ -1031,9 +1032,9 @@
   .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .lab-item.t-abnormal .lab-res b{ color:var(--critical-ink); }
 
-  .era-row{ padding:13px 14px 12px; }
-  .era-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
-  .era-row + .era-row{ margin-top:var(--gap); }
+  .era-row{ padding:13px 0; border-top:1px solid var(--border); }
+  .dx-sys-head + .era-row{ border-top:0; }
+  .era-row:has(+ .cyc-more[hidden]){ padding-bottom:0; }
 
   /* ---- yield curve charts ---- */
 

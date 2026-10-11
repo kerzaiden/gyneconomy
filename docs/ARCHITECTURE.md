@@ -375,7 +375,7 @@ manifest's.
   `data` (the figures, their constants and sources), `activity` (the growth gap, job growth (nonfarm payrolls) and retail sales, drawn by credit's line readings), `concentration` (the top ten's weight in the S&P 500, the same way), `credit` (consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies), `model` (seasons, cycles, mood), `history` (the one history component),
   `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `pulse-strips` (the Pulse history: one EKG strip per year, 0.9.25), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers), `fed-phases` (the Fed's phases on Analysis, and each cycle's rates story),
   `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
-  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (the Weather Report: its card on every cycle page, its page, and Risk Factors inside it), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
+  (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (the Today tab's Weather Report, the Cycle Story card on every cycle page and its page, and Risk Factors), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -389,9 +389,10 @@ The conversion was proved by the snapshot (every state identical) and the browse
 ## In one page
 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
-to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio. These are labels, and the
-panels keep their keys `chart` and `analysis`: Analysis is Cycle Statistics, which took Search's place in 0.6.1,
-and Herstory is the cycle list. The Content tab's models live in About Gyneconomy, the menu's page formerly
+to the manuscript, not part of it. Tabs: Today · Cycle · Analysis · Portfolio, opening on Today. These are labels,
+and Analysis's panel keeps its key `chart`: Analysis is Cycle Statistics, which took Search's place in 0.6.1, and
+Herstory, the cycle list (`#calendar-list`), is its last container since Today Tab; a past cycle opens in
+`#calendar-cycle` inside the same panel. The Content tab's models live in About Gyneconomy, the menu's page formerly
 "About the book" (V657). Cycle = the dial, then Browse, six categories since 0.9.11: Weather (Economic Season ·
 Market) · Activity (Labor · Output; key `activity`) · Mood (Valuations · Sentiment) · Desire (Demand · Risk) ·
 Circulation (Pressure · Money) · Stress (Households · Government; key `stress`). Debt became Households and
@@ -605,7 +606,7 @@ in progress reads `yearSoFar`: its latest quarter's real GDP on a year earlier a
 Growth and Temperature cards' own figures; the bar's blank end says the year is not done, so the row carries no
 "so far", which would not fit on a phone. Its grey dots are laid out after layout, not in the markup
 (`fitYearDots`, run by `renderDiagnosis` and `settleAll` on every tab switch and resize): their pitch is one quarter
-of the open cycle's Herstory row, a width only the page knows, so they sit exactly as far apart as Herstory's
+of the container's inner width, which Herstory's rows share since Today Tab, a width only the page knows, so they sit exactly as far apart as Herstory's
 (0.6.18), the first one gap from the market bar, so the gaps read even (0.8.8). A row opens Indicators on its year
 (`data-ind-when`, 0.8.9). The systems card (Circulation and Energy with their Analysis lines, `analysisFor`,
 `acrossCycle`) left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
@@ -639,18 +640,20 @@ emotion at the closing month, its years, and what followed a year later. Every l
   `fedFundsHistory` for a cycle that ends after it begins (1954-07) and `discountHistory` (the New York Fed's rate,
   1914 to 1954-06) before. The note under the legend is the cycle's `rates`
   story, with `{peak}` and `{month}` filled from `cyclePeak`.
-- **The Weather Report** (Weather Report, `ai-insights`): `reportCard(m)` opens every cycle page, a `trendDoor` to
-  `sheet-report` carrying `data-report-cycle`, which a capturing click listener reads before the page opens, so
-  `drawReport` draws the cycle the card was on. The open cycle's page is the edition in `now.report` (headline and
-  date, lede, Risk Factors, the cycle's `story`, one `.wr-el` per category in `categoriesShown` order); a closed
-  cycle's is its name and years, its `blurb` and its Risk Factors. The words are data: `src/data/weather-report.json`
-  (`asOf`, `headline`, `lede`, `story`, `elements` keyed by category), written with `[label](sheet-id)` links that
-  `prose` turns into buttons opening that reading's page (`plain` strips them for the card). The edition is also
+- **The Weather Report and the Cycle Story** (Weather Report, Today Tab, `ai-insights`): `drawToday` fills
+  `#today-home`, the Today tab, with the edition in `now.report` (headline and date, lede, Risk Factors, one `.wr-el`
+  per category in `categoriesShown` order), then the open cycle's Cycle Story. `storyCard(m)` follows the dial on
+  every cycle page, a `trendDoor` to `sheet-story` carrying `data-story-cycle`, which a capturing click listener
+  (`pickStory`) reads before the page opens, so `drawStory` draws the cycle the card was on: its name and years, its
+  Risk Factors and its story (`storyOf`: the open cycle's `now.report.story`, a closed cycle's `blurb`). The words are
+  data: `src/data/weather-report.json` (`asOf`, `headline`, `lede`, `story`, `elements` keyed by category), written
+  with `[label](sheet-id)` links that `prose` turns into buttons opening that reading's page. The edition is also
   a live document, `weatherReport`, an object reading flagged `words` (so `checkRoster` asks no roster row to show
   it), checked by `reportOk` (headline, lede, story and every element present, links only to `sheet-` ids, and like
   every live document no `<`, `>` or straight quote); it arrives from the artifact's database as `data/weatherReport`
   and on the site from `data/report.json` (`fetchSiteData` reads it beside `live.json`), and `redrawReport` repaints
-  an open report while the `*` painter redraws the card.
+  Today and an open story page while the `*` painter redraws the card. `tools/report.mjs` reads the risk factors
+  from `#today-home` after `drawToday`.
   Risk Factors (`riskFactors(c)`) lists `riskLabs`, the one judgement, each placed in its own record by `standing`;
   its doors carry `data-ind-cycle`, which `pickCat` reads to open Elements on that cycle and tier. A closed cycle
   reads its most extreme value inside the cycle against the record before it. The open cycle reads `todayValue`, the
@@ -706,7 +709,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
 - **One cycle, one card** (0.6.17, Cycle Insights): `diagnosisHtml` is one sequence for every cycle, open or closed,
   with no branch; the unit test "every cycle page, open or closed, is
   built in one shape" compares each closed cycle's containers and their children with today's (the peak mark and
-  the year rows, which vary with the data, aside). The Diagnosis is the Weather Report (`reportCard(m)`), then Year by Year. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
+  the year rows, which vary with the data, aside). The Diagnosis is the Cycle Story (`storyCard(m)`), then Year by Year. The mood card (`moodDoor`, V681 to 0.6.16) went with it. `onDial` names the category the
   hub opens on Indicators (Weather).
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's button opens it (`hubOpen`'s `cat`, on the current quarter) while the dial shows today; a parked

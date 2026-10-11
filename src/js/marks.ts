@@ -24,6 +24,7 @@ export function diceSvg(){ return markSvg(
   '<rect x="4" y="4" width="16" height="16" rx="3.6" stroke-width="1.8"/>' +
   '<circle cx="8.6" cy="8.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none"/>' +
   '<circle cx="15.4" cy="15.4" r="1.25" fill="currentColor" stroke="none"/>'); }
+export function herstorySvg(){ return markSvg('<path d="M3.6 12a8.4 8.4 0 1 0 2.5-6" stroke-width="1.8"/><path d="M3.2 4.6v4h4" stroke-width="1.8"/><path d="M12 7.7V12l3 1.8" stroke-width="1.8"/>'); }
 export function clockSvg(){ return markSvg('<circle cx="12" cy="12" r="8.4" stroke-width="1.8"/><path d="M12 7.4V12l3.1 2.1" stroke-width="1.8"/>'); }
 export function thermoSvg(){ return markSvg(
   '<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' +
