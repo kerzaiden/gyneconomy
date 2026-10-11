@@ -218,15 +218,18 @@ settles it; none is open after V668.
   (`--placeholder`).** (0.6.3)
 - **On every screen the tab bar floats: a liquid-glass pill inset 16px from the sides (at most 480px wide,
   centred) and close to the bottom edge, 12px inside the safe area (never under 10px), the surface at 58% behind an
-  18px blur with a light edge and a soft lift; the open tab sits in a pale pill (`--glass-on`), icon and label in
-  the accent ink.** Keren wanted the bar floating like the cycle app she showed, with the page visible and blurred
+  18px blur with a light edge and a soft lift. On a phone it holds icons only, as wide as its four icons, the open tab
+  in a plum-tinted pill (`--glass-on`, the accent at 14%, 24% in dark) with its icon in the accent ink; the names stay
+  for screen readers and in the desktop sidebar. Scrolling down shrinks it to 70% from its bottom edge, scrolling up
+  restores it.** On her iPhone she could barely tell which tab was open; after Instagram's bar she asked for a visible
+  pill, no labels under icons that already name the tab, and a bar that shrinks by about 30% while she scrolls. Keren wanted the bar floating like the cycle app she showed, with the page visible and blurred
   behind it as it scrolls. The glass is the `--glass*` tokens, light and dark; it replaces V550's flush, full-width
   bar. On her iPhone the bar sat too far from the bottom (10px plus the 34px inset left a 44px gap; now 22px). It is
   the same design on desktop and mobile (0.6.15 retired the wide-screen segmented track; the 480px cap is Claude's
   call). The page keeps bottom padding so nothing ends hidden behind the bar: the last container stops one top gap
   (`--gap-top`, 20px) above the bar, whatever the safe area, so the padding is the bar's height plus its lift
   (`--tabbar-lift`) plus that gap. The space below the last container had been too large on her iPhone (54px with
-  the 34px inset) and has to stay within the spacing scale. (0.6.9, 0.6.11, 0.6.13, 0.6.15)
+  the 34px inset) and has to stay within the spacing scale. (0.6.9, 0.6.11, 0.6.13, 0.6.15, Icon Tab Bar)
 - **The page's top bar does not stick: the open tab's title sits at the top of the page and scrolls away with
   it, while the round menu button (and the back arrow on a deeper page) float in the top corners as liquid-glass
   circles, aligned to the page's edges on wide screens; the "Gyneconomy" title stays in the menu. The title's

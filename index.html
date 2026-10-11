@@ -44,7 +44,7 @@
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
     --seg-track: #f6f5f5; --seg-on: #ffffff; --shade: var(--seg-track);
-    --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
+    --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--accent) 14%, transparent);
     --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
     --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
     --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.26), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.20), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.22), transparent 80%);
@@ -89,7 +89,7 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #271921; --seg-on: #4a3540; --shade: #3f3038;
-      --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
+      --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--accent) 24%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
       --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
@@ -133,7 +133,7 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #271921; --seg-on: #4a3540; --shade: #3f3038;
-      --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
+      --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--accent) 24%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
       --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
@@ -396,29 +396,36 @@
   .cycle-dial .dial-peak.down .disc{ stroke:var(--bleed-mid); } .cycle-dial .dial-peak.down .dot{ fill:var(--bleed-mid); }
 
   .tabbar{
-    position:fixed; left:0; right:0; bottom:var(--tabbar-lift); z-index:40; margin:0 auto; width:min(calc(100% - 32px), 480px);
+    position:fixed; left:0; right:0; bottom:var(--tabbar-lift); z-index:40; margin:0 auto; width:fit-content;
     display:flex; border-radius:var(--round); padding:5px; gap:2px;
     background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
     border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
+    transform-origin:50% 100%; transition:transform 0.25s ease;
   }
+  .tabbar.small{ transform:scale(0.7); }
   .tab-btn{
-    flex:1; border:none; background:transparent; padding:7px 0 6px; border-radius:var(--round); cursor:pointer;
-    display:flex; flex-direction:column; align-items:center; gap:3px;
+    flex:none; width:64px; height:44px; border:none; background:transparent; padding:0; border-radius:var(--round); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
     font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; color:var(--text-secondary);
     transition:background 0.15s ease, color 0.15s ease;
   }
-  .tab-btn svg{ width:22px; height:22px; flex:none; opacity:0.9; }
+  .tab-btn span{ position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  .tab-btn svg{ width:24px; height:24px; flex:none; opacity:0.9; }
   .tab-btn.active{ background:var(--glass-on); color:var(--accent-ink); }
-  .tab-btn.active svg{ opacity:1; }
+  .tab-btn.active svg{ opacity:1; stroke-width:2.2; }
   .tab-btn:hover:not(.active){ color:var(--text-primary); }
-  .wrap{ --tabbar-lift:max(10px, calc(env(safe-area-inset-bottom, 0px) - 12px)); padding-bottom:calc(62px + var(--tabbar-lift) + var(--gap-top)); }
+  .wrap{ --tabbar-lift:max(10px, calc(env(safe-area-inset-bottom, 0px) - 12px)); padding-bottom:calc(56px + var(--tabbar-lift) + var(--gap-top)); }
   .tabnav{ margin-bottom:0; }
   @media (min-width:1100px){
     .tabnav{ position:sticky; top:8px; z-index:40; height:0; }
     .tabbar{ position:absolute; top:2px; bottom:auto; left:calc(-1 * (var(--gap) + 220px)); right:auto; margin:0; width:220px; flex-direction:column; gap:4px; padding:8px;
       border-radius:var(--radius); background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow); -webkit-backdrop-filter:none; backdrop-filter:none; }
     .tab-btn.active{ background:var(--surface-2); }
-    .tab-btn{ flex:none; flex-direction:row; justify-content:flex-start; gap:12px; padding:10px 14px; font-size:var(--type-interface); border-radius:calc(var(--radius) - 6px); }
+    .tabbar.small{ transform:none; }
+    .tab-btn{ width:auto; height:auto; flex-direction:row; justify-content:flex-start; gap:12px; padding:10px 14px; font-size:var(--type-interface); border-radius:calc(var(--radius) - 6px); }
+    .tab-btn span{ position:static; width:auto; height:auto; margin:0; overflow:visible; clip:auto; }
+    .tab-btn svg{ width:22px; height:22px; }
+    .tab-btn.active svg{ stroke-width:1.9; }
     .wrap{ padding-bottom:var(--gap-top); }
   }
   .tab-panel, #calendar-cycle{ display:flex; flex-direction:column; gap:var(--gap); }
@@ -54549,6 +54556,24 @@
   function wireTabKeys() {
     rovingKeys(one(".tabbar"), ".tab-btn", "aria-selected");
   }
+  function wireTabShrink() {
+    var bar = one(".tabbar"), last = window.scrollY, queued = false;
+    function settle() {
+      queued = false;
+      var y = window.scrollY, dy = y - last;
+      if (Math.abs(dy) < 6) return;
+      bar.classList.toggle("small", dy > 0 && y > 40);
+      last = y;
+    }
+    window.addEventListener("scroll", function() {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(settle);
+      }
+    }, {
+      passive: true
+    });
+  }
   function wireMenu() {
     var menu = need("more-menu"), open = need("menu-btn"), back = need("menu-back");
     var prevOverflow = "", locked = false;
@@ -54724,6 +54749,8 @@
     renderTopbar();
     GYN.step("wireTabKeys", wireTabKeys, "wire");
     wireTabKeys();
+    GYN.step("wireTabShrink", wireTabShrink, "wire");
+    wireTabShrink();
     GYN.step("wireMenu", wireMenu, "wire");
     wireMenu();
   }
