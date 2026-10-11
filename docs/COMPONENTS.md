@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `3d80533` on 2026-10-11. **110 components**, **18 shared patterns**.
+Generated from commit `72eae88` on 2026-10-11. **110 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -17,7 +17,7 @@ Generated from commit `3d80533` on 2026-10-11. **110 components**, **18 shared p
 | **`elements`** | `.wr-el` | `ai-insights.ts:todayHtml` |
 | **`lead`** | `.wr-by` `.wr-head` | `ai-insights.ts:storyCard`, `ai-insights.ts:todayHtml` |
 | **`mountReport`** | `.wr-page` | `diagnosis.ts:diagnosisHost` |
-| **`prose`** | `.wr-link` | `ai-insights.ts:elements` |
+| **`prose`** | `.wr-link` | `ai-insights.ts:elements`, `ai-insights.ts:storyCard`, `ai-insights.ts:todayHtml` |
 | **`storyHtml`** | `.wr-date` `.wr-title` | — |
 
 ## analysis.ts
@@ -312,6 +312,7 @@ renderer speaks. Listed most-used first.
 | **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`monthIdx`** | wave-chart.ts | 3 places |
+| **`monthIndex`** | model.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`moodTrack`** | model.ts | 3 places |
 | **`mortgageLast`** | pressure.ts | 3 places |

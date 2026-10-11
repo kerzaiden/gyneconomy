@@ -20,9 +20,9 @@ export var now: NowStore = {
   fedFunds: { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
     asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026", turnLabel:"First hike since", turnValue:"2023" },
   yieldCurve: [
-  {m:"1M",  y:4.01}, {m:"2M",  y:4.18}, {m:"3M",  y:4.24}, {m:"4M",  y:4.33}, {m:"6M",  y:4.34},
-  {m:"1Y",  y:4.51}, {m:"2Y",  y:4.87}, {m:"3Y",  y:4.99}, {m:"5Y",  y:5.03}, {m:"7Y",  y:5.10},
-  {m:"10Y", y:5.18}, {m:"20Y", y:5.53}, {m:"30Y", y:5.47}
+  {m:"1M",  y:4.13}, {m:"2M",  y:4.13}, {m:"3M",  y:4.25}, {m:"4M",  y:4.29}, {m:"6M",  y:4.32},
+  {m:"1Y",  y:4.47}, {m:"2Y",  y:4.80}, {m:"3Y",  y:4.89}, {m:"5Y",  y:5.02}, {m:"7Y",  y:5.13},
+  {m:"10Y", y:5.24}, {m:"20Y", y:5.65}, {m:"30Y", y:5.60}
 ],
   sentiment: {
   kicker:"How she feels right now",
@@ -63,7 +63,7 @@ export var now: NowStore = {
   vix3mClose: 17.61
 };
 // ---- DATA (single source of truth — edit here on refresh) ----
-var YIELD_CURVE_ASOF = "2026-09-24", CAPE_ASOF = "2026-09-01";
+var YIELD_CURVE_ASOF = "2026-10-09", CAPE_ASOF = "2026-09-01";
 export function curveAsOf(){
   return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
 }

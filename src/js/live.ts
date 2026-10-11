@@ -16,6 +16,7 @@ type Gyn = {
   applyLive?: (name: string, value: unknown, d?: LiveDoc) => boolean;
   READINGS?: Record<string, LiveReading>;
   ROSTER?: RosterRow[];
+  cycle?: string;
 };
 
 export var liveAsOf: Record<string, string | undefined> = {}, liveApplied: Record<string, string | undefined> = {};

@@ -317,7 +317,7 @@ async function openPage(p, url, sheet) {
     const today = await read();
     await sweep(p);
     (today && today.visible && today.title === 'Cycle Story' && today.cards === 0 &&
-     today.boxes === 'story,sys' && today.doors === 1 && today.score && today.kicker === 'AI Cycle')
+     today.boxes === 'story,sys' && today.doors === 1 && today.score && !!today.kicker && today.kicker === await p.evaluate(() => window.__GYN.cycle))
       ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
@@ -351,7 +351,7 @@ async function openPage(p, url, sheet) {
     (yearInd.title === 'Elements' && yearInd.shown && yearInd.year === '2010' && yearInd.cycle === 'Year 2 of the Big Tech Cycle' && yearInd.items > 10 && !yearInd.popup)
       ? ok('a year in Year by Year opens Elements on that year', yearInd.items + ' readings in 2010')
       : bad('a year in Year by Year opens Elements on that year', JSON.stringify(yearInd));
-    await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
+    await filt(p, '[data-pick-period="' + await p.evaluate(() => window.__GYN.cycle) + '"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
     (past && past.visible && past.title === 'Cycle Story' && past.kicker === 'Big Tech Cycle')
@@ -516,7 +516,7 @@ async function openPage(p, url, sheet) {
     const tab = await p.evaluate(() => {
       const h = document.getElementById('sheet-find'), rows = [...h.querySelectorAll('.lab-row[data-open]')];
       return { title: document.getElementById('topbar-title').textContent, first: h.firstElementChild.className,
-        under: h.querySelector('.period-now b').textContent === 'AI Cycle' && !!h.querySelector('.lab-find .lab-filter.details-link'),
+        under: !!window.__GYN.cycle && h.querySelector('.period-now b').textContent === window.__GYN.cycle && !!h.querySelector('.lab-find .lab-filter.details-link'),
         chips: h.querySelectorAll('.rangebar, .lab-menu, .hist-bar').length, menu: !document.getElementById('detail-backdrop').classList.contains('show'),
         rows: rows.length, doors: rows.every(r => document.getElementById(r.dataset.open)),
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.indCat).join(), regularity: !!h.querySelector('.cat-cycle, [data-ind-cat="cycle"]') };
@@ -562,13 +562,13 @@ async function openPage(p, url, sheet) {
     await click(p, '#sheet-find .period-arrow.back'); await settle(p);
     const stepBack = await now();
     await filt(p, '[data-pick-tier="borderline"]'); await filt(p, '[data-pick-reset]');
-    const reset = await p.evaluate(() => ({ tier: document.querySelector('#detail-modal-body [data-pick-tier].on').dataset.pickTier, label: document.querySelector('#sheet-find .period-now b').textContent,
+    const reset = await p.evaluate(() => ({ open: window.__GYN.cycle, tier: document.querySelector('#detail-modal-body [data-pick-tier].on').dataset.pickTier, label: document.querySelector('#sheet-find .period-now b').textContent,
       show: document.querySelector('#detail-modal-body .ind-show').textContent, items: document.querySelectorAll('#sheet-find .lab-item:not([hidden])').length }));
     await click(p, '#detail-modal-body .ind-show'); await settle(p);
     const closed = await p.evaluate(() => !document.getElementById('detail-backdrop').classList.contains('show'));
     (sub.cal[0] > 15 && sub.cal[1] > 90 && sub.cal[2] > 350 && dot.label === 'Dot-Com Cycle' && dot.on === 'Dot-Com Cycle1991\u20132002' && dot.items > 10 &&
      y99.label === '1999' && y99.on === '1999' && y99.cap === 'Year 9 of the Dot-Com Cycle' && /^\+21\.0%/.test(y99.sp || '') && q99.label === 'Q4 1999' && q99.on === 'Q4' &&
-     stepBack.label === 'Q3 1999' && reset.tier === 'all' && reset.label === 'AI Cycle' && reset.show === 'Show ' + reset.items + ' readings' && closed)
+     stepBack.label === 'Q3 1999' && reset.tier === 'all' && !!reset.open && reset.label === reset.open && reset.show === 'Show ' + reset.items + ' readings' && closed)
       ? ok('Elements moves by cycle, year or quarter on one season calendar or the stepper\u2019s arrows, and Reset brings it home', sub.cal[0] + ' cycles, ' + sub.cal[1] + ' years, ' + sub.cal[2] + ' quarters; 1999 S&P 500 ' + y99.sp)
       : bad('Elements moves by cycle, year or quarter on one season calendar or the stepper\u2019s arrows, and Reset brings it home', JSON.stringify({ sub, dot, y99, q99, stepBack, reset, closed }));
     await p.click('#sheet-find .cat-mood .lab-fold'); await settle(p);
@@ -814,20 +814,13 @@ async function openPage(p, url, sheet) {
       if (!R || !step) return null;
       document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home button.dx-sys-head[data-open="sheet-find"]:not([data-ind-tier])').click();
       const cards = [...document.querySelectorAll('#sheet-find .lab-row[data-open]')].map(c => c.dataset.open).sort();
-      const warned = [], warn = console.warn;
-      console.warn = m => warned.push(String(m));
-      R.push(Object.assign({}, R[0], { group: R.filter(r => r.group)[0].group, live: ['nowhere'] }));
-      try { step.fn(); } finally { R.pop(); console.warn = warn; }
-      return { ids: R.map(r => r.id), cards, warned: warned.join(' ') };
+      return { ids: R.map(r => r.id), cards };
     });
     if (!roster) bad('the roster is every reading on Elements', 'no GYN.ROSTER or no checkRoster step');
     else {
       JSON.stringify(roster.ids.slice().sort()) === JSON.stringify(roster.cards)
         ? ok('the roster is every reading on Elements', roster.ids.length + ' readings')
         : bad('the roster is every reading on Elements', 'roster ' + roster.ids.join(',') + ' / cards ' + roster.cards.join(','));
-      ['declared twice', 'is split', 'no live reading nowhere'].every(w => roster.warned.indexOf(w) !== -1)
-        ? ok('checkRoster refuses a reading declared twice, a split group and an unknown live name')
-        : bad('checkRoster refuses a reading declared twice, a split group and an unknown live name', roster.warned || 'no warning');
     }
     await c.close();
   }

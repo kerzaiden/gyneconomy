@@ -1,5 +1,6 @@
 import { fmtSigned, qLabel, yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
+import { GYN } from "./live.ts";
 import { confidenceHistory, gnpQuarterlyBefore, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
 export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; heading: string; cpiHot: boolean; cpiCold: boolean; potential: number; gdpLatest: QuarterPoint };
@@ -17,9 +18,22 @@ function cpiTrend(points: MonthPoint[]){
   points.forEach(function(d, i){ num += (xs[i] - mx) * (d.v - my); den += (xs[i] - mx) * (xs[i] - mx); });
   return den ? num / den : 0;
 }
+var cpiAt: { list: MonthPoint[]; key: string; at: Map<number, number[]> } | null = null;
+function cpiPositions(){
+  var last = inflationHistory[inflationHistory.length - 1], key = inflationHistory.length + ":" + (last ? last.m : "");
+  if (cpiAt && cpiAt.list === inflationHistory && cpiAt.key === key) return cpiAt.at;
+  var at = new Map<number, number[]>();
+  inflationHistory.forEach(function(c, k){ var i = monthIndex(c.m), p = at.get(i); if (p) p.push(k); else at.set(i, [k]); });
+  cpiAt = { list: inflationHistory, key: key, at: at };
+  return at;
+}
+function cpiWindow(to: number){
+  var at = cpiPositions(), ks: number[] = [];
+  for (var i = to - 11; i <= to; i++) ks = ks.concat(at.get(i) || []);
+  return ks.sort(function(a, b){ return a - b; });
+}
 function cpiYear(endMonth: string){
-  var to = monthIndex(endMonth);
-  return inflationHistory.filter(function(c){ var i = monthIndex(c.m); return i > to - 12 && i <= to; });
+  return cpiWindow(monthIndex(endMonth)).map(function(k){ return inflationHistory[k]; });
 }
 function cpiDirectionOf(slope: number){ return slope > 0.02 ? "rising" : slope < -0.02 ? "falling" : "steady"; }
 export function cpiDirectionAt(endMonth: string){
@@ -195,10 +209,18 @@ export function diagnoseToday(){
   return x && x.word ? { stage:x.word, season:currentSeason, month:x.m } : null;
 }
 // ---- Her mood: one range from Depression to Mania ----
+function rankBefore(list: MoodPoint[], i: number, v: number | null){ return rankToDate(list.slice(0, i).map(function(d){ return d.v; }), v); }
+var rankMemo = new Map<MoodPoint[], (number | null)[]>();
+function rankAt(list: MoodPoint[], i: number){
+  var memo = rankMemo.get(list) || [];
+  rankMemo.set(list, memo);
+  if (memo[i] === undefined) memo[i] = rankBefore(list, i, list[i].v);
+  return memo[i];
+}
 function rankIn(list: MoodPoint[], m: string, v?: number | null){
   var i = -1;
   list.forEach(function(d, j){ if (d.k <= m) i = j; });
-  return i < 0 ? null : rankToDate(list.slice(0, i).map(function(d){ return d.v; }), v != null ? v : list[i].v);
+  return i < 0 ? null : v != null ? rankBefore(list, i, v) : rankAt(list, i);
 }
 var moodLists: { cape: MoodPoint[]; buffett: MoodPoint[]; vix: MoodPoint[]; confidence: MoodPoint[] } | null = null;
 function moodSeries(){
@@ -367,6 +389,11 @@ function seasonQuarters(prevRegime?: string, prevHeading?: string){
   });
   return out;
 }
+function regimes(track: TrackEntry[]){
+  var out: Record<string, string> = {};
+  track.forEach(function(e){ if (e) out[e.q] = e.reading.regime; });
+  return out;
+}
 export function bootModel(){
   currentEra = marketCycles.filter(function(c){ return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY); })[0] || marketCycles[marketCycles.length - 1];
   potentialByQ = {};
@@ -378,11 +405,8 @@ export function bootModel(){
   seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
   seasonByQ = {};
   seasonTrack.forEach(function(e){ if (e) seasonByQ[e.q] = seasonGroup(e.reading.season); });
-  regimeByQ = (function(){
-    var out: Record<string, string> = {};
-    seasonTrack.forEach(function(e){ if (e) out[e.q] = e.reading.regime; });
-    return out;
-  })();
+  regimeByQ = regimes(seasonTrack);
+  GYN.cycle = currentEra.name;
   // ---- One cycle, as the cycle view reads it ----
   cycleYtdFraction = (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
   nowModel = cycleModel(currentEra);
