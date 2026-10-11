@@ -36,9 +36,12 @@ test('a cycle counts only its closed years as bull years', () => {
   assert.equal(lab('bull').per[open], closed);
 });
 
-test('the (i) says how many closed cycles each short range rests on', () => {
-  const all = detailTexts.join(' ').replace(/<[^>]+>/g, '');
-  assert.match(all, /Depth: a range rests[^.]*\. US 10-year Treasury[^;]* on two; [^;]*Concentration risk on three/);
+test('a range needs four closed cycles and twenty years of record, and the (i) names the readings left unjudged', () => {
+  const all = detailTexts.join(' ').replace(/<[^>]+>/g, ''), thin = labs().filter(l => l.cat !== 'cycle' && !l.norm);
+  assert.match(all, /Depth: a range needs at least four closed cycles and 20 years of record/);
+  assert.ok(thin.length > 0 && thin.every(l => all.includes(l.name)), thin.map(l => l.name).join(', '));
+  assert.ok(thin.some(l => l.name === 'Margin debt') && !thin.some(l => l.name === 'Fear'));
+  assert.ok(labs().filter(l => l.norm && l.cat !== 'cycle').every(l => l.per.slice(0, 18).filter(v => v != null).length >= 4));
 });
 
 test('a live reading moves Cycle Statistics with its figure', async () => {

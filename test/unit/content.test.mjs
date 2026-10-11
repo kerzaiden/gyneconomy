@@ -347,7 +347,9 @@ test('the 10-year card reads its tendency like a barometer, by its own record\'s
 test('a Cycle Statistics result is named by its tier, Normal on its good side and flagged on the other', () => {
   const rows = [...document.querySelectorAll('#sheet-find .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
   assert.equal(rows.length, ROSTER.length);
+  const thin = new Set(labs().filter(l => l.cat !== 'cycle' && !l.norm).map(l => l.id));
   rows.forEach(({ R, li }) => {
+    if (thin.has(R.id)) { assert.ok(li.classList.contains('t-none'), R.name); assert.match(li.textContent, /Not judged.*Short record/, R.name); return; }
     const way = li.classList.contains('to-up') ? 'up' : li.classList.contains('to-down') ? 'down' : null;
     const normal = li.classList.contains('t-optimal');
     assert.equal(normal, !way || way === R.good, R.name + ' ' + way + ' ' + li.className);

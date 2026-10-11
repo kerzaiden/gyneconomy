@@ -2,7 +2,7 @@ import SERIES from "../data/series.json" with { type: "json" };
 import REPORT from "../data/weather-report.json" with { type: "json" };
 import { bandEnds, mean, metered, pctl, round1 } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
-import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, dsrQuarterly, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
+import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, dsrQuarterly, grossDebtQuarterly, sp500ReturnsBefore, treasuryLong, treasuryQuarterly } from "./history-fred.ts";
 
 export var BUFFETT_LINE = 80, DEBT_LINE = 70, DEFICIT_LINE = 3.8;
 export type Report = { asOf: string; headline: string; lede: string; story: string; elements: Record<string, string> };
@@ -339,7 +339,8 @@ export var VIX_CONVENTION: Src[] = [
   {t:"Chase \u2014 What Is the VIX and How To Use It (below 20 stability, above 30 fear and uncertainty)", u:"https://www.chase.com/personal/investments/learning-and-insights/article/what-is-the-vix"},
   {t:"TD Direct Investing \u2014 Understanding VIX or Volatility Index (the same lines at 20 and 30)", u:"https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"}
 ];
-export var DSR_FROM_YEAR = 2005;
+export var DSR_FROM_YEAR = 2005, TREASURY_GRID_FROM = "2005 Q1";
+export var t10yLongHistory: QuarterPoint[] = treasuryLong.y10, t10y3mLongHistory: QuarterPoint[] = treasuryLong.s3m;
 export var dsrHistory: number[] = dsrQuarterly.map(function(d){ return d.v; });
 export var SAV_FROM_YEAR = 1947;
 export var savHistory = SERIES.savHistory;
@@ -496,13 +497,13 @@ export var t10y3mHistory: QuarterPoint[], t10y2yHistory: QuarterPoint[], t3mYiel
 export function bootData(){
   liveInto("yieldCurve");
   liveInto("weatherReport");
-  t10y3mHistory = treasuryQuarterly.s3m;
+  t10y3mHistory = t10y3mLongHistory.filter(function(d){ return d.q >= TREASURY_GRID_FROM; });
   t10y2yHistory = treasuryQuarterly.s2y;
   // ---- Yield LEVELS by maturity, quarterly from Q1 2005 — not spreads, the actual yields themselves, ----
   t3mYieldHistory = treasuryQuarterly.m3;
   t2yYieldHistory = treasuryQuarterly.y2;
   t5yYieldHistory = treasuryQuarterly.y5;
-  t10yYieldHistory = treasuryQuarterly.y10;
+  t10yYieldHistory = t10yLongHistory.filter(function(d){ return d.q >= TREASURY_GRID_FROM; });
   t30yYieldHistory = treasuryQuarterly.y30;
   usRealGdpGrowth = merge(gdpGrowthBefore, {
     1990:1.89, 1991:-0.11, 1992:3.52, 1993:2.75, 1994:4.03, 1995:2.68, 1996:3.77, 1997:4.45, 1998:4.48, 1999:4.79,

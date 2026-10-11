@@ -30,8 +30,10 @@ const KNOWN_GAPS = { cpiYoYHistory: '2025-09 -> 2025-11', topTenQuarterly: REPOR
 const KEYED = [
   ['series.json', 'cpiYoYHistory',           'm', 440, [-5, 20]],
   ['series.json', 'gdpQuarterlyYoY',         'q', 150, [-15, 20]],
-  ...['m3', 'y2', 'y5', 'y10', 'y30'].map(k => ['fred.json',   'treasuryQuarterly.' + k, 'q', 86, [0, 20], 3]),
-  ...['s3m', 's2y'].map(k => ['fred.json',   'treasuryQuarterly.' + k, 'q', 86, [-5, 6], 3]),
+  ...['m3', 'y2', 'y5', 'y30'].map(k => ['fred.json',   'treasuryQuarterly.' + k, 'q', 86, [0, 20], 3]),
+  ['fred.json',   'treasuryQuarterly.s2y',   'q', 86, [-5, 6], 3],
+  ['fred.json',   'treasuryLong.y10',        'q', 290, [0, 20], 3],
+  ['fred.json',   'treasuryLong.s3m',        'q', 290, [-5, 6], 3],
   ['fred.json',   'fedFundsHistory',         'm', 860, [0, 25], 6],
   ['fred.json',   'volatilityHistory',       'm', 480, [5, 100], 6],
   ['fred.json',   'productivityHistory',     'q', 300, [-15, 15], 3],

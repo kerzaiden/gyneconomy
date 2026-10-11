@@ -167,8 +167,7 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   assert.deepEqual(ranked(story), ranked(today));
   assert.ok(risksOf(nowModel.era).length > 0);
   assert.deepEqual(ranked(today), risksOf(nowModel.era));
-  const ten = [...today.querySelectorAll('.cat-risk .lab-item')].find(b => b.textContent.startsWith('US 10-year Treasury'));
-  assert.equal(ten.querySelector('.lab-res b').textContent, todayFace(ROSTER_BY['sheet-sign-pressure']).text, 'one figure, one number: the risk factor reads today’s close');
+  [...today.querySelectorAll('.cat-risk .lab-row[data-open]')].forEach(r => assert.equal(r.querySelector('.lab-res b').textContent, todayFace(ROSTER_BY[r.dataset.open]).text.replace('\u2248', ''), 'one figure, one number: ' + r.dataset.title + ' reads today’s figure'));
   const links = [...today.querySelectorAll('.wr-link')];
   assert.ok(links.length >= 12 && links.every(a => ROSTER_BY[a.dataset.open] && a.dataset.title === ROSTER_BY[a.dataset.open].name), 'every link opens its reading');
   assert.equal(today.querySelector('.lab-door').dataset.indCycle, nowModel.era.name);

@@ -410,7 +410,7 @@ async function main() {
   say('GS10 long     ' + treasury.long.y10.length + ' quarters, ' + treasury.long.y10[0].q + ' → ' + treasury.long.y10[treasury.long.y10.length - 1].q);
   full.s3m = spreadQuarterly(full.y10, full.m3);
   full.s2y = spreadQuarterly(full.y10, full.y2);
-  for (const k of Object.keys(full)) treasury[k] = full[k].map(d => ({ q: d.q, v: d.v, partial: d.partial }));
+  for (const k of Object.keys(full).filter(k => !treasury.long[k])) treasury[k] = full[k].map(d => ({ q: d.q, v: d.v, partial: d.partial }));
   if (treasury.y30.slice(0, 4).some(d => d.v != null)) throw new Error('GS30: 2005 should be the no-issuance gap');
 
   const productivity = yoyQuarterly(quarterly(await fredSeries('OPHNFB', '1947-01-01'), 1, 1000), -20, 30);

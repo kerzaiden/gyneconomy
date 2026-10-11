@@ -1026,6 +1026,7 @@
   .lab-item:last-child{ border-bottom:0; }
   .lab-item.t-borderline{ --tier:var(--gold); }
   .lab-item.t-abnormal{ --tier:var(--critical); }
+  .lab-item.t-none .lab-to{ visibility:hidden; }
   .lab-to{ display:inline-block; width:9px; height:8px; margin-left:8px; vertical-align:1px; background:var(--tier); }
   .to-up .lab-to{ clip-path:polygon(50% 0, 100% 100%, 0 100%); }
   .to-down .lab-to{ clip-path:polygon(0 0, 100% 0, 50% 100%); }

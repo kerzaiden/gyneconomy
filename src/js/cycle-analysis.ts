@@ -54,6 +54,13 @@ function cycleReadings(R: RosterRow){
 function readingsNorm(seen: number[][]){
   return normOf(([] as number[]).concat.apply([], seen.slice(0, closedCount())));
 }
+export var DEPTH_CYCLES = 4, DEPTH_YEARS = 20;
+var PER_YEAR: Record<string, number> = { m:12, q:4, qi:4, y:1, yi:1 };
+function deep(R: RosterRow, seen: number[][]){
+  var closed = seen.slice(0, closedCount()), n = closed.filter(function(vs){ return vs.length; }).length;
+  var years = closed.reduce(function(a, vs){ return a + vs.length; }, 0) / PER_YEAR[R.hist.k];
+  return n >= DEPTH_CYCLES && years >= DEPTH_YEARS;
+}
 function spanOf(print: (v: number) => string){
   return function(lo: number, hi: number){ return print(lo) === print(hi) ? print(lo) : print(lo) + " – " + print(hi); };
 }
@@ -64,7 +71,7 @@ function cardPrint(R: RosterRow){
 function readingLab(R: RosterRow): Lab {
   var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; }, p = cardPrint(R);
   var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? todayValue(R) : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
-  var pin = function(n: Norm | null){ return n && R.normal ? { lo:R.normal.lo, hi:R.normal.hi, fence:n.fence, floor:n.floor } : n; };
+  var ok = deep(R, seen), pin = function(n: Norm | null){ return !ok ? null : n && R.normal ? { lo:R.normal.lo, hi:R.normal.hi, fence:n.fence, floor:n.floor } : n; };
   return { id:R.id, name:R.name, cat:R.cat, good:R.good, per:per, now:pin(readingsNorm(seen)), print:p.print, span:p.span,
     norm:pin(normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; }))) };
 }
@@ -128,13 +135,13 @@ function state(l: Lab, at: At){
 }
 export function yearsWord(v: number){ var q = Math.round(v * 4); return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + ["", "¼", "½", "¾"][q % 4]; }
 export function fmt(l: Lab, v: number){ return l.print(v); }
-var TIERS = [{ key:"abnormal", title:"Risk", cls:"t-abnormal" }, { key:"borderline", title:"Attention", cls:"t-borderline" }, { key:"optimal", title:"Normal", cls:"t-optimal" }];
+var UNJUDGED = { key:"none", title:"Not judged", cls:"t-none" }, TIERS = [{ key:"abnormal", title:"Risk", cls:"t-abnormal" }, { key:"borderline", title:"Attention", cls:"t-borderline" }, { key:"optimal", title:"Normal", cls:"t-optimal" }];
 function tier(l: Lab, at: At){
-  var v = at.v(l) as number, n = at.n(l) as Norm, up = v > n.hi, down = v < n.lo;
-  return l.id === "length" ? (v <= n.fence && (at.open || v >= n.floor) ? "optimal" : "abnormal") : !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, at) ? "abnormal" : "borderline";
+  var v = at.v(l) as number, n = at.n(l) as Norm, up = !!n && v > n.hi, down = !!n && v < n.lo;
+  return !n ? "none" : l.id === "length" ? (v <= n.fence && (at.open || v >= n.floor) ? "optimal" : "abnormal") : !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, at) ? "abnormal" : "borderline";
 }
 function catTitle(key: string){ return categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
-function side(l: Lab, at: At){ var v = at.v(l) as number, n = at.n(l) as Norm; return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
+function side(l: Lab, at: At){ var v = at.v(l) as number, n = at.n(l) as Norm; return !n ? "to-level" : v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
 function findWords(l: Lab){
   var R = ROSTER_BY[l.id];
   return [l.name, catTitle(l.cat)].concat(R ? [R.head, R.group || "", R.sub, R.term || "", R.cardUnit || ""] : []).join(" ").toLowerCase().replace(/"/g, "");
@@ -145,10 +152,10 @@ function cardWord(l: Lab, at: At){
   return t ? t + " \u00b7 " : "";
 }
 function labItem(l: Lab, at: At){
-  var n = at.n(l) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t){ return t.key === tier(l, at); })[0];
+  var n = at.n(l) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t){ return t.key === tier(l, at); })[0] || UNJUDGED;
   return '<li class="lab-item ' + side(l, at) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + cardWord(l, at) + t.title + at.tag(l) + '</small></div>' +
     '<div class="lab-res"><b>' + fmt(l, at.v(l) as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
-    '<small>' + l.span(n.lo, n.hi) + '</small></div></' + tag + '></li>';
+    '<small>' + (n ? l.span(n.lo, n.hi) : "Short record") + '</small></div></' + tag + '></li>';
 }
 function ring(v: number){
   var r = 21, c = 2 * Math.PI * r;
@@ -262,20 +269,28 @@ function narrow(host: HTMLElement, id: string){
   var none = host.querySelector<HTMLElement>(".search-none"); if (none) none.hidden = any;
 }
 export function riskLabs(i: number, key?: string){ var at = atCycle(i); return judged(at).filter(function(l){ return tier(l, at) === (key || "abnormal"); }); }
-function judged(at: At){ return labs().filter(function(l){ return at.v(l) != null && at.n(l) && !at.skip(l); }); }
+function judged(at: At){ return listed(at).filter(function(l){ return at.n(l); }); }
+function listed(at: At){ return labs().filter(function(l){ return at.v(l) != null && !at.skip(l); }); }
 function score(i: number){ var at = atCycle(i), j = judged(at), ok = j.filter(function(l){ return tier(l, at) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
 export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 function word(n: number){ return NUM[n] || String(n); }
 function cap(t: string){ return t.charAt(0).toUpperCase() + t.slice(1); }
 
+function depthRule(){
+  return "<b>Depth:</b> a range needs at least " + word(DEPTH_CYCLES) + " closed cycles and " + DEPTH_YEARS + " years of record: cycles differ too much for a shorter record to show what is normal, and with fewer than " + word(DEPTH_CYCLES) + " cycles most of them fall outside their own middle half by arithmetic alone. ";
+}
+function thinWords(thin: string[]){
+  var many = thin.length > 1;
+  return !thin.length ? "" : listWords(thin) + (many ? " have less, so they are read on their own pages" : " has less, so it is read on its own page") + " but not judged here. ";
+}
 function depthWords(){
-  var all = closedCount(), by: Record<number, string[]> = {};
+  var all = closedCount(), by: Record<number, string[]> = {}, thin: string[] = [];
   labs().forEach(function(l){
     var k = l.per.slice(0, all).filter(function(v){ return v != null; }).length;
-    if (k < all) (by[k] = by[k] || []).push(l.name);
+    if (l.cat !== "cycle" && !l.norm) thin.push(l.name); else if (k < all) (by[k] = by[k] || []).push(l.name);
   });
   var ks = Object.keys(by).map(Number).sort(function(a, b){ return a - b; });
-  return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
+  return depthRule() + thinWords(thin) + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every other range rests on all " + word(all) + ".");
 }
 function pinnedFacts(){
   return ROSTER.filter(function(R){ return R.normal; }).map(function(R){
@@ -398,7 +413,7 @@ function drawChart(id: string){
   var host = byId(id), c = pageCycle(id), at = periodAt(id);
   if (host && c && id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(marketCycles.indexOf(c)) + '</div>'; return; }
   if (!host || !at) return;
-  var j = judged(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
+  var j = listed(at).filter(function(l){ return l.cat !== "cycle"; }), rows = periodRows(id), slot = detailSlot(sheetHtml[id] = filterSheet(id, at, j, rows));
   host.innerHTML = stepper(id, rows, slot) + finder(id, slot) + '<div class="labs">' + labBox(bySystem(at, j, findOf(id).cat)) + noneLine("No reading matches.", " hidden") + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
