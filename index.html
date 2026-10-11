@@ -484,8 +484,8 @@
   .model-card .menu-prose p{ color:var(--text-secondary); line-height:1.65; }
   .model-card .legend-rows{ margin:0; }
   .model-card .legend-row{ padding:10px 12px; }
-  .seasons-rows .lag-row{ grid-template-columns: 1.5fr 0.8fr 0.8fr 1.3fr; font-size:var(--type-interface); padding:10px 12px; }
-  .seasons-rows .meta{ display:none; }
+  .seasons-rows .lag-row{ grid-template-columns: 1.35fr 0.75fr 1.15fr 1.15fr; font-size:var(--type-interface); padding:10px 12px; }
+  .seasons-rows .meta{ display:none; } .seasons-rows .cell{ white-space:nowrap; }
   @media (max-width:640px){
     .seasons-rows .lag-row{ grid-template-columns: 1fr; grid-template-areas: "name" "meta" "range"; gap:5px; padding:13px 12px; }
     .seasons-rows .lag-row span:first-child{ grid-area:name; font-size:var(--type-reading); }
@@ -1254,7 +1254,7 @@
       <h3 class="menu-section">The Six Seasons</h3>
       <div class="menu-card menu-prose">
         <p>A season is computed from two readings, never set by hand. <b>Growth</b> is real GDP against a year earlier, set beside the economy's <b>potential</b>, how fast it can grow without overheating: at or above potential is expansion, below it is contraction, even while output still grows. Within half a point of potential the economy keeps the side it was on. <b>Temperature</b> is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and which way it is heading over the last twelve months.</p>
-        <p>In expansion, cooling at any level is <b>Spring — disinflation</b>; heating within or below the range is <b>Spring — reflation</b>; and hot prices heating or stuck are <b>Summer — inflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; otherwise heating, or prices stuck above the range, is <b>Autumn — stagflation</b>, and cooling is <b>Autumn — disinflation</b>.</p>
+        <p>In expansion, cooling at any level is <b>Spring — disinflation</b>; heating within or below the range is <b>Spring — reflation</b>; and hot prices heating or stuck are <b>Summer — inflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; hot prices heating or stuck are <b>Autumn — stagflation</b>; and prices within the range, or hot and cooling, are <b>Autumn — disinflation</b>.</p>
         <p>The 1–3% band is part of the Season Model’s structure, a point either side of the Fed's 2% objective, read on CPI before 2000 and on PCE, the Fed’s own gauge, since. The full rule, with today's row marked, is in the menu under <b>About Gyneconomy</b>, in <b>The Season Model</b>.</p>
       </div>
 
@@ -45873,7 +45873,7 @@
     },
     lateautumn: {
       body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
-      economy: "Stagflation. Growth runs below the economy’s potential while inflation heats up or stays stuck above target, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown."
+      economy: "Stagflation. Growth runs below the economy’s potential while inflation runs hot and is not cooling, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown."
     },
     winter: {
       body: "Menstruation — groundation. Shedding, rest and the lowest energy of the cycle. The lining that was built up releases; the body is not failing, it is clearing the way.",
@@ -47187,7 +47187,7 @@
     var cpiDirection = cpiDirectionOf(cpiSlope), heading = cpiDirection === "steady" ? prevHeading || cpiDirection : cpiDirection;
     var cpiHot = cpiNow2 > 3, cpiCold = cpiNow2 < 1;
     var regime = regimeOf(gdp.v, potential, prevRegime), season;
-    if (regime === "expansion") season = cpiHot && cpiDirection !== "falling" ? "summer" : heading === "falling" ? "springdeflation" : "spring"; else season = cpiCold ? "winter" : heading === "rising" || cpiHot && cpiDirection === "steady" ? "lateautumn" : "autumn";
+    if (regime === "expansion") season = cpiHot && cpiDirection !== "falling" ? "summer" : heading === "falling" ? "springdeflation" : "spring"; else season = cpiCold ? "winter" : cpiHot && cpiDirection !== "falling" ? "lateautumn" : "autumn";
     return {
       season: season,
       regime: regime,
@@ -47398,8 +47398,8 @@
     spring: "Expansion with prices heating, within or below the range, is reflation — Spring.",
     springdeflation: "Expansion with prices cooling, at any level, is Spring — disinflation.",
     summer: "Expansion with prices above the range — hot — and heating or steady is inflation, Summer.",
-    autumn: "Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
-    lateautumn: "Contraction with prices heating within or above the range, or steady above it, is Autumn — stagflation.",
+    autumn: "Contraction with prices within the range, or hot and cooling, is disinflation — Autumn.",
+    lateautumn: "Contraction with prices above the range — hot — and heating or steady is Autumn — stagflation.",
     winter: "Contraction with prices below the range — cold — is deflation, Winter."
   };
   function potentialGap(r) {
@@ -55695,7 +55695,7 @@
     var head = function(name, sub) {
       return '<div class="sg-head"><b>' + name + "</b><small>" + sub + "</small></div>";
     };
-    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1–3%") + head("Hot", "above 3%") + head("Expansion", "at or above potential") + cell("spring", 2, "Spring", [ "Reflation · heating", "Disinflation · cooling, any level" ]) + cell("summer", 1, "Summer", [ "Inflation · heating or steady" ]) + head("Contraction", "below potential") + cell("winter", 1, "Winter", [ "Deflation" ]) + cell("autumn", 2, "Autumn", [ "Stagflation · heating or sticky", "Disinflation · cooling" ]) + "</div>";
+    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1–3%") + head("Hot", "above 3%") + head("Expansion", "at or above potential") + cell("spring", 2, "Spring", [ "Reflation · heating", "Disinflation · cooling, any level" ]) + cell("summer", 1, "Summer", [ "Inflation · heating or steady" ]) + head("Contraction", "below potential") + cell("winter", 1, "Winter", [ "Deflation" ]) + cell("autumn", 2, "Autumn", [ "Stagflation · hot, heating or steady", "Disinflation · warm, or hot and cooling" ]) + "</div>";
   }
   function recessionLine() {
     var r = recessionRecord();
@@ -55743,7 +55743,15 @@
     }, {
       key: "summer",
       growth: "Expansion",
-      temp: "Steady / Heating →",
+      temp: "Hot / Heating →",
+      zones: {
+        above: 1
+      },
+      range: "Above the range — hot, heating or steady"
+    }, {
+      key: "lateautumn",
+      growth: "Contraction",
+      temp: "Hot / Heating →",
       zones: {
         above: 1
       },
@@ -55751,21 +55759,12 @@
     }, {
       key: "autumn",
       growth: "Contraction",
-      temp: "← Cooling",
+      temp: "Warm / ← Cooling",
       zones: {
         within: 1,
         above: 1
       },
-      range: "Cooling — within or above the range"
-    }, {
-      key: "lateautumn",
-      growth: "Contraction",
-      temp: "Steady / Heating →",
-      zones: {
-        within: 1,
-        above: 1
-      },
-      range: "Heating within or above the range, or steady above it"
+      range: "Within the range, or hot and cooling"
     }, {
       key: "winter",
       growth: "Contraction",

@@ -763,8 +763,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
 
 ## The season model
 
-Six seasons in cycle order: Summer–Inflation · Autumn–Disinflation · Autumn–Stagflation (key `lateautumn`;
-the display name has no "Late") · Winter–Deflation · Spring–Disinflation · Spring–Reflation. Two Springs and
+Six seasons in cycle order: Summer–Inflation · Autumn–Stagflation (key `lateautumn`;
+the display name has no "Late") · Autumn–Disinflation · Winter–Deflation · Spring–Disinflation · Spring–Reflation. Two Springs and
 two Autumns share names, so **every season is named through `seasonTitle(meta)`, never a bare
 `meta.name`**. Actions come from the manuscript's cycle figure (Springs Growing · Summer Ripening · Autumns
 Harvest · Winter Seeding); fertility names only where the book has one — don't invent one.
@@ -786,15 +786,15 @@ slope (V694).
 | Spring — Disinflation | Expansion | Cooling, any level |
 | Spring — Reflation | Expansion | Heating, within or below |
 | Summer — Inflation | Expansion | Hot, heating or steady |
-| Autumn — Disinflation | Contraction | Cooling, within or above |
-| Autumn — Stagflation | Contraction | Heating, within or above; or steady above |
+| Autumn — Disinflation | Contraction | Within the range; or hot and cooling |
+| Autumn — Stagflation | Contraction | Hot, heating or steady |
 | Winter — Deflation | Contraction | Cold |
 
 Row order is Keren's. The tie-breaks, all stated in the (i): in expansion, cooling is Spring–Disinflation
 at any level, and hot is Summer unless it is cooling (2023 Q3, 3.5% and falling, is Disinflation) — **never re-add a Goldilocks Zone**. Contraction mirrors it:
-cold is Winter outright, otherwise direction alone. **Never redefine stagflation as contraction + hot
-regardless of direction** — it flips the Q4 2023 example (CPI 3.32%, hot and falling, reads
-Autumn–Disinflation); only *steady* prices above the range read Stagflation outright (sticky inflation). Steady prices otherwise keep the prior reading's direction (`heading`, carried down the track like `prevRegime`), and read Reflation or Disinflation only when nothing precedes them (0.9.2).
+cold is Winter outright, hot and heating or steady is Stagflation, and everything else (the range, or hot and
+falling) is Disinflation. **Never redefine stagflation as contraction + hot regardless of direction** — it flips
+the Q4 2023 example (CPI 3.32%, hot and falling, reads Autumn–Disinflation). Steady prices otherwise keep the prior reading's direction (`heading`, carried down the track like `prevRegime`), and read Reflation or Disinflation only when nothing precedes them (0.9.2).
 Shrinking needs no rule of its own: below zero is always further than the band below potential. **Inside the
 band the regime continues**: `prevRegime` comes from the track, computed once over the full history, never per
 cycle; the early track runs first and seeds BEA's.
