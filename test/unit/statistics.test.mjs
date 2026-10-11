@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { window } from './dom.mjs';
 import { detailTexts } from '../../src/js/dom.ts';
-import { refreshLiveData } from '../../src/js/live.ts';
+import { refreshLiveData, READINGS } from '../../src/js/live.ts';
+import { isoDay } from '../../src/js/format.ts';
 import { labRow, marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 import { meterWord } from '../../src/js/indicators.ts';
 import { calendarTodayY } from '../../src/js/refresh-season.ts';
@@ -45,7 +46,7 @@ test('a range needs four closed cycles and twenty years of record, and the (i) n
 });
 
 test('a live reading moves Cycle Statistics with its figure', async () => {
-  const docs = { capeValue: { kind: 'scalar', value: 33.3, asOf: '2026-10-03' } };
+  const docs = { capeValue: { kind: 'scalar', value: 33.3, asOf: new Date(Date.parse(isoDay(READINGS.capeValue.fileAsOf())) + 864e5).toISOString().slice(0, 10) } };
   window.claude = { use: () => Promise.resolve({ doc: path => ({ get: () => docs[path.slice(5)] ? Promise.resolve({ data: docs[path.slice(5)] }) : Promise.reject(new Error('none')) }) }) };
   refreshLiveData();
   for (let i = 0; i < 5; i++) await new Promise(r => setTimeout(r, 0));

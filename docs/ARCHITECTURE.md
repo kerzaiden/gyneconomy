@@ -701,10 +701,15 @@ emotion at the closing month, its years, and what followed a year later. Every l
   highest since" a quarter; otherwise `recordWords` says "highest since", as before.
   The editions are written by a scheduled Claude routine whose only instructions are `docs/report-task.md`;
   `tools/report.mjs facts` boots the app in jsdom on `data/live.json` and prints what it may say (every reading's
-  figure, word, tier and date, the risk rows, the Fed), and `tools/report.mjs check <file>` refuses an edition that
-  quotes a number no figure shows (dates, years, quarters, "S&P 500" and "10-year" aside), links to no reading,
-  forecasts, or runs long. The unit tests run the same check on the shipped edition, without the numbers, since
-  the figures move after a release. Closest Moments (0.6.5 to Element Insights) is retired; `v0.9.59` is the last
+  figure, word, tier and date, the risk rows, the Fed, and the years a sentence may cite), and
+  `tools/report.mjs check <file>` refuses an edition that quotes a number no figure shows (dates, quarters,
+  "S&P 500" and "10-year" aside), cites a year the facts do not hold (each reading's first, latest, record and
+  last-as-high-or-low years, the open cycle's, the facts' dates), puts a word or a tier in a sentence that does
+  not link or name a reading with that word or tier, leaves a reading at Attention or Risk unlinked in its
+  element, links to no reading, forecasts, or runs long. Single-word words ("Calm", "Rich") are not checked:
+  they are ordinary prose, and the facts give only today's word, not each reading's vocabulary. The unit tests
+  run the whole check on the shipped edition against the release's own fallback figures (`readFacts`), so a
+  fallback refresh that leaves the bundled edition behind fails `check`. Closest Moments (0.6.5 to Element Insights) is retired; `v0.9.59` is the last
   copy with its path matching, and `v0.9.60` the last with the element insights and the Cycle Story card.
 - **One vocabulary** (V686, Keren's "Switch"): the Diagnosis names the Mood page's emotion, the cycle of market
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
@@ -1003,7 +1008,7 @@ figure that moves with the data is compared, never written in. What is Keren's d
 static gates, not the browser: a removed class or id is hygiene's `GONE`, the chart geometry pins are
 hygiene's `PINNED`. The model's rules are tool tests (`test/cycle.test.js` lifts the functions from
 model with fixture data, so each window is tested at its edge). **The unit tests (V695, `npm run test:unit`, in
-`check`, about 41 s with the coverage run)** import the modules in Node: `test/unit/dom.mjs` boots the whole app once in jsdom from
+`check`, about 27 s with coverage)** import the modules in Node: `test/unit/dom.mjs` boots the whole app once in jsdom from
 `page-body.html` with the network refused, so every figure is its literal fallback. They draw every page at four
 widths (no NaN, undefined or Infinity; every history chart in `histFrame`), run the model over every cycle on the
 real record, and pin the pure functions at their edges. `content.test.mjs` (V697) checks what the pages say: it delivers live documents through the real door and reads
@@ -1015,7 +1020,7 @@ history head's and each More details) is read, and none may call a band a "norma
 is not one: a target is never relabelled normal. Proof (V667): of thirteen regressions planted one at a time,
 the suite and gate catch all thirteen; the old suite caught one of the audit's ten.
 **Every refactor ships with "66 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown); it caught three breaks in V630 alone,
-none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
+none visible. It waits on the app like the suite (`ready`, `settle`), never on a clock, and takes about a minute. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url`, always in place, with a short `label`. If
 refused because a newer version is live, read it in full and merge. **One figure, one number binds any

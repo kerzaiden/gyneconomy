@@ -323,7 +323,7 @@ export var lagging: Indicator[] = [
     meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:TEMP_BAND_LO,to:TEMP_BAND_HI, label:TEMP_BAND_LO + "\u2013" + TEMP_BAND_HI + "%"},
            ends:{ low:"Cold", high:"Hot" }},
     shortCaption:"",
-    caption:"Basal body temperature rises only after ovulation has already happened — prices work the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
+    get caption(){ var next = nextDecision(); return "Basal body temperature rises only after ovulation has already happened — prices work the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end." + (next ? " Next decision " + next + "." : ""); },
     facts:[],
     aux:[],
     src:[PCE_SRC,{t:"Federal Reserve — FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"Federal Reserve — FOMC meeting calendars", u:"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},{t:"BLS Monthly Labor Review — One hundred years of price change (CPI history since 1913)", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}]
@@ -454,8 +454,9 @@ function policyFacts(){ return [
   now.fedFunds.lastMove ? { label:"Last Fed move", value:now.fedFunds.lastMove + " on " + now.fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
                                       (now.fedFunds.vote ? " \u00b7 " + now.fedFunds.vote : ""), wordy:true } : null,
   now.fedFunds.lastMove && now.fedFunds.turnLabel ? { label:now.fedFunds.turnLabel, value:now.fedFunds.turnValue, wordy:true } : null,
-  now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? { label:"Next decision", value:now.fedFunds.next } : null
+  nextDecision() ? { label:"Next decision", value:nextDecision() } : null
 ].filter(Boolean) as AuxFact[]; }
+function nextDecision(){ return now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? now.fedFunds.next : ""; }
 export function policyFactRows(){
   return policyFacts().map(auxStat).join("");
 }

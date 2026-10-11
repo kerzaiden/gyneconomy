@@ -79,9 +79,9 @@ console.log('\nmoodAt \u2014 each reading ranked against its own past, turned to
   const months = n => ramp(n, i => ({ m: (2000 + Math.floor(i / 12)) + '-' + String(i % 12 + 1).padStart(2, '0'), v: i }));
   const env = { QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' },
     capeHistory: ramp(30, i => ({ y: 1985 + i, v: i })), buffettHistory: ramp(80, i => ({ q: (1990 + Math.floor(i / 4)) + ' Q' + (i % 4 + 1), v: i })),
-    volatilityHistory: months(24).map(d => Object.assign({}, d, { v: 24 - d.v })), confidenceHistory: months(24), sp500MonthlyHistory: months(24), moodLists: null, moodCache: null };
+    volatilityHistory: months(24).map(d => Object.assign({}, d, { v: 24 - d.v })), confidenceHistory: months(24), sp500MonthlyHistory: months(24), moodLists: null, moodCache: null, rankMemo: new Map() };
   for (const v of ['MOOD_TURN', 'MOOD_RISING', 'MOOD_FALLING']) env[v] = new Function('return ' + new RegExp('var ' + v + '\\s*= ([^;]*);').exec(SRC)[1])();
-  const M = lift(['rankToDate', 'rankIn', 'moodSeries', 'moodAt', 'moodWord', 'moodRead', 'moodTrack'], env);
+  const M = lift(['rankToDate', 'rankBefore', 'rankAt', 'rankIn', 'moodSeries', 'moodAt', 'moodWord', 'moodRead', 'moodTrack'], env);
   const top = M.moodAt('2001-12');
   ok('rising valuations and confidence and a falling VIX all rank at the top', [top.valuations, top.calm, top.confidence, top.score], [100, 100, 100, 100]);
   ok('a new low in the VIX is calm, a new high is not', [M.moodAt('2001-12', 0).calm, M.moodAt('2001-12', 99).calm], [100, 0]);

@@ -1,5 +1,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
+const path = require('path');
+const { pathToFileURL } = require('url');
 
 const CHROME = process.env.GYN_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 
@@ -14,6 +16,11 @@ const NORMALISERS = [
   [/\s+/g, ' ']
 ];
 const norm = s => NORMALISERS.reduce((acc, [re, to]) => acc.replace(re, to), s || '').trim();
+
+const pageUrl = file => pathToFileURL(path.resolve(file)).href;
+const settle = p => p.evaluate(() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() =>
+  Promise.all(document.getAnimations().filter(a => a.effect && isFinite(a.effect.getComputedTiming().endTime)).map(a => a.finished.catch(() => null))).then(() => done())))));
+const ready = p => p.waitForFunction(() => window.__GYN && document.getElementById('diagnosis')).then(() => settle(p));
 
 const click = (p, sel) => p.evaluate(s => {
   const e = [...document.querySelectorAll(s)].filter(x => x.getClientRects().length > 0)[0];
@@ -61,23 +68,23 @@ async function capture(file, out) {
       (u.startsWith('file://') || u.startsWith('data:') || u.startsWith('blob:')) ? r.continue() : r.abort();
     });
     p.on('pageerror', e => errs.push(w + ': ' + String(e).slice(0, 140)));
-    await p.goto('file://' + file); await p.waitForTimeout(1500);
+    await p.goto(pageUrl(file)); await ready(p);
     const sheets = await p.evaluate(() => window.__GYN.ROSTER.map(R => R.id));
     snaps.push(await grab(p, w + '/home'));
     for (const t of TABS) {
       await p.evaluate(x => { const el = document.querySelector('.tab-btn[data-tab="' + x + '"]'); if (el) el.click(); }, t);
-      await p.waitForTimeout(500);
+      await settle(p);
       const g = await grab(p, w + '/tab:' + t);
       g.notes = await notes(p, '.tab-panel:not([hidden])');
       snaps.push(g);
     }
     for (const sheet of sheets) {
-      await p.goto('file://' + file); await p.waitForTimeout(1100);
-      await click(p, '.tab-btn[data-tab="chart"]'); await p.waitForTimeout(300);
-      await click(p, '#chart-home button.dx-sys-head[data-open="sheet-find"]'); await p.waitForTimeout(380);
+      await p.goto(pageUrl(file)); await ready(p);
+      await click(p, '.tab-btn[data-tab="chart"]'); await settle(p);
+      await click(p, '#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p);
       const opened = await click(p, '.lab-row[data-open="' + sheet + '"]');
       if (opened) {
-        await p.waitForTimeout(800);
+        await settle(p);
         const g = await grab(p, w + '/page:' + sheet);
         g.notes = await notes(p);
         snaps.push(g);
@@ -114,6 +121,9 @@ function diff(af, bf) {
   process.exit(bad ? 1 : 0);
 }
 
-const args = process.argv.slice(2);
-if (args.includes('--diff')) diff(args[0], args[1]);
-else capture(args[0], args[1] || 'snap.json');
+module.exports = { pageUrl };
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.includes('--diff')) diff(args[0], args[1]);
+  else capture(args[0], args[1] || 'snap.json');
+}

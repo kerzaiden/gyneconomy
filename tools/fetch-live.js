@@ -177,20 +177,22 @@ const MATURITIES = [
   ['10 Yr', '10Y'], ['20 Yr', '20Y'], ['30 Yr', '30Y']
 ];
 
-async function treasuryCurve() {
-  const now = new Date().getUTCFullYear();
-  try { return await treasuryCurveFor(now); }
+async function treasuryCurve(now = new Date().getUTCFullYear(), get = getText) {
+  try { return await treasuryCurveFor(now, get); }
   catch (e) {
     if (!/no rows/.test(e.message)) throw e;
-    return treasuryCurveFor(now - 1);
+    return treasuryCurveFor(now - 1, get);
   }
 }
 
-async function treasuryCurveFor(year) {
+async function treasuryCurveFor(year, get) {
   const url = 'https://home.treasury.gov/resource-center/data-chart-center/interest-rates/'
     + 'daily-treasury-rates.csv/' + year + '/all?type=daily_treasury_yield_curve'
     + '&field_tdr_date_value=' + year + '&page&_format=csv';
-  const csv = await getText(url, 'treasury');
+  return treasuryRows(await get(url, 'treasury'));
+}
+
+function treasuryRows(csv) {
   const lines = csv.trim().split(/\r?\n/);
   if (lines.length < 2) throw new Error('treasury: no rows');
   const head = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
@@ -304,7 +306,7 @@ async function shillerSheet(parse) {
   throw new Error('no workbook on shillerdata.com yielded a reading — ' + why.join('; '));
 }
 
-if (require.main !== module) { module.exports = { BANDS, MAX_AGE_DAYS, staleDocs, capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut }; }
+if (require.main !== module) { module.exports = { BANDS, MAX_AGE_DAYS, staleDocs, capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut, treasuryRows, treasuryCurve }; }
 else (async () => {
   const out = {};
   const failed = [];

@@ -45247,7 +45247,7 @@
       weather: "Autumn, the stagflation kind. [Temperature](sheet-metric-temp) reads hot at 3.4% and is still heating, while the [Growth gap](sheet-sign-growth-gap) puts output a shade under its potential. The Fed has turned with it: the [Federal funds rate](sheet-sign-hormones) rose a quarter point in September, to 3.75–4.00%, its first hike since 2023. The [S&P 500](sheet-sign-market) has not flinched, up 14.4% this year.",
       activity: "The body is doing more with few new hands. [GDP growth](sheet-metric-gdp) holds a normal pace and [Productivity growth](sheet-sign-productivity-growth) runs above its trend, while [Job growth](sheet-sign-payrolls) has slowed below what her closed cycles usually managed and the [Unemployment rate](sheet-sign-activity) stays low.",
       mood: "Here is the split at the centre of this cycle. The [Buffett indicator](sheet-metric-buffett) stands at 256%, the highest on its record, and [Shiller CAPE](sheet-metric-valuation) is well above its range, yet the market prices in little [Fear](sheet-sign-sentiment). Households read it the other way: [Confidence](sheet-sign-confidence) is a tenth of a point above the record low it set in May.",
-      desire: "Shoppers keep spending without leaning on credit: [Discretionary spending](sheet-sign-desire) and [Retail sales](sheet-sign-retail) both sit in their normal ranges. The strain is in the index itself. The ten largest stocks now make up 40.6% of the S&P 500, a [Concentration risk](sheet-sign-concentration) at Risk, and the [Equity risk premium](sheet-sign-premium) has thinned.",
+      desire: "Shoppers keep spending, and borrowing more: [Discretionary spending](sheet-sign-desire) and [Retail sales](sheet-sign-retail) both sit in their normal ranges, and [Consumer credit](sheet-sign-consumer-credit) is up 2.7% on a year earlier. The strain is in the index itself. The ten largest stocks now make up 40.6% of the S&P 500, a concentrated index by its [Concentration risk](sheet-sign-concentration), and the [Equity risk premium](sheet-sign-premium) has thinned.",
       circulation: "The bond market carries the sharpest reading. The [US 10-year Treasury](sheet-sign-pressure) closed at 5.24% on 9 October, above every quarterly reading since 2005. Money still turns slowly: the [Pulse](sheet-sign-pulse) is weak while [Volume](sheet-sign-volume) holds.",
       stress: "Households carry little debt against their income, but the [Savings rate](sheet-sign-saving) is 2.8%, a thin cushion, and [Margin debt](sheet-sign-margin) is growing faster than its usual range. The heavier load is the state’s: [Federal debt](sheet-metric-debt) is elevated and the [Federal budget](sheet-marker-deficit) runs a large deficit while the economy is still growing."
     }
@@ -45274,43 +45274,43 @@
     },
     yieldCurve: [ {
       m: "1M",
-      y: 4.01
+      y: 4.13
     }, {
       m: "2M",
-      y: 4.18
+      y: 4.13
     }, {
       m: "3M",
-      y: 4.24
+      y: 4.25
     }, {
       m: "4M",
-      y: 4.33
+      y: 4.29
     }, {
       m: "6M",
-      y: 4.34
+      y: 4.32
     }, {
       m: "1Y",
-      y: 4.51
+      y: 4.47
     }, {
       m: "2Y",
-      y: 4.87
+      y: 4.8
     }, {
       m: "3Y",
-      y: 4.99
+      y: 4.89
     }, {
       m: "5Y",
-      y: 5.03
+      y: 5.02
     }, {
       m: "7Y",
-      y: 5.1
+      y: 5.13
     }, {
       m: "10Y",
-      y: 5.18
+      y: 5.24
     }, {
       m: "20Y",
-      y: 5.53
+      y: 5.65
     }, {
       m: "30Y",
-      y: 5.47
+      y: 5.6
     } ],
     sentiment: {
       kicker: "How she feels right now",
@@ -45434,7 +45434,7 @@
     vixRow: void 0,
     vix3mClose: 17.61
   };
-  var YIELD_CURVE_ASOF = "2026-09-24";
+  var YIELD_CURVE_ASOF = "2026-10-09";
   var CAPE_ASOF = "2026-09-01";
   function curveAsOf() {
     return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
@@ -47122,11 +47122,32 @@
     });
     return den ? num / den : 0;
   }
+  var cpiAt = null;
+  function cpiPositions() {
+    var last = inflationHistory[inflationHistory.length - 1], key = inflationHistory.length + ":" + (last ? last.m : "");
+    if (cpiAt && cpiAt.list === inflationHistory && cpiAt.key === key) return cpiAt.at;
+    var at = new Map;
+    inflationHistory.forEach(function(c, k) {
+      var i = monthIndex(c.m), p = at.get(i);
+      if (p) p.push(k); else at.set(i, [ k ]);
+    });
+    cpiAt = {
+      list: inflationHistory,
+      key: key,
+      at: at
+    };
+    return at;
+  }
+  function cpiWindow(to) {
+    var at = cpiPositions(), ks = [];
+    for (var i = to - 11; i <= to; i++) ks = ks.concat(at.get(i) || []);
+    return ks.sort(function(a, b) {
+      return a - b;
+    });
+  }
   function cpiYear(endMonth) {
-    var to = monthIndex(endMonth);
-    return inflationHistory.filter(function(c) {
-      var i = monthIndex(c.m);
-      return i > to - 12 && i <= to;
+    return cpiWindow(monthIndex(endMonth)).map(function(k) {
+      return inflationHistory[k];
     });
   }
   function cpiDirectionOf(slope) {
@@ -47417,14 +47438,24 @@
       month: x.m
     } : null;
   }
+  function rankBefore(list, i, v) {
+    return rankToDate(list.slice(0, i).map(function(d) {
+      return d.v;
+    }), v);
+  }
+  var rankMemo = new Map;
+  function rankAt(list, i) {
+    var memo = rankMemo.get(list) || [];
+    rankMemo.set(list, memo);
+    if (memo[i] === void 0) memo[i] = rankBefore(list, i, list[i].v);
+    return memo[i];
+  }
   function rankIn(list, m, v) {
     var i = -1;
     list.forEach(function(d, j) {
       if (d.k <= m) i = j;
     });
-    return i < 0 ? null : rankToDate(list.slice(0, i).map(function(d) {
-      return d.v;
-    }), v != null ? v : list[i].v);
+    return i < 0 ? null : v != null ? rankBefore(list, i, v) : rankAt(list, i);
   }
   var moodLists = null;
   function moodSeries() {
@@ -47736,6 +47767,13 @@
     });
     return out;
   }
+  function regimes(track) {
+    var out = {};
+    track.forEach(function(e) {
+      if (e) out[e.q] = e.reading.regime;
+    });
+    return out;
+  }
   function bootModel() {
     currentEra = marketCycles.filter(function(c) {
       return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY);
@@ -47753,13 +47791,8 @@
     seasonTrack.forEach(function(e) {
       if (e) seasonByQ[e.q] = seasonGroup(e.reading.season);
     });
-    regimeByQ = function() {
-      var out = {};
-      seasonTrack.forEach(function(e) {
-        if (e) out[e.q] = e.reading.regime;
-      });
-      return out;
-    }();
+    regimeByQ = regimes(seasonTrack);
+    GYN.cycle = currentEra.name;
     cycleYtdFraction = (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
     nowModel = cycleModel(currentEra);
     readingNow = nowModel.reading;
@@ -48746,7 +48779,10 @@
       }
     },
     shortCaption: "",
-    caption: "Basal body temperature rises only after ovulation has already happened — prices work the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
+    get caption() {
+      var next = nextDecision();
+      return "Basal body temperature rises only after ovulation has already happened — prices work the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end." + (next ? " Next decision " + next + "." : "");
+    },
     facts: [],
     aux: [],
     src: [ PCE_SRC, {
@@ -48954,10 +48990,13 @@
       label: now.fedFunds.turnLabel,
       value: now.fedFunds.turnValue,
       wordy: true
-    } : null, now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? {
+    } : null, nextDecision() ? {
       label: "Next decision",
-      value: now.fedFunds.next
+      value: nextDecision()
     } : null ].filter(Boolean);
+  }
+  function nextDecision() {
+    return now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? now.fedFunds.next : "";
   }
   function policyFactRows() {
     return policyFacts().map(auxStat).join("");
@@ -52982,10 +53021,10 @@
   function riskFactors(c) {
     return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk " + (c.ongoing ? "today" : "in this cycle") + ".");
   }
-  function prose(t) {
+  function prose(t, bare) {
     return t.replace(/\[([^\]]+)\]\((sheet-[a-z0-9-]+)\)/g, function(_, label, id) {
       var R = ROSTER_BY[id];
-      return R ? '<button type="button" class="wr-link" data-open="' + id + '" data-title="' + R.name + '">' + label + "</button>" : label;
+      return R && !bare ? '<button type="button" class="wr-link" data-open="' + id + '" data-title="' + R.name + '">' + label + "</button>" : label;
     });
   }
   function edition() {
@@ -52998,7 +53037,7 @@
     return '<span class="wr-head">' + head + '</span><span class="wr-by">' + by + "</span>";
   }
   function storyCard(m) {
-    return trendDoor(STORY_ID, "Cycle Story", bookSvg(), "Cycle Story", lead(m.era.name, cycLabel(m.era).years) + trendText(storyOf(m.era), "ai-clamp") + learnMore(void 0, "Read the story"), ' data-story-cycle="' + m.era.name + '"');
+    return trendDoor(STORY_ID, "Cycle Story", bookSvg(), "Cycle Story", lead(m.era.name, cycLabel(m.era).years) + trendText(prose(storyOf(m.era), true), "ai-clamp") + learnMore(void 0, "Read the story"), ' data-story-cycle="' + m.era.name + '"');
   }
   function elements() {
     return dxSys(" wr-els", categoriesShown().map(function(c) {
@@ -53007,11 +53046,11 @@
     }).join(""));
   }
   function storyBox(c) {
-    return trendBox(bookSvg(), "Cycle Story", trendText(storyOf(c)));
+    return trendBox(bookSvg(), "Cycle Story", trendText(prose(storyOf(c))));
   }
   function todayHtml() {
     var r = now.report, c = openCycle();
-    return trendBox(weatherSvg(), "Weather Report", lead(r.headline, edition()) + trendText(r.lede)) + riskFactors(c) + elements();
+    return trendBox(weatherSvg(), "Weather Report", lead(prose(r.headline, true), edition()) + trendText(prose(r.lede))) + riskFactors(c) + elements();
   }
   function storyHtml(c) {
     return dxSys(" wr-top", '<h2 class="wr-title">' + c.name + '</h2><p class="wr-date">' + cycLabel(c).years + "</p>") + riskFactors(c) + storyBox(c);

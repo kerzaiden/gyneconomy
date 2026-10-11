@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,006 lines** in 43 files, about 614 KB, roughly **174 thousand tokens**. No session can
+The source is **9,032 lines** in 43 files, about 615 KB, roughly **175 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `72eae88` on 2026-10-11.
+Generated from commit `b378b26` on 2026-10-11.
 
 ## The page
 
@@ -23,20 +23,20 @@ Generated from commit `72eae88` on 2026-10-11.
 | `js/main.ts` | 39 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **39** modules, **800** top-level functions, **124** top-level vars, **393** exported names, **20** boots.
+Counts: **39** modules, **806** top-level functions, **125** top-level vars, **393** exported names, **20** boots.
 
 ## Modules, in boot order
 
 | Module | Lines | Declarations | Imports from |
 |---|---|---|---|
 | `js/dom.ts` | 158 | 28 | `format` |
-| `js/live.ts` | 212 | 23 | `format` |
+| `js/live.ts` | 213 | 23 | `format` |
 | `js/refresh-season.ts` | 41 | 5 | `format`, `history-fred` |
 | `js/data.ts` | 550 | 77 | `format`, `history-fred`, `live` |
 | `js/credit.ts` | 139 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
-| `js/model.ts` | 395 | 58 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
+| `js/model.ts` | 419 | 64 | `data`, `dom`, `format`, `history-fred`, `live`, `refresh-season` |
 | `js/history.ts` | 502 | 50 | `charts`, `data`, `dom`, `format`, `live`, `model` |
-| `js/readings.ts` | 719 | 66 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
+| `js/readings.ts` | 720 | 67 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 163 | 6 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 382 | 20 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings`, `refresh-season` |
@@ -78,15 +78,15 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | Order | Boot | Lines |
 |---|---|---|
 | 1 | `bootDom` | `js/dom.ts:148`–157 |
-| 2 | `bootDone` | `js/live.ts:203`–205 |
-| 3 | `bootLive` | `js/live.ts:206`–211 |
+| 2 | `bootDone` | `js/live.ts:204`–206 |
+| 3 | `bootLive` | `js/live.ts:207`–212 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–40 |
 | 5 | `bootData` | `js/data.ts:497`–549 |
 | 6 | `bootCredit` | `js/credit.ts:131`–138 |
-| 7 | `bootModel` | `js/model.ts:370`–394 |
+| 7 | `bootModel` | `js/model.ts:397`–418 |
 | 8 | `bootHistory` | `js/history.ts:478`–501 |
-| 9 | `bootReadings` | `js/readings.ts:537`–585 |
-| 10 | `bootReadingRegistry` | `js/readings.ts:652`–718 |
+| 9 | `bootReadings` | `js/readings.ts:538`–586 |
+| 10 | `bootReadingRegistry` | `js/readings.ts:653`–719 |
 | 11 | `bootRoster` | `js/roster.ts:150`–162 |
 | 12 | `bootRenderCore` | `js/render-core.ts:150`–155 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:373`–378 |
@@ -144,34 +144,34 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 26 | `docValue` | `function docValue(` |
-| 35 | `docOk` | `function docOk(` |
-| 39 | `datedOk` | `function datedOk(` |
-| 42 | `plainText` · export | `function plainText(` |
-| 47 | `liveIsoOf` · export | `function liveIsoOf(` |
-| 50 | `newestDay` | `function newestDay(` |
-| 55 | `raiseFloor` | `function raiseFloor(` |
-| 60 | `olderThanFile` | `function olderThanFile(` |
-| 64 | `liveInto` · export | `function liveInto(` |
-| 68 | `landLive` | `function landLive(` |
+| 27 | `docValue` | `function docValue(` |
+| 36 | `docOk` | `function docOk(` |
+| 40 | `datedOk` | `function datedOk(` |
+| 43 | `plainText` · export | `function plainText(` |
+| 48 | `liveIsoOf` · export | `function liveIsoOf(` |
+| 51 | `newestDay` | `function newestDay(` |
+| 56 | `raiseFloor` | `function raiseFloor(` |
+| 61 | `olderThanFile` | `function olderThanFile(` |
+| 65 | `liveInto` · export | `function liveInto(` |
+| 69 | `landLive` | `function landLive(` |
 
 #### Repaint
 
 | Line | Name | Anchor |
 |---|---|---|
-| 78 | `repaintLive` · export | `function repaintLive(` |
-| 83 | `shapeOk` | `function shapeOk(` |
-| 115 | `defineReadings` · export | `function defineReadings(` |
-| 119 | `onLive` · export | `function onLive(` |
-| 120 | `exposeLive` · export | `function exposeLive(` |
-| 123 | `KINDS` | `var KINDS =` |
-| 124 | `checkLiveCoverage` · export | `function checkLiveCoverage(` |
-| 138 | `receive` | `function receive(` |
-| 151 | `applyLive` | `function applyLive(` |
-| 158 | `refreshLiveData` · export | `function refreshLiveData(` |
-| 175 | `fetchSiteData` · export | `function fetchSiteData(` |
-| 188 | `siteFile` | `function siteFile(` |
-| 196 | `forgetLive` · export | `function forgetLive(` |
+| 79 | `repaintLive` · export | `function repaintLive(` |
+| 84 | `shapeOk` | `function shapeOk(` |
+| 116 | `defineReadings` · export | `function defineReadings(` |
+| 120 | `onLive` · export | `function onLive(` |
+| 121 | `exposeLive` · export | `function exposeLive(` |
+| 124 | `KINDS` | `var KINDS =` |
+| 125 | `checkLiveCoverage` · export | `function checkLiveCoverage(` |
+| 139 | `receive` | `function receive(` |
+| 152 | `applyLive` | `function applyLive(` |
+| 159 | `refreshLiveData` · export | `function refreshLiveData(` |
+| 176 | `fetchSiteData` · export | `function fetchSiteData(` |
+| 189 | `siteFile` | `function siteFile(` |
+| 197 | `forgetLive` · export | `function forgetLive(` |
 
 ### `js/refresh-season.ts`
 
@@ -327,79 +327,85 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 13 | `monthIndex` | `function monthIndex(` |
-| 14 | `cpiTrend` | `function cpiTrend(` |
-| 20 | `cpiYear` | `function cpiYear(` |
-| 24 | `cpiDirectionOf` | `function cpiDirectionOf(` |
-| 25 | `cpiDirectionAt` · export | `function cpiDirectionAt(` |
-| 29 | `PEAK_YEARS` · export | `var PEAK_YEARS =` |
-| 32 | `regimeOf` | `function regimeOf(` |
-| 35 | `readSeason` | `function readSeason(` |
-| 46 | `potentialOf` · export | `function potentialOf(` |
-| 51 | `peakTrend` | `function peakTrend(` |
-| 56 | `gnpYear` | `function gnpYear(` |
-| 59 | `gnpTrend` | `function gnpTrend(` |
-| 62 | `gnpYoY` | `function gnpYoY(` |
-| 71 | `closingReading` | `function closingReading(` |
-| 75 | `qIndex` | `function qIndex(` |
-| 76 | `recessionRecord` · export | `function recessionRecord(` |
-| 101 | `regimeAt` | `function regimeAt(` |
-| 102 | `seasonTitle` · export | `function seasonTitle(` |
-| 103 | `cycleReturns` · export | `function cycleReturns(` |
-| 113 | `cycleModel` · export | `function cycleModel(` |
-| 152 | `potentialGap` · export | `function potentialGap(` |
-| 156 | `seasonWhyFor` | `function seasonWhyFor(` |
-| 162 | `pricesWord` | `function pricesWord(` |
-| 166 | `inflationFigure` · export | `function inflationFigure(` |
-| 171 | `growthWord` · export | `function growthWord(` |
-| 174 | `contractingClause` | `function contractingClause(` |
-| 178 | `cycleNowNote` · export | `function cycleNowNote(` |
-| 186 | `seasonOfQ` · export | `function seasonOfQ(` |
-| 187 | `seasonGroup` · export | `function seasonGroup(` |
+| 14 | `monthIndex` | `function monthIndex(` |
+| 15 | `cpiTrend` | `function cpiTrend(` |
+| 22 | `cpiPositions` | `function cpiPositions(` |
+| 30 | `cpiWindow` | `function cpiWindow(` |
+| 35 | `cpiYear` | `function cpiYear(` |
+| 38 | `cpiDirectionOf` | `function cpiDirectionOf(` |
+| 39 | `cpiDirectionAt` · export | `function cpiDirectionAt(` |
+| 43 | `PEAK_YEARS` · export | `var PEAK_YEARS =` |
+| 46 | `regimeOf` | `function regimeOf(` |
+| 49 | `readSeason` | `function readSeason(` |
+| 60 | `potentialOf` · export | `function potentialOf(` |
+| 65 | `peakTrend` | `function peakTrend(` |
+| 70 | `gnpYear` | `function gnpYear(` |
+| 73 | `gnpTrend` | `function gnpTrend(` |
+| 76 | `gnpYoY` | `function gnpYoY(` |
+| 85 | `closingReading` | `function closingReading(` |
+| 89 | `qIndex` | `function qIndex(` |
+| 90 | `recessionRecord` · export | `function recessionRecord(` |
+| 115 | `regimeAt` | `function regimeAt(` |
+| 116 | `seasonTitle` · export | `function seasonTitle(` |
+| 117 | `cycleReturns` · export | `function cycleReturns(` |
+| 127 | `cycleModel` · export | `function cycleModel(` |
+| 166 | `potentialGap` · export | `function potentialGap(` |
+| 170 | `seasonWhyFor` | `function seasonWhyFor(` |
+| 176 | `pricesWord` | `function pricesWord(` |
+| 180 | `inflationFigure` · export | `function inflationFigure(` |
+| 185 | `growthWord` · export | `function growthWord(` |
+| 188 | `contractingClause` | `function contractingClause(` |
+| 192 | `cycleNowNote` · export | `function cycleNowNote(` |
+| 200 | `seasonOfQ` · export | `function seasonOfQ(` |
+| 201 | `seasonGroup` · export | `function seasonGroup(` |
 
 #### The diagnosis: how she feels, and what has followed
 
 | Line | Name | Anchor |
 |---|---|---|
-| 189 | `rankToDate` · export | `function rankToDate(` |
-| 193 | `diagnoseToday` · export | `function diagnoseToday(` |
+| 203 | `rankToDate` · export | `function rankToDate(` |
+| 207 | `diagnoseToday` · export | `function diagnoseToday(` |
 
 #### Her mood: one range from Depression to Mania
 
 | Line | Name | Anchor |
 |---|---|---|
-| 198 | `rankIn` | `function rankIn(` |
-| 204 | `moodSeries` | `function moodSeries(` |
-| 212 | `moodAt` | `function moodAt(` |
-| 218 | `MOOD_TURN` · export | `var MOOD_TURN =` |
-| 221 | `moodWord` | `function moodWord(` |
-| 225 | `moodRead` | `function moodRead(` |
-| 233 | `moodTrack` · export | `function moodTrack(` |
-| 239 | `moodToday` · export | `function moodToday(` |
-| 243 | `moodSince` | `function moodSince(` |
-| 244 | `cycleStory` · export | `function cycleStory(` |
+| 212 | `rankBefore` | `function rankBefore(` |
+| 213 | `rankMemo` | `var rankMemo =` |
+| 214 | `rankAt` | `function rankAt(` |
+| 220 | `rankIn` | `function rankIn(` |
+| 226 | `moodSeries` | `function moodSeries(` |
+| 234 | `moodAt` | `function moodAt(` |
+| 240 | `MOOD_TURN` · export | `var MOOD_TURN =` |
+| 243 | `moodWord` | `function moodWord(` |
+| 247 | `moodRead` | `function moodRead(` |
+| 255 | `moodTrack` · export | `function moodTrack(` |
+| 261 | `moodToday` · export | `function moodToday(` |
+| 265 | `moodSince` | `function moodSince(` |
+| 266 | `cycleStory` · export | `function cycleStory(` |
 
 #### Cycles by name
 
 | Line | Name | Anchor |
 |---|---|---|
-| 255 | `cycleOfYear` · export | `function cycleOfYear(` |
-| 256 | `cycleByName` · export | `function cycleByName(` |
-| 260 | `openCycle` · export | `function openCycle(` |
-| 264 | `cycleSlice` · export | `function cycleSlice(` |
-| 272 | `totalGrowthYears` · export | `function totalGrowthYears(` |
-| 280 | `cycLabel` · export | `function cycLabel(` |
-| 284 | `cycleQtrIdx` · export | `function cycleQtrIdx(` |
-| 289 | `totalRiseIn` · export | `function totalRiseIn(` |
-| 299 | `yearInflation` · export | `function yearInflation(` |
-| 303 | `yearGrowth` · export | `function yearGrowth(` |
-| 306 | `yearSoFar` · export | `function yearSoFar(` |
-| 310 | `eraInflation` · export | `function eraInflation(` |
-| 319 | `eraGrowth` · export | `function eraGrowth(` |
-| 335 | `eraMarketTotal` · export | `function eraMarketTotal(` |
-| 340 | `forgetMood` · export | `function forgetMood(` |
-| 346 | `seasonEarly` | `function seasonEarly(` |
-| 358 | `seasonQuarters` | `function seasonQuarters(` |
+| 277 | `cycleOfYear` · export | `function cycleOfYear(` |
+| 278 | `cycleByName` · export | `function cycleByName(` |
+| 282 | `openCycle` · export | `function openCycle(` |
+| 286 | `cycleSlice` · export | `function cycleSlice(` |
+| 294 | `totalGrowthYears` · export | `function totalGrowthYears(` |
+| 302 | `cycLabel` · export | `function cycLabel(` |
+| 306 | `cycleQtrIdx` · export | `function cycleQtrIdx(` |
+| 311 | `totalRiseIn` · export | `function totalRiseIn(` |
+| 321 | `yearInflation` · export | `function yearInflation(` |
+| 325 | `yearGrowth` · export | `function yearGrowth(` |
+| 328 | `yearSoFar` · export | `function yearSoFar(` |
+| 332 | `eraInflation` · export | `function eraInflation(` |
+| 341 | `eraGrowth` · export | `function eraGrowth(` |
+| 357 | `eraMarketTotal` · export | `function eraMarketTotal(` |
+| 362 | `forgetMood` · export | `function forgetMood(` |
+| 368 | `seasonEarly` | `function seasonEarly(` |
+| 380 | `seasonQuarters` | `function seasonQuarters(` |
+| 392 | `regimes` | `function regimes(` |
 
 ### `js/history.ts`
 
@@ -519,27 +525,28 @@ falls in. **export** marks a name other modules import.
 | 450 | `rowReadings` · export | `function rowReadings(` |
 | 451 | `indOf` · export | `function indOf(` |
 | 452 | `policyFacts` | `function policyFacts(` |
-| 459 | `policyFactRows` · export | `function policyFactRows(` |
-| 462 | `gdpWord` · export | `function gdpWord(` |
-| 463 | `phaseClass` · export | `function phaseClass(` |
-| 468 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
+| 459 | `nextDecision` | `function nextDecision(` |
+| 460 | `policyFactRows` · export | `function policyFactRows(` |
+| 463 | `gdpWord` · export | `function gdpWord(` |
+| 464 | `phaseClass` · export | `function phaseClass(` |
+| 469 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
 
 #### Temperature's notes
 
 | Line | Name | Anchor |
 |---|---|---|
-| 586 | `yearReading` | `function yearReading(` |
-| 604 | `isNum` | `function isNum(` |
-| 606 | `rowId` | `function rowId(` |
-| 607 | `rowLike` | `function rowLike(` |
-| 620 | `rowsOk` | `function rowsOk(` |
-| 623 | `deriveHorizon` | `function deriveHorizon(` |
-| 637 | `fieldsKept` | `function fieldsKept(` |
-| 641 | `proseOk` | `function proseOk(` |
-| 642 | `reportOk` | `function reportOk(` |
-| 646 | `vixAsOf` | `function vixAsOf(` |
-| 647 | `coincidentAsOf` | `function coincidentAsOf(` |
-| 648 | `periodIso` · export | `function periodIso(` |
+| 587 | `yearReading` | `function yearReading(` |
+| 605 | `isNum` | `function isNum(` |
+| 607 | `rowId` | `function rowId(` |
+| 608 | `rowLike` | `function rowLike(` |
+| 621 | `rowsOk` | `function rowsOk(` |
+| 624 | `deriveHorizon` | `function deriveHorizon(` |
+| 638 | `fieldsKept` | `function fieldsKept(` |
+| 642 | `proseOk` | `function proseOk(` |
+| 643 | `reportOk` | `function reportOk(` |
+| 647 | `vixAsOf` | `function vixAsOf(` |
+| 648 | `coincidentAsOf` | `function coincidentAsOf(` |
+| 649 | `periodIso` · export | `function periodIso(` |
 
 ### `js/roster.ts`
 
