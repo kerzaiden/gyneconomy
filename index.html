@@ -46759,14 +46759,14 @@
       return mean(years[y]);
     });
     CONCENTRATION_MEAN = Math.round(mean(means) * 10) / 10;
-    var last = topTenQuarterly[topTenQuarterly.length - 1].q, recent = topTenRecent.filter(function(d) {
+    var last = topTenQuarterly[topTenQuarterly.length - 1].q, recent2 = topTenRecent.filter(function(d) {
       return d.q > last;
     });
     topTenReadings.length = 0;
-    topTenQuarterly.concat(recent).forEach(function(d) {
+    topTenQuarterly.concat(recent2).forEach(function(d) {
       topTenReadings.push(d);
     });
-    var ends = recent.length ? topTenReadings.slice(0, -1) : topTenReadings, at = {};
+    var ends = recent2.length ? topTenReadings.slice(0, -1) : topTenReadings, at = {};
     ends.forEach(function(d) {
       at[d.q] = d.v;
     });
@@ -52008,8 +52008,15 @@
       });
     });
   }
+  var WINDOW = 6;
+  function recent(xs) {
+    return xs.slice(0, closedCount()).slice(-WINDOW);
+  }
+  function windowFrom() {
+    return marketCycles[closedCount() - WINDOW].from;
+  }
   function readingsNorm(seen) {
-    return normOf([].concat.apply([], seen.slice(0, closedCount())));
+    return normOf([].concat.apply([], recent(seen)));
   }
   var DEPTH_CYCLES = 4;
   var DEPTH_YEARS = 20;
@@ -52021,7 +52028,7 @@
     yi: 1
   };
   function deep(R, seen) {
-    var closed = seen.slice(0, closedCount()), n = closed.filter(function(vs) {
+    var closed = recent(seen), n = closed.filter(function(vs) {
       return vs.length;
     }).length;
     var years = closed.reduce(function(a, vs) {
@@ -52069,7 +52076,7 @@
       now: pin(readingsNorm(seen)),
       print: p.print,
       span: p.span,
-      norm: pin(normOf(per.slice(0, closedCount()).filter(function(v) {
+      norm: pin(normOf(recent(per).filter(function(v) {
         return v != null;
       })))
     };
@@ -52470,12 +52477,14 @@
     return !thin.length ? "" : listed(thin) + (many ? " have less, so they are read on their own pages" : " has less, so it is read on its own page") + " but not judged here. ";
   }
   function depthWords() {
-    var all = closedCount(), by = {}, thin = [];
-    labs().forEach(function(l) {
-      var k = l.per.slice(0, all).filter(function(v) {
+    var all = WINDOW, by = {}, thin = [];
+    labs().filter(function(l) {
+      return l.cat !== "cycle";
+    }).forEach(function(l) {
+      var k = recent(l.per).filter(function(v) {
         return v != null;
       }).length;
-      if (l.cat !== "cycle" && !l.norm) thin.push(l.name); else if (k < all) (by[k] = by[k] || []).push(l.name);
+      if (!l.norm) thin.push(l.name); else if (k < all) (by[k] = by[k] || []).push(l.name);
     });
     var ks = Object.keys(by).map(Number).sort(function(a, b) {
       return a - b;
@@ -52496,7 +52505,7 @@
     return [ "<b>Length</b> is Typical inside Tukey’s fences of her closed cycles; <b>variation</b> is the standard deviation of their lengths." ];
   }
   function chartDetail() {
-    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, SD_SRC ]);
+    return "<p>Readings are judged against her last " + numberWord(WINDOW) + " closed cycles, since " + windowFrom() + "; the cycle’s own length, bull years and flow against all " + closedCount() + " since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading those six cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(), "<b>Window:</b> the last " + numberWord(WINDOW) + " cycles, recent enough to read today’s economy and long enough for a margin of safety. <b>Normal</b> is the middle half of those cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, SD_SRC ]);
   }
   var HOME_ID = "chart-home";
   function statRow(name, v, of, side2, page2, cls, text) {

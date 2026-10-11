@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `0fe4986` on 2026-10-11. **109 components**, **10 shared patterns**.
+Generated from commit `dc76221` on 2026-10-11. **109 components**, **10 shared patterns**.
 
 ## ai-insights.ts
 
@@ -242,7 +242,6 @@ renderer speaks. Listed most-used first.
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`monthLabel`** | format.ts | 9 places |
 | **`pctl`** | format.ts | 9 places |
-| **`closedCount`** | cycle-analysis.ts | 8 places |
 | **`sideWord`** | format.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`cycLabel`** | model.ts | 7 places |
@@ -258,17 +257,18 @@ renderer speaks. Listed most-used first.
 | **`fileRow`** | data.ts | 6 places |
 | **`isoDay`** | format.ts | 6 places |
 | **`listed`** | format.ts | 6 places |
+| **`numberWord`** | format.ts | 6 places |
 | **`openCycle`** | model.ts | 6 places |
 | **`pct`** | wave-chart.ts | 6 places |
 | **`publishGeom`** | charts.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
 | **`atMonth`** | format.ts | 5 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
+| **`closedCount`** | cycle-analysis.ts | 5 places |
 | **`colWidth`** | charts.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`monthWindow`** | history.ts | 5 places |
-| **`numberWord`** | format.ts | 5 places |
 | **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`visits`** | cycle-analysis.ts | 5 places |

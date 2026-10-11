@@ -669,6 +669,12 @@ settles it; none is open after V668.
   than four cycles most fall outside their own middle half by arithmetic alone, and twenty years keeps a range
   from resting on a few short cycles. Four and twenty are Claude's call under Keren's "as much data as possible", for
   her to move. (Deep Record)
+- **A reading is judged against her last six closed cycles (since 1978 today), not the whole record; the cycle's own
+  length, bull years and flow still read every closed cycle.** As a period tracker reads the last six cycles: recent
+  enough that 1930s or 1950s rates do not set today's normal, and six rather than four for a margin of safety
+  (Keren). The four-cycle, twenty-year depth floor applies within the six. The 10-year still reads Normal at 5.24%,
+  inside 2.93–8.18%, since the 1980s and 1990s ran higher; its rank ("highest since") is told in words, not by a tier.
+  (Deep Record)
 - **A Cycle analysis result is judged by whether its side is good for that reading, not only by its side.** A falling
   unemployment rate is good, so direction alone cannot judge a result; the parameter decides. A result outside its
   range on its good side is Normal (apricot) and counts toward the health score; on the other side it is Attention or

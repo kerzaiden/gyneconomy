@@ -50,13 +50,16 @@ function cycleReadings(R: RosterRow){
     return first > c.from ? [] : h.filter(function(d){ var y = +d.k.slice(0, 4); return y >= c.from && (c.ongoing || y <= c.to); }).map(function(d){ return d.v as number; });
   });
 }
+export var WINDOW = 6;
+function recent<T>(xs: T[]){ return xs.slice(0, closedCount()).slice(-WINDOW); }
+function windowFrom(){ return marketCycles[closedCount() - WINDOW].from; }
 function readingsNorm(seen: number[][]){
-  return normOf(([] as number[]).concat.apply([], seen.slice(0, closedCount())));
+  return normOf(([] as number[]).concat.apply([], recent(seen)));
 }
 var DEPTH_CYCLES = 4, DEPTH_YEARS = 20;
 var PER_YEAR: Record<string, number> = { m:12, q:4, qi:4, y:1, yi:1 };
 function deep(R: RosterRow, seen: number[][]){
-  var closed = seen.slice(0, closedCount()), n = closed.filter(function(vs){ return vs.length; }).length;
+  var closed = recent(seen), n = closed.filter(function(vs){ return vs.length; }).length;
   var years = closed.reduce(function(a, vs){ return a + vs.length; }, 0) / PER_YEAR[R.hist.k];
   return n >= DEPTH_CYCLES && years >= DEPTH_YEARS;
 }
@@ -72,7 +75,7 @@ function readingLab(R: RosterRow): Lab {
   var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? todayValue(R) : mean(vs); });
   var ok = deep(R, seen), pin = function(n: Norm | null){ return !ok ? null : n && R.normal ? { lo:R.normal.lo, hi:R.normal.hi, fence:n.fence, floor:n.floor } : n; };
   return { id:R.id, name:R.name, cat:R.cat, good:R.good, per:per, now:pin(readingsNorm(seen)), print:p.print, span:p.span,
-    norm:pin(normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; }))) };
+    norm:pin(normOf(recent(per).filter(function(v): v is number { return v != null; }))) };
 }
 var labCache: Lab[] | null = null;
 export function forgetLabs(){ labCache = null; visitCache = null; whenCache = {}; }
@@ -280,10 +283,10 @@ function thinWords(thin: string[]){
   return !thin.length ? "" : listed(thin) + (many ? " have less, so they are read on their own pages" : " has less, so it is read on its own page") + " but not judged here. ";
 }
 function depthWords(){
-  var all = closedCount(), by: Record<number, string[]> = {}, thin: string[] = [];
-  labs().forEach(function(l){
-    var k = l.per.slice(0, all).filter(function(v){ return v != null; }).length;
-    if (l.cat !== "cycle" && !l.norm) thin.push(l.name); else if (k < all) (by[k] = by[k] || []).push(l.name);
+  var all = WINDOW, by: Record<number, string[]> = {}, thin: string[] = [];
+  labs().filter(function(l){ return l.cat !== "cycle"; }).forEach(function(l){
+    var k = recent(l.per).filter(function(v){ return v != null; }).length;
+    if (!l.norm) thin.push(l.name); else if (k < all) (by[k] = by[k] || []).push(l.name);
   });
   var ks = Object.keys(by).map(Number).sort(function(a, b){ return a - b; });
   return depthRule() + thinWords(thin) + (ks.length ? capFirst(ks.map(function(k){ return listed(by[k]) + " on " + numberWord(k); }).join("; ")) + "; the rest on all " + numberWord(all) + "." : "Every other range rests on all " + numberWord(all) + ".");
@@ -298,9 +301,9 @@ function methodFacts(){
   return ["<b>Length</b> is Typical inside Tukey’s fences of her closed cycles; <b>variation</b> is the standard deviation of their lengths."];
 }
 function chartDetail(){
-  return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
-    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading her closed cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(),
-    "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
+  return '<p>Readings are judged against her last ' + numberWord(WINDOW) + ' closed cycles, since ' + windowFrom() + '; the cycle\u2019s own length, bull years and flow against all ' + closedCount() + ' since ' + marketCycles[0].from + '.</p>' + facts([
+    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", "<b>A year or a quarter</b> is its average, or the latest reading while it is still open, judged as the open cycle is: against the middle half of every reading those six cycles hold. A reading kept only by the year shows its year’s figure in a quarter, and says which.", depthWords(),
+    "<b>Window:</b> the last " + numberWord(WINDOW) + " cycles, recent enough to read today\u2019s economy and long enough for a margin of safety. <b>Normal</b> is the middle half of those cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
     pinnedFacts(),
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
     "<b>Health Score</b> is the share of results that are Normal, out of 100."
