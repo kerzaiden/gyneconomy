@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,838 lines** in 44 files, about 603 KB, roughly **171 thousand tokens**. No session can
+The source is **8,845 lines** in 44 files, about 605 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `42cbb8e` on 2026-10-11.
+Generated from commit `da2304b` on 2026-10-11.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `42cbb8e` on 2026-10-11.
 | `js/main.ts` | 40 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **40** modules, **810** top-level functions, **124** top-level vars, **392** exported names, **20** boots.
+Counts: **40** modules, **811** top-level functions, **124** top-level vars, **392** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -45,7 +45,7 @@ Counts: **40** modules, **810** top-level functions, **124** top-level vars, **3
 | `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 141 | 12 | `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `render-core`, `render-pages` |
-| `js/tabs-menu.ts` | 237 | 15 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
+| `js/tabs-menu.ts` | 244 | 16 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
 | `js/repaint.ts` | 40 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 60 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 66 | 14 | `cycle-analysis`, `data`, `dial-ring`, `dom`, `format`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
@@ -96,7 +96,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 16 | `bootAnalysis` | `js/analysis.ts:74`–78 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:135`–140 |
-| 19 | `bootTabsMenu` | `js/tabs-menu.ts:226`–236 |
+| 19 | `bootTabsMenu` | `js/tabs-menu.ts:233`–243 |
 | 20 | `bootRepaint` | `js/repaint.ts:26`–39 |
 
 ## Script, module by module
@@ -801,39 +801,40 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 12 | `seasonGrid` | `function seasonGrid(` |
 | 22 | `recessionLine` | `function recessionLine(` |
-| 26 | `seasonModelNote` | `function seasonModelNote(` |
-| 36 | `rangePos` | `function rangePos(` |
-| 41 | `cycleModelLine` | `function cycleModelLine(` |
-| 45 | `wireIdea` | `function wireIdea(` |
-| 48 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 26 | `sideFacts` | `function sideFacts(` |
+| 33 | `seasonModelNote` | `function seasonModelNote(` |
+| 43 | `rangePos` | `function rangePos(` |
+| 48 | `cycleModelLine` | `function cycleModelLine(` |
+| 52 | `wireIdea` | `function wireIdea(` |
+| 55 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 #### How to Read: where each reading sits and when it speaks, from the roster
 
 | Line | Name | Anchor |
 |---|---|---|
-| 90 | `placeLine` | `function placeLine(` |
-| 97 | `timingLine` | `function timingLine(` |
-| 104 | `renderHowto` | `function renderHowto(` |
+| 97 | `placeLine` | `function placeLine(` |
+| 104 | `timingLine` | `function timingLine(` |
+| 111 | `renderHowto` | `function renderHowto(` |
 
 #### TAB NAVIGATION (Today / Cycle / Analysis / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 106 | `renderTopbar` | `function renderTopbar(` |
-| 135 | `wireTabKeys` | `function wireTabKeys(` |
-| 136 | `wireTabDoors` | `function wireTabDoors(` |
+| 113 | `renderTopbar` | `function renderTopbar(` |
+| 142 | `wireTabKeys` | `function wireTabKeys(` |
+| 143 | `wireTabDoors` | `function wireTabDoors(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 144 | `wireMenu` | `function wireMenu(` |
+| 151 | `wireMenu` | `function wireMenu(` |
 
 #### Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its
 
 | Line | Name | Anchor |
 |---|---|---|
-| 218 | `bootGuide` | `function bootGuide(` |
+| 225 | `bootGuide` | `function bootGuide(` |
 
 ### `js/repaint.ts`
 

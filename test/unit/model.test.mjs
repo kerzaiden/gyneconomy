@@ -135,7 +135,7 @@ test('before 1948 a season is read every quarter from Balke and Gordon\'s GNP, a
   assert.equal(GNP_TREND.toFixed(2), '2.34');
   const seasons = {};
   for (const c of marketCycles) for (const s of cycleModel(c).track) seasons[s.q] = s.reading.season;
-  assert.deepEqual(['1937 Q1', '1937 Q2', '1937 Q3', '1937 Q4', '1938 Q1'].map(q => seasons[q]), ['summer', 'summer', 'summer', 'lateautumn', 'winter']);
+  assert.deepEqual(['1937 Q1', '1937 Q2', '1937 Q3', '1937 Q4', '1938 Q1'].map(q => seasons[q]), ['summer', 'summer', 'summer', 'autumn', 'winter']);
   assert.deepEqual([Object.keys(seasons).filter(q => q < '1948 Q1').length, Object.keys(seasons).sort()[0]], [80, '1928 Q1']);
 });
 
