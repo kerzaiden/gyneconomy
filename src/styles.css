@@ -19,14 +19,12 @@
     --overlay: rgba(43,21,32,0.38);
     --track: #f3e3dd;
     --good: #2a9488;
-    --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
-    --cold: var(--season-winter);
+    --warning-ink: var(--critical-ink);
     --cold-ink: #4a54a6;
     --phase-up-ink: #7a5709;
     --phase-down-ink: var(--cold-ink);
-    --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
+    --serious-ink: var(--critical-ink);
     --critical: #d0383b;
-    --m2-deep: #4a0f0a;
     --ff-blue: #4f6fb0;
     --ff-deep: #0b2340;
     --critical-ink: #a8292f;
@@ -67,13 +65,12 @@
       --overlay: rgba(0,0,0,0.62);
       --track: #3a2530;
       --good: #4cc2b4;
-      --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
-      --cold: var(--season-winter);
+      --warning-ink: var(--critical-ink);
       --cold-ink: #b4bdeb;
       --phase-up-ink: #f2c24d;
       --phase-down-ink: var(--cold-ink);
-      --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
-      --critical: #f05a55; --m2-deep: #ffd2c8;
+      --serious-ink: var(--critical-ink);
+      --critical: #f05a55;
       --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
       --critical-ink: #f6897f;
       --bleed-mid: #f05a55;
@@ -112,13 +109,12 @@
       --overlay: rgba(0,0,0,0.62);
       --track: #3a2530;
       --good: #4cc2b4;
-      --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink);
-      --cold: var(--season-winter);
+      --warning-ink: var(--critical-ink);
       --cold-ink: #b4bdeb;
       --phase-up-ink: #f2c24d;
       --phase-down-ink: var(--cold-ink);
-      --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink);
-      --critical: #f05a55; --m2-deep: #ffd2c8;
+      --serious-ink: var(--critical-ink);
+      --critical: #f05a55;
       --ff-blue: #86a3e0; --ff-deep: #d7e8fb;
       --critical-ink: #f6897f;
       --bleed-mid: #f05a55;
@@ -333,6 +329,8 @@
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
     --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f;
+    --hist-0:color-mix(in srgb, var(--gold) 40%, var(--surface)); --hist-1:color-mix(in srgb, var(--gold) 70%, var(--surface)); --hist-2:var(--gold);
+    --hist-3:color-mix(in srgb, var(--season-summer) 55%, var(--gold)); --hist-4:var(--season-summer); --hist-5:var(--accent);
     /* ---- THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change ---- */
     --mini-h:42px;
     --pad:10px;
@@ -454,16 +452,16 @@
   .era-row:hover{ background:var(--surface-2); }
   .era-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .menu-btn[hidden]{ display:none; }
-  .growth-col{ fill:none; stroke-linecap:round; stroke:var(--good); }
-  .growth-col.down{ stroke:var(--season-summer); }
+  .growth-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); }
+  .growth-col.down{ stroke:var(--hist-4); }
 
   .temp-col{ fill:none; stroke-linecap:round; }
-  .temp-col.s0{ stroke:var(--cold); }
-  .temp-col.s1{ stroke:color-mix(in srgb, var(--gold) 38%, var(--surface)); }
-  .temp-col.s2{ stroke:color-mix(in srgb, var(--gold) 68%, var(--surface)); }
-  .temp-col.s3{ stroke:var(--gold); }
-  .temp-col.s4{ stroke:color-mix(in srgb, var(--season-summer) 62%, var(--gold)); }
-  .temp-col.s5{ stroke:var(--season-summer); }
+  .temp-col.s0{ stroke:var(--hist-5); }
+  .temp-col.s1{ stroke:var(--hist-0); }
+  .temp-col.s2{ stroke:var(--hist-1); }
+  .temp-col.s3{ stroke:var(--hist-2); }
+  .temp-col.s4{ stroke:var(--hist-3); }
+  .temp-col.s5{ stroke:var(--hist-4); }
   .temp-avg{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; fill:none; }
   .chart-label-plate{ fill:var(--surface); }
   .hl-lab{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); fill:var(--text-muted); }
@@ -635,8 +633,8 @@
     stroke-linecap:round; stroke-linejoin:round; }
   .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
   .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
-  .ps-beat{ fill:none; stroke:var(--accent); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
-  .ps-beat.odd, .ps-beat.flat{ stroke:var(--bleed-mid); }
+  .ps-beat{ fill:none; stroke:var(--hist-5); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
+  .ps-beat.odd, .ps-beat.flat{ stroke:var(--hist-4); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
   .ps-scroll{ position:absolute; left:0; right:0; overflow-y:auto; scrollbar-width:none; }
@@ -661,21 +659,21 @@
   .vh-svg{ display:block; width:100%; height:auto; margin:10px 0 2px; overflow:visible; }
   /* ---- Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of ---- */
   .m2-col{ fill:none; stroke-linecap:round; }
-  .m2-col.v0{ stroke:color-mix(in srgb, var(--critical) 30%, var(--surface)); }
-  .m2-col.v1{ stroke:color-mix(in srgb, var(--critical) 45%, var(--surface)); }
-  .m2-col.v2{ stroke:color-mix(in srgb, var(--critical) 62%, var(--surface)); }
-  .m2-col.v3{ stroke:color-mix(in srgb, var(--critical) 80%, var(--surface)); }
-  .m2-col.v4{ stroke:var(--critical); }
-  .m2-col.v5{ stroke:color-mix(in srgb, var(--critical) 62%, var(--m2-deep)); }
+  .m2-col.v0{ stroke:var(--hist-0); }
+  .m2-col.v1{ stroke:var(--hist-1); }
+  .m2-col.v2{ stroke:var(--hist-2); }
+  .m2-col.v3{ stroke:var(--hist-3); }
+  .m2-col.v4{ stroke:var(--hist-4); }
+  .m2-col.v5{ stroke:var(--hist-5); }
 
 
-  .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
-  .hzn-col.inv{ stroke:var(--critical); }
-  .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
-  .unemp-col.tight, .unemp-col.warning{ stroke:var(--warning); }
-  .unemp-col.serious{ stroke:var(--serious); }
-  .def-col{ fill:none; stroke-linecap:round; stroke:var(--serious); opacity:0.85; }
-  .def-col.surplus{ stroke:var(--good); opacity:0.95; }
+  .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); opacity:0.9; }
+  .hzn-col.inv{ stroke:var(--hist-4); }
+  .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); opacity:0.9; }
+  .unemp-col.tight, .unemp-col.warning{ stroke:var(--hist-4); }
+  .unemp-col.serious{ stroke:var(--hist-5); }
+  .def-col{ fill:none; stroke-linecap:round; stroke:var(--hist-4); opacity:0.85; }
+  .def-col.surplus{ stroke:var(--hist-2); opacity:0.95; }
 
   .m2-zero{ stroke:var(--grid); stroke-width:1; fill:none; }
   .vh-mean{ fill:none; stroke:var(--accent); stroke-width:1.4; stroke-dasharray:5 4; stroke-linecap:round; }
@@ -686,8 +684,8 @@
 
   /* ---- the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the ---- */
   .yl-col{ fill:none; stroke-linecap:round; }
-  .yl-col.inverted{ stroke:var(--critical); }
-  .yl-col.normal{ stroke:var(--gold); }
+  .yl-col.inverted{ stroke:var(--hist-4); }
+  .yl-col.normal{ stroke:var(--hist-2); }
   .metric-sheet{ display:flex; flex-direction:column; }
 
 
@@ -800,15 +798,15 @@
   .dchart{ margin:10px 0 2px; }
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
   .dv-bar{ stroke-linecap:round; fill:none; }
-  .ff-col{ stroke:var(--ff-blue); fill:none; stroke-linecap:round; }
-  .ff-col.f0{ stroke:color-mix(in srgb, var(--ff-blue) 26%, var(--surface)); }
-  .ff-col.f1{ stroke:color-mix(in srgb, var(--ff-blue) 42%, var(--surface)); }
-  .ff-col.f2{ stroke:color-mix(in srgb, var(--ff-blue) 58%, var(--surface)); }
-  .ff-col.f3{ stroke:color-mix(in srgb, var(--ff-blue) 74%, var(--surface)); }
-  .ff-col.f4{ stroke:var(--ff-blue); }
-  .ff-col.f5{ stroke:color-mix(in srgb, var(--ff-blue) 70%, var(--ff-deep)); }
-  .dv-bar.over{ stroke:var(--serious); } .dv-bar.under{ stroke:var(--good); }
-  .dv-bar.over.good-above{ stroke:var(--good); } .dv-bar.under.good-above{ stroke:var(--serious); }
+  .ff-col{ stroke:var(--hist-2); fill:none; stroke-linecap:round; }
+  .ff-col.f0{ stroke:var(--hist-0); }
+  .ff-col.f1{ stroke:var(--hist-1); }
+  .ff-col.f2{ stroke:var(--hist-2); }
+  .ff-col.f3{ stroke:var(--hist-3); }
+  .ff-col.f4{ stroke:var(--hist-4); }
+  .ff-col.f5{ stroke:var(--hist-5); }
+  .dv-bar.over{ stroke:var(--hist-4); } .dv-bar.under{ stroke:var(--hist-2); }
+  .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
   .bt-xl, .bt-yl{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); fill:var(--text-muted); }
 
