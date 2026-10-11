@@ -489,6 +489,7 @@
   .sg-cell{ position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:3px; min-height:64px; padding:12px 8px;
     border-radius:var(--radius); background:color-mix(in srgb, var(--season) 30%, var(--surface)); text-align:center; }
   .sg-cell.wide{ grid-column:span 2; }
+  .sg-cell.winter{ background:color-mix(in srgb, var(--season) 55%, var(--surface)); }
   .sg-cell b{ font-size:var(--type-reading); font-weight:700; color:var(--text-primary); }
   .sg-cell small{ font-size:var(--type-label); line-height:1.35; color:var(--text-secondary); }
   .sg-cell.now{ box-shadow:inset 0 0 0 2px var(--accent-ink); }

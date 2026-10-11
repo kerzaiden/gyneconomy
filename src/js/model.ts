@@ -52,7 +52,7 @@ function readSeason(cpi12: MonthPoint[], gdp: QuarterPoint, potential: number, p
   var cpiDirection = cpiDirectionOf(cpiSlope), heading = cpiDirection === "steady" ? (prevHeading || cpiDirection) : cpiDirection;
   var cpiHot = cpiNow > 3.0, cpiCold = cpiNow < 1.0;
   var regime = regimeOf(gdp.v, potential, prevRegime), season: Season;
-  if (regime === "expansion") season = cpiHot && cpiDirection !== "falling" ? "summer" : heading === "falling" ? "springdeflation" : "spring";
+  if (regime === "expansion") season = cpiHot ? "summer" : heading === "falling" ? "springdeflation" : "spring";
   else season = cpiCold ? "winter" : cpiHot && cpiDirection !== "falling" ? "lateautumn" : "autumn";
   return { season:season, regime:regime, cpiNow:cpiNow, cpiSlope:cpiSlope, cpiDirection:cpiDirection, heading:heading, cpiHot:cpiHot, cpiCold:cpiCold,
            potential:potential, gdpLatest:gdp };

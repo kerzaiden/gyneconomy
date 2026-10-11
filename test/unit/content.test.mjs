@@ -150,7 +150,7 @@ test('the dial carries no title, only its legend icon, a door to About Gyneconom
   assert.ok(document.querySelector('#sheet-book #cycle-model'));
   const about = document.getElementById('sheet-book');
   assert.equal(about.querySelectorAll('.expand-btn, .info-btn').length, 0, 'About opens nothing further: its notes sit in its cards');
-  assert.deepEqual([...about.querySelectorAll('#seasons-notes .facts li b')].map(b => b.textContent), ['Expansion', 'Contraction', 'Arrows', 'Against the record']);
+  assert.deepEqual([...about.querySelectorAll('#seasons-notes .facts li b')].map(b => b.textContent), ['Expansion', 'Contraction', 'Arrows', '*Stagflation', 'Against the record']);
   assert.ok(document.getElementById('framework-notes').textContent.includes('seven signs'));
   const cells = [...about.querySelectorAll('#seasons-grid .sg-cell')];
   assert.deepEqual(cells.map(c => c.querySelector('b').textContent), ['Spring', 'Summer', 'Winter', 'Autumn']);

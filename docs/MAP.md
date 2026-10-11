@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,776 lines** in 44 files, about 596 KB, roughly **169 thousand tokens**. No session can
+The source is **8,778 lines** in 44 files, about 597 KB, roughly **169 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `9e44908` on 2026-10-11.
+Generated from commit `d84942b` on 2026-10-11.
 
 ## The page
 
@@ -18,7 +18,7 @@ Generated from commit `9e44908` on 2026-10-11.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,149 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,150 | the whole stylesheet, every token and rule |
 | `page-body.html` | 248 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 40 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
@@ -45,7 +45,7 @@ Counts: **40** modules, **809** top-level functions, **125** top-level vars, **3
 | `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 141 | 12 | `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `render-core`, `render-pages` |
-| `js/tabs-menu.ts` | 212 | 16 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
+| `js/tabs-menu.ts` | 213 | 16 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
 | `js/repaint.ts` | 40 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 60 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 66 | 14 | `cycle-analysis`, `data`, `dial-ring`, `dom`, `format`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
@@ -96,7 +96,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 16 | `bootAnalysis` | `js/analysis.ts:74`–78 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:135`–140 |
-| 19 | `bootTabsMenu` | `js/tabs-menu.ts:201`–211 |
+| 19 | `bootTabsMenu` | `js/tabs-menu.ts:202`–212 |
 | 20 | `bootRepaint` | `js/repaint.ts:26`–39 |
 
 ## Script, module by module
@@ -810,29 +810,29 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 59 | `placeLine` | `function placeLine(` |
-| 66 | `timingLine` | `function timingLine(` |
-| 73 | `renderHowto` | `function renderHowto(` |
+| 60 | `placeLine` | `function placeLine(` |
+| 67 | `timingLine` | `function timingLine(` |
+| 74 | `renderHowto` | `function renderHowto(` |
 
 #### TAB NAVIGATION (Today / Cycle / Analysis / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 75 | `renderTopbar` | `function renderTopbar(` |
-| 104 | `wireTabKeys` | `function wireTabKeys(` |
-| 105 | `wireTabDoors` | `function wireTabDoors(` |
+| 76 | `renderTopbar` | `function renderTopbar(` |
+| 105 | `wireTabKeys` | `function wireTabKeys(` |
+| 106 | `wireTabDoors` | `function wireTabDoors(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 113 | `wireMenu` | `function wireMenu(` |
+| 114 | `wireMenu` | `function wireMenu(` |
 
 #### Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its
 
 | Line | Name | Anchor |
 |---|---|---|
-| 193 | `bootGuide` | `function bootGuide(` |
+| 194 | `bootGuide` | `function bootGuide(` |
 
 ### `js/repaint.ts`
 
@@ -1532,20 +1532,20 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 341 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
 | 403 | tab bar (app-style segmented navigation) |
 | 439 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
-| 508 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 648 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 665 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 712 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 850 | View more: the button under Year by Year and Herstory |
-| 861 | The symptoms: a cycle's years against today |
-| 1,007 | yield curve charts |
-| 1,021 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,035 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,043 | un-inversion-to-recession historical lag panel |
-| 1,052 | the reading's tag |
-| 1,056 | info icon + popover (progressive disclosure for longer notes) |
-| 1,070 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,140 | footer |
+| 509 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
+| 649 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 666 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 713 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 851 | View more: the button under Year by Year and Herstory |
+| 862 | The symptoms: a cycle's years against today |
+| 1,008 | yield curve charts |
+| 1,022 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,036 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,044 | un-inversion-to-recession historical lag panel |
+| 1,053 | the reading's tag |
+| 1,057 | info icon + popover (progressive disclosure for longer notes) |
+| 1,071 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,141 | footer |
 
 ## Markup landmarks
 

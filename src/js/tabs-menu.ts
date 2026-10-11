@@ -24,8 +24,8 @@ function seasonGrid(){
   var heating = function(k: Season){ return wheelMeta[k].theme + ' <span aria-label="heating">\u2192</span>'; };
   var cooling = function(k: Season){ return '<span aria-label="cooling">\u2190</span> ' + wheelMeta[k].theme; };
   return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("Warm", "1\u20133%") + head("Hot", "above 3%") +
-    row("Expansion") + seasonCell("spring", 2, [heating("spring"), cooling("springdeflation")]) + seasonCell("summer", 1, [heating("summer")]) +
-    row("Contraction") + seasonCell("winter", 1, [wheelMeta.winter.theme]) + seasonCell("autumn", 2, [heating("lateautumn"), cooling("autumn")]) + '</div>';
+    row("Expansion") + seasonCell("spring", 2, [heating("spring"), cooling("springdeflation")]) + seasonCell("summer", 1, [wheelMeta.summer.theme]) +
+    row("Contraction") + seasonCell("winter", 1, [wheelMeta.winter.theme]) + seasonCell("autumn", 2, [heating("lateautumn") + "*", cooling("autumn")]) + '</div>';
 }
 function cycleModelLine(){
   var closed = marketCycles.filter(function(c){ return !c.ongoing; }), years = closed.reduce(function(a, c){ return a + c.to - c.from + 1; }, 0);
@@ -46,7 +46,8 @@ function renderSeasonRows(){
   put("seasons-notes", facts([
     "<b>Expansion</b>: real GDP growth at or above its potential, the CBO\u2019s since 1950.",
     "<b>Contraction</b>: growth below its potential.",
-    "<b>Arrows</b>: \u2192 prices heating, \u2190 prices cooling.",
+    "<b>Arrows</b>: \u2192 prices heating, \u2190 prices cooling. Spring and Autumn are transitions, so their direction names them; Summer and Winter hold whatever the direction.",
+    "<b>*Stagflation</b> only while prices are hot, above 3%, and not cooling. Warm prices in a contraction are Disinflation, heating or cooling.",
     recessionLine()
   ]) + srcBlock([CLOCK_SRC[0], FED_TARGET_SRC, gdpSrc[gdpSrc.length - 1]]));
   renderCycleModel();

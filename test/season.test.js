@@ -51,7 +51,7 @@ ok('shrinking output is contraction', readSeason(cpi(2.0, 0), { q: 'x', v: -1 },
 
 ok('expansion + hot prices        = summer',          season(cpi(4.2, 0.05), up),  'summer');
 ok('expansion + hot prices steady = summer',          readSeason(cpi(4.2, 0), up, P, null, 'falling').season, 'summer');
-ok('expansion + hot prices cooling = springdeflation', season(cpi(4.2, -0.05), up), 'springdeflation');
+ok('expansion + hot prices cooling = summer', season(cpi(4.2, -0.05), up), 'summer');
 ok('expansion + cooling prices    = springdeflation', season(cpi(2.0, -0.05), up), 'springdeflation');
 ok('expansion + heating prices    = spring',          season(cpi(2.0, 0.05), up),  'spring');
 ok('expansion + steady prices     = spring',          season(cpi(2.0, 0), up),     'spring');
@@ -69,7 +69,7 @@ ok('contraction + hot prices steady = lateautumn',    readSeason(cpi(4.2, 0), do
 ok('contraction + hot prices cooling = autumn',       season(cpi(4.2, -0.05), down), 'autumn');
 const levels = { cold: 0.4, warm: 2.0, hot: 4.2 }, moves = { cooling: -0.05, steady: 0, heating: 0.05 };
 const table = {
-  expansion:   { cold: ['springdeflation', 'spring', 'spring'], warm: ['springdeflation', 'spring', 'spring'], hot: ['springdeflation', 'summer', 'summer'] },
+  expansion:   { cold: ['springdeflation', 'spring', 'spring'], warm: ['springdeflation', 'spring', 'spring'], hot: ['summer', 'summer', 'summer'] },
   contraction: { cold: ['winter', 'winter', 'winter'], warm: ['autumn', 'autumn', 'autumn'], hot: ['autumn', 'lateautumn', 'lateautumn'] }
 };
 for (const [regime, rows] of Object.entries(table)) for (const [level, want] of Object.entries(rows)) Object.entries(moves).forEach(([move, step], k) =>
