@@ -12,7 +12,7 @@ import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHis
 import { HIST_NOTE } from '../../src/js/history.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { nowModel, growthWord, cycleNowNote, cycLabel } from '../../src/js/model.ts';
-import { fmtSigned } from '../../src/js/format.ts';
+import { fmtSigned, isoDay } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 import { todayFace } from '../../src/js/reading.ts';
 import { rhythmRecord, RHYTHM_WINDOW } from '../../src/js/rhythm.ts';
@@ -21,6 +21,7 @@ import { marketCycles } from '../../src/js/data.ts';
 
 const value = sheet => todayFace(ROSTER_BY[sheet]).text;
 const word = sheet => todayFace(ROSTER_BY[sheet]).word;
+const after = (name, days = 1) => new Date(Date.parse(isoDay(READINGS[name].fileAsOf())) + days * 864e5).toISOString().slice(0, 10);
 
 async function deliver(docs) {
   window.claude = { use: () => Promise.resolve({ doc: path => ({ get: () => {
@@ -169,11 +170,11 @@ test('a live document carrying markup is refused and changes nothing', async () 
 });
 
 test('a live VIX close reaches the Volatility card; one outside its band is refused', async () => {
-  await deliver({ vixClose: { kind: 'scalar', value: 31.7, asOf: '2026-10-01' } });
+  await deliver({ vixClose: { kind: 'scalar', value: 31.7, asOf: after('vixClose') } });
   assert.equal(value('sheet-sign-sentiment'), '31.7');
   assert.equal(String(now.vixRow.flagValue), '31.7');
   assert.equal(word('sheet-sign-sentiment'), 'Fearful');
-  await deliver({ vixClose: { kind: 'scalar', value: 9999, asOf: '2026-10-02' } });
+  await deliver({ vixClose: { kind: 'scalar', value: 9999, asOf: after('vixClose') } });
   assert.equal(value('sheet-sign-sentiment'), '31.7');
 });
 
@@ -183,10 +184,14 @@ test('a live yield curve moves the 10-year figure on the Pressure card', async (
   assert.equal(value('sheet-sign-pressure'), '4.44%');
 });
 
-test('a live CAPE reaches the Valuations card, and a high-yield spread left in the database is ignored', async () => {
+test('a live CAPE reaches the Valuations card with its verdict word, and a high-yield spread left in the database is ignored', async () => {
   const desire = value('sheet-sign-desire');
-  await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-01' }, hyOasNow: { kind: 'scalar', value: 4.1, asOf: '2026-10-01' } });
+  await deliver({ capeValue: { kind: 'scalar', value: 18, asOf: after('capeValue') } });
+  assert.equal(word('sheet-metric-valuation'), 'Fair');
+  const day = after('capeValue');
+  await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: day }, hyOasNow: { kind: 'scalar', value: 4.1, asOf: day } });
   assert.equal(value('sheet-metric-valuation'), '35.2×');
+  assert.equal(word('sheet-metric-valuation'), 'Rich');
   assert.equal(value('sheet-sign-desire'), desire);
   assert.equal(capeHistory[capeHistory.length - 1].v, 35.2, 'the CAPE history takes the live figure too');
   assert.deepEqual(errors, []);
@@ -237,14 +242,6 @@ test('a live panel missing a row the page reads is refused, and an older figure 
 
 test('a good boot clears the one-reload guard', () => {
   assert.equal(sessionStorage.getItem('gyn.forgot'), null);
-});
-
-test('a live CAPE reaches the Valuations figure with its verdict word', async () => {
-  await deliver({ capeValue: { kind: 'scalar', value: 18, asOf: '2026-10-05' } });
-  assert.equal(word('sheet-metric-valuation'), 'Fair');
-  await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-06' } });
-  assert.equal(word('sheet-metric-valuation'), 'Rich');
-  assert.match(value('sheet-metric-valuation'), /^35\.2/);
 });
 
 test('a new Fed range without its move clears the old move and the next date, and the note follows', async () => {
@@ -346,7 +343,9 @@ test('the 10-year card reads its tendency like a barometer, by its own record\'s
 test('a Cycle Statistics result is named by its tier, Normal on its good side and flagged on the other', () => {
   const rows = [...document.querySelectorAll('#sheet-find .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
   assert.equal(rows.length, ROSTER.length);
+  const thin = new Set(labs().filter(l => l.cat !== 'cycle' && !l.norm).map(l => l.id));
   rows.forEach(({ R, li }) => {
+    if (thin.has(R.id)) { assert.ok(li.classList.contains('t-none'), R.name); assert.match(li.textContent, /Not judged.*Short record/, R.name); return; }
     const way = li.classList.contains('to-up') ? 'up' : li.classList.contains('to-down') ? 'down' : null;
     const normal = li.classList.contains('t-optimal');
     assert.equal(normal, !way || way === R.good, R.name + ' ' + way + ' ' + li.className);
@@ -388,4 +387,39 @@ test('the Pulse page reads its rhythm: two years of quarterly changes, cut at th
   assert.match(page, /Steady: the steadiest two years on record\. It last ran irregular in 1981–1984, 2008–2010 and 2020–2022\./);
   assert.doesNotMatch(page, /COVID-era low/);
   assert.match(page, /1981–1984, 2008–2010 and 2020–2022/);
+});
+
+test('each credit word turns at its own line, and holds either side of it', async () => {
+  const { bootCredit, creditReadings, savingPoints, debtPaymentPoints, DELINQUENCY_MEAN, CONSUMER_LINE, MARGIN_LINE } = await import('../../src/js/credit.ts');
+  const { consumerCreditHistory, marginHistory, delinquencyHistory } = await import('../../src/js/history-fred.ts');
+  const { SAV_HIGH, DSR_MEAN } = await import('../../src/js/data.ts');
+  const kept = { ...creditReadings }, e = 0.01;
+  const wordAt = (id, h, v) => { h.push({ ...h[h.length - 1], v }); try { bootCredit(); return word(id); } finally { h.pop(); } };
+  const rows = [
+    ['sheet-sign-consumer-credit', consumerCreditHistory, CONSUMER_LINE, ['Borrowing less', 'Borrowing more', 'Borrowing more']],
+    ['sheet-sign-margin', marginHistory, MARGIN_LINE, ['Borrowing less', 'Borrowing more', 'Borrowing more']],
+    ['sheet-sign-saving', savingPoints, SAV_THIN, ['Saving very little', 'Saving little', 'Saving little']],
+    ['sheet-sign-saving', savingPoints, SAV_LOW, ['Saving little', 'Saving steadily', 'Saving steadily']],
+    ['sheet-sign-saving', savingPoints, SAV_HIGH, ['Saving steadily', 'Saving steadily', 'Saving a lot']],
+    ['sheet-metric-debt-payments', debtPaymentPoints, DSR_MEAN, ['Below average', 'Below average', 'Above average']],
+    ['sheet-metric-delinquency', delinquencyHistory, DELINQUENCY_MEAN, ['Below average', 'Above average', 'Above average']]
+  ];
+  try {
+    for (const [id, h, line, want] of rows) assert.deepEqual([line - e, line, line + e].map(v => wordAt(id, h, v)), want, id + ' at ' + line);
+  } finally { bootCredit(); Object.assign(creditReadings, kept); }
+});
+
+test('the next Fed decision is named until its day has passed, on the policy facts and in the Temperature caption', async t => {
+  const { policyFactRows } = await import('../../src/js/readings.ts');
+  const was = now.fedFunds.next, temp = () => rowReadings().find(r => r.bodyTerm === 'Temperature').caption;
+  const named = day => { t.mock.timers.setTime(Date.parse(day)); return [/Next decision/.test(policyFactRows()), /Next decision Oct 28, 2026\./.test(temp())]; };
+  now.fedFunds.next = 'Oct 28, 2026';
+  t.mock.timers.enable({ apis: ['Date'], now: Date.parse('2026-10-27T12:00:00Z') });
+  try {
+    assert.deepEqual(named('2026-10-27T12:00:00Z'), [true, true]);
+    assert.deepEqual(named('2026-10-29T12:00:00Z'), [false, false]);
+    assert.match(temp(), /one more before year-end\.$/);
+    now.fedFunds.next = '';
+    assert.deepEqual(named('2026-10-27T12:00:00Z'), [false, false]);
+  } finally { t.mock.timers.reset(); now.fedFunds.next = was; }
 });

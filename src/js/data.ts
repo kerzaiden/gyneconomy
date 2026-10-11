@@ -2,7 +2,7 @@ import SERIES from "../data/series.json" with { type: "json" };
 import REPORT from "../data/weather-report.json" with { type: "json" };
 import { bandEnds, mean, metered, pctl, round1 } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
-import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, dsrQuarterly, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
+import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, dsrQuarterly, grossDebtQuarterly, sp500ReturnsBefore, treasuryLong, treasuryQuarterly } from "./history-fred.ts";
 
 export var BUFFETT_LINE = 80, DEBT_LINE = 70, DEFICIT_LINE = 3.8;
 export type Report = { asOf: string; headline: string; lede: string; story: string; elements: Record<string, string> };
@@ -20,9 +20,9 @@ export var now: NowStore = {
   fedFunds: { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
     asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026", turnLabel:"First hike since", turnValue:"2023" },
   yieldCurve: [
-  {m:"1M",  y:4.01}, {m:"2M",  y:4.18}, {m:"3M",  y:4.24}, {m:"4M",  y:4.33}, {m:"6M",  y:4.34},
-  {m:"1Y",  y:4.51}, {m:"2Y",  y:4.87}, {m:"3Y",  y:4.99}, {m:"5Y",  y:5.03}, {m:"7Y",  y:5.10},
-  {m:"10Y", y:5.18}, {m:"20Y", y:5.53}, {m:"30Y", y:5.47}
+  {m:"1M",  y:4.13}, {m:"2M",  y:4.13}, {m:"3M",  y:4.25}, {m:"4M",  y:4.29}, {m:"6M",  y:4.32},
+  {m:"1Y",  y:4.47}, {m:"2Y",  y:4.80}, {m:"3Y",  y:4.89}, {m:"5Y",  y:5.02}, {m:"7Y",  y:5.13},
+  {m:"10Y", y:5.24}, {m:"20Y", y:5.65}, {m:"30Y", y:5.60}
 ],
   sentiment: {
   kicker:"How she feels right now",
@@ -63,7 +63,7 @@ export var now: NowStore = {
   vix3mClose: 17.61
 };
 // ---- DATA (single source of truth — edit here on refresh) ----
-var YIELD_CURVE_ASOF = "2026-09-24", CAPE_ASOF = "2026-09-01";
+var YIELD_CURVE_ASOF = "2026-10-09", CAPE_ASOF = "2026-09-01";
 export function curveAsOf(){
   return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
 }
@@ -137,7 +137,7 @@ export var PREMIUM_LINE = 0;
 // ---- The deficit, year by year ----
 export var DEF_FROM_YEAR = 1946;
 export var deficitHistory = SERIES.deficitHistory;
-export var DEF_MEAN = deficitHistory.reduce(function(a, b){ return a + b; }, 0) / deficitHistory.length;
+export var DEF_MEAN = mean(deficitHistory);
 export var DEF_RECESSION_FY: Record<number, number> = {1949:1,1950:1,1954:1,1958:1,1960:1,1961:1,1970:1,1971:1,1974:1,1975:1,
                         1980:1,1981:1,1982:1,1983:1,1990:1,1991:1,2001:1,2002:1,2008:1,2009:1,2020:1};
 function checkDeficitHistory(){
@@ -339,7 +339,8 @@ export var VIX_CONVENTION: Src[] = [
   {t:"Chase \u2014 What Is the VIX and How To Use It (below 20 stability, above 30 fear and uncertainty)", u:"https://www.chase.com/personal/investments/learning-and-insights/article/what-is-the-vix"},
   {t:"TD Direct Investing \u2014 Understanding VIX or Volatility Index (the same lines at 20 and 30)", u:"https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"}
 ];
-export var DSR_FROM_YEAR = 2005;
+export var DSR_FROM_YEAR = 2005, TREASURY_GRID_FROM = "2005 Q1";
+export var t10yLongHistory: QuarterPoint[] = treasuryLong.y10, t10y3mLongHistory: QuarterPoint[] = treasuryLong.s3m;
 export var dsrHistory: number[] = dsrQuarterly.map(function(d){ return d.v; });
 export var SAV_FROM_YEAR = 1947;
 export var savHistory = SERIES.savHistory;
@@ -351,7 +352,7 @@ function checkHouseholdHistories(){
   if (savHistory.length !== 318 || Math.abs(sHi - 24.4) > 1e-9 || Math.abs(sLo - 1.8) > 1e-9)
     console.warn("savHistory failed its check", savHistory.length, sHi, sLo);
 }
-export var DSR_MEAN = dsrHistory.reduce(function(a, b){ return a + b; }, 0) / dsrHistory.length;
+export var DSR_MEAN = mean(dsrHistory);
 export var curveNoteFull = "The 30-day VIX divided by the 3-month VIX \u2014 the SHAPE of expected volatility rather " +
   "than its level. Below 1.00 the curve slopes up, which is its ordinary state: insuring three months costs " +
   "more than insuring one, as it should. At 1.00 it is flat. Above 1.00 it is inverted, and near-term fear " +
@@ -496,13 +497,13 @@ export var t10y3mHistory: QuarterPoint[], t10y2yHistory: QuarterPoint[], t3mYiel
 export function bootData(){
   liveInto("yieldCurve");
   liveInto("weatherReport");
-  t10y3mHistory = treasuryQuarterly.s3m;
+  t10y3mHistory = t10y3mLongHistory.filter(function(d){ return d.q >= TREASURY_GRID_FROM; });
   t10y2yHistory = treasuryQuarterly.s2y;
   // ---- Yield LEVELS by maturity, quarterly from Q1 2005 — not spreads, the actual yields themselves, ----
   t3mYieldHistory = treasuryQuarterly.m3;
   t2yYieldHistory = treasuryQuarterly.y2;
   t5yYieldHistory = treasuryQuarterly.y5;
-  t10yYieldHistory = treasuryQuarterly.y10;
+  t10yYieldHistory = t10yLongHistory.filter(function(d){ return d.q >= TREASURY_GRID_FROM; });
   t30yYieldHistory = treasuryQuarterly.y30;
   usRealGdpGrowth = merge(gdpGrowthBefore, {
     1990:1.89, 1991:-0.11, 1992:3.52, 1993:2.75, 1994:4.03, 1995:2.68, 1996:3.77, 1997:4.45, 1998:4.48, 1999:4.79,

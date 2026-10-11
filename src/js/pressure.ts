@@ -1,10 +1,10 @@
-import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, srcBlock, titleCase } from "./format.ts";
+import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, qYears, srcBlock, titleCase } from "./format.ts";
 import { addSources, need, svgEl } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
+import { AXIS, chartAxes, colScale, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
 import { curveAsOf, curveAt, curveSpread, FENCE_SRC, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
-import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
+import { headPickRow, histControls, monthWindow, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
 import { indOf, periodIso, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, tendencyOf, volumeInfoHtml } from "./readings.ts";
 import type { Tendency } from "./readings.ts";
 import { chartShell, defineReading, indicatorInsight, redrawReading } from "./reading.ts";
@@ -73,7 +73,7 @@ function pulseHistory(){
     var from = idx ? idx[0] : qWindowFrom(m2vHistory.length, key), to = idx ? idx[1] : undefined;
     var chart = function(w: number){ return pulseStripsChart(w, from, to); };
     return { geom:"pulseStripsChart", wrap:"vh-host", chart:chart, paint:function(box: HTMLElement){ refitHistory(box, chart); stripScroller(box); },
-      trend:trendPill(trendOf(m2vHistory.slice(from, to), "points", "quarter"), null, false, { rising:"accelerating", falling:"decelerating" }) };
+      trend:trendPill(trendOf(m2vHistory.slice(from, to), "quarter"), null, false, { rising:"accelerating", falling:"decelerating" }) };
   }
 function defineFlow(){
   defineReading("sheet-sign-pulse", {
@@ -95,8 +95,8 @@ function defineFlow(){
       var len = m2Yoy.length - 4, key = page.range["volume-range"], cyc = pageCycle("volume-range");
       var idx = cyc ? cycleQtrIdx(M2_FROM_YEAR + 1, cyc, len) : null;
       var from = idx ? idx[0] : qWindowFrom(len, key), to = idx ? idx[1] : undefined;
-      return { geom:"m2GrowthChart", wrap:"vh-host", chart:function(w: number){ return m2GrowthChart(w, from, to); },
-        trend:trendPill(trendOf(m2Yoy.slice(4).slice(from, to).filter(function(v){ return v != null; }), "points", "quarter"), null, true,
+      return { geom:"m2GrowthChart", wrap:"vh-host", chart:function(w: number){ return m2GrowthChart(w, from, { to:to }); },
+        trend:trendPill(trendOf(m2Yoy.slice(4).slice(from, to).filter(function(v){ return v != null; }), "quarter"), null, true,
           { rising:"expanding", falling:"contracting" }) };
     },
     insight:function(){ return indicatorInsight(ROSTER_BY["sheet-sign-volume"], flowRow("Volume"), function(v){ return fmtSigned(v, 1) + "%"; }); },
@@ -148,7 +148,7 @@ function ylmFitLine(svg: Element, maturities: Maturity[], ylmFrom: number, ylmTo
     if (!m.on) return;
     m.data.forEach(function(d, i){ if (i >= ylmFrom && i < ylmTo && d.v != null) fitVals.push(d.v); });
   });
-  var ylmFit = trendOf(fitVals, "points", "quarter").fit;
+  var ylmFit = trendOf(fitVals, "quarter").fit;
   if (ylmFit && ylmFit.n > 1)
     svg.insertAdjacentHTML("beforeend", fitGroup(
       { fit:ylmFit, fmt:function(v: number){ return v.toFixed(2) + "%"; } },
@@ -169,7 +169,7 @@ function pressureHead(maturities: Maturity[], mat: Maturity | undefined, title: 
 function definePressure(){
   var svg: Element;
   var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
-  var innerW = W - padL - padR, innerH = H - padT - padB;
+  var innerW = W - padL - padR;
   var el = svgEl;
 
   var quarters = t3mYieldHistory.map(function(d){ return d.q; });
@@ -193,11 +193,8 @@ function definePressure(){
 
   var ylmFrom = 0, ylmTo = quarters.length;
   function ylmCount(){ return ylmTo - ylmFrom; }
-  function x(i: number){
-    var half = innerW / (2 * Math.max(1, ylmCount()));
-    return padL + half + ((innerW - 2 * half) * (i - ylmFrom)) / ((ylmCount() - 1) || 1);
-  }
-  var minV: number, maxV: number;
+  var minV: number, maxV: number, cs: { X: Plot; Y: Plot };
+  function x(i: number){ return cs.X(i - ylmFrom); }
   function computeScale(){
     var vals: number[] = [];
     maturities.forEach(function(m){
@@ -209,15 +206,16 @@ function definePressure(){
     maxV = Math.ceil(Math.max.apply(null, vals) / 1) * 1;
     if (maxV <= minV) maxV = minV + 1;
   }
-  function y(v: number){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
+  function y(v: number){ return cs.Y(v); }
 
   function render(){
     svg = need("ylm-svg");
     var shell = svg.parentElement;
     F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
-    innerW = W - padL - padR; innerH = H - padT - padB;
+    innerW = W - padL - padR;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     computeScale();
+    cs = colScale(F, ylmCount(), minV, maxV);
     svg.innerHTML = "";
 
     var steps = maxV - minV <= 6 ? (maxV - minV) : 6, ylmTicks = [];
@@ -243,8 +241,6 @@ function definePressure(){
 
     ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR);
 
-    var crosshair = el("line", {x1:0, x2:0, y1:padT, y2:H - padB, class:"crosshair"});
-    svg.appendChild(crosshair);
     var hit = el("rect", {x:padL, y:0, width:innerW, height:H, class:"hero-hit"});
     svg.appendChild(hit);
   }
@@ -282,8 +278,8 @@ function definePressure(){
       var w: number[] = [], mt = matOf(matPick);
       if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d){ if (d.v != null) w.push(d.v); });
       return { geom:"ylm", paint:render,
-        chart:function(){ return chartShell("ylm", "US Treasury yield levels by maturity, quarterly, 2005 to 2026"); },
-        trend:trendPill(trendOf(w, "points", "quarter"), null, true, { rising:"climbing", falling:"easing" }) };
+        chart:function(){ return chartShell("ylm", "US Treasury yield levels by maturity, quarterly, " + qYears(maturities[0].data.slice(ylmFrom, ylmTo), " to ")); },
+        trend:trendPill(trendOf(w, "quarter"), null, true, { rising:"climbing", falling:"easing" }) };
     },
     insight:pressureInsights
   });
@@ -324,11 +320,11 @@ function pressureInsights(){
 }
 // ---- RENDER: the 30-year mortgage rate — what a household pays for money, monthly since 1971 ----
 var MORTGAGE_BACK = 12;
-export var MORTGAGE_SRC: Src[] = [
+var MORTGAGE_SRC: Src[] = [
   { t:"Freddie Mac — Primary Mortgage Market Survey: the average rate on 30-year fixed-rate conforming mortgages, weekly since April 1971", u:"https://www.freddiemac.com/pmms" },
   { t:"FRED — 30-Year Fixed Rate Mortgage Average in the United States (MORTGAGE30US)", u:"https://fred.stlouisfed.org/series/MORTGAGE30US" }
 ];
-export var mortgageTendency: Tendency;
+var mortgageTendency: Tendency;
 function mortgageLast(){ return mortgageHistory[mortgageHistory.length - 1]; }
 function mortgageInfo(){
   var T = mortgageTendency, last = mortgageLast(), pt = function(v: number){ return v.toFixed(2); };
@@ -365,10 +361,9 @@ function defineMortgage(){
     key:function(){ return rateKey(mortgageHistory); },
     controls:function(){ return histControls(key, { series:h }, Y0); },
     history:function(){
-      var cyc = pageCycle(key), span = cyc ? cycleSlice(h, cyc) : null;
-      var from = span ? span[0] : mWindowFrom(h.length, page.range[key]), to = span ? span[1] : undefined;
-      return { geom:"mortgageHistoryChart", chart:function(w: number){ return mortgageHistoryChart(w, from, { to:to, cycle:!!span }); },
-        trend:trendPill(trendOf(h.slice(from, to).map(function(d){ return d.v; }), "points", "month"), null, true, { rising:"climbing", falling:"easing" }) };
+      var w = monthWindow(key, h), from = w.from, to = w.to;
+      return { geom:"mortgageHistoryChart", chart:function(W: number){ return mortgageHistoryChart(W, from, { to:to, cycle:w.cycle }); },
+        trend:trendPill(trendOf(h.slice(from, to).map(function(d){ return d.v; }), "month"), null, true, { rising:"climbing", falling:"easing" }) };
     },
     insight:mortgageInsight
   });

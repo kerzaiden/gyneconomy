@@ -1,4 +1,4 @@
-import { auxStat, facts, srcBlock } from "./format.ts";
+import { auxStat, facts, keySwatch, srcBlock } from "./format.ts";
 import { moreRow, need, trendDoor, trendSoon, trendText } from "./dom.ts";
 import { clockSvg, slidersSvg, umbrellaSvg } from "./marks.ts";
 import { CLOCK_SRC } from "./data.ts";
@@ -11,7 +11,7 @@ type Phase = { key: string; name: string; growth: string; prices: string; holds:
 
 var WEATHER_ID = "sheet-all-weather", CLOCK_ID = "sheet-investment-clock";
 var WEATHER_NAME = "All Weather", CLOCK_NAME = "Investment Clock";
-var WEATHER_SRC: Src[] = [
+export var WEATHER_SRC: Src[] = [
   {t:"Bridgewater Associates — The All Weather Story (2012)", u:"https://www.bridgewater.com/resources/all-weather-story.pdf"},
   {t:"Tony Robbins — Money: Master the Game (Simon & Schuster, 2014), the All Seasons allocation Ray Dalio gave for individuals", u:"https://www.simonandschuster.com/books/MONEY-Master-the-Game/Tony-Robbins/9781476757803"}
 ];
@@ -51,7 +51,7 @@ function weatherDetail(){
 }
 function drawWeather(){
   var r = nowModel.reading;
-  var weights = ALL_WEATHER.map(function(a){ return auxStat({ label:'<span class="season-sw" style="--season:var(' + a.ink + ')"></span>' + a.what, value:a.w + "%" }); }).join("");
+  var weights = ALL_WEATHER.map(function(a){ return auxStat({ label:keySwatch("bar", "", "--season:var(" + a.ink + ")") + a.what, value:a.w + "%" }); }).join("");
   var weather = WEATHER.map(function(w){ return auxStat({ label:w.when + (w.test(r) ? " · today" : ""), value:w.holds, wordy:true }); }).join("");
   methodPage(WEATHER_ID, say("Something for every kind of economic weather, held all the time, so no season has to be called. The mix Ray Dalio gave individual investors:") +
     weatherStrip() + weights + say("What each kind of weather has favoured:") + weather, weatherDetail());

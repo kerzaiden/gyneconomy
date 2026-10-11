@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const { capeFromRows, priceFromRows, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut, staleDocs } = require('../tools/fetch-live.js');
+const { capeFromRows, priceFromRows, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut, staleDocs, treasuryRows, treasuryCurve } = require('../tools/fetch-live.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -154,5 +154,27 @@ ok('a daily figure a week old is fresh, eight days old is stale', staleDocs({ vi
 ok('a monthly CAPE three months old is fresh, and the Fed has no age limit', staleDocs({ capeValue: { asOf: '2026-07-02' }, fedFunds: { asOf: 'Jan 1, 2020' } }, '2026-10-03'), []);
 ok('a CAPE past three months is stale', staleDocs({ capeValue: { asOf: '2026-06-30' } }, '2026-10-03'), ['capeValue: stale since 2026-06-30']);
 
-console.log('\n' + pass + '/' + (pass + fail) + ' passed\n');
-process.exit(fail ? 1 : 0);
+console.log('\ntreasuryRows and treasuryCurve \u2014 tools/fetch-live.js\n');
+const csv = fs.readFileSync(path.join(__dirname, 'fixtures', 'treasury-yield-curve.csv'), 'utf8');
+const curve = treasuryRows(csv);
+ok('the newest day is read, its date made ISO', curve.date, '2026-10-09');
+ok('every maturity the app draws, in order, the 1.5-month column skipped', curve.rows.map(r => r.m), ['1M', '2M', '3M', '4M', '6M', '1Y', '2Y', '3Y', '5Y', '7Y', '10Y', '20Y', '30Y']);
+ok('the 10-year is the newest day\u2019s', curve.rows.find(r => r.m === '10Y').y, 5.24);
+const refused = (label, fn, re) => { try { fn(); ok(label, 'no error', re.source); } catch (e) { ok(label, re.test(e.message), true); } };
+refused('a CSV with only its header has no rows', () => treasuryRows(csv.split('\n')[0] + '\n'), /no rows/);
+refused('an empty CSV has no rows', () => treasuryRows(''), /no rows/);
+refused('a yield out of band is refused', () => treasuryRows(csv.replace('5.24', '52.4')), /out of band/);
+refused('a day that is not a date is refused', () => treasuryRows(csv.replace('10/09/2026', 'soon')), /unparsable date/);
+(async () => {
+  const asked = [], get = year => async url => { asked.push(+/csv\/(\d{4})\//.exec(url)[1]); return /csv\/2027\//.test(url) ? (year ? csv.split('\n')[0] : '') : csv; };
+  const jan = await treasuryCurve(2027, get(true));
+  ok('in January, a year with no rows yet falls back to the year before', [jan.date, asked], ['2026-10-09', [2027, 2026]]);
+  asked.length = 0;
+  const empty = await treasuryCurve(2027, get(false));
+  ok('an empty answer falls back the same way', [empty.date, asked], ['2026-10-09', [2027, 2026]]);
+  let other = '';
+  try { await treasuryCurve(2026, async () => csv.replace('5.24', '52.4')); } catch (e) { other = e.message; }
+  ok('any other failure is not hidden by the fallback', /out of band/.test(other), true);
+  console.log('\n' + pass + '/' + (pass + fail) + ' passed\n');
+  process.exit(fail ? 1 : 0);
+})();

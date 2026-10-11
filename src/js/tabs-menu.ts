@@ -1,13 +1,12 @@
-import { facts, ledeHtml, srcBlock, titleCase } from "./format.ts";
+import { facts, ledeHtml, listed, srcBlock } from "./format.ts";
 import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { CLOCK_SRC, frameworkRows, HOLD_BAND, marketCycles } from "./data.ts";
 import { cpiNow, currentEra, currentSeason, GNP_TREND, inflationFigure, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
-import { sourceIndex } from "./pages-nav.ts";
-
-type SourceGroup = [string, RegExp | null];
+import { FRAMEWORK_SRC, sourceShelves } from "./sources.ts";
+import { categoriesShown, ROSTER, TIMING } from "./roster.ts";
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
 function seasonGrid(){
@@ -85,12 +84,24 @@ function renderSeasonRows(){
       "<b>Coincident</b> signs report the present: desire peaks in the fertile window itself, as appetite shows in what households are buying now.",
       "<b>Lagging</b> signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway."
     ]) +
-    srcBlock([
-      {t:"Conference Board — Leading Economic Index components", u:"https://www.conference-board.org/topics/us-leading-indicators"},
-      {t:"Schularick & Taylor — Credit Booms Gone Bust (NBER w15512)", u:"https://www.nber.org/papers/w15512"},
-      {t:"StatPearls — Fertility Awareness-Based Methods (NCBI)", u:"https://www.ncbi.nlm.nih.gov/books/NBK546666/"}
-    ])));
+    srcBlock(FRAMEWORK_SRC)));
 }
+// ---- How to Read: where each reading sits and when it speaks, from the roster ----
+function placeLine(c: { key: string; title: string }){
+  var rows = ROSTER.filter(function(R){ return R.cat === c.key; }), subs: string[] = [];
+  rows.forEach(function(R){ if (subs.indexOf(R.sub) === -1) subs.push(R.sub); });
+  return '<p><b>' + c.title + '</b>: ' + subs.map(function(sub){
+    return sub + ' holds ' + listed(rows.filter(function(R){ return R.sub === sub; }).map(function(R){ return R.name + ' (' + TIMING[R.timing].label.toLowerCase() + ')'; }));
+  }).join('; ') + '.</p>';
+}
+function timingLine(){
+  var inOrder = categoriesShown().reduce(function(a: RosterRow[], c){ return a.concat(ROSTER.filter(function(R){ return R.cat === c.key; })); }, []);
+  var says: Record<RosterTiming, string> = { leading:"signs turn first", coincident:"signs report the present", lagging:"signs confirm afterwards", structural:"markers move slowly, by design" };
+  return '<p>' + (Object.keys(says) as RosterTiming[]).map(function(t){
+    return '<b>' + TIMING[t].label + '</b> ' + says[t] + ': ' + listed(inOrder.filter(function(R){ return R.timing === t; }).map(function(R){ return R.name; })) + '.';
+  }).join(' ') + '</p>';
+}
+function renderHowto(){ put("howto-places", categoriesShown().map(placeLine).join("") + timingLine()); }
 // ---- TAB NAVIGATION (Today / Cycle / Analysis / Portfolio) ----
 function renderTopbar(){
   var btns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
@@ -158,28 +169,12 @@ function wireMenu(){
   function fromHash(){ if (location.hash === "#menu"){ show(); if (history.replaceState) history.replaceState(null, "", location.pathname + location.search); } }
   fromHash(); window.addEventListener("hashchange", fromHash);
 
-  // ---- the Sources screen, built on first open from sourceIndex (the same grouping as sources.html) ----
+  // ---- the Sources screen, built on first open from each reading's own citations (the same list as sources.html) ----
   var built = false;
-  var groups: SourceGroup[] = [
-    ["Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|M13009USM156NNBR|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|nber\.org\/data\/abc|eurostat|ftportfolios|fisherinvestments|yardeni/],
-    ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|ycfaq|bostonfed|freddiemac|MORTGAGE30US/],
-    ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|PAYEMS|RSAFS|bls\.gov\/ces|census\.gov|fomccalendars|opub\/mlr|series\/FEDFUNDS$|johntayl/],
-    ["Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/],
-    ["Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/],
-    ["Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|sec\.gov|ssga\.com|fortune\.com|berkshirehathaway/],
-    ["Households & credit", /finra\.org|nber\.org\/papers|releases\/chargeoff|DRALACBS|releases\/g19|TOTALSL|us-leading-indicators|PSAVERT|TDSP/], ["Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|GFDEBTN|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/]
-  ];
   function buildSources(){
-    var src = sourceIndex, seen: Record<string, boolean> = {}, items: Src[] = [];
-    function add(x: Src){ if (!x || seen[x.u]) return; seen[x.u] = true; items.push(x); }
-    src.all.forEach(add); src.cards.forEach(function(c){ c.src.forEach(add); }); src.annual.forEach(add); src.gdp.forEach(add);
-    var buckets = groups.map(function(): Src[] { return []; }), rest: Src[] = [];
-    items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ var re = groups[i][1]; if (re && String(x.u).search(re) >= 0){ buckets[i].push(x); return; } } rest.push(x); });
-    if (rest.length){ groups.push(["Other", null]); buckets.push(rest); }
-    put("sources-groups", groups.map(function(g, i){
-      if (!buckets[i].length) return "";
-      return '<h3 class="menu-section">' + titleCase(g[0]) + '</h3><div class="menu-card">' + buckets[i].map(function(x){
-        return '<a class="menu-row" href="' + x.u + '" target="_blank" rel="noopener"><span class="menu-label">' + x.t.replace(/&/g, "&amp;").replace(/</g, "&lt;") + '</span>' +
+    put("sources-groups", sourceShelves().map(function(g){
+      return '<h3 class="menu-section">' + g.title + '</h3><div class="menu-card">' + g.src.map(function(x){
+        return '<a class="menu-row" href="' + x.u.replace(/&/g, "&amp;") + '" target="_blank" rel="noopener"><span class="menu-label">' + x.t + '</span>' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a>';
       }).join("") + '</div>';
     }).join(""));
@@ -220,11 +215,16 @@ function wireMenu(){
   })();
 }
 
-export function bootTabsMenu(){
+function bootGuide(){
   GYN.step("renderSeasonRows", renderSeasonRows, "render");
   renderSeasonRows();
+  GYN.step("renderHowto", renderHowto, "render");
+  renderHowto();
   GYN.step("wireIdea", wireIdea, "wire");
   wireIdea();
+}
+export function bootTabsMenu(){
+  bootGuide();
   GYN.step("renderTopbar", renderTopbar, "wire");
   renderTopbar();
   GYN.step("wireTabKeys", wireTabKeys, "wire");

@@ -1,4 +1,4 @@
-import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLabel, MONTHS_SHORT, qPretty, quartile, srcBlock, tagFor, titleCase } from "./format.ts";
+import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLabel, MONTHS_SHORT, pctl, qLabel, readingNote, sideWord, srcBlock, tagFor, titleCase } from "./format.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
@@ -34,16 +34,14 @@ function productivityWord(v: number): WordOf & { why: string } {
     why:"is below both lines, so the word is below the slowdown" };
 }
 function confidenceWord(v: number): WordOf {
-  if (v >= CONFIDENCE_LINE) return { state:"good", text:"Confident",
-    says:"above the OECD\u2019s long-term average of 100, the side on which households lean towards spending on major purchases" };
-  return { state:"warning", text:"Pessimistic",
-    says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" };
+  return sideWord({ line:CONFIDENCE_LINE,
+    above:{ state:"good", text:"Confident", says:"above the OECD\u2019s long-term average of 100, the side on which households lean towards spending on major purchases" },
+    below:{ state:"warning", text:"Pessimistic", says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" } })(v);
 }
 function desireWord(v: number): WordOf {
-  if (v >= DESIRE_LINE) return { state:"good", text:"High appetite",
-    says:"above zero: households are buying more of what they could put off than they were a year earlier" };
-  return { state:"warning", text:"Low appetite",
-    says:"below zero: households are buying less of what they could put off than they were a year earlier" };
+  return sideWord({ line:DESIRE_LINE,
+    above:{ state:"good", text:"High appetite", says:"above zero: households are buying more of what they could put off than they were a year earlier" },
+    below:{ state:"warning", text:"Low appetite", says:"below zero: households are buying less of what they could put off than they were a year earlier" } })(v);
 }
 export function deficitInfoHtml(){
   var iSur = -1, i;
@@ -106,109 +104,104 @@ export function meterFlagged(m: Meter){
   return m.value != null && (m.value < ends[0] || m.value > ends[1]);
 }
 export function volumeInfoHtml(ind: Indicator){
-  return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
+  return readingNote({ title:titleCase(ind.econTerm), lead:
+    'The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
       'cash, chequing and savings deposits, and retail money-market funds \u2014 read as the YoY change ' +
-      '(' + ind.metricSub + ').</p>' +
-    '<p class="caption follow"><b>Her pace is ' + M2_PACE_LO + '\u2013' + M2_PACE_HI + '%</b>, and that is a band computed from ' +
+      '(' + ind.metricSub + ').', paras:[
+    '<b>Her pace is ' + M2_PACE_LO + '\u2013' + M2_PACE_HI + '%</b>, and that is a band computed from ' +
       'this page\u2019s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a ' +
       'year on average (median 6.70%), and the tenth to ninetieth percentile runs ' + M2_PACE_LO + '% to ' + M2_PACE_HI + '%. So roughly four ' +
       'quarters in five sat inside this band, and the two ends are what unusual looks like in each direction \u2014 ' +
       '<b>draining</b> below it, <b>flooding</b> above. The ends of the track are the record itself: \u22124.6% in ' +
-      '2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.</p>' +
-    '<p class="caption follow">Volume and Pulse are two halves of one number \u2014 nominal output ' +
-      'is the money stock times its velocity \u2014 so neither means much read alone.</p>';
+      '2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.',
+    'Volume and Pulse are two halves of one number \u2014 nominal output ' +
+      'is the money stock times its velocity \u2014 so neither means much read alone.'] });
 }
 export function pulseInfoHtml(ind: Indicator){
-  return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. Velocity is how many times ' +
+  return readingNote({ title:titleCase(ind.econTerm), lead:
+    'The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. Velocity is how many times ' +
       'the same dollar changes hands in a year, nominal GDP divided by M2 (' + ind.metricSub + '). The track\u2019s ' +
-      'ends are the record: 1.126\u00d7 in 2020 Q2 and 2.192\u00d7 in 1997 Q3.</p>' +
-    '<p class="caption follow"><b>The ' + (PULSE_PRE2008 * PULSE_STEADY_LO).toFixed(2) + '\u2013' + (PULSE_PRE2008 * PULSE_STEADY_HI).toFixed(2) + '\u00d7 band is the pre-2008 era\u2019s own middle</b>, not a ' +
+      'ends are the record: 1.126\u00d7 in 2020 Q2 and 2.192\u00d7 in 1997 Q3.', paras:[
+    '<b>The ' + (PULSE_PRE2008 * PULSE_STEADY_LO).toFixed(2) + '\u2013' + (PULSE_PRE2008 * PULSE_STEADY_HI).toFixed(2) + '\u00d7 band is the pre-2008 era\u2019s own middle</b>, not a ' +
       'target \u2014 the tenth to ninetieth percentile of the 196 quarters from 1959 Q1 to 2007 Q4, when velocity averaged ' + PULSE_PRE2008.toFixed(3) + '\u00d7 (median 1.808\u00d7) and ' +
       'ran between ' + (PULSE_PRE2008 * PULSE_FLOOR).toFixed(3) + '\u00d7 and ' + (PULSE_PRE2008 * PULSE_CEIL).toFixed(3) + '\u00d7. Beyond those two, the era\u2019s own extremes, the word is <b>very</b> slow or fast. It is labelled <b>Pre-2008</b> rather than normal for that reason: the ' +
-      'collapse after 2008 may be the new ordinary, and calling the old range normal would beg that question.</p>' +
-    '<p class="caption follow">The ends mean direction as well as level: <b>slow</b> is money ' +
+      'collapse after 2008 may be the new ordinary, and calling the old range normal would beg that question.',
+    'The ends mean direction as well as level: <b>slow</b> is money ' +
       'sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which ' +
-      'is a busy economy and, past a point, an inflationary one.</p>';
+      'is a busy economy and, past a point, an inflationary one.'] });
 }
 function confidenceInfoHtml(f: ConfidenceReading){
-  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
-      'The record, month by month, runs ' + f.span + '.</p>' +
-    '<p class="caption follow"><b>The 100 line is the OECD\u2019s own</b>: the index is amplitude adjusted so that ' +
+  return readingNote({ title:titleCase(f.econTerm), lead:
+    'The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
+      'The record, month by month, runs ' + f.span + '.', paras:[
+    '<b>The 100 line is the OECD\u2019s own</b>: the index is amplitude adjusted so that ' +
       '100 is its long-term average. In the OECD\u2019s words, a reading above 100 \u201csignals a boost in the consumers\u2019 confidence ' +
       'towards the future economic situation\u201d, with households \u201cless prone to save, and more inclined to spend money on major ' +
-      'purchases in the next 12 months\u201d; below 100 indicates \u201ca pessimistic attitude towards future developments in the economy\u201d.</p>' +
-    '<p class="caption follow">It is built from household surveys of their finances, the economy, unemployment and ' +
-      'saving, and the OECD publishes it a few months after the month it describes, which is why the card\u2019s date trails the others.</p>' +
-    srcBlock(CONFIDENCE_SRC);
+      'purchases in the next 12 months\u201d; below 100 indicates \u201ca pessimistic attitude towards future developments in the economy\u201d.',
+    'It is built from household surveys of their finances, the economy, unemployment and ' +
+      'saving, and the OECD publishes it a few months after the month it describes, which is why the card\u2019s date trails the others.'], src:CONFIDENCE_SRC });
 }
 function desireInfoHtml(f: DesireReading){
-  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
-      'The record, month by month, runs ' + f.span + '.</p>' +
-    '<p class="caption follow">No official series measures discretionary spending, so the app measures it by durable goods, the BEA\u2019s own category for goods that last three years or more: ' +
+  return readingNote({ title:titleCase(f.econTerm), lead:
+    'The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
+      'The record, month by month, runs ' + f.span + '.', paras:[
+    'No official series measures discretionary spending, so the app measures it by durable goods, the BEA\u2019s own category for goods that last three years or more: ' +
       'cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their ' +
-      'spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p>' +
-    '<p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a ' +
-      'year ago; below it her appetite is low. No other band is drawn.</p>' +
-    srcBlock(DESIRE_SRC);
+      'spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.',
+    '<b>Zero is the only line.</b> Above it she is buying more of what she could do without than a ' +
+      'year ago; below it her appetite is low. No other band is drawn.'], src:DESIRE_SRC });
 }
 function premiumInfoHtml(f: PremiumReading){
-  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
-    '<p class="caption">' + f.metric + ' (' + f.metricSub + '): ' + f.side + '. ' +
-      'The record, month by month, runs ' + f.span + '.</p>' +
-    '<p class="caption follow">The equity risk premium is what stocks earn over safe bonds. This is Robert Shiller\u2019s ' +
+  return readingNote({ title:titleCase(f.econTerm), lead:
+    '' + f.metric + ' (' + f.metricSub + '): ' + f.side + '. ' +
+      'The record, month by month, runs ' + f.span + '.', paras:[
+    'The equity risk premium is what stocks earn over safe bonds. This is Robert Shiller\u2019s ' +
       'Excess CAPE Yield: the CAPE\u2019s earnings yield (one over the CAPE, ten years of real earnings against today\u2019s price) less the ' +
       'real 10-year Treasury yield (the yield less the inflation of the ten years before). A thin premium is investors asking little ' +
-      'for the risk of owning stocks; a wide one is investors asking a lot.</p>' +
-    '<p class="caption follow"><b>Zero is the only line</b>, where stocks stop earning more than bonds. No other band is drawn, ' +
-      'and the reading carries no word.</p>' +
-    srcBlock(PREMIUM_SRC);
+      'for the risk of owning stocks; a wide one is investors asking a lot.',
+    '<b>Zero is the only line</b>, where stocks stop earning more than bonds. No other band is drawn, ' +
+      'and the reading carries no word.'], src:PREMIUM_SRC });
 }
 function productivityInfoHtml(f: ProductivityReading){
-  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
+  return readingNote({ title:titleCase(f.econTerm), lead:
+    'The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
       'business sector, against the same quarter a year earlier (' + f.metricSub + '). The record for that ' +
-      'series, quarter by quarter, runs ' + f.span + '.</p>' +
-    '<p class="caption follow"><b>The 1.3% line is the BLS\u2019s own figure for the slowdown ' +
+      'series, quarter by quarter, runs ' + f.span + '.', paras:[
+    '<b>The 1.3% line is the BLS\u2019s own figure for the slowdown ' +
       'era</b> \u2014 since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year ' +
       'across 1947\u20132018. So the band says something narrower than it looks: above the line is <i>better than ' +
-      'the slowdown</i>, not <i>at trend</i>. Today\u2019s ' + f.metric + ' ' + f.wordWhy + '.</p>' +
-    '<p class="caption follow">This is the reading that says whether capacity is being ' +
+      'the slowdown</i>, not <i>at trend</i>. Today\u2019s ' + f.metric + ' ' + f.wordWhy + '.',
+    'This is the reading that says whether capacity is being ' +
       'rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from ' +
-      'each one, and only the second kind compounds.</p>' +
-    srcBlock(PRODUCTIVITY_SRC);
+      'each one, and only the second kind compounds.'], src:PRODUCTIVITY_SRC });
 }
 export function activityInfoHtml(ind: Indicator){
-  return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +
+  return readingNote({ title:titleCase(ind.econTerm), lead:
+    'The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +
       'headline unemployment rate (' + ind.metricSub + '). The ends of the track are the record: 2.5% in ' +
-      'mid-1953 and, at the far end, the Census Bureau\u2019s 24.9% estimate for 1933.</p>' +
-    '<p class="caption follow"><b>The ' + ACT_BAND_LO + '\u2013' + ACT_BAND_HI + '% band brackets the CBO\u2019s noncyclical rate of ' +
+      'mid-1953 and, at the far end, the Census Bureau\u2019s 24.9% estimate for 1933.', paras:[
+    '<b>The ' + ACT_BAND_LO + '\u2013' + ACT_BAND_HI + '% band brackets the CBO\u2019s noncyclical rate of ' +
       'unemployment</b> \u2014 its estimate of the rate that remains once demand is neither too hot nor too cold, ' +
       'currently around 4.2%. Be clear about what is sourced and what is not: the CBO\u2019s number is published, ' +
       'the two edges are round figures set either side of it rather than a computed interval. There is no ' +
-      'official normal range for unemployment, and this is the honest way to draw one.</p>' +
-    '<p class="caption follow">The ends read the opposite way to most bars here: <b>tight</b> ' +
+      'official normal range for unemployment, and this is the honest way to draw one.',
+    'The ends read the opposite way to most bars here: <b>tight</b> ' +
       'is a hot labour market with few people looking, <b>slack</b> is a cold one. And this reading confirms a ' +
       'phase rather than calling it \u2014 unemployment is the textbook lagging indicator, usually trailing a turn ' +
-      'by two to three quarters.</p>' +
-    srcBlock([
+      'by two to three quarters.'], src:[
       {t:"CBO via FRED \u2014 Noncyclical Rate of Unemployment (NROU)", u:"https://fred.stlouisfed.org/series/NROU"},
       {t:"BLS via FRED \u2014 Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"}
-    ]);
+    ] });
 }
 function bandMonths(){
   return inflationHistory.filter(function(d){ return d.v >= TEMP_BAND_LO && d.v <= TEMP_BAND_HI; }).length;
 }
 export function temperatureInfoHtml(ind: Indicator){
-  return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is ' +
+  return readingNote({ title:titleCase(ind.econTerm), lead:
+    'The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is ' +
       'consumer prices, YoY (' + ind.metricSub + '). The ends of the track are the record, and they ' +
-      'are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p>' +
-    '<p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one ' +
+      'are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.', paras:[
+    '<b>1–3% is a target band, not a normal range</b> — the one ' +
       'band in this app that describes where prices <i>ought</i> to be rather than where they have been. The ' +
       'Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on ' +
       'Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the ' +
@@ -216,22 +209,21 @@ export function temperatureInfoHtml(ind: Indicator){
       'structure, not taken from a source. And the months inside it are not evidence that the band is normal — ' + bandMonths() + ' of the ' + inflationHistory.length + ' ' +
       'months this page can draw, since ' + inflationHistory[0].m.slice(0, 4) + ', have sat inside 1–3%, which is a fact about how often the Fed ' +
       'has hit its target rather than about where prices naturally sit. Widen the window and the band stops ' +
-      'describing anything: the ends of this same track are −15.8% and +23.7%.</p>' +
-    '<p class="caption follow">The needle is read on the gauge the Fed used in each era. Since ' +
+      'describing anything: the ends of this same track are −15.8% and +23.7%.',
+    'The needle is read on the gauge the Fed used in each era. Since ' +
       'January 2000 it is the <b>PCE</b> price index: the FOMC moved its inflation projections to it in its ' +
       'February 2000 Monetary Policy Report, and its 2% target is written on it. Before 2000 it is the ' +
       '<b>CPI</b>, the measure the Fed worked from then. The two are not the same index: the CPI covers only ' +
       'urban out-of-pocket spending, leans harder on shelter and reweights less often, so it usually runs a ' +
-      'little higher.</p>' +
-    '<p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what ' +
+      'little higher.',
+    'The two ends are not mirror images. <b>Hot</b> erodes what ' +
       'money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every ' +
       'debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero ' +
-      'rather than at it.</p>' +
-    srcBlock([
+      'rather than at it.'], src:[
       FED_TARGET_SRC, PCE_SWITCH_SRC, PCE_SRC,
       {t:"Cleveland Fed — The CPI versus the PCE price index", u:"https://www.clevelandfed.org/collections/infographics/2024/infogr-20241205-cpi-versus-pce-price-index"},
       {t:"BLS Monthly Labor Review — One hundred years of price change", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}
-    ]);
+    ] });
 }
 export function volumeVerdict(g: number): Tag {
   return g < 0     ? { text:"Draining", state:"serious" }
@@ -249,30 +241,29 @@ function sahmNow(){ for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSah
 function potentialSentence(){
   var r = nowModel.reading;
   return 'And the economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 is the line the Season Model ' +
-    'reads growth against. The CBO puts it at ' + r.potential.toFixed(1) + '% for ' + qPretty(r.gdpLatest.q) +
+    'reads growth against. The CBO puts it at ' + r.potential.toFixed(1) + '% for ' + qLabel(r.gdpLatest.q) +
     ', and at 2.1% a year through 2030, easing to 1.8% after that as the population ages. The latest quarter, ' +
     fmtSigned(r.gdpLatest.v, 1) + '%, is ' + potentialGap(r) + ' potential, so the economy reads as ' +
     growthWord(r) + (Math.abs(r.gdpLatest.v - r.potential) <= HOLD_BAND ? ', the side it was already on' : '') + '.';
 }
 export function growthInfoHtml(){
-  return '<h4>Real GDP Growth</h4>' +
-    '<p class="caption">The figure is real gross domestic product against the same quarter a year earlier ' +
+  return readingNote({ title:"Real GDP Growth", lead:
+    'The figure is real gross domestic product against the same quarter a year earlier ' +
       '(' + gdpNowQ.q + '), so it is already adjusted for inflation \u2014 this is output, not prices. The ends of ' +
       'the track are the record and they are the same event twice: \u22127.4% in 2020 Q2, the deepest quarter of ' +
-      'the pandemic shutdown, and +12.4% a year later, which is that collapse being measured against itself.</p>' +
-    '<p class="caption follow"><b>The 1.0\u20134.3% band is computed from this page\u2019s own ' +
+      'the pandemic shutdown, and +12.4% a year later, which is that collapse being measured against itself.', paras:[
+    '<b>The 1.0\u20134.3% band is computed from this page\u2019s own ' +
       'series, not chosen</b>: across the 154 quarters since 1988 the tenth and ninetieth percentiles fall at ' +
       '0.96% and 4.34%. So roughly four quarters in five have sat inside it, and each end is what unusual looks ' +
       'like in that direction. There is no official normal rate of growth to point at instead, which is why it ' +
-      'is drawn this way and said so.</p>' +
-    '<p class="caption follow">Two other lines matter more than the edges. The dashed line on ' +
+      'is drawn this way and said so.',
+    'Two other lines matter more than the edges. The dashed line on ' +
       'the chart is this series\u2019 own long-run average, <b>' + GDP_NORM + '%</b> \u2014 the middle of the record ' +
-      'rather than the edge of it, and the honest answer to "is this quick or slow". ' + potentialSentence() + '</p>' +
-    srcBlock([
+      'rather than the edge of it, and the honest answer to "is this quick or slow". ' + potentialSentence() + ''], src:[
       {t:"BEA \u2014 Gross Domestic Product", u:"https://www.bea.gov/data/gdp/gross-domestic-product"},
       {t:"CBO \u2014 The Budget and Economic Outlook: 2026 to 2036", u:"https://www.cbo.gov/publication/62105"},
       {t:"CBO via FRED \u2014 Real Potential Gross Domestic Product (GDPPOT)", u:"https://fred.stlouisfed.org/series/GDPPOT"}
-    ]);
+    ] });
 }
 function velocityVerdict(v: number): Tag {
   var r = v / PULSE_PRE2008;
@@ -323,7 +314,7 @@ export var lagging: Indicator[] = [
     meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:TEMP_BAND_LO,to:TEMP_BAND_HI, label:TEMP_BAND_LO + "\u2013" + TEMP_BAND_HI + "%"},
            ends:{ low:"Cold", high:"Hot" }},
     shortCaption:"",
-    caption:"Basal body temperature rises only after ovulation has already happened — prices work the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
+    get caption(){ var next = nextDecision(); return "Basal body temperature rises only after ovulation has already happened — prices work the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end." + (next ? " Next decision " + next + "." : ""); },
     facts:[],
     aux:[],
     src:[PCE_SRC,{t:"Federal Reserve — FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"Federal Reserve — FOMC meeting calendars", u:"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},{t:"BLS Monthly Labor Review — One hundred years of price change (CPI history since 1913)", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}]
@@ -385,30 +376,30 @@ export function tendencyOf(a: (HznPoint & { q?: string; m?: string })[], back: n
     if (!from) from = p.q || p.m || "";
     moves.push(Math.abs(p.v - was));
   });
-  var still = quartile(moves, 0.25), fast = quartile(moves, 0.75), m = Math.abs(d);
+  var still = pctl(moves, 0.25), fast = pctl(moves, 0.75), m = Math.abs(d);
   return { d:d, still:still, fast:fast, from:from,
     word:m <= still ? "Steady" : (d > 0 ? "Rising" : "Falling") + (m >= fast ? " quickly" : "") };
 }
 function derivePressureTendency(){ pressureTendency = tendencyOf(t10yYieldHistory, HZN_BACK, horizonRead.dLong); }
 export function horizonInfoHtml(pick: string, detail: string){
   var m = HZN_METERS[pick], shortLeg = pick === "2y" ? "2-year" : "3-month";
-  return '<h4>10-year minus ' + shortLeg + '</h4>' +
-    '<p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a ' +
+  return readingNote({ title:"10-year minus " + shortLeg, lead:
+    'What the long end of the curve pays over the short end, in percentage points. It is a ' +
       'forecast rather than a measurement: the long rate is the market’s own average of where it expects the ' +
       'short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a ' +
       'market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly ' +
       'record, ' + m.min.toFixed(2) + ' and +' + m.max.toFixed(2) + ' points; the deepest single DAY of the ' +
-      'last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p>' +
-    '<p class="caption follow"><b>The line at zero is definitional, not drawn</b> — it is ' +
+      'last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.', paras:[
+    '<b>The line at zero is definitional, not drawn</b> — it is ' +
       'where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own ' +
       'recession model is built on, using this exact pair of maturities. That model’s FAQ states that an ' +
       'inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. ' +
-      'The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p>' +
-    '<p class="caption follow">Read the caution with the signal, because it is the same ' +
+      'The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.',
+    'Read the caution with the signal, because it is the same ' +
       'source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the ' +
       'crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever ' +
       'inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, ' +
-      'but no source says where \u201cjust above\u201d ends, so the page draws no zone for it.</p>' +
+      'but no source says where \u201cjust above\u201d ends, so the page draws no zone for it.'] }) +
     detail.replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
 }
 export function pulseCard(rate: number, ref: number, ind: Indicator){
@@ -418,7 +409,7 @@ export function pulseCard(rate: number, ref: number, ind: Indicator){
 }
 export function volatilityDetailHtml(){
   var m = now.vixRow.meter;
-  return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + '</div>' + facts([
+  return readingNote({ title:"Fear", sub:"Cboe, " + now.vixRow.sub }) + facts([
     'The <b>VIX</b> is Cboe\u2019s volatility index: what options traders pay to insure the S&amp;P 500 against a fall ' +
       'over the next thirty days, as an annual rate.',
     'It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near ' +
@@ -435,17 +426,11 @@ function marketWord(v: number): WordOf {
   return { state:"serious", text:"Bear year", says:"a negative total return, which the dial draws as a bear year" };
 }
 function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
-function yearLead(f: MarketReading){
-  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +
-      'The record, year by year, runs ' + f.span + '.</p>';
-}
 function marketInfoHtml(f: MarketReading){
-  return yearLead(f) +
-    '<p class="caption follow"><b>The zero line is the definition, not a band</b>: a year the index ends higher, ' +
+  return readingNote({ title:titleCase(f.econTerm), lead:'The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. The record, year by year, runs ' + f.span + '.',
+    paras:['<b>The zero line is the definition, not a band</b>: a year the index ends higher, ' +
       'dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial\u2019s inner band ' +
-      'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
-    srcBlock(sp500AnnualReturnSource);
+      'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '')], src:sp500AnnualReturnSource });
 }
 export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading], Object.keys(creditReadings).map(function(k){ return creditReadings[k]; })); }
 export function indOf(R: { term?: string }): Indicator | undefined { return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
@@ -454,8 +439,9 @@ function policyFacts(){ return [
   now.fedFunds.lastMove ? { label:"Last Fed move", value:now.fedFunds.lastMove + " on " + now.fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
                                       (now.fedFunds.vote ? " \u00b7 " + now.fedFunds.vote : ""), wordy:true } : null,
   now.fedFunds.lastMove && now.fedFunds.turnLabel ? { label:now.fedFunds.turnLabel, value:now.fedFunds.turnValue, wordy:true } : null,
-  now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? { label:"Next decision", value:now.fedFunds.next } : null
+  nextDecision() ? { label:"Next decision", value:nextDecision() } : null
 ].filter(Boolean) as AuxFact[]; }
+function nextDecision(){ return now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? now.fedFunds.next : ""; }
 export function policyFactRows(){
   return policyFacts().map(auxStat).join("");
 }
@@ -542,7 +528,7 @@ export function bootReadings(){
   })();
   productivityReading = (function(R){
     var word = productivityWord(R.now.v);
-    var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
+    var at = qLabel(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qLabel(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qLabel(R.hi.q) + ")";
     return {
       bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
       econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,

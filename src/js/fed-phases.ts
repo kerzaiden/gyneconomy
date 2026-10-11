@@ -49,7 +49,7 @@ function tightBands(): WaveBand[] {
   var ph = fedPhases();
   return ph.map(function(p, k){ return { s: p.s, from: monthIdx(p.m), to: k + 1 < ph.length ? monthIdx(ph[k + 1].m) : Infinity }; }).filter(function(p){ return p.s > 0; });
 }
-function rateSeries(toM: string){ return fedFundsHistory.length && toM >= fedFundsHistory[0].m ? fedFundsHistory : discountHistory; }
+export function rateSeries(toM: string){ var ff = fedFundsHistory[0]; return ff && toM >= ff.m ? discountHistory.filter(function(d){ return d.m < ff.m; }).concat(fedFundsHistory) : discountHistory; }
 var LEGEND = waveLegend([{ name: "Easing", kind: "blank" }, { name: "Tightening", kind: "band" }, { name: "Rates", kind: "line", color: "gold" }, { name: "Prices", kind: "line", color: "season-summer" }]);
 function footnoteHtml(m: CycleModel){
   var rate = ROSTER_BY["sheet-sign-hormones"];

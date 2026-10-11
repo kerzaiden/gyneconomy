@@ -1,7 +1,5 @@
-import { allSources, byId, focusQuiet, layer, need, ui } from "./dom.ts";
+import { byId, focusQuiet, layer, need, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { gdpSrc, sp500AnnualReturnSource } from "./data.ts";
-import { coincident, lagging } from "./readings.ts";
 import { collapseEmptyBlocks, detailClose, seatPageFoot, sheetRenderers } from "./render-core.ts";
 import { defineMarketReadings } from "./pressure.ts";
 import { cycleViewEl, defineSubjectReadings, setTopbar } from "./render-pages.ts";
@@ -9,8 +7,6 @@ import { cycleView } from "./dial-cycle.ts";
 import { defineInnerReadings, wirePageControls } from "./inner-pages.ts";
 import { defineSplits } from "./indicators.ts";
 import { mountReadings } from "./reading.ts";
-type SourceIndex = { all: Src[]; cards: { name: string; src: Src[] }[]; annual: Src[]; gdp: Src[] };
-export var sourceIndex: SourceIndex = { all: [], cards: [], annual: [], gdp: [] };
 
 type OpenPage = (el: HTMLElement | null, title: string | null, returning?: boolean, homeKey?: string | null) => void;
 type PageHome = { panel: HTMLElement; bar: () => [string, (() => void) | null]; hide: () => (HTMLElement | null | undefined)[] };
@@ -141,5 +137,4 @@ export function bootPagesNav(){
   renderSignsList();
   GYN.step("renderPagesAndNav", renderPagesAndNav, "build");
   renderPagesAndNav();
-  sourceIndex = { all: allSources, cards: ([] as Indicator[]).concat(coincident, lagging).map(function(c){ return {name:c.bodyTerm, src:c.src || []}; }), annual: sp500AnnualReturnSource, gdp: gdpSrc };
 }

@@ -57,6 +57,10 @@ ok('the treasury block is written with its partial mark',
    J(emit([], [], null, { y10: [{ q: '2026 Q3', v: 4.7, partial: true }, { q: '2026 Q2', v: 4.6, partial: false }] })).treasuryQuarterly,
    { y10: [{ q: '2026 Q3', v: 4.7, partial: true }, { q: '2026 Q2', v: 4.6 }] });
 
+ok('the long Treasury record is written beside the grid, never inside it',
+   (o => [Object.keys(o.treasuryQuarterly), o.treasuryLong])(J(emit([], [], null, { y10: [{ q: '2026 Q2', v: 4.6 }], long: { y10: [{ q: '1953 Q2', v: 2.9 }], s3m: [{ q: '1953 Q2', v: 0.8, partial: true }] } }))),
+   [['y10'], { y10: [{ q: '1953 Q2', v: 2.9 }], s3m: [{ q: '1953 Q2', v: 0.8, partial: true }] }]);
+
 ok('a fiscal-year series keeps its years',
    fiscalYears([d('1946-01-01', 106.3), d('2007-01-01', 34.79)], 0, 300),
    [{ y: 1946, v: 106.3 }, { y: 2007, v: 34.79 }]);

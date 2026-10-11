@@ -5,6 +5,7 @@ export var volatilityHistory = FRED.volatilityHistory;
 export var fiscalHistory = FRED.fiscalHistory;
 export var grossDebtQuarterly = FRED.grossDebtQuarterly;
 export var treasuryQuarterly = FRED.treasuryQuarterly;
+export var treasuryLong = FRED.treasuryLong;
 export var productivityHistory = FRED.productivityHistory;
 export var sp500MonthlyHistory = FRED.sp500MonthlyHistory;
 export var confidenceHistory = FRED.confidenceHistory;

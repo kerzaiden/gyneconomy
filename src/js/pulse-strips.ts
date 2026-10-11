@@ -1,16 +1,16 @@
 // ---- Pulse strips ----
 import { AXIS, beatPath, chartAxes, histFrame, publishGeom, vGrid, vhOpen, xLabel, yLabel } from "./charts.ts";
 import { M2_FLOOD, M2V_FROM_YEAR, m2vHistory, m2Yoy } from "./data.ts";
-import { fmtSigned, qAtIndex, quartile } from "./format.ts";
+import { fmtSigned, pctl, qAtIndex, readingNote } from "./format.ts";
 
-export var PULSE_BEATS = 5, PULSE_VIEW = 4, PULSE_PEEK = 0.4, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10, PULSE_BAR = 14, PULSE_THUMB = 44;
+var PULSE_BEATS = 5, PULSE_VIEW = 4, PULSE_PEEK = 0.4, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10, PULSE_BAR = 14, PULSE_THUMB = 44;
 var fences: number[] | null = null;
 function pulseMove(i: number){ return (m2vHistory[i] / m2vHistory[i - 1] - 1) * 100; }
-export function pulseFences(){
+function pulseFences(){
   if (fences) return fences;
   var moves: number[] = [];
   for (var i = 1; i < m2vHistory.length; i++) moves.push(pulseMove(i));
-  var q1 = quartile(moves, 0.25), q3 = quartile(moves, 0.75), k = q3 - q1;
+  var q1 = pctl(moves, 0.25), q3 = pctl(moves, 0.75), k = q3 - q1;
   return fences = [q1 - PULSE_FAR * k, q1 - PULSE_FENCE * k, q3 + PULSE_FENCE * k];
 }
 export function pulseBeat(i: number){
@@ -19,7 +19,7 @@ export function pulseBeat(i: number){
   return m < f[0] ? "flat" : (m < f[1] || m > f[2]) ? "odd" : "";
 }
 function f1(v: number){ return v.toFixed(1); }
-export function pulseStroke(i: number){
+function pulseStroke(i: number){
   var g = m2Yoy[i];
   return g == null ? null : Math.max(-1, Math.min(1, g / M2_FLOOD));
 }
@@ -70,7 +70,7 @@ export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [], body: string[] = [stripPaper(L, R, T, T + full, h)];
   strips.off = 0;
   out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));
-  ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17)); });
+  ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, F.H - AXIS.FOOT)); });
   for (var y = y0; y <= y1; y++) body.push(stripRow({ y:y, top:T + h * (y1 - y), h:h, sq:sq, from:from, end:end, X:X }));
   out.push('<clipPath id="psview"><rect x="0" y="' + f1(T) + '" width="' + F.W + '" height="' + f1(B - T) + '"/></clipPath><g clip-path="url(#psview)"><g class="ps-rows">' + body.join("") + '</g></g>');
   var cell = function(i: number){ return { q:(from + i) % 4 }; };
@@ -155,13 +155,13 @@ export function stripsInfo(){
   var f = pulseFences(), pct = function(v: number){ return (v > 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + "%"; };
   var flats: string[] = [];
   for (var i = 1; i < m2vHistory.length; i++) if (pulseBeat(i) === "flat") flats.push(qAtIndex(M2V_FROM_YEAR, i));
-  return '<p class="caption follow"><b>The history is an EKG strip for each year</b>, the newest on top and its quarters across. A beat is a fifth of one turnover of the money stock, ' +
+  return readingNote({ paras:['<b>The history is an EKG strip for each year</b>, the newest on top and its quarters across. A beat is a fifth of one turnover of the money stock, ' +
     'so a year at 1.4\u00d7 carries 7 beats and the gaps widen as money slows; the figure under each year is its average velocity, in turnovers a year. ' +
-    'Five beats a turnover is Claude\u2019s choice, made for legibility (Keren found ten too crowded).</p>' +
-    '<p class="caption follow"><b>A beat\u2019s height is the money stock\u2019s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, ' +
+    'Five beats a turnover is Claude\u2019s choice, made for legibility (Keren found ten too crowded).',
+    '<b>A beat\u2019s height is the money stock\u2019s growth</b>, the stroke volume behind each turnover: M2 against a year earlier, ' +
     'full height at ' + M2_FLOOD.toFixed(1) + '%, where Volume starts to read Flooding, and no higher. A shrinking stock beats upside down, as in 2023. ' +
-    M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.</p>' +
-    '<p class="caption follow"><b>A red quarter moved past Tukey\u2019s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' +
+    M2V_FROM_YEAR + ' has no year-earlier stock and beats at half height in grey.',
+    '<b>A red quarter moved past Tukey\u2019s outlier fence</b> (1.5 times the interquartile range) of every quarterly change since ' +
     M2V_FROM_YEAR + ', ' + pct(f[1]) + ' or ' + pct(f[2]) + '. <b>A quarter flatlines</b> when its fall passed Tukey\u2019s far-out fence (3 times the range), ' +
-    pct(f[0]) + ': ' + flats.join(" and ") + '.</p>';
+    pct(f[0]) + ': ' + flats.join(" and ") + '.'] });
 }

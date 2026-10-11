@@ -132,6 +132,11 @@ settles it; none is open after V668.
   that day, every link is a reading, and no sentence forecasts. The routine commits the edition to `main` as
   `data/report.json`, which the site reads, and writes it to the artifact's database, which the artifact reads; the
   copy in `src/data/weather-report.json` is the floor a release ships. (Weather Report)
+- **The routine's check also holds each year, word and tier to the facts: a year must be one a reading's record or
+  the open cycle holds, a reading's word or tier sits only in a sentence that names that reading, and every reading at
+  Attention or Risk is linked in its element.** The shipped edition had said Concentration risk was at Risk while it
+  read Normal, and that shoppers spent "without leaning on credit" while Consumer credit read Borrowing more. The
+  must-link rule is editorial and Keren's to confirm. (Deep Record)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)
@@ -658,6 +663,18 @@ settles it; none is open after V668.
   (i) names each reading whose range rests on fewer than all her closed cycles (from the 5 October review). Tapping a
   cycle in Analysis opens that cycle's results, as a blood test is read. The ranges are her own record's, and each
   says how many closed cycles it rests on. (0.2.0, 0.5.2, 0.5.3, 0.6.0, 0.6.1, 0.6.16)
+- **A reading is judged only when its record holds at least four closed cycles and twenty years; a shorter one reads
+  "Not judged" under "Short record", stays on its own page, and counts toward no tier or health score.** Cycles differ
+  in length, story and numbers, so analysis should rest on as much of the record as there is (Keren); with fewer
+  than four cycles most fall outside their own middle half by arithmetic alone, and twenty years keeps a range
+  from resting on a few short cycles. Four and twenty are Claude's call under Keren's "as much data as possible", for
+  her to move. (Deep Record)
+- **A reading is judged against her last six closed cycles (since 1978 today), not the whole record; the cycle's own
+  length, bull years and flow still read every closed cycle.** As a period tracker reads the last six cycles: recent
+  enough that 1930s or 1950s rates do not set today's normal, and six rather than four for a margin of safety
+  (Keren). The four-cycle, twenty-year depth floor applies within the six. The 10-year still reads Normal at 5.24%,
+  inside 2.93–8.18%, since the 1980s and 1990s ran higher; its rank ("highest since") is told in words, not by a tier.
+  (Deep Record)
 - **A Cycle analysis result is judged by whether its side is good for that reading, not only by its side.** A falling
   unemployment rate is good, so direction alone cannot judge a result; the parameter decides. A result outside its
   range on its good side is Normal (apricot) and counts toward the health score; on the other side it is Attention or
@@ -1173,6 +1190,9 @@ settles it; none is open after V668.
   from page to page, and no history invents its own.** It is one component with variants, so no page has to be
   worked on separately. Keren asked for the heat ramp and the blood ramp by name, so the plot may differ, but
   the chrome may not. (V399, V475, V522)
+- **Every column history is drawn by one function (`columnHistory`), and its column tones are the shared steps
+  `hc-0`…`hc-5`, not a ramp per chart.** Keren asked for shared components with variants; six copies of the same
+  columns had already drifted (M2's long-run rule was drawn twice, the deficit's columns were narrower). (Deep Record)
 - **The frame is one component (`histFrame`): width floor, breakpoint, height, margins, edges, year label,
   crosshair, zero rule, mean rule and svg come from one set of functions, and their classes belong to the
   frame alone.** Keren asked for named, reused components; ten copies of a geometry means the next change
@@ -1652,6 +1672,17 @@ settles it; none is open after V668.
 - **Unemployment is monthly, seasonally adjusted, from January 1948; October 2025 has no reading and is kept
   as a gap, drawn as nothing and left out of every average.** BLS did not publish that month, and joining
   across it would invent a figure. (V498)
+- **The 10-year Treasury and its spread over the 3-month bill run from 1953 Q2, FRED's monthly GS10 and TB3MS; the
+  other tenors keep the 2005 grid.** As much record as exists is what a range should rest on; the long record moved
+  the 10-year from Risk to Normal. The tenor picker still draws every tenor from 2005, where they all exist.
+  (Deep Record)
+- **The Rates line is the fed funds rate from July 1954 and the discount rate before it.** Rates means the Fed's
+  policy rate, and before fed funds existed that was the discount rate, so every cycle's line starts on a reading.
+  (Deep Record)
+- **The Sources screen is built from what each reading cites: grouped by element and subcategory in roster order,
+  then the model's own shelves; a source is listed once, where it is first cited.** A list kept by hand drifted
+  (17 cited sources were missing from it). A reading declares a source in the roster only when it cites it outside
+  its (i). (Deep Record)
 - **First Trust and Fisher Investments, the sources for the typical cycle length, are grouped with the cycle
   sources on the Sources screen, so no "Other" group appears; grouping them is not an endorsement.** They are
   the only citations that are neither primary nor a labelled compilation, and whether they belong is Keren's

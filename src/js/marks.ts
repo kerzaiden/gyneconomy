@@ -10,7 +10,7 @@ export function diamondSvg(){ return markSvg(
   '<path d="M6.2 3.9h11.6l3.9 5.3L12 20.4 2.3 9.2z" stroke-width="1.7"/>' +
   '<path d="M2.3 9.2h19.4" stroke-width="1.5"/>' +
   '<path d="M6.2 3.9 8.9 9.2M17.8 3.9 15.1 9.2" stroke-width="1.35" opacity="0.75"/>'); }
-function markSvg(body: string, extra?: string){
+function markSvg(body: string){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
 }
 export function orbitSvg(){ return markSvg('<path d="M9.51 19.81A8.2 8.2 0 0 0 19.53 15.24M20.19 11.53A8.2 8.2 0 0 0 6.76 5.69M4.49 8.70A8.2 8.2 0 0 0 6.27 17.87" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke-width="1.6"/><circle cx="5.45" cy="7.07" r="1.9" stroke-width="1.6"/><circle cx="20.08" cy="13.42" r="1.9" stroke-width="1.6"/><circle cx="7.78" cy="19.03" r="1.9" stroke-width="1.6"/>'); }

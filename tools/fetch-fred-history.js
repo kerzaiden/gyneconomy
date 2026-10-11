@@ -166,6 +166,12 @@ function spreadQuarterly(long, short) {
 }
 
 const GS30_GAP = ['2002-03', '2006-01'];
+const LONG_TREASURY = { y10: '1953-04-01', m3: '1953-04-01' }, LONG_FROM_Q = '1953 Q2';
+function closedMark(qs) {
+  const last = qs[qs.length - 1], closed = /-(03|06|09|12)-/.test(last.last);
+  return qs.map(d => Object.assign({}, d, { partial: d === last && !closed }));
+}
+function mark(d) { return d.partial ? { q: d.q, v: d.v, partial: true } : { q: d.q, v: d.v }; }
 function withoutGap(qs, rows, gap) {
   const traded = new Set(rows.filter(r => r.date.slice(0, 7) < gap[0] || r.date.slice(0, 7) > gap[1])
     .map(r => r.date.slice(0, 4) + ' Q' + Math.ceil(Number(r.date.slice(5, 7)) / 3)));
@@ -322,7 +328,8 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   }
   if (treasury) {
     out.treasuryQuarterly = {};
-    for (const k of Object.keys(treasury)) out.treasuryQuarterly[k] = treasury[k].map(d => d.partial ? { q: d.q, v: d.v, partial: true } : { q: d.q, v: d.v });
+    if (treasury.long) out.treasuryLong = { y10: treasury.long.y10.map(mark), s3m: treasury.long.s3m.map(mark) };
+    for (const k of Object.keys(treasury).filter(k => k !== 'long')) out.treasuryQuarterly[k] = treasury[k].map(d => d.partial ? { q: d.q, v: d.v, partial: true } : { q: d.q, v: d.v });
   }
   if (productivity) out.productivityHistory = q(productivity);
   if (sp500) out.sp500MonthlyHistory = m(sp500);
@@ -386,19 +393,24 @@ async function main() {
   say('grossQ        ' + fiscal.grossQ.length + ' quarters, ' + fiscal.grossQ[0].q + ' → ' + fiscal.grossQ[fiscal.grossQ.length - 1].q);
 
   const T = { m3: 'TB3MS', y2: 'GS2', y5: 'GS5', y10: 'GS10', y30: 'GS30' };
-  const treasury = {}, full = {};
+  const treasury = {}, full = {}, long = {};
   for (const [k, id] of Object.entries(T)) {
-    const rows = await fredSeries(id, '2005-01-01');
-    let qs = quarterlyMean(rows, 0, 25);
+    const from = LONG_TREASURY[k] || '2005-01-01', rows = await fredSeries(id, from);
+    if (LONG_TREASURY[k]) long[k] = closedMark(quarterlyMean(rows, 0, 25).filter(d => d.q >= LONG_FROM_Q));
+    let qs = quarterlyMean(rows, 0, 25).filter(d => d.q >= '2005 Q1');
     if (k === 'y30') qs = withoutGap(qs, rows, GS30_GAP);
     const last = qs[qs.length - 1];
     const closed = /-(03|06|09|12)-/.test(last.last);
     full[k] = qs.map(d => Object.assign({}, d, { partial: d === last && !closed }));
     say(id.padEnd(13) + ' ' + qs.length + ' quarters, ' + qs[0].q + ' → ' + last.q + (closed ? '' : ' (partial)'));
   }
+  treasury.long = { y10: long.y10.map(d => ({ q: d.q, v: d.v, partial: d.partial })),
+    s3m: spreadQuarterly(long.y10, long.m3).map(d => ({ q: d.q, v: d.v, partial: d.partial })) };
+  if (treasury.long.y10[0].q !== LONG_FROM_Q || treasury.long.s3m[0].q !== LONG_FROM_Q) throw new Error('GS10 and TB3MS: expected quarters from ' + LONG_FROM_Q);
+  say('GS10 long     ' + treasury.long.y10.length + ' quarters, ' + treasury.long.y10[0].q + ' → ' + treasury.long.y10[treasury.long.y10.length - 1].q);
   full.s3m = spreadQuarterly(full.y10, full.m3);
   full.s2y = spreadQuarterly(full.y10, full.y2);
-  for (const k of Object.keys(full)) treasury[k] = full[k].map(d => ({ q: d.q, v: d.v, partial: d.partial }));
+  for (const k of Object.keys(full).filter(k => !treasury.long[k])) treasury[k] = full[k].map(d => ({ q: d.q, v: d.v, partial: d.partial }));
   if (treasury.y30.slice(0, 4).some(d => d.v != null)) throw new Error('GS30: 2005 should be the no-issuance gap');
 
   const productivity = yoyQuarterly(quarterly(await fredSeries('OPHNFB', '1947-01-01'), 1, 1000), -20, 30);

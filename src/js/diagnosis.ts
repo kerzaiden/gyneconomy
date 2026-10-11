@@ -5,12 +5,12 @@ import { calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
-import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
+import { closedSegs, dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, IND } from "./cycle-analysis.ts";
 import { drawToday, storyCard, wireStory } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
 
-var DIAG_SRC = [
+export var DIAG_SRC: Src[] = [
   {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
   {t:"Federal Reserve via FRED \u2014 the Fed\u2019s moves: the discount rate before September 1982 (INTDSRUSM193N), the federal funds target to December 2008 (DFEDTAR) and its upper limit since (DFEDTARU)", u:"https://fred.stlouisfed.org/series/DFEDTARU"},
   {t:"NBER Macrohistory via FRED \u2014 the Federal Reserve Bank of New York\u2019s discount rate, monthly from 1914: the Fed\u2019s moves before 1950 and its rate line before the federal funds rate begins in July 1954 (M13009USM156NNBR)", u:"https://fred.stlouisfed.org/series/M13009USM156NNBR"},
@@ -21,7 +21,7 @@ function diagnosisHtml(m: CycleModel){
   return storyCard(m) + yearByYear(m);
 }
 function yearByYear(m: CycleModel){
-  var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
+  var segs = closedSegs(m), rows: string[] = [];
   for (var y = m.era.from; y <= m.endYear; y++){
     var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), ytd = m.ongoing && y === calendarTodayY, now = yearSoFar(y);
     rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd),

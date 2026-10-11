@@ -1,9 +1,9 @@
 import { MONTHS_SHORT } from "./format.ts";
 
-export type WaveSeries = { list: MonthPoint[]; color: string; fill: number; bold?: boolean };
+type WaveSeries = { list: MonthPoint[]; color: string; fill: number; bold?: boolean };
 export type WaveBand = { from: number; to: number };
-export type WaveKey = { name: string; kind: "line" | "band" | "blank"; color?: string };
-export type WaveChart = { series: WaveSeries[]; bands: WaveBand[]; band?: string; from: number; to: number; open: boolean };
+type WaveKey = { name: string; kind: "line" | "band" | "blank"; color?: string };
+type WaveChart = { series: WaveSeries[]; bands: WaveBand[]; from: number; to: number; open: boolean };
 type Pt = { i: number; v: number };
 type Scale = { y: (v: number) => number; lo: number; hi: number; step: number };
 
@@ -13,14 +13,13 @@ var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 60, CURL = 0.45, WAVE = 10, 
 export function monthIdx(k: string){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1; }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
 function lineTone(color: string){ return "--line:var(--" + color + ")"; }
-function bandTone(band?: string){ return band ? ' style="--band:var(--' + band + ')"' : ""; }
 function monthPoints(list: MonthPoint[], from: number, to: number){
   var at: Record<number, number> = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out: Pt[] = [];
   list.forEach(function(d){ var i = monthIdx(d.m); if (i <= to) at[i] = d.v; });
   for (var k = 0; k <= POINTS; k++){
     var c = from + (to - from) * k / POINTS, w = 0, sum = 0;
     for (var i = Math.floor(c - 3 * sigma); i <= Math.ceil(c + 3 * sigma); i++) if (at[i] != null){ var g = Math.exp(-(i - c) * (i - c) / (2 * sigma * sigma)); w += g; sum += g * at[i]; }
-    if (w) out.push({ i: c, v: sum / w });
+    if (w && (at[Math.floor(c)] != null || at[Math.ceil(c)] != null)) out.push({ i: c, v: sum / w });
   }
   return out;
 }
@@ -94,8 +93,8 @@ function bandsHtml(bands: WaveBand[], from: number, to: number){
 }
 export function waveChart(o: WaveChart){
   var lines = o.series.map(function(s){ return monthPoints(s.list, o.from, o.to); }), sc = levelScale(lines);
-  return '<div class="wave-plot"' + bandTone(o.band) + '><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + '</span>' + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + '</div>' + axisHtml(o.from, o.to, o.open);
+  return '<div class="wave-plot"><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + '</span>' + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + '</div>' + axisHtml(o.from, o.to, o.open);
 }
-export function waveLegend(keys: WaveKey[], band?: string){
-  return '<ul class="wave-legend"' + bandTone(band) + '>' + keys.map(function(k){ return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + '>' + k.name + '</li>'; }).join("") + '</ul>';
+export function waveLegend(keys: WaveKey[]){
+  return '<ul class="wave-legend">' + keys.map(function(k){ return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + '>' + k.name + '</li>'; }).join("") + '</ul>';
 }

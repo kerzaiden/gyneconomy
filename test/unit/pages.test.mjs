@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { errors, bootWarnings, window } from './dom.mjs';
+import { errors, bootWarnings, warnings, window } from './dom.mjs';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { CATEGORIES, ROSTER } from '../../src/js/roster.ts';
 import { page, pickerOpen } from '../../src/js/history.ts';
@@ -25,28 +25,27 @@ test('every reading in the roster has a page that draws it', () => {
   }
 });
 
+const framed = new Set();
+const inFrame = s => {
+  const [, , w, h] = s.getAttribute('viewBox').split(' ').map(Number), label = s.getAttribute('aria-label');
+  framed.add(label);
+  if (/heartbeat, one strip per year/.test(label)) assert.ok(w === histFrame(w).W && h > 0, 'the Pulse strips take the frame width');
+  else assert.equal(h, histFrame(w).H, label);
+};
 for (const id of Object.keys(sheetRenderers)) {
-  test('page ' + id + ' draws at every width with no broken value', () => {
+  test('page ' + id + ' draws at every width with no broken value, every history chart in the one frame', () => {
     for (const W of WIDTHS) {
       sheetRenderers[id](W);
       const host = document.getElementById(id) || document.getElementById((ROSTER.find(R => R.hk === id) || {}).id) || document.body;
       assert.deepEqual(broken(host.innerHTML), [], id + ' at ' + W + 'px');
+      host.querySelectorAll('svg.vh-svg').forEach(inFrame);
     }
     assert.deepEqual(errors, []);
   });
 }
 
-test('every history chart on a page sits in the one frame', () => {
-  for (const W of WIDTHS) {
-    Object.values(sheetRenderers).forEach(draw => draw(W));
-    const svgs = [...document.querySelectorAll('svg.vh-svg')];
-    assert.ok(svgs.length >= 6);
-    svgs.forEach(s => {
-      const [, , w, h] = s.getAttribute('viewBox').split(' ').map(Number);
-      if (/heartbeat, one strip per year/.test(s.getAttribute('aria-label'))) assert.ok(w === histFrame(w).W && h > 0, 'the Pulse strips take the frame width');
-      else assert.equal(h, histFrame(w).H, s.getAttribute('aria-label'));
-    });
-  }
+test('the pages draw at least six history charts', () => {
+  assert.ok(framed.size >= 6, framed.size + ' charts');
 });
 
 const CHARTS = { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, m2GrowthChart,
@@ -76,8 +75,17 @@ test('the Pulse strips flatline only the quarters whose fall was far out of the 
   assert.equal((svg.match(/class="ps-beat hcol/g) || []).length, 12);
 });
 
-test('every history chart is reachable by keyboard and keeps its live region when redrawn', () => {
-  for (let k = 0; k < 2; k++) Object.values(sheetRenderers).forEach(draw => draw(390));
+test('every history chart, redrawn after every width, is attached to its readout and reachable by keyboard, and keeps its live region', () => {
+  let seen = 0;
+  const loose = Object.keys(sheetRenderers).flatMap(id => {
+    sheetRenderers[id](390);
+    const svgs = [...document.querySelectorAll('svg.vh-svg')];
+    seen += svgs.length;
+    return svgs.filter(svg => { for (let n = svg.parentElement; n; n = n.parentElement) if (n.__geom) return false; return true; })
+      .map(svg => id + ': ' + svg.getAttribute('aria-label').slice(0, 40));
+  });
+  assert.ok(seen > 10, seen + ' charts');
+  assert.deepEqual(loose, []);
   const hosts = [...document.querySelectorAll('*')].filter(h => h.__geom);
   assert.ok(hosts.some(h => h.__geom.src === 'spreadHistory'), 'Horizon is a history chart');
   hosts.forEach(h => {
@@ -179,8 +187,7 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   assert.ok(!today.textContent.includes(now.report.story), 'the cycle story stays on the cycle tab');
   assert.ok(risksOf(nowModel.era).length > 0);
   assert.deepEqual(ranked(today), risksOf(nowModel.era));
-  const ten = [...today.querySelectorAll('.cat-risk .lab-item')].find(b => b.textContent.startsWith('US 10-year Treasury'));
-  assert.equal(ten.querySelector('.lab-res b').textContent, todayFace(ROSTER_BY['sheet-sign-pressure']).text, 'one figure, one number: the risk factor reads today’s close');
+  [...today.querySelectorAll('.cat-risk .lab-row[data-open]')].forEach(r => assert.equal(r.querySelector('.lab-res b').textContent, todayFace(ROSTER_BY[r.dataset.open]).text.replace('\u2248', ''), 'one figure, one number: ' + r.dataset.title + ' reads today’s figure'));
   const links = [...today.querySelectorAll('.wr-link')];
   assert.ok(links.length >= 12 && links.every(a => ROSTER_BY[a.dataset.open] && a.dataset.title === ROSTER_BY[a.dataset.open].name), 'every link opens its reading');
   assert.equal(today.querySelector('.lab-door').dataset.indCycle, nowModel.era.name);
@@ -199,12 +206,32 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   page.cycles['chart-home'] = null; sheetRenderers['chart-home']();
 });
 
-test('the shipped edition passes the routine’s own check, and the check catches a forecast, a stray link and a figure the app does not show', async () => {
-  const { check } = await import('../../tools/report.mjs');
+test('the routine’s facts hold every reading of the roster with its figure, word and tier, and nothing broken', async () => {
+  const { readFacts } = await import('../../tools/report.mjs');
+  const F = await readFacts();
+  assert.deepEqual(F.readings.map(r => r.id), ROSTER.map(R => R.id));
+  assert.deepEqual(F.readings.filter(r => !r.name || !r.element || !/\d/.test(r.figure) || typeof r.word !== 'string' || !['Normal', 'Attention', 'Risk'].includes(r.tier)).map(r => r.id), []);
+  assert.ok(F.readings.filter(r => r.word).length >= ROSTER.length - 1, 'every reading but the premium speaks a word');
+  assert.deepEqual(broken(JSON.stringify(F)), []);
+  assert.deepEqual(F.categories.slice().sort(), CATEGORIES.map(c => c.key).sort());
+  assert.ok(F.numbers.length > 20 && F.numbers.every(n => /^\d+(\.\d+)?$/.test(n)), F.numbers.join(' '));
+  assert.ok(F.years.length > 5 && F.years.every(y => /^(18|19|20)\d{2}$/.test(y)), F.years.join(' '));
+  assert.ok(F.years.includes(String(cycleByName(F.cycle).from)), 'the open cycle\u2019s first year');
+});
+
+test('the shipped edition passes the routine’s own check on the release’s own figures, and the check catches a forecast, a stray link, a figure, a year, a word or a tier the app does not show', async () => {
+  const { check, readFacts } = await import('../../tools/report.mjs');
   const { now } = await import('../../src/js/data.ts');
-  const F = { categories: CATEGORIES.map(c => c.key), ids: ROSTER.map(R => R.id), numbers: null };
+  const F = await readFacts();
   const doc = { kind: 'object', ...now.report };
   assert.deepEqual(check(doc, F), []);
+  const el = (k, t) => check({ ...doc, elements: { ...doc.elements, [k]: t } }, F).filter(b => b.startsWith('element ' + k));
+  const off = Array.from({ length: 120 }, (_, i) => String(1900 + i)).find(y => !F.years.includes(y));
+  assert.deepEqual(el('circulation', doc.elements.circulation + ' It is the highest since ' + off + '.'), ['element circulation says ' + off + ', which is no year the facts hold']);
+  assert.deepEqual(el('stress', doc.elements.stress + ' The [Federal debt](sheet-metric-debt) reads Normal.'), ['element stress says Normal beside Federal debt (Attention)']);
+  assert.deepEqual(el('activity', doc.elements.activity + ' Households are saving very little.'), ['element activity says saving very little, the word of Savings rate, in a sentence that names none of them']);
+  assert.deepEqual(el('desire', 'Shoppers keep spending without leaning on credit: [Discretionary spending](sheet-sign-desire) sits in its normal range.'),
+    ['element desire never links Consumer credit, which reads Attention', 'element desire never links Equity risk premium, which reads Attention']);
   const { standing } = await import('../../tools/report.mjs');
   const { nowModel } = await import('../../src/js/model.ts');
   const { labs, riskLabs } = await import('../../src/js/cycle-analysis.ts');
@@ -215,7 +242,7 @@ test('the shipped edition passes the routine’s own check, and the check catche
   const i = marketCycles.indexOf(nowModel.era), stands = riskLabs(i).map(l => standing(ROSTER_BY[l.id], nowModel.era, i, labs().find(x => x.id === l.id), { keyed, readingFor, todayValue })).filter(Boolean);
   assert.ok(stands.length && stands.every(x => /^((Highest|Lowest) on record, which starts in|(Highest|Lowest) since|Its (high|low) since|(Above|Below) every (quarterly|monthly|yearly) reading since|No (quarterly|monthly|yearly) reading has been this (high|low) since) /.test(x.words)), 'the routine reads where each risk factor stands in its own record');
   const bad = { ...doc, lede: 'Rates will rise.', elements: { ...doc.elements, mood: 'See [Fear](sheet-nope).' } };
-  assert.deepEqual(check(bad, F).map(b => b.split(' ')[0] + ' ' + b.split(' ')[1]), ['lede forecasts:', 'element mood']);
+  assert.deepEqual(check(bad, { ...F, readings: null }).map(b => b.split(' ')[0] + ' ' + b.split(' ')[1]), ['lede forecasts:', 'element mood']);
   assert.deepEqual(check({ ...doc, headline: 'Prices at 9.9%, the S&P 500 in Q2 2026' }, { ...F, numbers: ['3.4'] }).filter(b => b.startsWith('headline')), ['headline says 9.9, which no figure in the app shows']);
 });
 
@@ -230,4 +257,14 @@ test('every cycle page, open or closed, is built in one shape', async () => {
   renderDiagnosis(nowModel);
   assert.equal(today.length, 2);
   assert.deepEqual(off.map(c => c.name), []);
+});
+
+test('checkRoster refuses a reading declared twice, a split group and an unknown live name', () => {
+  const G = window.__GYN, R = G.ROSTER, step = G.steps.find(s => s.name === 'checkRoster'), from = warnings.length;
+  R.push(Object.assign({}, R[0], { group: R.filter(r => r.group)[0].group, live: ['nowhere'] }));
+  try { step.fn(); } finally { R.pop(); }
+  const said = warnings.splice(from).join(' ');
+  assert.deepEqual(['declared twice', 'is split', 'no live reading nowhere'].filter(w => !said.includes(w)), [], said);
+  step.fn();
+  assert.deepEqual(warnings.splice(from), []);
 });

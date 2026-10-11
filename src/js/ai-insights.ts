@@ -17,10 +17,10 @@ function riskDoor(t: string, c: Cycle){ return ' data-open="' + IND + '" data-ti
 function riskFactors(c: Cycle){
   return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk today.");
 }
-function prose(t: string){
+function prose(t: string, bare?: boolean){
   return t.replace(/\[([^\]]+)\]\((sheet-[a-z0-9-]+)\)/g, function(_, label: string, id: string){
     var R = ROSTER_BY[id];
-    return R ? '<button type="button" class="wr-link" data-open="' + id + '" data-title="' + R.name + '">' + label + '</button>' : label;
+    return R && !bare ? '<button type="button" class="wr-link" data-open="' + id + '" data-title="' + R.name + '">' + label + '</button>' : label;
   });
 }
 function edition(){ return dateWords(now.report.asOf); }
@@ -28,7 +28,7 @@ function storyOf(c: Cycle){ return c.ongoing ? now.report.story : c.blurb; }
 function lead(head: string, by: string){ return '<span class="wr-head">' + head + '</span><span class="wr-by">' + by + '</span>'; }
 export function storyCard(m: CycleModel){
   return trendBox(bookSvg(), '<span>' + m.era.name + ' <span class="trend-when">\u00b7 ' + cycLabel(m.era).years + '</span></span>',
-    trendText(storyOf(m.era), "ai-clamp") + learnMore(' aria-expanded="false" data-story-more="1"', "Read more"));
+    trendText(prose(storyOf(m.era)), "ai-clamp") + learnMore(' aria-expanded="false" data-story-more="1"', "Read more"));
 }
 export function wireStory(host: HTMLElement){
   var btn = host.querySelector<HTMLElement>("[data-story-more]"), text = btn && btn.previousElementSibling as HTMLElement | null;
@@ -59,7 +59,7 @@ function cycleCard(){
 }
 function todayHtml(){
   var r = now.report, c = openCycle();
-  return trendBox(weatherSvg(), "Weather Report", lead(r.headline, edition()) + trendText(r.lede)) +
+  return trendBox(weatherSvg(), "Weather Report", lead(prose(r.headline, true), edition()) + trendText(prose(r.lede))) +
     cycleCard() + riskFactors(c) + elements();
 }
 export function drawToday(){ put("today-home", todayHtml()); }

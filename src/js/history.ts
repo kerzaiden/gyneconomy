@@ -3,7 +3,7 @@ import { byId, detailTexts, focusQuiet, layer, onScreen } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, pendingGeom } from "./charts.ts";
 import { deficitHistory, marketCycles } from "./data.ts";
-import { cycLabel, cycleByName, openCycle } from "./model.ts";
+import { cycLabel, cycleByName, cycleSlice, openCycle } from "./model.ts";
 
 type HeadGroup = { key: string; label: string; on: boolean; value: string; rows: string };
 type HistHeadSpec = { mark?: () => string; title?: string | (() => string); menu?: () => HeadGroup[] };
@@ -23,11 +23,11 @@ export var page = {
 export var HIST_NOTE: Record<string, string | (() => string)> = {};
 var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
   '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
+var TICK = '<span class="cycsel-tick" aria-hidden="true"></span>';
+function menuOption(cls: string, attrs: string, inner: string){ return '<button type="button" class="cycsel-opt' + cls + '" ' + attrs + '>' + inner + '</button>'; }
+function menuName(label: string){ return '<span class="cycsel-nm">' + label + '</span>'; }
 export function headPickRow(on: boolean, attr: string, key: string, label: string){
-  return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
-    '" aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' +
-    '<span class="cycsel-tick" aria-hidden="true"></span>' +
-    '<span class="cycsel-nm">' + label + '</span></button>';
+  return menuOption(" bh-pick" + (on ? " on" : ""), 'aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '"', TICK + menuName(label));
 }
 export function histHead(id: string){
   var H = page.head[id];
@@ -68,20 +68,15 @@ function headMenuHtml(id: string): string {
   else if (headSubFor){
     var g = groups.filter(function(x){ return x.key === headSubFor; })[0];
     if (!g){ headSubFor = null; return headMenuHtml(id); }
-    return '<button type="button" class="cycsel-opt bh-back" data-head-grp="" aria-label="Back from ' + g.label + '">' +
-      CHEV + '<span class="cycsel-nm">' + g.label + '</span></button>' +
+    return menuOption(" bh-back", 'data-head-grp="" aria-label="Back from ' + g.label + '"', CHEV + menuName(g.label)) +
       '<div class="bh-sep"></div>' + g.rows;
   }
   else extra = groups.map(function(x){
-    return '<button type="button" class="cycsel-opt bh-grp-row" ' +
-      'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + '</span>' +
-      '<span class="cycsel-yr">' + (x.on ? x.value : "") + '</span>' + CHEV + '</button>';
+    return menuOption(" bh-grp-row", 'data-head-grp="' + x.key + '"', nameAside(x.label, x.on ? x.value : "") + CHEV);
   }).join("") + '<div class="bh-sep"></div>';
   var i = headNote(id);
   if (i == null) return extra;
-  return extra +
-    '<button type="button" class="cycsel-opt bh-opt" data-detail-idx="' +
-    i + '"><span class="cycsel-nm">About this reading</span></button>';
+  return extra + menuOption(" bh-opt", 'data-detail-idx="' + i + '"', menuName("About this reading"));
 }
 var headMenuFor: string | null = null;
 var headSubFor: string | null = null;
@@ -328,7 +323,7 @@ function touchGate(host: HTMLElement, at: (e: { clientX: number; clientY: number
   host.addEventListener("pointerup", function(){ if (down) pick(down); live = false; });
   host.addEventListener("pointercancel", function(){ drop(); live = false; });
 }
-function wireHistHover(host: HTMLElement, tipId: string){
+function wireHistHover(host: HTMLElement){
   if (!host) return;
   histReadEnsure(host);
   histReadFill(host, null);
@@ -336,9 +331,7 @@ function wireHistHover(host: HTMLElement, tipId: string){
   histLive(host);
   if (host.__hovWired) return;
   host.__hovWired = true;
-  var tip = byId(tipId);
   function hide(){
-    if (tip){ tip.style.opacity = "0"; tip.hidden = true; }
     host.classList.remove("hovering");
     if (host.__onCol){ host.__onCol.classList.remove("on"); host.__onCol = null; }
     histReadFill(host, null);
@@ -347,7 +340,7 @@ function wireHistHover(host: HTMLElement, tipId: string){
     var col0 = host.querySelector<SVGElement>(".hcol");
     var g = host.__geom;
     var svg = (col0 && col0.ownerSVGElement) || host.querySelector("svg.hist-svg") || host.querySelector("svg");
-    if (!g || !svg || !tip) return;
+    if (!g || !svg) return;
     var box = svg.getBoundingClientRect();
     var scale = box.width / g.W || 1;
     var x = (e.clientX - box.left) / scale;
@@ -388,9 +381,13 @@ function histKeysWire(host: HTMLElement, hide: () => void){
     histLive(host).textContent = [part(".hr-label"), part(".hr-value")].filter(Boolean).join(", ");
   });
 }
-export function mWindowFrom(len: number, key: string | undefined){
+function mWindowFrom(len: number, key: string | undefined){
   var sp = timelineSpan(key);
   return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 12);
+}
+export function monthWindow(id: string, series: Point[], fromFn?: (len: number, key: string | undefined) => number){
+  var cyc = pageCycle(id), span = cyc ? cycleSlice(series, cyc) : null;
+  return span ? { from:span[0], to:span[1] as number | undefined, cycle:true } : { from:(fromFn || mWindowFrom)(series.length, page.range[id]), to:undefined, cycle:false };
 }
 export function qWindowFrom(len: number, key: string | undefined){
   var sp = timelineSpan(key);
@@ -411,8 +408,8 @@ function tabSegs(items: string[][], active: string | undefined, attr: string){
 export function tabBar(attrs: string, items: string[][], active: string | undefined, attr: string, cls?: string){
   return '<div class="rangebar' + (cls ? " " + cls : "") + '" role="tablist" ' + attrs + '>' + tabSegs(items, active, attr) + '</div>';
 }
-function modeBar(id: string, active: string | undefined, extra?: string[][]){
-  return tabBar('data-mode-for="' + id + '"', [["cycles", "Cycles"], ["calendar", "Years"]].concat(extra || []), active, "data-mode");
+function modeBar(id: string, active: string | undefined){
+  return tabBar('data-mode-for="' + id + '"', [["cycles", "Cycles"], ["calendar", "Years"]], active, "data-mode");
 }
 export var pickerOpen: Record<string, boolean> = {};
 export function controlKeys(el: Element | null): string[] {
@@ -425,11 +422,11 @@ function controlKeysIn(box: Element, el: Element): string[] {
   var at = "[" + a + '="' + box.getAttribute(a) + '"] ';
   return (b ? [at + "[" + b + '="' + el.getAttribute(b) + '"]'] : []).concat(a === "data-cycles-for" ? [at + "[data-picker-toggle]"] : []);
 }
-export function histControls(id: string, tl: TimelineSource, minYear?: number | null, extra?: string[][]){
+export function histControls(id: string, tl: TimelineSource, minYear?: number | null){
   var mode = page.mode[id], on = mode === "cycles";
   if (minYear == null) minYear = page.y0[id];
   var known = mode === "cycles" || mode === "calendar";
-  return controlsBox(modeBar(id, mode, extra) +
+  return controlsBox(modeBar(id, mode) +
     (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear)
                       : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:page.stops[id] }), page.range[id])));
 }
@@ -452,10 +449,9 @@ function cyclePicker(id: string, picked: string | null | undefined, minYear?: nu
     rows.map(function(c){ var L = cycLabel(c); return pickRow(c.name === cur.name, "data-cycle", c.name, L.name, L.years); }).join("") + '</div></div>';
 }
 function pickRow(on: boolean, attr: string, key: string, name: string, aside: string){
-  return '<button type="button" class="cycsel-opt' + (on ? " on" : "") + '" role="option" aria-selected="' + on + '" ' + attr + '="' + key + '">' +
-    '<span class="cycsel-tick" aria-hidden="true"></span>' + nameAside(name, aside) + '</button>';
+  return menuOption(on ? " on" : "", 'role="option" aria-selected="' + on + '" ' + attr + '="' + key + '"', TICK + nameAside(name, aside));
 }
-function nameAside(name: string, aside: string){ return '<span class="cycsel-nm">' + name + '</span><span class="cycsel-yr">' + aside + '</span>'; }
+function nameAside(name: string, aside: string){ return menuName(name) + '<span class="cycsel-yr">' + aside + '</span>'; }
 function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
   if (!ranges || ranges.length < 2) return "";
   return tabBar('data-range-for="' + id + '"', ranges.map(function(r){ return [r.key, r.label]; }), active, "data-range");
@@ -465,13 +461,13 @@ export function headSigma(id: string, text?: string | null){
   el.textContent = text == null ? "" : "(Σ" + text + ")";
   el.hidden = text == null;
 }
-export function attachHistory(host: HTMLElement | null, tipId?: string | null, expect?: string){
+export function attachHistory(host: HTMLElement | null, expect?: string){
   if (!host) return null;
   var g = pendingGeom;
   if (expect && (!g || g.src !== expect))
     (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
   host.__geom = g;
-  if (tipId) wireHistHover(host, tipId);
+  wireHistHover(host);
   return g;
 }
 

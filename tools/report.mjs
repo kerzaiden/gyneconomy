@@ -43,6 +43,28 @@ export function numbersIn(t) {
   DATES.forEach(re => { s = s.replace(re, ' '); });
   return (s.match(/\d[\d,]*(?:\.\d+)?/g) || []).map(n => n.replace(/,/g, ''));
 }
+export function yearsIn(t) {
+  return String(t).replace(LINK, '$1').replace(/S&P 500/g, ' ').match(/\b(18|19|20)\d{2}(?=s?\b)/g) || [];
+}
+const TIER = /\b(Normal|Attention|Risk)\b(?! Factors)/g;
+const sentences = t => String(t).split(/(?<=[.!?])\s+/);
+const phrases = w => String(w || '').split(' \u00b7 ').filter(p => p.includes(' '));
+const said = (w, t) => new RegExp('\\b' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i').test(t);
+function wordsSaid(name, t, F) {
+  const bad = [], by = Object.fromEntries(F.readings.map(r => [r.id, r]));
+  for (const st of sentences(t)) {
+    const linked = [...st.matchAll(LINK)].map(m => by[m[2]]).filter(Boolean), bare = st.replace(LINK, ' ');
+    const named = F.readings.filter(r => linked.includes(r) || said(r.name, bare));
+    for (const m of bare.matchAll(TIER)) if (!named.some(r => r.tier === m[1])) bad.push(name + ' says ' + m[1] + ' beside ' + (named.map(r => r.name + ' (' + r.tier + ')').join(', ') || 'no reading'));
+    const words = [...new Set(F.readings.flatMap(r => phrases(r.word)))].filter(w => said(w, bare));
+    for (const w of words) if (!named.some(r => phrases(r.word).includes(w))) bad.push(name + ' says ' + w.toLowerCase() + ', the word of ' + F.readings.filter(r => phrases(r.word).includes(w)).map(r => r.name).join(' and ') + ', in a sentence that names none of them');
+  }
+  return bad;
+}
+function unlinked(doc, F) {
+  return F.readings.filter(r => r.tier !== 'Normal' && typeof (doc.elements || {})[r.element] === 'string' && ![...doc.elements[r.element].matchAll(LINK)].some(m => m[2] === r.id))
+    .map(r => 'element ' + r.element + ' never links ' + r.name + ', which reads ' + r.tier);
+}
 function texts(doc) { return [['headline', doc.headline], ['lede', doc.lede], ['story', doc.story]].concat(Object.entries(doc.elements || {}).map(([k, v]) => ['element ' + k, v])); }
 
 export function check(doc, F) {
@@ -61,8 +83,20 @@ export function check(doc, F) {
     if (f) bad.push(name + ' forecasts: "' + f[0] + '"');
     for (const m of t.matchAll(LINK)) if (!F.ids.includes(m[2])) bad.push(name + ' links to ' + m[2] + ', which is no reading');
     if (F.numbers) numbersIn(t).forEach(n => { if (!F.numbers.includes(n)) bad.push(name + ' says ' + n + ', which no figure in the app shows'); });
+    if (F.years) yearsIn(t).forEach(y => { if (!F.years.includes(y)) bad.push(name + ' says ' + y + ', which is no year the facts hold'); });
+    if (F.readings) bad.push(...wordsSaid(name, t, F));
   });
-  return bad;
+  return F.readings ? bad.concat(unlinked(doc, F)) : bad;
+}
+
+function yearsOf(R, M) {
+  const h = R.hist ? M.keyed(R.hist).filter(d => d.v != null) : [], prior = h.slice(0, -1);
+  if (!h.length) return [];
+  let v = h[h.length - 1].v;
+  try { v = M.todayValue(R); } catch (e) {}
+  const most = up => h.reduce((a, d) => (up ? d.v > a.v : d.v < a.v) ? d : a);
+  const since = up => prior.filter(d => up ? d.v >= v : d.v <= v).pop();
+  return [h[0], h[h.length - 1], most(true), most(false), since(true), since(false)].filter(Boolean).map(d => String(keyYear(d.k)));
 }
 
 export async function facts() {
@@ -70,6 +104,10 @@ export async function facts() {
   if (fs.existsSync(new URL('data/report.json', ROOT))) live.weatherReport = json('data/report.json');
   globalThis.gynCache = live;
   await import('../test/unit/dom.mjs');
+  return readFacts();
+}
+
+export async function readFacts() {
   const { ROSTER, categoriesShown } = await import('../src/js/roster.ts');
   const { todayFace, readingFor } = await import('../src/js/reading.ts');
   const { labs, riskLabs } = await import('../src/js/cycle-analysis.ts');
@@ -87,13 +125,17 @@ export async function facts() {
   const risks = riskLabs(i).map(l => standing(ROSTER_BY[l.id], marketCycles[i], i, labs().find(x => x.id === l.id), { keyed, readingFor, todayValue }))
     .filter(Boolean).sort((a, b) => Number(b.record) - Number(a.record)).map(x => [x.R.name + ' ' + x.when, x.v, x.words + '.'].join(' \u00b7 '));
   const fed = now.fedFunds, season = nowModel.reading;
-  const said = readings.map(r => r.figure).concat(risks, [fed.lo, fed.hi, fed.lastMove].map(String), [fed.lo.toFixed(2), fed.hi.toFixed(2)]);
+  const shown = readings.map(r => r.figure).concat(risks, [fed.lo, fed.hi, fed.lastMove].map(String), [fed.lo.toFixed(2), fed.hi.toFixed(2)]);
+  const { calendarTodayY } = await import('../src/js/refresh-season.ts');
+  const years = ROSTER.flatMap(R => yearsOf(R, { keyed, todayValue })).concat(String(nowModel.era.from), yearsIn(nowModel.era.blurb + ' ' + nowModel.era.rates),
+    [calendarTodayY, fed.turnValue].map(String), [fed.asOf, fed.next, now.report.asOf, ...risks, ...readings.map(r => r.asOf)].flatMap(t => String(t || '').match(/\b(18|19|20)\d{2}\b/g) || []));
   return {
     cycle: nowModel.era.name, season: season.season, regime: season.regime, prices: season.heading,
     fed: { range: fed.lo.toFixed(2) + '–' + fed.hi.toFixed(2) + '%', lastMove: fed.lastMoveLabel, on: fed.asOf, next: fed.next },
     categories: categoriesShown().map(c => c.key), ids: ROSTER.map(R => R.id), readings, risks,
     attention: readings.filter(r => r.tier === 'Attention').map(r => r.name),
-    numbers: [...new Set(said.flatMap(numbersIn))],
+    numbers: [...new Set(shown.flatMap(numbersIn))],
+    years: [...new Set(years)].sort(),
     lastEdition: { asOf: now.report.asOf, headline: now.report.headline }
   };
 }

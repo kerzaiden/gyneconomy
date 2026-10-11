@@ -3,7 +3,7 @@ import { GYN, LIVE_NAMES, READINGS } from "./live.ts";
 import { bagSvg, debtSvg, homeSvg, diamondSvg, diceSvg, factorySvg, gaugeSvg, heartSvg, marketSvg, personSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { confidenceHistory, payrollsHistory, retailHistory, consumerCreditHistory, delinquencyHistory, durablesHistory, marginHistory, fedFundsHistory, premiumHistory, grossDebtQuarterly, productivityHistory, volatilityHistory, mortgageHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_MEAN, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_MID, sp500Years, t10y3mHistory, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
+import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_MEAN, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_MID, sp500Years, t10y3mLongHistory, t10yLongHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
 import { CONSUMER_LINE, debtPaymentPoints, DELINQUENCY_MEAN, MARGIN_LINE, savingPoints } from "./credit.ts";
 import { GAP_LINE, growthGapHistory, PAYROLLS_LINE, RETAIL_LINE } from "./activity.ts";
@@ -67,16 +67,26 @@ function checkRoster(){
 export function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b){ return a.shown - b.shown; }); }
 
 export var ROSTER: RosterRow[];
+var TEMP_SRC: Src[] = [{t:"BLS \u2014 Consumer Price Index, the monthly release", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},
+  {t:"BLS via FRED \u2014 Consumer Price Index for All Urban Consumers (CPIAUCSL)", u:"https://fred.stlouisfed.org/series/CPIAUCSL"},
+  {t:"BLS via FRED \u2014 Consumer Price Index for All Urban Consumers, not seasonally adjusted, before 1948 (CPIAUCNS)", u:"https://fred.stlouisfed.org/series/CPIAUCNS"}];
+var FED_FUNDS_SRC: Src[] = [{t:"Federal Reserve H.15 via FRED \u2014 Federal Funds Effective Rate (FEDFUNDS)", u:"https://fred.stlouisfed.org/series/FEDFUNDS"},
+  {t:"Federal Reserve via FRED \u2014 Federal Funds Target Range, upper limit (DFEDTARU)", u:"https://fred.stlouisfed.org/series/DFEDTARU"}];
+var TREASURY_SRC: Src[] = [{t:"U.S. Treasury \u2014 Daily Treasury par yield curve rates", u:"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=202609"},
+  {t:"FRED \u2014 2-Year Treasury Rate (GS2)", u:"https://fred.stlouisfed.org/series/GS2"},
+  {t:"FRED \u2014 5-Year Treasury Rate (GS5)", u:"https://fred.stlouisfed.org/series/GS5"},
+  {t:"FRED \u2014 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}];
+var SPREADS_SRC: Src[] = [{t:"FRED \u2014 10Y minus 2Y spread (T10Y2Y)", u:"https://fred.stlouisfed.org/series/T10Y2Y"}];
 
 function declareRoster(): RosterRow[] {
   return [
     { id:"sheet-metric-temp", name:"Temperature", cat:"weather", sub:"Economic Season", timing:"lagging", term:"Temperature",
       head:"CPI and PCE Inflation", hist:{ s:inflationHistory, k:"m" }, cardUnit:"PCE, YoY",
-      normal:{ lo:TEMP_BAND_LO, hi:TEMP_BAND_HI, why:"the Season Model\u2019s band, a point either side of the Fed\u2019s 2% target" } },
+      normal:{ lo:TEMP_BAND_LO, hi:TEMP_BAND_HI, why:"the Season Model\u2019s band, a point either side of the Fed\u2019s 2% target" }, src:TEMP_SRC },
     { id:"sheet-sign-growth-gap", name:"Growth gap", cat:"weather", sub:"Economic Season", good:"up", timing:"coincident",
       term:"Growth gap", head:"GDP Growth vs Potential", hist:{ s:growthGapHistory, k:"q" }, mid:GAP_LINE, cardUnit:"vs potential" },
     { id:"sheet-sign-hormones", name:"Federal funds rate", cat:"weather", sub:"Economic Season", timing:"leading", hk:"hormones-range",
-      head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, cardUnit:"Fed funds target", live:["fedFunds"] },
+      head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, cardUnit:"Fed funds target", live:["fedFunds"], src:FED_FUNDS_SRC },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, cardUnit:"total return" },
     { id:"sheet-sign-activity", name:"Unemployment rate", cat:"activity", sub:"Labor", good:"down", timing:"lagging",
@@ -89,9 +99,9 @@ function declareRoster(): RosterRow[] {
       term:"Productivity growth", head:"Output per Hour, YoY", hist:{ s:productivityHistory, k:"q" },
       mid:PRODUCTIVITY_SLOWDOWN },
     { id:"sheet-sign-pressure", name:"US 10-year Treasury", cat:"circulation", sub:"Pressure", timing:"leading", hk:"pressure-range",
-      head:"", stops:["5y", "10y", "max"], hist:{ s:t10yYieldHistory, k:"q" }, cardUnit:"10-year Treasury", live:["yieldCurve"] },
+      head:"", stops:["5y", "10y", "max"], hist:{ s:t10yLongHistory, k:"q" }, cardUnit:"10-year Treasury", live:["yieldCurve"], src:TREASURY_SRC },
     { id:"sheet-sign-spreads", name:"Treasury spreads", cat:"circulation", sub:"Pressure", timing:"leading", hk:"spreads-range",
-      head:"", hist:{ s:t10y3mHistory, k:"q" }, mid:0, cardUnit:"10Y \u2212 3M, points", live:["yieldCurve"] },
+      head:"", hist:{ s:t10y3mLongHistory, k:"q" }, mid:0, cardUnit:"10Y \u2212 3M, points", live:["yieldCurve"], src:SPREADS_SRC },
     { id:"sheet-sign-mortgage", name:"30-year mortgage rate", cat:"circulation", sub:"Pressure", timing:"leading", hk:"mortgage-range",
       head:"30-Year Fixed Mortgage Rate", hist:{ s:mortgageHistory, k:"m" }, cardUnit:"30-year fixed, monthly average" },
     { id:"sheet-sign-pulse", name:"Pulse", cat:"circulation", sub:"Money", timing:"coincident", term:"Pulse", hk:"pulse-range",

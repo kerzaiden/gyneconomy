@@ -18,8 +18,8 @@ when there is news; most weekdays there is none, and then you stop.
 
 **2. Read today's facts.** `node tools/report.mjs facts > /tmp/facts.json`. It boots the app on
 `data/live.json` and prints every reading's figure, word, tier (Normal, Attention, Risk) and date, the Risk
-Factors rows exactly as the page shows them, the Fed's range, last move and next meeting, and the last edition's
-date and headline. These are the only facts you may use. Fetch nothing else.
+Factors rows exactly as the page shows them, the Fed's range, last move and next meeting, the years a sentence may
+cite (`years`), and the last edition's date and headline. These are the only facts you may use. Fetch nothing else.
 
 **3. Decide whether there is news.** Compare with `data/report-facts.json`, the facts the last edition was
 written from. There is news when any of these changed:
@@ -47,6 +47,13 @@ in the facts, `YYYY-MM-DD`), `headline`, `lede`, `story`, and `elements` with on
 - **Link each reading the first time it is named**: `[US 10-year Treasury](sheet-sign-pressure)`, with the ids
   from the facts.
 - **Quote a figure only as the facts print it**, and only a figure the facts hold. Say dates the US way, month first: "October 9", or "October 9, 2026" with the year; never "9 October" or "9th".
+- **Cite a year only from `years`**: each reading's first and latest year, its record high and low, the last
+  year it stood as high or as low as today, the open cycle's years, and the dates in the facts.
+- **Give a reading only its own word and tier.** A word the facts give a reading ("borrowing more", "saving very
+  little") goes only in a sentence that links or names that reading. A tier is written as the facts write it
+  (Normal, Attention, Risk) and only in a sentence that links or names a reading at that tier. Never say what the
+  word denies: if Consumer credit reads Borrowing more, shoppers are not spending "without leaning on credit".
+- **Link every reading at Attention or Risk** in its own element's text.
 - **Never forecast.** No "will", "expect", "likely", "outlook", "next year"; say what is, and what it last
   resembled ("the highest since 2007").
 - **Keep the market's words** (bull year, tightening, risk premium) and her voice: Mrs. Market is "she".
@@ -54,8 +61,10 @@ in the facts, `YYYY-MM-DD`), `headline`, `lede`, `story`, and `elements` with on
 - **Leave `story` as it is.** It is the cycle's story; if the cycle itself has changed, keep it and say so in
   your report, for Keren.
 
-**5. Check it.** `node tools/report.mjs check data/report.json` must print `ok`. Fix what it names and run it
-again. Never publish an edition that fails.
+**5. Check it.** `node tools/report.mjs check data/report.json` must print `ok`. It checks the shape, the length,
+forecasts, links, every figure and year against the facts, each word and tier against the reading it sits beside,
+and that every reading at Attention or Risk is linked in its element. Fix what it names and run it again. Never
+publish an edition that fails.
 
 **6. Publish it in two places**, the same document in both:
 

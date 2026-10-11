@@ -13,14 +13,14 @@ import * as fred from '../../src/js/history-fred.ts';
 const require = createRequire(import.meta.url);
 
 test('trendOf fits a straight line and names its direction', () => {
-  const up = trendOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 'pts', 'month');
+  const up = trendOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 'month');
   assert.equal(up.word, 'rising');
   assert.deepEqual(up.fit, { slope: 1, intercept: 1, n: 10 });
-  assert.equal(trendOf([10, 9, 8, 7, 6, 5, 4, 3], 'pts').word, 'falling');
+  assert.equal(trendOf([10, 9, 8, 7, 6, 5, 4, 3]).word, 'falling');
 });
 
 test('trendOf fits across a gap without reading it as zero', () => {
-  assert.deepEqual(trendOf([1, null, 3, 4, null, 6, 7, 8, 9, 10], 'pts', 'quarter').fit, { slope: 1, intercept: 1, n: 10 });
+  assert.deepEqual(trendOf([1, null, 3, 4, null, 6, 7, 8, 9, 10], 'quarter').fit, { slope: 1, intercept: 1, n: 10 });
 });
 
 test('a quarter with no reading draws no column but keeps its slot', () => {
@@ -31,7 +31,7 @@ test('a quarter with no reading draws no column but keeps its slot', () => {
 });
 
 test('trendOf refuses fewer than eight points', () => {
-  assert.deepEqual(trendOf([1, 2, 3], 'pts'), { word: 'unavailable', span: '', flat: true });
+  assert.deepEqual(trendOf([1, 2, 3]), { word: 'unavailable', span: '', flat: true });
   assert.deepEqual(trendOf(null), { word: 'unavailable', span: '', flat: true });
 });
 
@@ -112,7 +112,7 @@ test('the Fred backfill writes the stored figures back byte for byte', () => {
   const { emit } = require('../../tools/fetch-fred-history.js');
   const early = { gdp: fred.gdpYoYBefore, cpi: fred.cpiYoYBefore, returns: fred.sp500ReturnsBefore, growth: fred.gdpGrowthBefore, gnp: fred.gnpQuarterlyBefore };
   const fiscal = Object.assign({}, fred.fiscalHistory, { grossQ: fred.grossDebtQuarterly });
-  const out = emit(fred.fedFundsHistory, fred.volatilityHistory, fiscal, fred.treasuryQuarterly, fred.productivityHistory,
+  const out = emit(fred.fedFundsHistory, fred.volatilityHistory, fiscal, Object.assign({}, fred.treasuryQuarterly, { long: fred.treasuryLong }), fred.productivityHistory,
     fred.sp500MonthlyHistory, fred.confidenceHistory, early, fred.durablesHistory, fred.premiumHistory, fred.fedMoves, fred.pceYoYHistory, fred.potentialYoYHistory,
     { delinquency: fred.delinquencyHistory, margin: fred.marginHistory, consumer: fred.consumerCreditHistory, dsr: fred.dsrQuarterly },
     { debt: fred.debtDollarsQuarterly, today: fred.debtToday },

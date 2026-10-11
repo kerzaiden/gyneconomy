@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { window } from './dom.mjs';
 import { detailTexts } from '../../src/js/dom.ts';
-import { refreshLiveData } from '../../src/js/live.ts';
+import { refreshLiveData, READINGS } from '../../src/js/live.ts';
+import { isoDay } from '../../src/js/format.ts';
 import { labRow, marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 import { meterWord } from '../../src/js/indicators.ts';
 import { calendarTodayY } from '../../src/js/refresh-season.ts';
@@ -36,13 +37,16 @@ test('a cycle counts only its closed years as bull years', () => {
   assert.equal(lab('bull').per[open], closed);
 });
 
-test('the (i) says how many closed cycles each short range rests on', () => {
-  const all = detailTexts.join(' ').replace(/<[^>]+>/g, '');
-  assert.match(all, /Depth: a range rests[^.]*\. US 10-year Treasury[^;]* on two; [^;]*Concentration risk on three/);
+test('a range needs four closed cycles and twenty years of record, and the (i) names the readings left unjudged', () => {
+  const all = detailTexts.join(' ').replace(/<[^>]+>/g, ''), thin = labs().filter(l => l.cat !== 'cycle' && !l.norm);
+  assert.match(all, /Depth: a range needs at least four closed cycles and 20 years of record/);
+  assert.ok(thin.length > 0 && thin.every(l => all.includes(l.name)), thin.map(l => l.name).join(', '));
+  assert.ok(thin.some(l => l.name === 'Margin debt') && !thin.some(l => l.name === 'Fear'));
+  assert.ok(labs().filter(l => l.norm && l.cat !== 'cycle').every(l => l.per.slice(0, 18).filter(v => v != null).length >= 4));
 });
 
 test('a live reading moves Cycle Statistics with its figure', async () => {
-  const docs = { capeValue: { kind: 'scalar', value: 33.3, asOf: '2026-10-03' } };
+  const docs = { capeValue: { kind: 'scalar', value: 33.3, asOf: new Date(Date.parse(isoDay(READINGS.capeValue.fileAsOf())) + 864e5).toISOString().slice(0, 10) } };
   window.claude = { use: () => Promise.resolve({ doc: path => ({ get: () => docs[path.slice(5)] ? Promise.resolve({ data: docs[path.slice(5)] }) : Promise.reject(new Error('none')) }) }) };
   refreshLiveData();
   for (let i = 0; i < 5; i++) await new Promise(r => setTimeout(r, 0));
@@ -88,7 +92,7 @@ test('the Health Score opens every cycle’s score, and Interest Rates on Analys
   const page = detailTexts[+document.querySelector('#chart-home .lab-score-box .details-link').dataset.detailIdx];
   const bars = page.match(/<rect class="(ok|warn|odd)"/g) || [];
   assert.equal(bars.length, marketCycles.length, 'one bar per cycle');
-  assert.ok(page.includes('<i class="warn"></i>Attention'));
+  assert.match(page, /<i class="[^"]*\bwarn"><\/i>Attention/);
 });
 
 test('every cycle lists its readings in the roster’s order, whatever their results', () => {

@@ -1,3 +1,4 @@
+import { capFirst } from "./format.ts";
 
 type Fit = { slope: number; intercept: number; n: number };
 type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
@@ -7,10 +8,10 @@ type XLabelOpts = { xLabel?: ((d: never, i: number) => string) | null; _years?: 
 type AxesOpts = { ticks?: number[]; step?: number; lo?: number; hi?: number; fmt: (v: number) => string; y: YScale; x0: number; x1: number; top?: number | null; bot?: number | null; skipNear?: number | null; marks?: number[]; markFmt?: (v: number) => string; noGridAt?: number | null; base?: number | string | null; gutter?: number };
 type DivergeDatum = { v: number | null; y?: number; [k: string]: unknown };
 type DivergeOpts = XLabelOpts & FitOpts & { vals: DivergeDatum[]; mid: number; midLabel?: string; tickFmt?: (v: number) => string; step?: number; goodAbove?: boolean; at?: ChartGeom["at"]; alt?: string };
-export type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: number; T: number; B: number };
+type HistFrame = { W: number; narrow: boolean; H: number; L: number; R: number; T: number; B: number };
 
 // ---- The range bar ----
-export function trendOf(vals: (number | null)[] | null | undefined, unit?: string, period?: string): Trend {
+export function trendOf(vals: (number | null)[] | null | undefined, period?: string): Trend {
   period = period || "period";
   if (!vals || vals.length < 8) return { word:"unavailable", span:"", flat:true };
   var n = vals.length, m = 0, sx = 0, sy = 0, sxy = 0, sxx = 0;
@@ -52,7 +53,7 @@ function xLabelOf(o: XLabelOpts, d: { y?: number }, i: number, all?: { y?: numbe
   return d.y % 10 ? "" : "\u2019" + String(d.y).slice(2);
 }
 export function fitLine(vals: (number | null)[], per: string, fmt: (v: number) => string, x0: number, x1: number, y: YScale, W: number, padL: number, padR: number){
-  var fit = trendOf(vals, "points", per).fit;
+  var fit = trendOf(vals, per).fit;
   return fit && fit.n > 1 ? fitGroup({ fit:fit, fmt:fmt }, x0, x1, y, W, padL, padR) : "";
 }
 export function fitGroup(o: FitOpts, x0: number, x1: number, y: YScale, W: number, padL: number, padR: number){
@@ -88,22 +89,36 @@ export function colWidth(slot: number){
   return Math.min(20, slot * COL_FILL);
 }
 export var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };
+var YEAR_ROW = 17;
 export function histFrame(Wpx?: number | null): HistFrame {
   var W = Math.max(270, Math.round(Wpx || 360));
   var narrow = W < 430;
   var H = narrow ? 335 : 375;
   return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
-           T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
+           T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - YEAR_ROW - AXIS.FOOT };
+}
+export function colScale(F: HistFrame, n: number, lo: number, hi: number){
+  var h = (F.R - F.L) / (2 * Math.max(1, n));
+  return { X:function(i: number){ return F.L + h + (F.R - F.L - 2 * h) * i / Math.max(1, n - 1); },
+           Y:function(v: number){ return F.B - (F.B - F.T) * (v - lo) / (hi - lo); } };
+}
+export function yearMarks(F: HistFrame, years: number[], idx: (yr: number) => number, X: (i: number) => number){
+  var grids: string[] = [], labels: string[] = [];
+  years.forEach(function(yr){
+    var i = idx(yr); if (i < 0) return;
+    grids.push(vGrid(X(i), F.T, F.B));
+    labels.push(xLabel(X(i).toFixed(1), yr, F.H - AXIS.FOOT));
+  });
+  return { grids:grids, labels:labels };
+}
+export function hitRect(F: HistFrame){
+  return '<rect class="hero-hit" x="' + F.L + '" y="' + F.T + '" width="' + (F.R - F.L) + '" height="' + (F.B - F.T) + '"/>';
 }
 export function xLabel(x: number | string, text: string | number, y: number | string){
   return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + '</text>';
 }
 export function yLabel(x: number, y: number, text: string | number, anchor: string, cls?: string){
   return '<text class="bt-yl' + (cls ? " " + cls : "") + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + '</text>';
-}
-export type KeyRow = [string, string];
-export function histKey(rows: KeyRow[]){
-  return '<ul class="hist-key">' + rows.map(function(r){ return '<li><i class="hk ' + r[0] + '"></i>' + r[1] + '</li>'; }).join("") + '</ul>';
 }
 export function crossLine(top: number | string, bot: number | string){
   return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
@@ -114,10 +129,9 @@ export function zeroRule(L: number, R: number, y: number){
 export function meanRule(L: number, R: number, y: number){ return '<path class="vh-mean" d="M' + L + ',' + y.toFixed(1) + 'H' + R + '"/>'; }
 export var pendingGeom: ChartGeom | null = null;
 export function publishGeom(name: string, g: ChartGeom){ g.src = name; pendingGeom = g; return g; }
-export function histBar(inner?: string | null, id?: string | null){
-  return '<div class="hist-bar"' + (id ? ' id="' + id + '"' : '') + '>' + (inner || '') + '</div>';
+export function histBar(inner?: string | null){
+  return '<div class="hist-bar">' + (inner || '') + '</div>';
 }
-export function histTip(id: string){ return '<div class="gdp-tooltip mono hist-tip" id="' + id + '" hidden></div>'; }
 export function avgRule(x0: number | string, x1: number | string, y: number | string){
   return '<path class="temp-avg" d="M' + x0 + ',' + y + 'H' + x1 + '"/>';
 }
@@ -223,8 +237,7 @@ export function windowYears(fromYear: number, toYear: number, want: number): num
   return out.length ? out : [toYear];
 }
 function refName(t?: string | null){
-  var w = String(t || "Reference").split(",")[0].trim();
-  return w.charAt(0).toUpperCase() + w.slice(1);
+  return capFirst(String(t || "Reference").split(",")[0].trim());
 }
 export function beatPath(x0: number, x1: number, y: number, period: number | ((x: number) => number), amp: number){
   var f = function(n: number){ return n.toFixed(1); };

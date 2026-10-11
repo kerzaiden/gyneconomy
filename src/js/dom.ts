@@ -81,8 +81,8 @@ export function moreRow(fullHtml: string | null | undefined, label?: string){
   if (!fullHtml) return "";
   return moreDoor(' data-detail-idx="' + detailSlot(fullHtml) + '"', label || "More details");
 }
-export function moreDoor(attrs: string, label: string, mark?: string){
-  return '<button type="button" class="more-row"' + attrs + '><span' + (mark ? ' class="more-lead"><span class="more-mark" aria-hidden="true">' + mark + '</span>' : '>') + label + '</span>' + CHEV + '</button>';
+function moreDoor(attrs: string, label: string){
+  return '<button type="button" class="more-row"' + attrs + '><span>' + label + '</span>' + CHEV + '</button>';
 }
 export function moreButton(more: boolean){
   return '<button type="button" class="cyc-more dx-more" aria-expanded="false"' + (more ? "" : " hidden") + '><span>View more</span>' + CHEV + '</button>';
@@ -109,20 +109,7 @@ export function appendSvgMarkup(svg: Element, markup: string | null | undefined)
   var kids: Node[] = Array.prototype.slice.call(root.childNodes);
   for (var i = 0; i < kids.length; i++) svg.appendChild(document.importNode(kids[i], true));
 }
-export var allSources: Src[] = [
-  {t:"Treasury daily par yield curve rates", u:"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=202609"},
-  {t:"FRED — 10Y minus 2Y spread", u:"https://fred.stlouisfed.org/series/T10Y2Y"},
-  {t:"FRED — 10Y minus 3M spread", u:"https://fred.stlouisfed.org/series/T10Y3M"},
-  {t:"FRED — 10Y minus 3M spread, monthly average (T10Y3MM)", u:"https://fred.stlouisfed.org/series/T10Y3MM"},
-  {t:"BLS Employment Situation", u:"https://www.bls.gov/news.release/empsit.nr0.htm"},
-  {t:"DOL weekly unemployment claims", u:"https://www.dol.gov/ui/data.pdf"},
-  {t:"BLS Consumer Price Index", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},
-  {t:"Federal Reserve FOMC statement", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},
-  {t:"FRED — Consumer Price Index for All Urban Consumers (CPIAUCSL)", u:"https://fred.stlouisfed.org/series/CPIAUCSL"},
-  {t:"FRED — Consumer Price Index for All Urban Consumers, not seasonally adjusted, before 1948 (CPIAUCNS)", u:"https://fred.stlouisfed.org/series/CPIAUCNS"},
-  {t:"FRED — Federal Funds Target Range, upper limit (DFEDTARU)", u:"https://fred.stlouisfed.org/series/DFEDTARU"},
-  {t:"FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}
-];
+export var allSources: Src[] = [];
 export function addSources(list: Src | Src[] | null | undefined){
   if (!list) return;
   var seen: Record<string, number> = Object.create(null), i;
@@ -151,9 +138,9 @@ export function detailSlot(html: unknown){
   }
   return idx;
 }
-export function expandBtn(fullHtml: unknown){
-  return '<button type="button" class="expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
-         '" aria-label="Expand details">i</button>';
+export function expandBtn(fullHtml: unknown, label?: string){
+  return '<button type="button" class="' + (label ? "info-btn " : "") + 'expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
+         '" aria-label="' + (label || "Expand details") + '"' + (label ? ' title="' + label + '"' : "") + '>i</button>';
 }
 
 var detailSlots: Record<string, number>;
