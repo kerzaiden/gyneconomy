@@ -844,7 +844,8 @@ settles it; none is open after V668.
   did, so nothing downstream moves. (Oct 11, 2026)
 - **Summer is hot prices in any direction; the polar seasons, Summer and Winter, have no direction, and the
   transition seasons, Spring and Autumn, are named by it.** Keren chose simplicity: nobody understands a model whose
-  hottest season splits by direction. This reverses 1.0.1's "hot prices cooling in expansion are
+  hottest season splits by direction. It is also how the real seasons turn: Spring starts chilly and warms, hot is
+  Summer, and Summer cools through Autumn into Winter. This reverses 1.0.1's "hot prices cooling in expansion are
   Spring–Disinflation" the same day; Autumn keeps 1.0.1's rule, and the grid marks its Stagflation with an asterisk,
   only while hot. Measured first: 28 quarters move from Spring–Disinflation to Summer (1976, 1985, 2023 Q3 among
   them); today and the record against recessions are unchanged. (Legend Icon)
