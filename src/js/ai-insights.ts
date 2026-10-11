@@ -24,7 +24,7 @@ function edition(){ return dateWords(now.report.asOf); }
 function storyOf(c: Cycle){ return c.ongoing ? now.report.story : c.blurb; }
 function lead(head: string, by: string){ return '<span class="wr-head">' + head + '</span><span class="wr-by">' + by + '</span>'; }
 export function storyCard(m: CycleModel){
-  return trendBox(bookSvg(), '<span>' + m.era.name + ' Story <span class="trend-when">\u00b7 ' + cycLabel(m.era).years + '</span></span>',
+  return trendBox(bookSvg(), '<span>' + m.era.name + ' <span class="trend-when">\u00b7 ' + cycLabel(m.era).years + '</span></span>',
     trendText(storyOf(m.era), "ai-clamp") + learnMore(' aria-expanded="false" data-story-more="1"', "Read more"));
 }
 export function wireStory(host: HTMLElement){

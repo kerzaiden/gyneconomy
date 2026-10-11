@@ -316,7 +316,7 @@ async function openPage(p, url, sheet) {
     });
     const today = await read();
     await sweep(p);
-    (today && today.visible && today.title === 'AI Cycle Story \u00b7 2023\u2013Today' && today.cards === 0 &&
+    (today && today.visible && today.title === 'AI Cycle \u00b7 2023\u2013Today' && today.cards === 0 &&
      today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker === 'AI Cycle')
       ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
@@ -361,7 +361,7 @@ async function openPage(p, url, sheet) {
     await filt(p, '[data-pick-period="AI Cycle"]'); await shut(p);
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="chart"]').click()); await settle(p);
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click()); await settle(p);
-    (past && past.visible && past.title === 'Big Tech Cycle Story \u00b7 2009\u20132018' && past.kicker === 'Big Tech Cycle')
+    (past && past.visible && past.title === 'Big Tech Cycle \u00b7 2009\u20132018' && past.kicker === 'Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -498,7 +498,7 @@ async function openPage(p, url, sheet) {
     const rest = await bar();
     await p.mouse.wheel(0, 900); await settle(p); const down = await bar();
     await p.mouse.wheel(0, -900); await settle(p);
-    (rest.icons && rest.width < 300 && rest.pill !== 'rgba(0, 0, 0, 0)' && down.height === rest.height && down.width === rest.width)
+    (rest.icons && rest.width < 340 && rest.pill !== 'rgba(0, 0, 0, 0)' && down.height === rest.height && down.width === rest.width)
       ? ok('the phone tab bar shows icons only, a pill on the open tab, and holds its size while scrolling', rest.width + 'px, ' + rest.pill)
       : bad('the phone tab bar shows icons only, a pill on the open tab, and holds its size while scrolling', JSON.stringify({ rest, down }));
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);

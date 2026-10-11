@@ -147,7 +147,7 @@ test('the dial is titled by its cycle, its legend speaks in signs, and the cycle
   const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
   ['Prices &lt; 1%', 'Prices \u2264 3%', 'Prices &gt; 3%', 'Prices \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
   const first = document.querySelector('#diagnosis .trend-card');
-  assert.equal(first.querySelector('.trend-head').textContent, nowModel.era.name + ' Story \u00b7 ' + cycLabel(nowModel.era).years);
+  assert.equal(first.querySelector('.trend-head').textContent, nowModel.era.name + ' \u00b7 ' + cycLabel(nowModel.era).years);
   assert.equal(first.dataset.open, undefined);
   assert.equal(first.querySelector('.ai-clamp').textContent, now.report.story);
   assert.equal(document.querySelector('[data-open="sheet-ai-insights"]'), null);
@@ -289,7 +289,7 @@ test('a past cycle shows its own record on the Diagnosis, and Back restores toda
   assert.equal(chevs(), 0);
   document.querySelector('#calendar-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(heads(), 'Big Tech Cycle Story \u00b7 2009\u20132018');
+  assert.equal(heads(), 'Big Tech Cycle \u00b7 2009\u20132018');
   assert.equal(chevs(), 0);
   assert.equal(lede(), ui.eraOpen.blurb);
   ui.eraPageBack();

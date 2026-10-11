@@ -155,7 +155,7 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   const reads = (c, story) => {
     const k = card(), more = k.querySelector('[data-story-more]'), text = k.querySelector('.trend-text');
     assert.equal(k.tagName, 'SECTION', c.name + ': the story opens no page');
-    assert.equal(k.querySelector('.trend-head').textContent, c.name + ' Story \u00b7 ' + cycLabel(c).years, c.name);
+    assert.equal(k.querySelector('.trend-head').textContent, c.name + ' \u00b7 ' + cycLabel(c).years, c.name);
     assert.equal(text.textContent, story, c.name);
     assert.ok(text.classList.contains('ai-clamp') && more.textContent === 'Read more', c.name);
     more.click();

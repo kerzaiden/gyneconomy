@@ -109,11 +109,11 @@ settles it; none is open after V668.
   Cycle tab. Closest Moments stays retired: the
   moments that resemble today are found by what needs attention, the way financial media say "highest since", which
   Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report, Today Tab)
-- **The Cycle Story card follows the dial on every cycle page, the book its mark, titled by its cycle ("AI Cycle
-  Story", "Dot-Com Cycle Story") with a dot and its years beside the title, then three lines of its story and "Read
+- **The Cycle Story card follows the dial on every cycle page, the book its mark, titled by its cycle alone ("AI
+  Cycle", "Dot-Com Cycle") with a dot and its years beside the title, then three lines of its story and "Read
   more", which opens the rest in place ("Read less" closes it).** The story's own page repeated Risk Factors, already
   on Today, and a page for one paragraph was a detour; one title line with the years saves the space a separate name
-  and date took. A past cycle keeps its story, and because every cycle page is one page, today's cycle carries the
+  and date took, and the book already says it is a story, so the title does not. A past cycle keeps its story, and because every cycle page is one page, today's cycle carries the
   same card. The Weather Report on Today dates its edition in full ("9 October 2026"), never "Updated": a report is plainly as of its date. Risk Factors follow the lede, and
   the lede carries only what moved and never restates the story. (Weather Report, Today Tab, Story In Place)
 - **A new edition is written only when there is news, checked every weekday evening, by a scheduled Claude routine
@@ -221,10 +221,13 @@ settles it; none is open after V668.
   centred) and close to the bottom edge, 12px inside the safe area (never under 10px), the surface at 58% behind an
   18px blur with a light edge and a soft lift. On a phone it holds icons only, as wide as its four icons, the open tab
   in a plum-tinted pill (`--glass-on`, the accent at 14%, 24% in dark) with its icon in the accent ink; the names stay
-  for screen readers and in the desktop sidebar. It keeps its size while the page scrolls.** On her iPhone she could
+  for screen readers and in the desktop sidebar. Each tab is 76×48 with a 26px icon, so the bar is about 80% of a
+  phone's width and 60px tall. It keeps its size while the page scrolls.** On her iPhone she could
   barely tell which tab was open; after Instagram's bar she asked for a visible pill and no labels under icons that
   already name the tab. The bar briefly shrank while scrolling, as Instagram's does; Keren dropped it: Instagram is
-  built around scrolling and this app is not, and the shrink moved too fast. Keren wanted the bar floating like the cycle app she showed, with the page visible and blurred
+  built around scrolling and this app is not, and the shrink moved too fast. At 64×44 the tabs were too small for her
+  fingers; Instagram's bar, measured from her screenshot, spans about 75% of the screen with five tabs, so four tabs
+  fill a little more. Keren wanted the bar floating like the cycle app she showed, with the page visible and blurred
   behind it as it scrolls. The glass is the `--glass*` tokens, light and dark; it replaces V550's flush, full-width
   bar. On her iPhone the bar sat too far from the bottom (10px plus the 34px inset left a 44px gap; now 22px). It is
   the same design on desktop and mobile (0.6.15 retired the wide-screen segmented track; the 480px cap is Claude's
@@ -1443,7 +1446,7 @@ settles it; none is open after V668.
     mark at Keren's request. (V302, V661)
   - Circulation: a hollow drop, kept apart from Desire's flame by the flame's filled core. In this app Circulation
     is blood. (V302, V507)
-  - The cycle story: a book, left of its heading ("AI Cycle Story"), on every cycle page.
+  - The cycle story: a book, left of its heading (the cycle's name, "AI Cycle"), on every cycle page.
     (V691)
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
   - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index, which the
