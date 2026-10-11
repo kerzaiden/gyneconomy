@@ -152,7 +152,7 @@ export function chartAxes(o: AxesOpts){
     out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, ly, o.fmt(v), "middle"));
   });
   (o.marks || []).forEach(function(m){
-    out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, parseFloat(o.y(m) as string) - 5, (o.markFmt || o.fmt)(m), "middle", "bt-ref"));
+    out.push(yLabel((fx0 + o.x0 - AXIS.RAIL) / 2, parseFloat(o.y(m) as string) - 5, (o.markFmt || o.fmt)(m), "middle"));
   });
   if (o.base != null)
     out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + ',' + o.base + 'L' + fx1.toFixed(1) + ',' + o.base + '"/>');

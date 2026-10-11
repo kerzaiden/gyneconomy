@@ -808,7 +808,6 @@
   .ff-col.fx{ stroke:var(--hist-x); }
   .dv-bar.over{ stroke:var(--hist-4); } .dv-bar.under{ stroke:var(--hist-2); }
   .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
-  .bt-yl.bt-ref{ fill:var(--text-primary); font-weight:600; }
   .hist-key{ list-style:none; margin:12px 0 0; padding:0; display:grid; gap:6px; font-size:var(--type-meta); color:var(--text-secondary); }
   .hist-key li{ display:flex; align-items:flex-start; gap:8px; line-height:1.4; }
   .hk{ flex:none; width:14px; height:9px; margin-top:4px; border-radius:3px; }

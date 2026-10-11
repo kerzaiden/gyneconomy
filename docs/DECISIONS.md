@@ -1083,7 +1083,9 @@ settles it; none is open after V668.
   (V306)
 - **The policy rate has no band: its columns stand on zero, the window's own average is drawn across them, the
   height is the reading and the trend pill gives the direction.** Where "restrictive" turns "accommodative" is
-  contested, unpublished and moves, so drawing it would be inventing a band. (V592)
+  contested, unpublished and moves, so drawing it would be inventing a band. Its columns still take the history
+  colours like every level history, plum only past Tukey's fence of its own record: an outlier rule, not a
+  policy stance (Keren, consistency across the app). (V592, History Red)
 - **No score, band or verdict word is put on the Treasury level; Pressure's row prints today's 10-year yield
   from the live curve, and Pressure's cuff ring that scored it on a 0–6% band stays gone.** No sourced band
   exists for a rate (Keren declined three constructions), and a figure without a band gets no word. (V596,
