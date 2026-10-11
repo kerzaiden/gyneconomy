@@ -182,7 +182,10 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   const ring = today.querySelector('.today-cycle');
   assert.deepEqual([...today.children].slice(0, 3).map(c => c.classList.contains('today-cycle') ? 'cycle' : c.querySelector('.lab-door') ? 'risk' : 'report'), ['report', 'cycle', 'risk']);
   assert.equal(ring.dataset.goTab, 'cycle');
-  assert.equal(ring.querySelectorAll('.dial-moon').length, document.querySelectorAll('#cycle-dial .dial-moon').length, 'the card draws the dial’s own ring');
+  const sides = [...document.querySelectorAll('#cycle-dial .dial-mkt')].map((p) => p.classList.contains('up'));
+  assert.equal(ring.querySelectorAll('.dial-mkt').length, sides.filter((up, i) => i === 0 || up !== sides[i - 1]).length, 'the card draws one smooth S&P 500 arc per run of bull or bear years');
+  assert.equal(ring.querySelectorAll('.dial-track').length, 1, 'a grey ring stands for the typical cycle');
+  assert.equal(ring.querySelectorAll('.dial-moon, .dial-dot, .dial-peak').length, 0, 'no seasons, dots or peak mark');
   assert.equal(ring.querySelector('.today-cycle-season').firstChild.textContent.trim(), document.getElementById('season-wheel-hub-theme').firstChild.textContent);
   assert.ok(!today.textContent.includes(now.report.story), 'the cycle story stays on the cycle tab');
   assert.ok(risksOf(nowModel.era).length > 0);

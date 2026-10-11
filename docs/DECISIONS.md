@@ -109,14 +109,18 @@ settles it; none is open after V668.
   Cycle tab. Closest Moments stays retired: the
   moments that resemble today are found by what needs attention, the way financial media say "highest since", which
   Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report, Today Tab)
-- **Under the Weather Report, Today carries the current cycle in small: the dial's own ring, small, on the left (its seasons,
-  bull and bear years and the typical cycle ahead, without the year badge, its lines drawn bolder), and on the right
+- **Under the Weather Report, Today carries the current cycle in small: a small S&P 500 ring on the left, drawn like the
+  Health app's rings: a grey ring for a typical cycle and one smooth arc over it for the years so far, in the bull
+  or bear ink, a new arc only where the market changes side), and on the right
   the cycle and its year, the season and its stage on one line ("Autumn · Stagflation"), and the year so far
   ("+14.4% in 2026", the figure in the bull or bear ink, which says the year's side without a word); the two small
   lines share one size so neither competes with the season;
   the whole card opens the Cycle tab.** Keren wanted the cycle in view where the app opens, as a door to its page:
   the ring only shows the colours and where the cycle stands (the large one is a tap away), and the card carries no
-  date, since the Weather Report above it already does. The ring is the dial's, drawn by one function (`dialRing`), so the two cannot part. (Story In Place)
+  date, since the Weather Report above it already does. The seasons' moons were too small to read at that size and
+  the season is already in words beside it, so the ring keeps only the market and where the cycle stands against a
+  typical length. Year segments, dots and the peak mark were barely visible at that size, so the ring is one thick,
+  smooth arc; its length and colours come from the same model and returns as the dial's. (Story In Place, Home Tab)
 - **The Cycle Story card follows the dial on every cycle page, the book its mark, titled by its cycle alone ("AI
   Cycle", "Dot-Com Cycle") with a dot and its years beside the title, then three lines of its story and "Read
   more", which opens the rest in place ("Read less" closes it).** The story's own page repeated Risk Factors, already
@@ -200,12 +204,13 @@ settles it; none is open after V668.
 
 ### Tabs, bars and menu
 
-- **The tab bar is Today · Cycle · Analysis · Portfolio, and the app opens on Today, its tab icon the weather
-  mark.** Today holds the Weather Report and, later, other financial news: what a reader comes back for every day
+- **The tab bar is Today · Cycle · Analysis · Portfolio, and the app opens on Today, its tab icon a home.** Today
+  is where the app opens and where a reader returns, so its icon says home; the weather mark stays with the Weather
+  Report it heads. The name stays "Today" for screen readers and in the desktop sidebar. Today holds the Weather Report and, later, other financial news: what a reader comes back for every day
   belongs on the first screen. Herstory gave up its tab to make room, since the cycle list is read far less often
   than Analysis, Portfolio or the cycle. Search replaced the Content tab (V657) and swapped places with Analysis
   (V665); Cycle analysis then took Search's place, because the two showed the same readings in different views.
-  (V657, V665, 0.6.1, Today Tab)
+  (V657, V665, 0.6.1, Today Tab, Home Tab)
 - **Herstory is the last container on Analysis, built like Year by Year: the history clock (an arrow turning back
   round a clock face) as its mark, the three newest closed cycles, then View more for the rest.** It is read less
   often than the rest of Analysis, so it sits at the foot; it keeps the icon that stood beside Cycle history. A cycle
@@ -276,7 +281,8 @@ settles it; none is open after V668.
   surface behind a 24px blur, with the glass edge and lift, over a lighter veil that blurs the page by 10px.**
   Keren picked option C from the liquid-glass previews. (0.6.9)
 - **The top bar's titles are Keren's names for the tabs: "Today", "Current Cycle", "Analysis", "Portfolio".**
-  (undated, 0.6.1, Today Tab)
+  Today keeps its title for now, though the Weather Report's date already names the day: Keren will decide when
+  she settles the top bar. (undated, 0.6.1, Today Tab, Home Tab)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
   head names the series (bar "Pulse", head "Velocity of Money (M2)").** A title inside the page only repeated the
   top bar: the bar names the page and the card names the reading. (V208, V288, V298, V361)
