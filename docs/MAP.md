@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,825 lines** in 44 files, about 603 KB, roughly **171 thousand tokens**. No session can
+The source is **8,838 lines** in 44 files, about 603 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `d258ed2` on 2026-10-11.
+Generated from commit `42cbb8e` on 2026-10-11.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `d258ed2` on 2026-10-11.
 | `js/main.ts` | 40 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **40** modules, **808** top-level functions, **124** top-level vars, **392** exported names, **20** boots.
+Counts: **40** modules, **810** top-level functions, **124** top-level vars, **392** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -52,7 +52,7 @@ Counts: **40** modules, **808** top-level functions, **124** top-level vars, **3
 | `js/charts.ts` | 261 | 35 | `format` |
 | `js/concentration.ts` | 48 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 497 | 138 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `roster` |
-| `js/dial-ring.ts` | 81 | 2 | `data`, `model`, `refresh-season` |
+| `js/dial-ring.ts` | 94 | 4 | `data`, `model`, `refresh-season` |
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 75 | 13 | `data`, `dom`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster`, `wave-chart` |
 | `js/format.ts` | 106 | 44 | — |
@@ -1101,7 +1101,9 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 9 | `dialRing` · export | `function dialRing(` |
-| 77 | `miniRing` · export | `function miniRing(` |
+| 77 | `miniRuns` | `function miniRuns(` |
+| 86 | `miniArc` | `function miniArc(` |
+| 90 | `miniRing` · export | `function miniRing(` |
 
 ### `js/era.ts`
 

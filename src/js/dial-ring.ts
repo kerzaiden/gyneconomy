@@ -74,7 +74,20 @@ export function dialRing(m: CycleModel){
   }
   return { parts:parts, quarters:quarters, polar:polar, R:R, SEAM_END:SEAM_END, lastMoonEnd:lastMoonEnd, moonW:moonW, trackW:trackW };
 }
+function miniRuns(m: CycleModel){
+  var runs: { up: boolean; from: number; to: number }[] = [];
+  for (var y = m.era.from; y <= m.endYear; y++){
+    var ret = sp500AnnualReturns[y], from = y - m.era.from, to = Math.min(from + 1, m.elapsedYears), last = runs[runs.length - 1];
+    if (ret == null || to <= from) continue;
+    if (last && last.up === ret >= 0 && last.to === from) last.to = to; else runs.push({ up:ret >= 0, from:from, to:to });
+  }
+  return runs;
+}
+function miniArc(f0: number, f1: number){
+  function at(f: number){ var a = Math.min(f, 0.9999) * 2 * Math.PI; return (80 * Math.sin(a)).toFixed(2) + " " + (-80 * Math.cos(a)).toFixed(2); }
+  return "M" + at(f0) + " A80 80 0 " + (f1 - f0 > 0.5 ? 1 : 0) + " 1 " + at(f1);
+}
 export function miniRing(m: CycleModel){
-  var g = dialRing(m);
-  return '<svg class="cycle-dial mini-ring" viewBox="-84 -84 168 168" aria-hidden="true">' + g.parts.filter(function(p){ return /class="dial-(mkt|peak|dot)\b/.test(p); }).join("").replace(/ data-year="[^"]*"/g, "") + '</svg>';
+  var arcs = miniRuns(m).map(function(r){ return '<path class="dial-mkt ' + (r.up ? "up" : "down") + '" d="' + miniArc(r.from / m.dialYears, r.to / m.dialYears) + '"></path>'; });
+  return '<svg class="cycle-dial mini-ring" viewBox="-100 -100 200 200" aria-hidden="true"><circle class="dial-track" r="80"></circle>' + arcs.join("") + '</svg>';
 }

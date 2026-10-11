@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `dc76221` on 2026-10-11. **109 components**, **10 shared patterns**.
+Generated from commit `42cbb8e` on 2026-10-11. **109 components**, **12 shared patterns**.
 
 ## ai-insights.ts
 
@@ -91,7 +91,7 @@ Generated from commit `dc76221` on 2026-10-11. **109 components**, **10 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`dialRing`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-track` `.disc` `.dot` | `dial-cycle.ts:drawDial`, `dial-ring.ts:miniRing` |
+| **`dialRing`** | `.cap` `.dial-dot` `.dial-moon` `.dial-peak` `.disc` `.dot` | `dial-cycle.ts:drawDial` |
 | **`miniRing`** | `.cycle-dial` `.mini-ring` | `ai-insights.ts:cycleCard` |
 
 ## dom.ts
@@ -348,6 +348,8 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.trend-card` | 2 | `ai-insights.ts:cycleCard`, `dom.ts:trendCard` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
 | `.dx` | 2 | `diagnosis.ts:diagnosisHost`, `portfolio.ts:buildPortfolio` |
+| `.dial-track` | 2 | `dial-ring.ts:dialRing`, `dial-ring.ts:miniRing` |
+| `.dial-mkt` | 2 | `dial-ring.ts:dialRing`, `dial-ring.ts:miniRing` |
 | `.dx-mark` | 2 | `dom.ts:trendHead`, `render-core.ts:dxHead` |
 | `.cycsel-menu` | 2 | `history.ts:cyclePicker`, `history.ts:headDots` |
 | `.lag-row` | 2 | `render-pages.ts:deriveUninversionDetail`, `tabs-menu.ts:renderSeasonRows` |

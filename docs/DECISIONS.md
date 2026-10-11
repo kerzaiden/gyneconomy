@@ -109,17 +109,18 @@ settles it; none is open after V668.
   Cycle tab. Closest Moments stays retired: the
   moments that resemble today are found by what needs attention, the way financial media say "highest since", which
   Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report, Today Tab)
-- **Under the Weather Report, Today carries the current cycle in small: the dial's own S&P 500 ring, small, on the left (the
-  cycle's bull and bear years and the typical cycle ahead as dots, without the seasons), and on the right
+- **Under the Weather Report, Today carries the current cycle in small: a small S&P 500 ring on the left, drawn like the
+  Health app's rings: a grey ring for a typical cycle and one smooth arc over it for the years so far, in the bull
+  or bear ink, a new arc only where the market changes side), and on the right
   the cycle and its year, the season and its stage on one line ("Autumn · Stagflation"), and the year so far
   ("+14.4% in 2026", the figure in the bull or bear ink, which says the year's side without a word); the two small
   lines share one size so neither competes with the season;
   the whole card opens the Cycle tab.** Keren wanted the cycle in view where the app opens, as a door to its page:
   the ring only shows the colours and where the cycle stands (the large one is a tap away), and the card carries no
   date, since the Weather Report above it already does. The seasons' moons were too small to read at that size and
-  the season is already in words beside it, so the ring keeps only the market's years and where the cycle stands
-  against a typical length. The ring is the dial's, drawn by one function (`dialRing`), so the two cannot part.
-  (Story In Place, Home Tab)
+  the season is already in words beside it, so the ring keeps only the market and where the cycle stands against a
+  typical length. Year segments, dots and the peak mark were barely visible at that size, so the ring is one thick,
+  smooth arc; its length and colours come from the same model and returns as the dial's. (Story In Place, Home Tab)
 - **The Cycle Story card follows the dial on every cycle page, the book its mark, titled by its cycle alone ("AI
   Cycle", "Dot-Com Cycle") with a dot and its years beside the title, then three lines of its story and "Read
   more", which opens the rest in place ("Read less" closes it).** The story's own page repeated Risk Factors, already
