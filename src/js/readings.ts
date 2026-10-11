@@ -1,4 +1,4 @@
-import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLabel, MONTHS_SHORT, qPretty, quartile, readingNote, srcBlock, tagFor, titleCase } from "./format.ts";
+import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLabel, MONTHS_SHORT, qPretty, quartile, readingNote, sideWord, srcBlock, tagFor, titleCase } from "./format.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
@@ -34,16 +34,14 @@ function productivityWord(v: number): WordOf & { why: string } {
     why:"is below both lines, so the word is below the slowdown" };
 }
 function confidenceWord(v: number): WordOf {
-  if (v >= CONFIDENCE_LINE) return { state:"good", text:"Confident",
-    says:"above the OECD\u2019s long-term average of 100, the side on which households lean towards spending on major purchases" };
-  return { state:"warning", text:"Pessimistic",
-    says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" };
+  return sideWord({ line:CONFIDENCE_LINE,
+    above:{ state:"good", text:"Confident", says:"above the OECD\u2019s long-term average of 100, the side on which households lean towards spending on major purchases" },
+    below:{ state:"warning", text:"Pessimistic", says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" } })(v);
 }
 function desireWord(v: number): WordOf {
-  if (v >= DESIRE_LINE) return { state:"good", text:"High appetite",
-    says:"above zero: households are buying more of what they could put off than they were a year earlier" };
-  return { state:"warning", text:"Low appetite",
-    says:"below zero: households are buying less of what they could put off than they were a year earlier" };
+  return sideWord({ line:DESIRE_LINE,
+    above:{ state:"good", text:"High appetite", says:"above zero: households are buying more of what they could put off than they were a year earlier" },
+    below:{ state:"warning", text:"Low appetite", says:"below zero: households are buying less of what they could put off than they were a year earlier" } })(v);
 }
 export function deficitInfoHtml(){
   var iSur = -1, i;
@@ -429,13 +427,10 @@ function marketWord(v: number): WordOf {
 }
 function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
 function marketInfoHtml(f: MarketReading){
-  return readingNote({ title:titleCase(f.econTerm),
-    lead:'The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +
-      'The record, year by year, runs ' + f.span + '.',
+  return readingNote({ title:titleCase(f.econTerm), lead:'The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. The record, year by year, runs ' + f.span + '.',
     paras:['<b>The zero line is the definition, not a band</b>: a year the index ends higher, ' +
       'dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial\u2019s inner band ' +
-      'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '')],
-    src:sp500AnnualReturnSource });
+      'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '')], src:sp500AnnualReturnSource });
 }
 export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading], Object.keys(creditReadings).map(function(k){ return creditReadings[k]; })); }
 export function indOf(R: { term?: string }): Indicator | undefined { return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }

@@ -76,6 +76,13 @@ export function factsFrom(text: unknown){
   var parts = String(text).replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+(?=[A-Z(“"'"'"'])/);
   return facts(parts.filter(function(x){ return x.trim(); }));
 }
+type Side = { state: State; text: string; says: string };
+export function sideWord(o: { line: number; above: Side; below: Side; strict?: boolean }){
+  return function(v: number): Side {
+    var w = (o.strict ? v > o.line : v >= o.line) ? o.above : o.below;
+    return { state:w.state, text:w.text, says:w.says };
+  };
+}
 export function readingNote(n: { title?: string; lead?: string; paras?: string[]; src?: Src[] }){
   return (n.title != null ? '<h4>' + n.title + '</h4>' : '') + (n.lead != null ? '<p class="caption">' + n.lead + '</p>' : '') +
     (n.paras || []).map(function(p){ return '<p class="caption follow">' + p + '</p>'; }).join("") + (n.src ? srcBlock(n.src) : '');

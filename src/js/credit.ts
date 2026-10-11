@@ -1,4 +1,4 @@
-import { fmtSigned, pointLabel, qAtIndex, readingNote, titleCase } from "./format.ts";
+import { fmtSigned, pointLabel, qAtIndex, readingNote, sideWord, titleCase } from "./format.ts";
 import { colPeek } from "./charts.ts";
 import { consumerCreditHistory, delinquencyHistory, marginHistory } from "./history-fred.ts";
 import { DSR_FROM_YEAR, DSR_MEAN, dsrHistory, SAV_FROM_YEAR, SAV_HIGH, SAV_LOW, SAV_MID, SAV_THIN, savHistory } from "./data.ts";
@@ -35,14 +35,12 @@ export var debtPaymentPoints: QuarterPoint[] = dsrHistory.map(function(v, i){ re
 
 function avgSpan(){ return delinquencyHistory[0].q.slice(0, 4) + "\u2013" + DELINQUENCY_TO; }
 function consumerWord(v: number): CreditWord {
-  if (v >= CONSUMER_LINE) return { state:"norm", text:"Borrowing more",
-    says:"above zero: households owe more on cards, cars and student loans than a year earlier" };
-  return { state:"norm", text:"Borrowing less", says:"below zero: households owe less on cards, cars and student loans than a year earlier" };
+  return sideWord({ line:CONSUMER_LINE, above:{ state:"norm", text:"Borrowing more", says:"above zero: households owe more on cards, cars and student loans than a year earlier" },
+    below:{ state:"norm", text:"Borrowing less", says:"below zero: households owe less on cards, cars and student loans than a year earlier" } })(v);
 }
 function marginWord(v: number): CreditWord {
-  if (v >= MARGIN_LINE) return { state:"norm", text:"Borrowing more",
-    says:"above zero: investors owe their brokers more than a year earlier" };
-  return { state:"norm", text:"Borrowing less", says:"below zero: investors owe their brokers less than a year earlier" };
+  return sideWord({ line:MARGIN_LINE, above:{ state:"norm", text:"Borrowing more", says:"above zero: investors owe their brokers more than a year earlier" },
+    below:{ state:"norm", text:"Borrowing less", says:"below zero: investors owe their brokers less than a year earlier" } })(v);
 }
 function savingWord(v: number): CreditWord {
   var band = " the " + SAV_LOW.toFixed(1) + "\u2013" + SAV_HIGH.toFixed(1) + "% that held in eight quarters of ten since " + SAV_FROM_YEAR;
@@ -53,8 +51,8 @@ function savingWord(v: number): CreditWord {
 }
 function debtPaymentsWord(v: number): CreditWord {
   var avg = DSR_MEAN.toFixed(1) + "%";
-  if (v > DSR_MEAN) return { state:"warning", text:"Above average", says:"above its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes more of what households take home than usual" };
-  return { state:"good", text:"Below average", says:"below its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes less of what households take home than usual" };
+  return sideWord({ line:DSR_MEAN, strict:true, above:{ state:"warning", text:"Above average", says:"above its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes more of what households take home than usual" },
+    below:{ state:"good", text:"Below average", says:"below its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes less of what households take home than usual" } })(v);
 }
 function householdSpecs(): CreditSpec[] {
   var pct = function(v: number){ return v.toFixed(1) + "%"; };
@@ -77,9 +75,8 @@ function householdSpecs(): CreditSpec[] {
 }
 function delinquencyWord(v: number): CreditWord {
   var avg = DELINQUENCY_MEAN.toFixed(2) + "%";
-  if (v >= DELINQUENCY_MEAN) return { state:"warning", text:"Above average",
-    says:"above its " + avgSpan() + " average of " + avg + ": more loans are going unpaid than usual" };
-  return { state:"good", text:"Below average", says:"below its " + avgSpan() + " average of " + avg + ": fewer loans are going unpaid than usual" };
+  return sideWord({ line:DELINQUENCY_MEAN, above:{ state:"warning", text:"Above average", says:"above its " + avgSpan() + " average of " + avg + ": more loans are going unpaid than usual" },
+    below:{ state:"good", text:"Below average", says:"below its " + avgSpan() + " average of " + avg + ": fewer loans are going unpaid than usual" } })(v);
 }
 function specs(): CreditSpec[] {
   return [

@@ -1,4 +1,4 @@
-import { qAtIndex } from "./format.ts";
+import { qAtIndex, sideWord } from "./format.ts";
 import { topTenQuarterly } from "./data.ts";
 import { topTenRecent } from "./history-fred.ts";
 
@@ -16,9 +16,8 @@ export var topTenHistory: { q: string; v: number | null }[] = [];
 function concentrationSpan(){ return topTenQuarterly[0].q.slice(0, 4) + "–" + CONCENTRATION_TO; }
 function concentrationWord(v: number): CreditWord {
   var avg = CONCENTRATION_MEAN.toFixed(1) + "%";
-  if (v >= CONCENTRATION_MEAN) return { state:"warning", text:"Concentrated",
-    says:"above its " + concentrationSpan() + " average of " + avg + ": more of the index rests on its ten largest stocks than usual" };
-  return { state:"good", text:"Broad", says:"below its " + concentrationSpan() + " average of " + avg + ": the index is spread wider than usual" };
+  return sideWord({ line:CONCENTRATION_MEAN, above:{ state:"warning", text:"Concentrated", says:"above its " + concentrationSpan() + " average of " + avg + ": more of the index rests on its ten largest stocks than usual" },
+    below:{ state:"good", text:"Broad", says:"below its " + concentrationSpan() + " average of " + avg + ": the index is spread wider than usual" } })(v);
 }
 function concentrationRecord(){
   var years: Record<string, number[]> = {};

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,789 lines** in 42 files, about 603 KB, roughly **171 thousand tokens**. No session can
+The source is **8,785 lines** in 42 files, about 604 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `2eac6d0` on 2026-10-11.
+Generated from commit `a548d8d` on 2026-10-11.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `2eac6d0` on 2026-10-11.
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **793** top-level functions, **126** top-level vars, **396** exported names, **20** boots.
+Counts: **38** modules, **794** top-level functions, **126** top-level vars, **397** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -33,10 +33,10 @@ Counts: **38** modules, **793** top-level functions, **126** top-level vars, **3
 | `js/live.ts` | 212 | 23 | `format` |
 | `js/refresh-season.ts` | 41 | 5 | `format`, `history-fred` |
 | `js/data.ts` | 550 | 77 | `format`, `history-fred`, `live` |
-| `js/credit.ts` | 138 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
+| `js/credit.ts` | 135 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
 | `js/model.ts` | 395 | 58 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 506 | 51 | `charts`, `data`, `dom`, `format`, `live`, `model` |
-| `js/readings.ts` | 709 | 65 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
+| `js/readings.ts` | 704 | 65 | `charts`, `credit`, `data`, `format`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 153 | 6 | `activity`, `concentration`, `credit`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `refresh-season` |
 | `js/render-core.ts` | 156 | 21 | `dom`, `format`, `live`, `model`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 360 | 19 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `reading`, `readings` |
@@ -47,14 +47,14 @@ Counts: **38** modules, **793** top-level functions, **126** top-level vars, **3
 | `js/pages-nav.ts` | 146 | 12 | `data`, `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `readings`, `render-core`, `render-pages` |
 | `js/tabs-menu.ts` | 241 | 11 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
-| `js/activity.ts` | 62 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
+| `js/activity.ts` | 60 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 61 | 20 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `render-core`, `roster` |
 | `js/charts.ts` | 266 | 37 | — |
-| `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
+| `js/concentration.ts` | 48 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 500 | 142 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 75 | 13 | `data`, `dom`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster`, `wave-chart` |
-| `js/format.ts` | 89 | 38 | — |
+| `js/format.ts` | 96 | 39 | — |
 | `js/history-charts.ts` | 205 | 19 | `charts`, `data`, `format`, `history`, `history-fred`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 33 | 15 | — |
 | `js/indicators.ts` | 174 | 30 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
@@ -81,11 +81,11 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 3 | `bootLive` | `js/live.ts:206`–211 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–40 |
 | 5 | `bootData` | `js/data.ts:497`–549 |
-| 6 | `bootCredit` | `js/credit.ts:130`–137 |
+| 6 | `bootCredit` | `js/credit.ts:127`–134 |
 | 7 | `bootModel` | `js/model.ts:370`–394 |
 | 8 | `bootHistory` | `js/history.ts:482`–505 |
-| 9 | `bootReadings` | `js/readings.ts:527`–575 |
-| 10 | `bootReadingRegistry` | `js/readings.ts:642`–708 |
+| 9 | `bootReadings` | `js/readings.ts:522`–570 |
+| 10 | `bootReadingRegistry` | `js/readings.ts:637`–703 |
 | 11 | `bootRoster` | `js/roster.ts:140`–152 |
 | 12 | `bootRenderCore` | `js/render-core.ts:150`–155 |
 | 13 | `bootRenderPages` | `js/render-pages.ts:351`–356 |
@@ -312,13 +312,13 @@ falls in. **export** marks a name other modules import.
 | 12 | `CONSUMER_LINE` · export | `var CONSUMER_LINE =` |
 | 36 | `avgSpan` | `function avgSpan(` |
 | 37 | `consumerWord` | `function consumerWord(` |
-| 42 | `marginWord` | `function marginWord(` |
-| 47 | `savingWord` | `function savingWord(` |
-| 54 | `debtPaymentsWord` | `function debtPaymentsWord(` |
-| 59 | `householdSpecs` | `function householdSpecs(` |
-| 78 | `delinquencyWord` | `function delinquencyWord(` |
-| 84 | `specs` | `function specs(` |
-| 109 | `readingOf` | `function readingOf(` |
+| 41 | `marginWord` | `function marginWord(` |
+| 45 | `savingWord` | `function savingWord(` |
+| 52 | `debtPaymentsWord` | `function debtPaymentsWord(` |
+| 57 | `householdSpecs` | `function householdSpecs(` |
+| 76 | `delinquencyWord` | `function delinquencyWord(` |
+| 81 | `specs` | `function specs(` |
+| 106 | `readingOf` | `function readingOf(` |
 
 ### `js/model.ts`
 
@@ -471,74 +471,74 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 25 | `productivityWord` | `function productivityWord(` |
 | 36 | `confidenceWord` | `function confidenceWord(` |
-| 42 | `desireWord` | `function desireWord(` |
-| 48 | `deficitInfoHtml` · export | `function deficitInfoHtml(` |
-| 100 | `deriveVolumeTag` | `function deriveVolumeTag(` |
-| 104 | `meterFlagged` · export | `function meterFlagged(` |
-| 108 | `volumeInfoHtml` · export | `function volumeInfoHtml(` |
-| 122 | `pulseInfoHtml` · export | `function pulseInfoHtml(` |
-| 135 | `confidenceInfoHtml` | `function confidenceInfoHtml(` |
-| 146 | `desireInfoHtml` | `function desireInfoHtml(` |
-| 156 | `premiumInfoHtml` | `function premiumInfoHtml(` |
-| 167 | `productivityInfoHtml` | `function productivityInfoHtml(` |
-| 180 | `activityInfoHtml` · export | `function activityInfoHtml(` |
-| 198 | `bandMonths` | `function bandMonths(` |
-| 201 | `temperatureInfoHtml` · export | `function temperatureInfoHtml(` |
-| 230 | `volumeVerdict` · export | `function volumeVerdict(` |
-| 237 | `unempState` · export | `function unempState(` |
-| 242 | `sahmNow` | `function sahmNow(` |
-| 243 | `potentialSentence` | `function potentialSentence(` |
-| 251 | `growthInfoHtml` · export | `function growthInfoHtml(` |
-| 270 | `velocityVerdict` | `function velocityVerdict(` |
-| 278 | `laborWord` · export | `function laborWord(` |
-| 281 | `temperatureWord` · export | `function temperatureWord(` |
-| 286 | `deriveLaggingTags` | `function deriveLaggingTags(` |
-| 292 | `derivePulseTag` | `function derivePulseTag(` |
-| 325 | `volatilityTag` · export | `function volatilityTag(` |
-| 331 | `fearCurve` · export | `function fearCurve(` |
-| 336 | `curveVerdict` · export | `function curveVerdict(` |
-| 341 | `valuationVerdict` · export | `function valuationVerdict(` |
-| 349 | `PRESSURE_ZONES` | `var PRESSURE_ZONES =` |
-| 353 | `pressureZone` · export | `function pressureZone(` |
-| 359 | `HZN_BACK` | `var HZN_BACK =` |
-| 360 | `hznLast` | `function hznLast(` |
-| 361 | `hznNeed` | `function hznNeed(` |
-| 362 | `hznDelta` | `function hznDelta(` |
-| 363 | `hznRecord` | `function hznRecord(` |
-| 367 | `hznBack` | `function hznBack(` |
-| 368 | `horizonWord` | `function horizonWord(` |
-| 373 | `tendencyOf` · export | `function tendencyOf(` |
-| 385 | `derivePressureTendency` | `function derivePressureTendency(` |
-| 386 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
-| 407 | `pulseCard` · export | `function pulseCard(` |
-| 412 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
-| 426 | `marketWord` | `function marketWord(` |
-| 430 | `marketCol` | `function marketCol(` |
-| 431 | `marketInfoHtml` | `function marketInfoHtml(` |
-| 440 | `rowReadings` · export | `function rowReadings(` |
-| 441 | `indOf` · export | `function indOf(` |
-| 442 | `policyFacts` | `function policyFacts(` |
-| 449 | `policyFactRows` · export | `function policyFactRows(` |
-| 452 | `gdpWord` · export | `function gdpWord(` |
-| 453 | `phaseClass` · export | `function phaseClass(` |
-| 458 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
+| 41 | `desireWord` | `function desireWord(` |
+| 46 | `deficitInfoHtml` · export | `function deficitInfoHtml(` |
+| 98 | `deriveVolumeTag` | `function deriveVolumeTag(` |
+| 102 | `meterFlagged` · export | `function meterFlagged(` |
+| 106 | `volumeInfoHtml` · export | `function volumeInfoHtml(` |
+| 120 | `pulseInfoHtml` · export | `function pulseInfoHtml(` |
+| 133 | `confidenceInfoHtml` | `function confidenceInfoHtml(` |
+| 144 | `desireInfoHtml` | `function desireInfoHtml(` |
+| 154 | `premiumInfoHtml` | `function premiumInfoHtml(` |
+| 165 | `productivityInfoHtml` | `function productivityInfoHtml(` |
+| 178 | `activityInfoHtml` · export | `function activityInfoHtml(` |
+| 196 | `bandMonths` | `function bandMonths(` |
+| 199 | `temperatureInfoHtml` · export | `function temperatureInfoHtml(` |
+| 228 | `volumeVerdict` · export | `function volumeVerdict(` |
+| 235 | `unempState` · export | `function unempState(` |
+| 240 | `sahmNow` | `function sahmNow(` |
+| 241 | `potentialSentence` | `function potentialSentence(` |
+| 249 | `growthInfoHtml` · export | `function growthInfoHtml(` |
+| 268 | `velocityVerdict` | `function velocityVerdict(` |
+| 276 | `laborWord` · export | `function laborWord(` |
+| 279 | `temperatureWord` · export | `function temperatureWord(` |
+| 284 | `deriveLaggingTags` | `function deriveLaggingTags(` |
+| 290 | `derivePulseTag` | `function derivePulseTag(` |
+| 323 | `volatilityTag` · export | `function volatilityTag(` |
+| 329 | `fearCurve` · export | `function fearCurve(` |
+| 334 | `curveVerdict` · export | `function curveVerdict(` |
+| 339 | `valuationVerdict` · export | `function valuationVerdict(` |
+| 347 | `PRESSURE_ZONES` | `var PRESSURE_ZONES =` |
+| 351 | `pressureZone` · export | `function pressureZone(` |
+| 357 | `HZN_BACK` | `var HZN_BACK =` |
+| 358 | `hznLast` | `function hznLast(` |
+| 359 | `hznNeed` | `function hznNeed(` |
+| 360 | `hznDelta` | `function hznDelta(` |
+| 361 | `hznRecord` | `function hznRecord(` |
+| 365 | `hznBack` | `function hznBack(` |
+| 366 | `horizonWord` | `function horizonWord(` |
+| 371 | `tendencyOf` · export | `function tendencyOf(` |
+| 383 | `derivePressureTendency` | `function derivePressureTendency(` |
+| 384 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
+| 405 | `pulseCard` · export | `function pulseCard(` |
+| 410 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
+| 424 | `marketWord` | `function marketWord(` |
+| 428 | `marketCol` | `function marketCol(` |
+| 429 | `marketInfoHtml` | `function marketInfoHtml(` |
+| 435 | `rowReadings` · export | `function rowReadings(` |
+| 436 | `indOf` · export | `function indOf(` |
+| 437 | `policyFacts` | `function policyFacts(` |
+| 444 | `policyFactRows` · export | `function policyFactRows(` |
+| 447 | `gdpWord` · export | `function gdpWord(` |
+| 448 | `phaseClass` · export | `function phaseClass(` |
+| 453 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
 
 #### Temperature's notes
 
 | Line | Name | Anchor |
 |---|---|---|
-| 576 | `yearReading` | `function yearReading(` |
-| 594 | `isNum` | `function isNum(` |
-| 596 | `rowId` | `function rowId(` |
-| 597 | `rowLike` | `function rowLike(` |
-| 610 | `rowsOk` | `function rowsOk(` |
-| 613 | `deriveHorizon` | `function deriveHorizon(` |
-| 627 | `fieldsKept` | `function fieldsKept(` |
-| 631 | `proseOk` | `function proseOk(` |
-| 632 | `reportOk` | `function reportOk(` |
-| 636 | `vixAsOf` | `function vixAsOf(` |
-| 637 | `coincidentAsOf` | `function coincidentAsOf(` |
-| 638 | `periodIso` · export | `function periodIso(` |
+| 571 | `yearReading` | `function yearReading(` |
+| 589 | `isNum` | `function isNum(` |
+| 591 | `rowId` | `function rowId(` |
+| 592 | `rowLike` | `function rowLike(` |
+| 605 | `rowsOk` | `function rowsOk(` |
+| 608 | `deriveHorizon` | `function deriveHorizon(` |
+| 622 | `fieldsKept` | `function fieldsKept(` |
+| 626 | `proseOk` | `function proseOk(` |
+| 627 | `reportOk` | `function reportOk(` |
+| 631 | `vixAsOf` | `function vixAsOf(` |
+| 632 | `coincidentAsOf` | `function coincidentAsOf(` |
+| 633 | `periodIso` · export | `function periodIso(` |
 
 ### `js/roster.ts`
 
@@ -828,10 +828,10 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 7 | `PAYROLLS_LINE` · export | `var PAYROLLS_LINE =` |
-| 18 | `sideWord` | `function sideWord(` |
-| 24 | `gapOf` | `function gapOf(` |
-| 29 | `gapSpec` | `function gapSpec(` |
-| 42 | `activitySpecs` · export | `function activitySpecs(` |
+| 18 | `yoyWord` | `function yoyWord(` |
+| 22 | `gapOf` | `function gapOf(` |
+| 27 | `gapSpec` | `function gapSpec(` |
+| 40 | `activitySpecs` · export | `function activitySpecs(` |
 
 ### `js/ai-insights.ts`
 
@@ -928,8 +928,8 @@ falls in. **export** marks a name other modules import.
 | 6 | `CONCENTRATION_TO` · export | `var CONCENTRATION_TO =` |
 | 16 | `concentrationSpan` | `function concentrationSpan(` |
 | 17 | `concentrationWord` | `function concentrationWord(` |
-| 23 | `concentrationRecord` | `function concentrationRecord(` |
-| 37 | `concentrationSpecs` · export | `function concentrationSpecs(` |
+| 22 | `concentrationRecord` | `function concentrationRecord(` |
+| 36 | `concentrationSpecs` · export | `function concentrationSpecs(` |
 
 ### `js/cycle-analysis.ts`
 
@@ -1151,13 +1151,14 @@ falls in. **export** marks a name other modules import.
 | 71 | `auxStat` · export | `function auxStat(` |
 | 74 | `facts` · export | `function facts(` |
 | 75 | `factsFrom` · export | `function factsFrom(` |
-| 79 | `readingNote` · export | `function readingNote(` |
-| 83 | `srcBlock` · export | `function srcBlock(` |
-| 84 | `srcHtml` | `function srcHtml(` |
-| 85 | `fmtSigned` · export | `function fmtSigned(` |
-| 86 | `hubLine` · export | `function hubLine(` |
-| 87 | `qPretty` · export | `function qPretty(` |
-| 88 | `capeFmt1` · export | `function capeFmt1(` |
+| 80 | `sideWord` · export | `function sideWord(` |
+| 86 | `readingNote` · export | `function readingNote(` |
+| 90 | `srcBlock` · export | `function srcBlock(` |
+| 91 | `srcHtml` | `function srcHtml(` |
+| 92 | `fmtSigned` · export | `function fmtSigned(` |
+| 93 | `hubLine` · export | `function hubLine(` |
+| 94 | `qPretty` · export | `function qPretty(` |
+| 95 | `capeFmt1` · export | `function capeFmt1(` |
 
 ### `js/history-charts.ts`
 
