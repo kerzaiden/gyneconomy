@@ -855,8 +855,10 @@ settles it; none is open after V668.
 - **Stagflation needs hot prices, heating or steady; contraction within the range is Autumn–Disinflation whatever
   its direction.** Stagflation is stagnant growth with inflation too high: a shrinking economy with inflation in
   the range is not stagflation (Keren). It mirrors Summer, so each colour on the Season Model's bar names one
-  side's seasons: Autumn–Stagflation is red, Autumn–Disinflation yellow or red. Disinflation strictly means falling
-  inflation, so a warm Autumn with inflation rising is loose usage, kept as Keren's choice. Measured first: 33
+  side's seasons: Autumn–Stagflation is red, Autumn–Disinflation yellow or red. Autumn is named by the absence of
+  heat: warm prices in a below-potential economy are not stagflation until they are hot, so they read as the
+  cooling side of the cycle. Formally disinflation means falling inflation, so a warm Autumn with inflation rising
+  stretches the term. Measured first: 33
   quarters move from Stagflation to Disinflation (among them 2001, 2007 Q3, 2016–17 and 2025 Q4); today is
   unchanged. Replaces "Stagflation does not need prices above the range; it mirrors expansion" (Sep 19, 2026).
   (Oct 11, 2026)
