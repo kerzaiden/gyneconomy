@@ -4,7 +4,6 @@ import { type HistFrame, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine,
 import { fedFundsHistory, mortgageHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, m2Yoy, NROU_NOW, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
-import { quarterRegime } from "./model.ts";
 import { windowScale } from "./history.ts";
 import { unempState } from "./readings.ts";
 
@@ -247,7 +246,7 @@ export function gdpHistoryChart(Wpx: number, from: number, o?: HistOpts){
   });
   var sw = colWidth((R - L) / n);
   vals.forEach(function(d, i){
-    out.push('<path class="growth-col hcol' + (quarterRegime(d) === "contraction" ? " down" : "") + '" stroke-width="' + sw.toFixed(2) +
+    out.push('<path class="growth-col hcol" stroke-width="' + sw.toFixed(2) +
       '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
   });
   var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;

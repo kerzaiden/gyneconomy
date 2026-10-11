@@ -988,6 +988,10 @@ three tones: paint (lines, bands, rings; ≥ 3:1), ink (words; ≥ 4.5:1), wash 
 on top). **Never text in paint**; a new ink is the same hue darkened and measured. Greys are plum-biased;
 hierarchy comes from borders and surface steps, never shadows. **The dark theme is designed, not
 inverted** — its own inks, washes and ramps. Every token is read somewhere: `npm run hygiene` fails on one that is not (V668).
+History columns are the exception to good/critical: every history reads the one ramp `--hist-0`…`--hist-5` (yellow
+to orange to plum, the Interest Rates chart's palette), two-state charts its yellow and orange steps, so a page
+never brings a hue of its own (History Colours). The yellow paints sit under 3:1 on white; height and the axis
+carry the value, colour only the state.
 
 Seasons: Winter periwinkle, Autumn a quieter step of Winter's hue, Summer orange, Spring marigold;
 declared in `:root` and both dark blocks. `--gold` holds the marigold for what is gold but not a season (the
