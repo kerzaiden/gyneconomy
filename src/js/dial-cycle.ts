@@ -5,7 +5,7 @@ import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-se
 import { CPI_TARGET, FED_TARGET_SRC, gdpSrc, HOLD_BAND, sp500AnnualReturns, TEMP_BAND_HI, TEMP_BAND_LO, typicalCycleSrc, typicalCycleYears } from "./data.ts";
 import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
-import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
+import { closedSegs, marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
 import { fitYearDots, renderDiagnosis } from "./diagnosis.ts";
 import { cycleViewEl } from "./render-pages.ts";
@@ -38,7 +38,7 @@ function drawDial(m: CycleModel){
   var parts = ['<path class="dial-track" d="' + arcPath(R, START - LEAD + capDegT, SEAM_END - capDegT) + '"></path>'];
   var quarters: DialQuarter[] = [];
 
-  var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; });
+  var segs = closedSegs(m);
   var insetDeg = capDegM + MARGIN, runs: { seg: TrackSeg; a0: number; a1: number }[][] = [];
   segs.forEach(function(seg){
     var last = runs[runs.length - 1];
@@ -278,7 +278,7 @@ export function showCycle(era: Cycle){ if (ui.shownEra !== era) renderCycleView(
 function aheadWord(cyc: Cycle){ return cyc.ongoing ? "not yet run" : "shorter than a typical cycle"; }
 export function seasonStripHtml(cyc: Cycle, spanOverride?: number){
   return (function(){
-    var m = cycleModel(cyc), segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), runs = seasonRuns(segs);
+    var m = cycleModel(cyc), segs = closedSegs(m), runs = seasonRuns(segs);
     var lead = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead + segs.length;
     var span = Math.max(spanOverride || 0, typicalCycleYears * 4,
                         cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);

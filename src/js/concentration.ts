@@ -1,4 +1,4 @@
-import { qAtIndex, sideWord } from "./format.ts";
+import { mean, qAtIndex, sideWord } from "./format.ts";
 import { topTenQuarterly } from "./data.ts";
 import { topTenRecent } from "./history-fred.ts";
 
@@ -22,8 +22,8 @@ function concentrationWord(v: number): CreditWord {
 function concentrationRecord(){
   var years: Record<string, number[]> = {};
   topTenQuarterly.forEach(function(d){ var y = d.q.slice(0, 4); if (+y <= CONCENTRATION_TO) (years[y] = years[y] || []).push(d.v); });
-  var means = Object.keys(years).map(function(y){ return years[y].reduce(function(a, v){ return a + v; }, 0) / years[y].length; });
-  CONCENTRATION_MEAN = Math.round(means.reduce(function(a, v){ return a + v; }, 0) / means.length * 10) / 10;
+  var means = Object.keys(years).map(function(y){ return mean(years[y]); });
+  CONCENTRATION_MEAN = Math.round(mean(means) * 10) / 10;
   var last = topTenQuarterly[topTenQuarterly.length - 1].q, recent = topTenRecent.filter(function(d){ return d.q > last; });
   topTenReadings.length = 0;
   (topTenQuarterly as CreditPoint[]).concat(recent).forEach(function(d){ topTenReadings.push(d); });

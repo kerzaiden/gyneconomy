@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `9769e5b` on 2026-10-11. **108 components**, **9 shared patterns**.
+Generated from commit `d062128` on 2026-10-11. **108 components**, **9 shared patterns**.
 
 ## ai-insights.ts
 
@@ -222,10 +222,12 @@ renderer speaks. Listed most-used first.
 |---|---|---|
 | **`fmtSigned`** | format.ts | 24 places |
 | **`need`** | dom.ts | 24 places |
+| **`mean`** | format.ts | 18 places |
 | **`titleCase`** | format.ts | 16 places |
 | **`byId`** | dom.ts | 13 places |
 | **`defineReading`** | reading.ts | 12 places |
 | **`histControls`** | history.ts | 12 places |
+| **`qLabel`** | format.ts | 12 places |
 | **`metered`** | format.ts | 11 places |
 | **`pageCycle`** | history.ts | 11 places |
 | **`f1`** | pulse-strips.ts | 10 places |
@@ -233,18 +235,16 @@ renderer speaks. Listed most-used first.
 | **`findOf`** | cycle-analysis.ts | 9 places |
 | **`focusQuiet`** | dom.ts | 9 places |
 | **`monthLabel`** | format.ts | 9 places |
-| **`qLabel`** | format.ts | 9 places |
+| **`pctl`** | format.ts | 9 places |
 | **`closedCount`** | cycle-analysis.ts | 8 places |
 | **`sideWord`** | format.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`cycLabel`** | model.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histFrame`** | charts.ts | 7 places |
-| **`mean`** | format.ts | 7 places |
 | **`normOf`** | cycle-analysis.ts | 7 places |
 | **`put`** | dom.ts | 7 places |
 | **`qAtIndex`** | format.ts | 7 places |
-| **`atMonth`** | format.ts | 6 places |
 | **`columnHistory`** | history-charts.ts | 6 places |
 | **`dxSys`** | render-core.ts | 6 places |
 | **`factsFrom`** | format.ts | 6 places |
@@ -254,17 +254,18 @@ renderer speaks. Listed most-used first.
 | **`pct`** | wave-chart.ts | 6 places |
 | **`publishGeom`** | charts.ts | 6 places |
 | **`seasonGroup`** | model.ts | 6 places |
+| **`atMonth`** | format.ts | 5 places |
 | **`catTitle`** | cycle-analysis.ts | 5 places |
 | **`colWidth`** | charts.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
-| **`meanOf`** | cycle-analysis.ts | 5 places |
 | **`monthWindow`** | history.ts | 5 places |
-| **`pctl`** | format.ts | 5 places |
+| **`numberWord`** | format.ts | 5 places |
 | **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`visits`** | cycle-analysis.ts | 5 places |
 | **`bandEnds`** | format.ts | 4 places |
+| **`capFirst`** | format.ts | 4 places |
 | **`categoriesShown`** | roster.ts | 4 places |
 | **`colPath`** | charts.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
@@ -278,23 +279,21 @@ renderer speaks. Listed most-used first.
 | **`inflationFigure`** | model.ts | 4 places |
 | **`keyed`** | roster.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
+| **`listed`** | format.ts | 4 places |
 | **`moreRow`** | dom.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
-| **`qPretty`** | format.ts | 4 places |
-| **`quartile`** | format.ts | 4 places |
 | **`qWindowFrom`** | history.ts | 4 places |
 | **`readingPage`** | indicators.ts | 4 places |
 | **`recordInsight`** | reading.ts | 4 places |
 | **`trendText`** | dom.ts | 4 places |
 | **`windowYears`** | charts.ts | 4 places |
-| **`word`** | cycle-analysis.ts | 4 places |
 | **`yearsWord`** | cycle-analysis.ts | 4 places |
 | **`atCycle`** | cycle-analysis.ts | 3 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`barClass`** | cycle-analysis.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`calBtn`** | cycle-analysis.ts | 3 places |
-| **`cap`** | cycle-analysis.ts | 3 places |
+| **`closedSegs`** | render-core.ts | 3 places |
 | **`colScale`** | charts.ts | 3 places |
 | **`curveAt`** | data.ts | 3 places |
 | **`cycleOfYear`** | model.ts | 3 places |
@@ -308,7 +307,6 @@ renderer speaks. Listed most-used first.
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`lenKey`** | cycle-analysis.ts | 3 places |
-| **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`menuOption`** | history.ts | 3 places |
 | **`monthIdx`** | wave-chart.ts | 3 places |

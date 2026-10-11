@@ -1,5 +1,5 @@
 type HistOpts = { to?: number | null; cycle?: boolean };
-import { type KeyRow, atMonth, atQuarter, fmtSigned, mean, pctl, qAtIndex, quartile } from "./format.ts";
+import { type KeyRow, atMonth, atQuarter, fmtSigned, mean, pctl, qAtIndex } from "./format.ts";
 import { avgRule, AXIS, chartAxes, colPath, colScale, colWidth, crossLine, fitGroup, fitLine, histFrame, hitRect, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, yearMarks, zeroRule } from "./charts.ts";
 import { fedFundsHistory, mortgageHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
@@ -140,7 +140,7 @@ export function mortgageHistoryChart(Wpx: number, from: number, o?: HistOpts){
   return columnHistory(rateSpec(mortgageHistory, "mortgageHistoryChart", "The 30-year fixed mortgage rate"), Wpx, from, o);
 }
 function rateFence(series: MonthPoint[]){
-  var vs = series.map(function(d){ return d.v; }), q1 = quartile(vs, 0.25), q3 = quartile(vs, 0.75);
+  var vs = series.map(function(d){ return d.v; }), q1 = pctl(vs, 0.25), q3 = pctl(vs, 0.75);
   return q3 + 1.5 * (q3 - q1);
 }
 export function rateKey(series: MonthPoint[]): KeyRow[] {

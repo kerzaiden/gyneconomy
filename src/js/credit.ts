@@ -1,4 +1,4 @@
-import { fmtSigned, pointLabel, qAtIndex, readingNote, sideWord, titleCase } from "./format.ts";
+import { fmtSigned, mean, pointLabel, qAtIndex, readingNote, sideWord, titleCase } from "./format.ts";
 import { colPeek } from "./charts.ts";
 import { consumerCreditHistory, delinquencyHistory, marginHistory } from "./history-fred.ts";
 import { DSR_FROM_YEAR, DSR_MEAN, dsrHistory, SAV_FROM_YEAR, SAV_HIGH, SAV_LOW, SAV_MID, SAV_THIN, savHistory } from "./data.ts";
@@ -126,7 +126,7 @@ export var creditReadings: Record<string, CreditReading> = {};
 export var creditPages: Record<string, CreditPage> = {};
 export function bootCredit(){
   var closed = delinquencyHistory.filter(function(d){ return +d.q.slice(0, 4) <= DELINQUENCY_TO; });
-  DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d){ return a + d.v; }, 0) / closed.length * 100) / 100;
+  DELINQUENCY_MEAN = Math.round(mean(closed.map(function(d){ return d.v; })) * 100) / 100;
   specs().concat(householdSpecs(), activitySpecs(), concentrationSpecs()).forEach(function(S){
     creditReadings[S.id] = readingOf(S);
     creditPages[S.id] = { goodAbove:S.goodAbove, line:S.line, fmt:S.fmt, tick:S.fmt, src:S.src, lede:S.lede, series:S.series };

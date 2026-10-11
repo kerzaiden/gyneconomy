@@ -137,7 +137,7 @@ export var PREMIUM_LINE = 0;
 // ---- The deficit, year by year ----
 export var DEF_FROM_YEAR = 1946;
 export var deficitHistory = SERIES.deficitHistory;
-export var DEF_MEAN = deficitHistory.reduce(function(a, b){ return a + b; }, 0) / deficitHistory.length;
+export var DEF_MEAN = mean(deficitHistory);
 export var DEF_RECESSION_FY: Record<number, number> = {1949:1,1950:1,1954:1,1958:1,1960:1,1961:1,1970:1,1971:1,1974:1,1975:1,
                         1980:1,1981:1,1982:1,1983:1,1990:1,1991:1,2001:1,2002:1,2008:1,2009:1,2020:1};
 function checkDeficitHistory(){
@@ -352,7 +352,7 @@ function checkHouseholdHistories(){
   if (savHistory.length !== 318 || Math.abs(sHi - 24.4) > 1e-9 || Math.abs(sLo - 1.8) > 1e-9)
     console.warn("savHistory failed its check", savHistory.length, sHi, sLo);
 }
-export var DSR_MEAN = dsrHistory.reduce(function(a, b){ return a + b; }, 0) / dsrHistory.length;
+export var DSR_MEAN = mean(dsrHistory);
 export var curveNoteFull = "The 30-day VIX divided by the 3-month VIX \u2014 the SHAPE of expected volatility rather " +
   "than its level. Below 1.00 the curve slopes up, which is its ordinary state: insuring three months costs " +
   "more than insuring one, as it should. At 1.00 it is flat. Above 1.00 it is inverted, and near-term fear " +

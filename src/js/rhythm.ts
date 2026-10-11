@@ -1,4 +1,4 @@
-import { hiCard, pctl, qAtIndex, readingNote } from "./format.ts";
+import { hiCard, listed, mean, pctl, qAtIndex, readingNote } from "./format.ts";
 import { M2V_FROM_YEAR, m2vHistory } from "./data.ts";
 
 // ---- Rhythm: how evenly the pulse of money changes pace ----
@@ -7,7 +7,7 @@ type Rhythm = { history: QuarterPoint[]; edge: number };
 var rhythm: Rhythm | null = null;
 
 function spread(xs: number[]){
-  var m = xs.reduce(function(a, x){ return a + x; }, 0) / xs.length;
+  var m = mean(xs);
   return Math.sqrt(xs.reduce(function(a, x){ return a + (x - m) * (x - m); }, 0) / xs.length);
 }
 export function rhythmRecord(): Rhythm {
@@ -30,7 +30,6 @@ function stretches(r: Rhythm){
     return r.history[s.a].q.slice(0, 4) + "–" + r.history[s.b].q.slice(0, 4);
   });
 }
-function listed(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 export function rhythmCard(){
   var r = rhythmRecord(), h = r.history, last = h[h.length - 1], odd = last.v > r.edge;
   var steadier = h.filter(function(d){ return d.v < last.v; }).length;

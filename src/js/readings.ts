@@ -1,4 +1,4 @@
-import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLabel, MONTHS_SHORT, qPretty, quartile, readingNote, sideWord, srcBlock, tagFor, titleCase } from "./format.ts";
+import { auxStat, bandEnds, facts, fmtSigned, hiCard, ledeHtml, metered, monthLabel, MONTHS_SHORT, pctl, qLabel, readingNote, sideWord, srcBlock, tagFor, titleCase } from "./format.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
@@ -241,7 +241,7 @@ function sahmNow(){ for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSah
 function potentialSentence(){
   var r = nowModel.reading;
   return 'And the economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 is the line the Season Model ' +
-    'reads growth against. The CBO puts it at ' + r.potential.toFixed(1) + '% for ' + qPretty(r.gdpLatest.q) +
+    'reads growth against. The CBO puts it at ' + r.potential.toFixed(1) + '% for ' + qLabel(r.gdpLatest.q) +
     ', and at 2.1% a year through 2030, easing to 1.8% after that as the population ages. The latest quarter, ' +
     fmtSigned(r.gdpLatest.v, 1) + '%, is ' + potentialGap(r) + ' potential, so the economy reads as ' +
     growthWord(r) + (Math.abs(r.gdpLatest.v - r.potential) <= HOLD_BAND ? ', the side it was already on' : '') + '.';
@@ -376,7 +376,7 @@ export function tendencyOf(a: (HznPoint & { q?: string; m?: string })[], back: n
     if (!from) from = p.q || p.m || "";
     moves.push(Math.abs(p.v - was));
   });
-  var still = quartile(moves, 0.25), fast = quartile(moves, 0.75), m = Math.abs(d);
+  var still = pctl(moves, 0.25), fast = pctl(moves, 0.75), m = Math.abs(d);
   return { d:d, still:still, fast:fast, from:from,
     word:m <= still ? "Steady" : (d > 0 ? "Rising" : "Falling") + (m >= fast ? " quickly" : "") };
 }
@@ -527,7 +527,7 @@ export function bootReadings(){
   })();
   productivityReading = (function(R){
     var word = productivityWord(R.now.v);
-    var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
+    var at = qLabel(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qLabel(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qLabel(R.hi.q) + ")";
     return {
       bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
       econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,

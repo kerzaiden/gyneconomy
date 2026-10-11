@@ -1,4 +1,4 @@
-import { type KeyRow, atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, readingNote, srcBlock, yearOf, titleCase } from "./format.ts";
+import { type KeyRow, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, pointLabel, qLabel, readingNote, srcBlock, yearOf, titleCase } from "./format.ts";
 import { divergeChart, trendOf, trendPill, windowYears } from "./charts.ts";
 import { debtDollarsQuarterly, debtToday, grossDebtQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
@@ -36,7 +36,7 @@ function splitPages(): Record<string, SplitPage> {
            "buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
       insight:buffettInsight },
     "sheet-metric-debt": { row:labRow("sheet-metric-debt"), word:function(){ return meterWord(labRow("sheet-metric-debt").meter); }, line:"50-year average",
-      fmt:tenth, at:function(d){ var b = debtDollarsQuarterly.filter(function(x){ return x.q === d.q; })[0]; return qPretty(d.q) + (b ? " \u00b7 " + dollars(b.v) : ""); }, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3).concat(DEBT_DOLLAR_SRC), insight:debtInsight },
+      fmt:tenth, at:function(d){ var b = debtDollarsQuarterly.filter(function(x){ return x.q === d.q; })[0]; return qLabel(d.q as string) + (b ? " \u00b7 " + dollars(b.v) : ""); }, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3).concat(DEBT_DOLLAR_SRC), insight:debtInsight },
     "sheet-sign-productivity-growth": productivityPage(tenth),
     "sheet-sign-desire": desirePage(), "sheet-sign-premium": premiumPage(), "sheet-sign-confidence": confidencePage(),
     "sheet-sign-market": marketPage()
@@ -94,7 +94,7 @@ function splitHistory(s: SplitSpec): History {
   var tr = trendOf(vals.map(function(d){ return d.v; }), periodOfSeries(s.series[0]));
   return { geom:"divergeChart", trend:trendPill(tr, null, true), chart:function(w: number){
     return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
-      xLabel:periodTicks(vals), at:s.at || function(d: SeriesPt){ return d.m ? atMonth(d as MonthPoint) : d.q ? qPretty(d.q) : "FY" + d.y; },
+      xLabel:periodTicks(vals), at:s.at || pointLabel,
       alt:s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
   } };
 }

@@ -1,3 +1,4 @@
+import { capFirst } from "./format.ts";
 
 type Fit = { slope: number; intercept: number; n: number };
 type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
@@ -236,8 +237,7 @@ export function windowYears(fromYear: number, toYear: number, want: number): num
   return out.length ? out : [toYear];
 }
 function refName(t?: string | null){
-  var w = String(t || "Reference").split(",")[0].trim();
-  return w.charAt(0).toUpperCase() + w.slice(1);
+  return capFirst(String(t || "Reference").split(",")[0].trim());
 }
 export function beatPath(x0: number, x1: number, y: number, period: number | ((x: number) => number), amp: number){
   var f = function(n: number){ return n.toFixed(1); };

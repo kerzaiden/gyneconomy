@@ -1,7 +1,7 @@
 // ---- Pulse strips ----
 import { AXIS, beatPath, chartAxes, histFrame, publishGeom, vGrid, vhOpen, xLabel, yLabel } from "./charts.ts";
 import { M2_FLOOD, M2V_FROM_YEAR, m2vHistory, m2Yoy } from "./data.ts";
-import { fmtSigned, qAtIndex, quartile, readingNote } from "./format.ts";
+import { fmtSigned, pctl, qAtIndex, readingNote } from "./format.ts";
 
 var PULSE_BEATS = 5, PULSE_VIEW = 4, PULSE_PEEK = 0.4, PULSE_FENCE = 1.5, PULSE_FAR = 3, PULSE_GUTTER = 10, PULSE_BAR = 14, PULSE_THUMB = 44;
 var fences: number[] | null = null;
@@ -10,7 +10,7 @@ function pulseFences(){
   if (fences) return fences;
   var moves: number[] = [];
   for (var i = 1; i < m2vHistory.length; i++) moves.push(pulseMove(i));
-  var q1 = quartile(moves, 0.25), q3 = quartile(moves, 0.75), k = q3 - q1;
+  var q1 = pctl(moves, 0.25), q3 = pctl(moves, 0.75), k = q3 - q1;
   return fences = [q1 - PULSE_FAR * k, q1 - PULSE_FENCE * k, q3 + PULSE_FENCE * k];
 }
 export function pulseBeat(i: number){
