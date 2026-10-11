@@ -486,6 +486,14 @@ async function openPage(p, url, sheet) {
     (tabs === 'today:Today cycle:Cycle chart:Analysis portfolio:Portfolio' && gone)
       ? ok('the tab bar reads Today, Cycle, Analysis, Portfolio', 'no Search page, timing filter or category analysis')
       : bad('the tab bar reads Today, Cycle, Analysis, Portfolio', JSON.stringify({ tabs, gone }));
+    const bar = async () => p.evaluate(() => { const t = document.querySelector('.tabbar'), s = t.querySelector('.tab-btn span');
+      return { icons: s.getBoundingClientRect().width <= 1, width: t.offsetWidth, small: t.classList.contains('small'), pill: getComputedStyle(t.querySelector('.tab-btn.active')).backgroundColor }; });
+    const rest = await bar();
+    await p.mouse.wheel(0, 900); await settle(p); const down = await bar();
+    await p.mouse.wheel(0, -300); await settle(p); const up = await bar();
+    (rest.icons && rest.width < 300 && !rest.small && rest.pill !== 'rgba(0, 0, 0, 0)' && down.small && !up.small)
+      ? ok('the phone tab bar shows icons only, a pill on the open tab, and shrinks while scrolling down', rest.width + 'px, ' + rest.pill)
+      : bad('the phone tab bar shows icons only, a pill on the open tab, and shrinks while scrolling down', JSON.stringify({ rest, down, up }));
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const door = await p.evaluate(() => ({ first: document.getElementById('chart-home').firstElementChild.className,
       rows: [...document.querySelectorAll('#chart-home .insight-row')].map(b => b.dataset.indCat).join() }));
@@ -1001,9 +1009,9 @@ async function keyboardAndLayers(b, url) {
   await ph.goto('file://' + url); await ready(ph);
   await ph.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await settle(ph);
   const end = await ph.evaluate(() => {
-    const bar = document.querySelector('.tabbar').getBoundingClientRect(), panel = document.querySelector('.tab-panel:not([hidden])');
+    const t = document.querySelector('.tabbar'), panel = document.querySelector('.tab-panel:not([hidden])');
     const last = Math.max(...[...panel.children].filter(e => e.getClientRects().length).map(e => e.getBoundingClientRect().bottom));
-    return { gap: bar.top - last, want: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap-top')) };
+    return { gap: t.getBoundingClientRect().bottom - t.offsetHeight - last, want: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap-top')) };
   });
   (Math.abs(end.gap - end.want) < 1)
     ? ok('on a phone the page ends one top gap above the tab bar', end.gap + 'px')
