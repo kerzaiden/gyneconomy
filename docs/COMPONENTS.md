@@ -8,17 +8,16 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `0e86412` on 2026-10-11. **110 components**, **18 shared patterns**.
+Generated from commit `a887649` on 2026-10-11. **109 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
 | **`elements`** | `.wr-el` | `ai-insights.ts:todayHtml` |
-| **`lead`** | `.wr-by` `.wr-head` | `ai-insights.ts:storyCard`, `ai-insights.ts:todayHtml` |
-| **`mountReport`** | `.wr-page` | `diagnosis.ts:diagnosisHost` |
+| **`lead`** | `.wr-by` `.wr-head` | `ai-insights.ts:todayHtml` |
 | **`prose`** | `.wr-link` | `ai-insights.ts:elements` |
-| **`storyHtml`** | `.wr-date` `.wr-title` | — |
+| **`storyCard`** | `.trend-when` | `diagnosis.ts:diagnosisHtml` |
 
 ## analysis.ts
 
@@ -179,7 +178,7 @@ Generated from commit `0e86412` on 2026-10-11. **110 components**, **18 shared p
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:riskCard` |
 | **`dxHead`** | `.dx-sys-head` | `analysis.ts:cycleRowsHtml`, `cycle-analysis.ts:homeSections`, `cycle-analysis.ts:statsHome`, `diagnosis.ts:yearByYear`, `fed-phases.ts:fedEnvironment` |
 | **`econChips`** | `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
-| **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:mountReport`, `portfolio.ts:portfolioSheets`, `reading.ts:mountReadings` |
+| **`metricSheet`** | `.metric-sheet` | `portfolio.ts:portfolioSheets`, `reading.ts:mountReadings` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
 | **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml` |
 | **`stripTrack`** | `.strip-track` | `dial-cycle.ts:seasonStripHtml` |
@@ -223,7 +222,7 @@ renderer speaks. Listed most-used first.
 | Function | Lives in | Called from |
 |---|---|---|
 | **`fmtSigned`** | format.ts | 24 places |
-| **`need`** | dom.ts | 24 places |
+| **`need`** | dom.ts | 23 places |
 | **`titleCase`** | format.ts | 17 places |
 | **`pageCycle`** | history.ts | 15 places |
 | **`byId`** | dom.ts | 14 places |
@@ -313,7 +312,6 @@ renderer speaks. Listed most-used first.
 | **`moodToday`** | model.ts | 3 places |
 | **`moodTrack`** | model.ts | 3 places |
 | **`mortgageLast`** | pressure.ts | 3 places |
-| **`one`** | dial-cycle.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
 | **`readingFor`** | reading.ts | 3 places |

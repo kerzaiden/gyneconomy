@@ -109,12 +109,13 @@ settles it; none is open after V668.
   Cycle tab. Closest Moments stays retired: the
   moments that resemble today are found by what needs attention, the way financial media say "highest since", which
   Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report, Today Tab)
-- **The Cycle Story card follows the dial on every cycle page, the book its mark: the cycle's name, its years under
-  it, three lines of its story, then "Read the story", and the whole card opens the story's page: the cycle's Risk
-  Factors, then its story.** A past cycle keeps its story and its own risk factors, and because every cycle page is one
-  page, today's cycle carries the same card. The Weather Report on Today dates its edition
-  in full ("9 October 2026"), never "Updated": a report is plainly as of its date. Risk Factors follow the lede, and
-  the lede carries only what moved and never restates the story. (Weather Report, Today Tab)
+- **The Cycle Story card follows the dial on every cycle page, the book its mark, titled by its cycle ("AI Cycle
+  Story", "Dot-Com Cycle Story") with a dot and its years beside the title, then three lines of its story and "Read
+  more", which opens the rest in place ("Read less" closes it).** The story's own page repeated Risk Factors, already
+  on Today, and a page for one paragraph was a detour; one title line with the years saves the space a separate name
+  and date took. A past cycle keeps its story, and because every cycle page is one page, today's cycle carries the
+  same card. The Weather Report on Today dates its edition in full ("9 October 2026"), never "Updated": a report is plainly as of its date. Risk Factors follow the lede, and
+  the lede carries only what moved and never restates the story. (Weather Report, Today Tab, Story In Place)
 - **A new edition is written only when there is news, checked every weekday evening, by a scheduled Claude routine
   that publishes it without review.** Of the readings only the Treasury curve, Fear and CAPE move on an ordinary
   weekday and the Fed eight times a year, so a daily rewrite would repeat itself; a monthly release landing, a
@@ -220,16 +221,18 @@ settles it; none is open after V668.
   centred) and close to the bottom edge, 12px inside the safe area (never under 10px), the surface at 58% behind an
   18px blur with a light edge and a soft lift. On a phone it holds icons only, as wide as its four icons, the open tab
   in a plum-tinted pill (`--glass-on`, the accent at 14%, 24% in dark) with its icon in the accent ink; the names stay
-  for screen readers and in the desktop sidebar. Scrolling down shrinks it to 70% from its bottom edge, scrolling up
-  restores it.** On her iPhone she could barely tell which tab was open; after Instagram's bar she asked for a visible
-  pill, no labels under icons that already name the tab, and a bar that shrinks by about 30% while she scrolls. Keren wanted the bar floating like the cycle app she showed, with the page visible and blurred
+  for screen readers and in the desktop sidebar. It keeps its size while the page scrolls.** On her iPhone she could
+  barely tell which tab was open; after Instagram's bar she asked for a visible pill and no labels under icons that
+  already name the tab. The bar briefly shrank while scrolling, as Instagram's does; Keren dropped it: Instagram is
+  built around scrolling and this app is not, and the shrink moved too fast. Keren wanted the bar floating like the cycle app she showed, with the page visible and blurred
   behind it as it scrolls. The glass is the `--glass*` tokens, light and dark; it replaces V550's flush, full-width
   bar. On her iPhone the bar sat too far from the bottom (10px plus the 34px inset left a 44px gap; now 22px). It is
   the same design on desktop and mobile (0.6.15 retired the wide-screen segmented track; the 480px cap is Claude's
   call). The page keeps bottom padding so nothing ends hidden behind the bar: the last container stops one top gap
   (`--gap-top`, 20px) above the bar, whatever the safe area, so the padding is the bar's height plus its lift
   (`--tabbar-lift`) plus that gap. The space below the last container had been too large on her iPhone (54px with
-  the 34px inset) and has to stay within the spacing scale. (0.6.9, 0.6.11, 0.6.13, 0.6.15, Icon Tab Bar)
+  the 34px inset) and has to stay within the spacing scale. (0.6.9, 0.6.11, 0.6.13, 0.6.15, Icon Tab Bar, Story In
+  Place)
 - **The page's top bar does not stick: the open tab's title sits at the top of the page and scrolls away with
   it, while the round menu button (and the back arrow on a deeper page) float in the top corners as liquid-glass
   circles, aligned to the page's edges on wide screens; the "Gyneconomy" title stays in the menu. The title's
@@ -597,16 +600,17 @@ settles it; none is open after V668.
   may say the figure; the check holds it to the app's own, and a Fed decision is itself news that brings a new edition.
   The emotional reading of each cycle has not been worked out yet; the lede's opening, "Born out of the 2022
   correction", which Keren liked, stays. (0.6.6, 0.6.12, 0.6.13, AI Insights Everywhere)
-- **Risk Factors lists every reading Cycle Statistics reads as Risk, on Today and on each cycle's Cycle Story page,
-  in the Elements card's design: a white title row, then the readings on apricot rows, each with its word and tier,
+- **Risk Factors lists every reading Cycle Statistics reads as Risk, on Today, in the Elements card's design: a white
+  title row as tall as the rows under it, then the readings on apricot rows, each with its word and tier,
   its value in red with its triangle, and its range.** A design readers already know from Elements reads at a
   glance; the record lines and dates added little beside the edition's own text. Its title is set like the other
   titles on Today (the dice, bold, in the accent) so it blends with the page, and a chevron in place of a count says
   the title opens that cycle's Elements filtered to Risk; a row opens its reading. The readings at Attention are
   not counted here for now. Where each reading stands in its own record
   ("highest since", "above every quarterly reading since Q1 2005") is still worked out, for the Weather Report
-  routine's facts, so an edition can say it. (0.6.13, AI Insights Everywhere, Element Insights, Weather Report,
-  Today Risk Factors)
+  routine's facts, so an edition can say it. The title row matches the rows' height so the card reads as one even
+  list (one height for every plain Elements card). (0.6.13, AI Insights Everywhere, Element Insights, Weather Report,
+  Today Risk Factors, Story In Place)
 
 ### Analysis
 
@@ -1439,7 +1443,7 @@ settles it; none is open after V668.
     mark at Keren's request. (V302, V661)
   - Circulation: a hollow drop, kept apart from Desire's flame by the flame's filled core. In this app Circulation
     is blood. (V302, V507)
-  - The cycle story: a book, left of its heading, today ("Optimism in Autumn") and on a past cycle ("Cycle story").
+  - The cycle story: a book, left of its heading ("AI Cycle Story"), on every cycle page.
     (V691)
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
   - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index, which the

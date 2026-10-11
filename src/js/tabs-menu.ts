@@ -122,17 +122,6 @@ function renderTopbar(){
   });
 }
 function wireTabKeys(){ rovingKeys(one(".tabbar"), ".tab-btn", "aria-selected"); }
-function wireTabShrink(){
-  var bar = one(".tabbar"), last = window.scrollY, queued = false;
-  function settle(){
-    queued = false;
-    var y = window.scrollY, dy = y - last;
-    if (Math.abs(dy) < 6) return;
-    bar.classList.toggle("small", dy > 0 && y > 40);
-    last = y;
-  }
-  window.addEventListener("scroll", function(){ if (!queued){ queued = true; requestAnimationFrame(settle); } }, { passive: true });
-}
 // ---- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----
 function wireMenu(){
   var menu = need("more-menu"), open = need("menu-btn"), back = need("menu-back");
@@ -233,8 +222,6 @@ export function bootTabsMenu(){
   renderTopbar();
   GYN.step("wireTabKeys", wireTabKeys, "wire");
   wireTabKeys();
-  GYN.step("wireTabShrink", wireTabShrink, "wire");
-  wireTabShrink();
   GYN.step("wireMenu", wireMenu, "wire");
   wireMenu();
 }
