@@ -76,6 +76,10 @@ export function factsFrom(text: unknown){
   var parts = String(text).replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+(?=[A-Z(“"'"'"'])/);
   return facts(parts.filter(function(x){ return x.trim(); }));
 }
+export function readingNote(n: { title?: string; lead?: string; paras?: string[]; src?: Src[] }){
+  return (n.title != null ? '<h4>' + n.title + '</h4>' : '') + (n.lead != null ? '<p class="caption">' + n.lead + '</p>' : '') +
+    (n.paras || []).map(function(p){ return '<p class="caption follow">' + p + '</p>'; }).join("") + (n.src ? srcBlock(n.src) : '');
+}
 export function srcBlock(list: Src[]){ return '<div class="src">' + srcHtml(list) + '</div>'; }
 function srcHtml(list: Src[]){ return list.map(function(s: Src){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
 export function fmtSigned(v: number, dp: number){ var a = Math.abs(v).toFixed(dp); return (+a === 0 ? "" : v > 0 ? "+" : "\u2212") + a; }

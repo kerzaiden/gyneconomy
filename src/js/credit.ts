@@ -1,4 +1,4 @@
-import { fmtSigned, pointLabel, qAtIndex, srcBlock, titleCase } from "./format.ts";
+import { fmtSigned, pointLabel, qAtIndex, readingNote, titleCase } from "./format.ts";
 import { colPeek } from "./charts.ts";
 import { consumerCreditHistory, delinquencyHistory, marginHistory } from "./history-fred.ts";
 import { DSR_FROM_YEAR, DSR_MEAN, dsrHistory, SAV_FROM_YEAR, SAV_HIGH, SAV_LOW, SAV_MID, SAV_THIN, savHistory } from "./data.ts";
@@ -116,9 +116,8 @@ function readingOf(S: CreditSpec): CreditReading {
     meter:{ min:lo.v, max:hi.v, value:last.v, optimal:S.optimal, ends:S.ends }, span:span, lead:"",
     caption:at + ", " + S.econ.toLowerCase() + " at " + S.fmt(last.v) + ", " + word.says + ". The track runs over the record since " + pointLabel(h[0]) + ": " + span + ".",
     info:function(){
-      return '<h4>' + titleCase(S.econ) + '</h4>' +
-        '<p class="caption">The reading is <b>' + word.text + '</b>: ' + S.fmt(last.v) + ', ' + word.says + ' (' + r.metricSub + '). The record runs ' + span + '.</p>' +
-        '<p class="caption follow">' + S.about + '</p><p class="caption follow">' + S.band + '</p>' + srcBlock(S.src);
+      return readingNote({ title:titleCase(S.econ), lead:'The reading is <b>' + word.text + '</b>: ' + S.fmt(last.v) + ', ' + word.says + ' (' + r.metricSub + '). The record runs ' + span + '.',
+        paras:[S.about, S.band], src:S.src });
     }
   };
   Object.defineProperty(r, "peek", { get:function(){

@@ -1,4 +1,4 @@
-import { hiCard, pctl, qAtIndex } from "./format.ts";
+import { hiCard, pctl, qAtIndex, readingNote } from "./format.ts";
 import { M2V_FROM_YEAR, m2vHistory } from "./data.ts";
 
 // ---- Rhythm: how evenly the pulse of money changes pace ----
@@ -40,7 +40,7 @@ export function rhythmCard(){
 }
 export function rhythmInfo(){
   var r = rhythmRecord();
-  return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' +
+  return readingNote({ paras:['<b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' +
     RHYTHM_WINDOW + ' of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is ' + pts(r.edge) +
-    ', the 90th percentile of every two-year window from ' + M2V_FROM_YEAR + ' to ' + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p>';
+    ', the 90th percentile of every two-year window from ' + M2V_FROM_YEAR + ' to ' + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.'] });
 }
