@@ -1846,8 +1846,9 @@ settles it; none is open after V668.
 - **A number the abandoned line already tagged is never tagged or released over.** The tags v1.0.0 to v1.8.0
   name commits of the line given up, so the draft's own 1.0.0 cannot take its tag while they stand. The Tag
   workflow names such a version and turns red instead of skipping it or putting its Release on the old commit,
-  and `npm run bump` refuses the number. Claude's call, for Keren to overturn; retiring the old tags before 1.0.0
-  is hers to decide. (0.1.1)
+  and `npm run bump` refuses the number. Claude's call, for Keren to overturn. **At 1.0.0 Keren retired the old
+  tags:** each is renamed `old-v1.x.y` on its same commit, so the abandoned line keeps its history and the new
+  1.x numbers are free to tag and release. (0.1.1, 1.0.0)
 - **Which number moves:**
   - **Major** for a redesign, or a change to how the app is read: a season, cycle or mood model redefined,
     a category or tab added or removed, the book's framework changed.
