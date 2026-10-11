@@ -190,6 +190,9 @@
   }
   @media (max-width:400px){ .topbar-title{ font-size:var(--type-section); } }
   .topbar-title:focus{ outline:none; }
+  .wrap:has(> main > .tab-panel[data-tab="today"]:not([hidden])) > .topbar:not(:has(> .back-btn:not([hidden]))) > .topbar-title{
+    position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;
+  }
   .menu-btn{
     grid-column:3; width:44px; height:44px; border-radius:50%; padding:0; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
     border:0; background:transparent; color:var(--accent-ink); transition:color 0.12s;

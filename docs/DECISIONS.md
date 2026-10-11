@@ -200,12 +200,13 @@ settles it; none is open after V668.
 
 ### Tabs, bars and menu
 
-- **The tab bar is Today · Cycle · Analysis · Portfolio, and the app opens on Today, its tab icon the weather
-  mark.** Today holds the Weather Report and, later, other financial news: what a reader comes back for every day
+- **The tab bar is Today · Cycle · Analysis · Portfolio, and the app opens on Today, its tab icon a home.** Today
+  is where the app opens and where a reader returns, so its icon says home; the weather mark stays with the Weather
+  Report it heads. The name stays "Today" for screen readers and in the desktop sidebar. Today holds the Weather Report and, later, other financial news: what a reader comes back for every day
   belongs on the first screen. Herstory gave up its tab to make room, since the cycle list is read far less often
   than Analysis, Portfolio or the cycle. Search replaced the Content tab (V657) and swapped places with Analysis
   (V665); Cycle analysis then took Search's place, because the two showed the same readings in different views.
-  (V657, V665, 0.6.1, Today Tab)
+  (V657, V665, 0.6.1, Today Tab, Home Tab)
 - **Herstory is the last container on Analysis, built like Year by Year: the history clock (an arrow turning back
   round a clock face) as its mark, the three newest closed cycles, then View more for the rest.** It is read less
   often than the rest of Analysis, so it sits at the foot; it keeps the icon that stood beside Cycle history. A cycle
@@ -276,7 +277,9 @@ settles it; none is open after V668.
   surface behind a 24px blur, with the glass edge and lift, over a lighter veil that blurs the page by 10px.**
   Keren picked option C from the liquid-glass previews. (0.6.9)
 - **The top bar's titles are Keren's names for the tabs: "Today", "Current Cycle", "Analysis", "Portfolio".**
-  (undated, 0.6.1, Today Tab)
+  Today's home shows no title: the Weather Report's date already says which day it is, so the word only takes the
+  space. It stays in the heading for screen readers and returns on any page opened from Today. (undated, 0.6.1,
+  Today Tab, Home Tab)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
   head names the series (bar "Pulse", head "Velocity of Money (M2)").** A title inside the page only repeated the
   top bar: the bar names the page and the card names the reading. (V208, V288, V298, V361)
