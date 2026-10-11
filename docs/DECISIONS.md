@@ -1864,6 +1864,9 @@ settles it; none is open after V668.
   **Since 0.6.1 every release moves the last number, and the middle number moves only when Keren says so.**
   Versions had been moving too fast. `npm run bump major` refuses on 0.x; 1.0.0 is given exactly,
   `npm run bump 1.0.0`. (0.0.9, 0.6.1)
+- **Keren called the first draft finished on October 11, 2026: "we already have an app, this is the first version
+  of it."** So the release after 0.9.72 (843) is **1.0.0, build 844** (Home Tab), and from it every release again
+  moves the last number, the middle one only on her word. (1.0.0)
 - **A release gets its number when it merges, not when its branch starts.** Several threads work in parallel,
   and numbering each at the start meant renumbering, re-merging and re-checking whenever another merged first.
   A branch and its PR carry only the release's name; the merging session merges `main` in, bumps, checks and
@@ -1876,8 +1879,9 @@ settles it; none is open after V668.
 - **A number the abandoned line already tagged is never tagged or released over.** The tags v1.0.0 to v1.8.0
   name commits of the line given up, so the draft's own 1.0.0 cannot take its tag while they stand. The Tag
   workflow names such a version and turns red instead of skipping it or putting its Release on the old commit,
-  and `npm run bump` refuses the number. Claude's call, for Keren to overturn; retiring the old tags before 1.0.0
-  is hers to decide. (0.1.1)
+  and `npm run bump` refuses the number. Claude's call, for Keren to overturn. **At 1.0.0 Keren retired the old
+  tags:** each is renamed `old-v1.x.y` on its same commit, so the abandoned line keeps its history and the new
+  1.x numbers are free to tag and release. (0.1.1, 1.0.0)
 - **Which number moves:**
   - **Major** for a redesign, or a change to how the app is read: a season, cycle or mood model redefined,
     a category or tab added or removed, the book's framework changed.
