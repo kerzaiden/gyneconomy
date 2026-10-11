@@ -1045,7 +1045,6 @@
 
   .chart-shell{ position:relative; margin:10px -6px 4px; }
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
-  .crosshair{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:3 3; opacity:0; pointer-events:none; }
   .hero-hit{ fill:transparent; }
 
   .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
@@ -1095,7 +1094,6 @@
   #metric-page .hist-bar{ margin-top:0; }
   .hist-bar > * + *{ margin-top:8px; }
   .spread-history-band{ fill:var(--border); opacity:0.7; }
-  .spread-history-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
 
   /* ---- un-inversion-to-recession historical lag panel ---- */
 

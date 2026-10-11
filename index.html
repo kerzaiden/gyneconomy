@@ -1034,7 +1034,6 @@
 
   .chart-shell{ position:relative; margin:10px -6px 4px; }
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
-  .crosshair{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:3 3; opacity:0; pointer-events:none; }
   .hero-hit{ fill:transparent; }
 
   .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
@@ -1081,7 +1080,6 @@
   #metric-page .hist-bar{ margin-top:0; }
   .hist-bar > * + *{ margin-top:8px; }
   .spread-history-band{ fill:var(--border); opacity:0.7; }
-  .spread-history-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
 
   .lag-rows{ margin:10px 0 14px; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
   .lag-row{ display:grid; grid-template-columns: 1.05fr 1.15fr 1.05fr 0.75fr; gap:6px; padding:8px 10px; font-size:var(--type-meta); line-height:1.35; border-bottom:1px solid var(--border); color:var(--text-primary); }
@@ -50914,23 +50912,7 @@
   }
   function paintSpreads(key, from, to) {
     var svg = need("spread-history-svg");
-    var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
-    var innerW = W - padL - padR, innerH = H - padT - padB;
-    var minV = -2, maxV = 4;
     var el = svgEl;
-    function qIndex2(data2, q) {
-      for (var i = 0; i < data2.length; i++) {
-        if (data2[i].q === q) return i;
-      }
-      return -1;
-    }
-    function x(i, n) {
-      var h = innerW / (2 * Math.max(1, n));
-      return padL + h + (innerW - 2 * h) * i / (n - 1);
-    }
-    function y(v) {
-      return padT + innerH - (v - minV) / (maxV - minV) * innerH;
-    }
     function pts2(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2) + " pts";
     }
@@ -50938,25 +50920,25 @@
     var data = s.data.slice(from, to);
     if (data.length < 2) data = s.data;
     var shell = svg.parentElement;
-    F = histFrame(shell && shell.clientWidth);
-    W = F.W;
-    H = F.H;
-    innerW = W - padL - padR;
-    innerH = H - padT - padB;
+    var F = histFrame(shell && shell.clientWidth), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T;
+    var n = data.length, cs = colScale(F, n, -2, 4), x = cs.X, y = cs.Y;
+    var quarters = data.map(function(d) {
+      return d.q;
+    });
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.innerHTML = "";
     t10y3mRecessions.forEach(function(r) {
-      var i0 = qIndex2(data, r.from), i1 = qIndex2(data, r.to);
+      var i0 = quarters.indexOf(r.from), i1 = quarters.indexOf(r.to);
       if (i0 < 0 || i1 < 0) return;
       svg.appendChild(el("rect", {
-        x: x(i0, data.length),
+        x: x(i0),
         y: padT,
-        width: Math.max(2, x(i1, data.length) - x(i0, data.length)),
-        height: innerH,
+        width: Math.max(2, x(i1) - x(i0)),
+        height: F.B - F.T,
         class: "spread-history-band"
       }));
     });
-    var yTop = padT, yBot = padT + innerH, xR = W - padR;
+    var yTop = F.T, yBot = F.B, xR = F.R;
     appendSvgMarkup(svg, chartAxes({
       x0: padL,
       x1: xR,
@@ -50969,52 +50951,35 @@
         return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) + "%";
       }
     }));
-    svg.appendChild(el("line", {
-      x1: padL - AXIS.L,
-      x2: xR + AXIS.R,
-      y1: y(0),
-      y2: y(0),
-      class: "spread-history-zero"
-    }));
-    var y0q = parseInt(data[0].q.slice(0, 4), 10), y1q = parseInt(data[data.length - 1].q.slice(0, 4), 10);
-    var xLabelYears = windowYears(y0q, y1q, 6);
-    var xMarks = "";
-    data.forEach(function(d, i) {
-      var m = d.q.match(/^(\d{4}) Q1$/);
-      if (m && xLabelYears.indexOf(parseInt(m[1], 10)) !== -1) {
-        var xp = x(i, data.length);
-        xMarks += vGrid(xp, yTop, yBot) + xLabel(xp.toFixed(1), m[1], H - AXIS.FOOT);
-      }
-    });
-    appendSvgMarkup(svg, xMarks);
+    appendSvgMarkup(svg, zeroRule(padL, xR, y(0)));
+    var y0q = parseInt(data[0].q.slice(0, 4), 10), y1q = parseInt(data[n - 1].q.slice(0, 4), 10);
+    var ym = yearMarks(F, windowYears(y0q, y1q, 6), function(yr) {
+      return quarters.indexOf(yr + " Q1");
+    }, x);
+    appendSvgMarkup(svg, ym.grids.map(function(g, i) {
+      return g + ym.labels[i];
+    }).join(""));
     var zeroY = y(0);
-    var colW = colWidth(innerW / Math.max(1, data.length));
+    var colW = colWidth((F.R - F.L) / Math.max(1, n));
     data.forEach(function(d, i) {
-      var cx = x(i, data.length);
       svg.appendChild(el("path", {
-        d: colPath(cx, zeroY, y(d.v), colW),
+        d: colPath(x(i), zeroY, y(d.v), colW),
         "stroke-width": colW.toFixed(2),
         class: "hzn-col hcol" + (d.v < 0 ? " inv" : "")
       }));
     });
     appendSvgMarkup(svg, fitLine(data.map(function(d) {
       return d.v;
-    }), "quarter", pts2, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
-    svg.appendChild(el("line", {
-      x1: 0,
-      x2: 0,
-      y1: padT,
-      y2: H - padB,
-      class: "hist-cross"
-    }));
+    }), "quarter", pts2, x(0), x(n - 1), y, W, padL, padR));
+    appendSvgMarkup(svg, crossLine(padT, F.B));
     publishGeom("spreadHistory", {
       vals: data,
-      n: data.length,
+      n: n,
       W: W,
       T: yTop,
       B: yBot,
-      L: x(0, data.length),
-      R: x(data.length - 1, data.length),
+      L: x(0),
+      R: x(n - 1),
       at: function(d) {
         return qLabel(d.q);
       },
@@ -54278,7 +54243,7 @@
   function definePressure() {
     var svg;
     var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
-    var innerW = W - padL - padR, innerH = H - padT - padB;
+    var innerW = W - padL - padR;
     var el = svgEl;
     var quarters = t3mYieldHistory.map(function(d) {
       return d.q;
@@ -54318,11 +54283,10 @@
     function ylmCount() {
       return ylmTo - ylmFrom;
     }
+    var minV, maxV, cs;
     function x(i) {
-      var half = innerW / (2 * Math.max(1, ylmCount()));
-      return padL + half + (innerW - 2 * half) * (i - ylmFrom) / (ylmCount() - 1 || 1);
+      return cs.X(i - ylmFrom);
     }
-    var minV, maxV;
     function computeScale() {
       var vals = [];
       maturities.forEach(function(m) {
@@ -54337,7 +54301,7 @@
       if (maxV <= minV) maxV = minV + 1;
     }
     function y(v) {
-      return padT + innerH - (v - minV) / (maxV - minV) * innerH;
+      return cs.Y(v);
     }
     function render() {
       svg = need("ylm-svg");
@@ -54346,9 +54310,9 @@
       W = F.W;
       H = F.H;
       innerW = W - padL - padR;
-      innerH = H - padT - padB;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
       computeScale();
+      cs = colScale(F, ylmCount(), minV, maxV);
       svg.innerHTML = "";
       var steps = maxV - minV <= 6 ? maxV - minV : 6, ylmTicks = [];
       for (var s = 0; s <= steps; s++) ylmTicks.push(minV + (maxV - minV) * s / steps);
@@ -54397,14 +54361,6 @@
       ylmYearMarks(svg, quarters, ylmFrom, ylmTo, x, padT, H, padB);
       ylmColumns(svg, maturities, quarters, ylmFrom, ylmTo, x, y, colWidth(innerW / Math.max(1, ylmCount())), latestSpread);
       ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR);
-      var crosshair = el("line", {
-        x1: 0,
-        x2: 0,
-        y1: padT,
-        y2: H - padB,
-        class: "crosshair"
-      });
-      svg.appendChild(crosshair);
       var hit = el("rect", {
         x: padL,
         y: 0,

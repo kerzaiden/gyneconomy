@@ -1,7 +1,7 @@
 import { atMonth, auxStat, factsFrom, hiCard, highlightsHtml, isoDay, lede, metered, qLabel, srcBlock, stateOf } from "./format.ts";
 import { addSources, appendSvgMarkup, byId, expandBtn, need, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { AXIS, chartAxes, colPath, colWidth, divergeChart, fitLine, histFrame, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
+import { AXIS, chartAxes, colPath, colScale, colWidth, crossLine, divergeChart, fitLine, histFrame, publishGeom, trendOf, trendPill, windowYears, yearMarks, zeroRule } from "./charts.ts";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { curveAsOf, curveNoteFull, FENCE_SRC, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
@@ -64,65 +64,50 @@ function spreadDetail(key: string){
 }
 function paintSpreads(key: string, from: number, to: number){
   var svg = need("spread-history-svg");
-  var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
-  var innerW = W - padL - padR, innerH = H - padT - padB;
-  var minV = -2, maxV = 4;
   var el = svgEl;
-  function qIndex(data: typeof t10y3mHistory, q: string){ for (var i=0;i<data.length;i++){ if (data[i].q === q) return i; } return -1; }
-  function x(i: number, n: number){ var h = innerW / (2 * Math.max(1, n)); return padL + h + (innerW - 2 * h) * i / (n - 1); }
-  function y(v: number){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
   function pts(v: number){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + " pts"; }
   var s = spreadSeries()[key];
   var data = s.data.slice(from, to);
   if (data.length < 2) data = s.data;
   var shell = svg.parentElement;
-  F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
-  innerW = W - padL - padR; innerH = H - padT - padB;
+  var F = histFrame(shell && shell.clientWidth), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T;
+  var n = data.length, cs = colScale(F, n, -2, 4), x = cs.X, y = cs.Y;
+  var quarters = data.map(function(d){ return d.q; });
   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
   svg.innerHTML = "";
 
   t10y3mRecessions.forEach(function(r){
-    var i0 = qIndex(data, r.from), i1 = qIndex(data, r.to);
+    var i0 = quarters.indexOf(r.from), i1 = quarters.indexOf(r.to);
     if (i0 < 0 || i1 < 0) return;
-    svg.appendChild(el("rect", { x:x(i0,data.length), y:padT, width: Math.max(2, x(i1,data.length) - x(i0,data.length)), height: innerH, class:"spread-history-band" }));
+    svg.appendChild(el("rect", { x:x(i0), y:padT, width: Math.max(2, x(i1) - x(i0)), height: F.B - F.T, class:"spread-history-band" }));
   });
 
-  var yTop = padT, yBot = padT + innerH, xR = W - padR;
+  var yTop = F.T, yBot = F.B, xR = F.R;
   appendSvgMarkup(svg, chartAxes({
     x0:padL, x1:xR, top:(yTop - AXIS.LEG - AXIS.READ), bot:yBot, y:y, noGridAt:0,
     ticks:[-2, -1, 0, 1, 2, 3, 4],
     fmt:function(v: number){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v) + "%"; }
   }));
-  svg.appendChild(el("line", { x1:padL - AXIS.L, x2:xR + AXIS.R, y1:y(0), y2:y(0), class:"spread-history-zero" }));
+  appendSvgMarkup(svg, zeroRule(padL, xR, y(0)));
 
-  var y0q = parseInt(data[0].q.slice(0, 4), 10), y1q = parseInt(data[data.length - 1].q.slice(0, 4), 10);
-  var xLabelYears = windowYears(y0q, y1q, 6);
-  var xMarks = "";
-  data.forEach(function(d, i){
-    var m = d.q.match(/^(\d{4}) Q1$/);
-    if (m && xLabelYears.indexOf(parseInt(m[1], 10)) !== -1){
-      var xp = x(i, data.length);
-      xMarks += vGrid(xp, yTop, yBot) +
-        xLabel(xp.toFixed(1), m[1], H - AXIS.FOOT);
-    }
-  });
-  appendSvgMarkup(svg, xMarks);
+  var y0q = parseInt(data[0].q.slice(0, 4), 10), y1q = parseInt(data[n - 1].q.slice(0, 4), 10);
+  var ym = yearMarks(F, windowYears(y0q, y1q, 6), function(yr: number){ return quarters.indexOf(yr + " Q1"); }, x);
+  appendSvgMarkup(svg, ym.grids.map(function(g, i){ return g + ym.labels[i]; }).join(""));
 
   var zeroY = y(0);
-  var colW = colWidth(innerW / Math.max(1, data.length));
+  var colW = colWidth((F.R - F.L) / Math.max(1, n));
   data.forEach(function(d, i){
-    var cx = x(i, data.length);
     svg.appendChild(el("path", {
-      d: colPath(cx, zeroY, y(d.v), colW),
+      d: colPath(x(i), zeroY, y(d.v), colW),
       "stroke-width": colW.toFixed(2),
       class: "hzn-col hcol" + (d.v < 0 ? " inv" : "")
     }));
   });
-  appendSvgMarkup(svg, fitLine(data.map(function(d){ return d.v; }), "quarter", pts, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
+  appendSvgMarkup(svg, fitLine(data.map(function(d){ return d.v; }), "quarter", pts, x(0), x(n - 1), y, W, padL, padR));
 
-  svg.appendChild(el("line", { x1:0, x2:0, y1:padT, y2:H - padB, class:"hist-cross" }));
-  publishGeom("spreadHistory", { vals:data, n:data.length, W:W, T:yTop, B:yBot,
-                   L:x(0, data.length), R:x(data.length - 1, data.length),
+  appendSvgMarkup(svg, crossLine(padT, F.B));
+  publishGeom("spreadHistory", { vals:data, n:n, W:W, T:yTop, B:yBot,
+                   L:x(0), R:x(n - 1),
                    at:function(d: { q: string }){ return qLabel(d.q); },
                    fmt:pts,
                    refs:[{ label:"NBER recession", swatch:"var(--border-strong)" },

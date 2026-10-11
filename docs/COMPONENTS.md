@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `72eae88` on 2026-10-11. **106 components**, **17 shared patterns**.
+Generated from commit `57189b1` on 2026-10-11. **106 components**, **17 shared patterns**.
 
 ## ai-insights.ts
 
@@ -33,7 +33,7 @@ Generated from commit `72eae88` on 2026-10-11. **106 components**, **17 shared p
 | **`avgRule`** | `.temp-avg` | `charts.ts:divergeChart`, `history-charts.ts:columnHistory`, `history-charts.ts:deficitChart` |
 | **`chartAxes`** | `.bt-axis` `.bt-frame` `.bt-grid` | `charts.ts:divergeChart`, `history-charts.ts:columnHistory`, `history-charts.ts:deficitChart`, `pressure.ts:definePressure`, `pulse-strips.ts:pulseStripsChart`, `render-pages.ts:paintSpreads` |
 | **`colPeek`** | `.heat` `.peek-base` `.peek-chart` | `credit.ts:readingOf`, `readings.ts:deriveFeelingReadings`, `readings.ts:derivePulseTag`, `readings.ts:yearReading` |
-| **`crossLine`** | `.hist-cross` | `charts.ts:divergeChart`, `history-charts.ts:columnHistory`, `history-charts.ts:deficitChart`, `pressure.ts:definePressure` |
+| **`crossLine`** | `.hist-cross` | `charts.ts:divergeChart`, `history-charts.ts:columnHistory`, `history-charts.ts:deficitChart`, `pressure.ts:definePressure`, `render-pages.ts:paintSpreads` |
 | **`divergeChart`** | `.dchart` `.dv-bar` `.dv-mid` `.hcol` | `indicators.ts:splitHistory`, `inner-pages.ts:defineValuation`, `render-pages.ts:defineVolatility` |
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.ts:divergeChart`, `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `pressure.ts:ylmFitLine` |
 | **`histBar`** | `.hist-bar` | `reading.ts:drawReading` |
@@ -43,10 +43,10 @@ Generated from commit `72eae88` on 2026-10-11. **106 components**, **17 shared p
 | **`meanRule`** | `.vh-mean` | `history-charts.ts:columnHistory`, `history-charts.ts:deficitChart` |
 | **`trendOf`** | `.tp-arrow` | `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:defineMortgage`, `pressure.ts:definePressure`, `pressure.ts:pulseHistory`, `pressure.ts:ylmFitLine`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
 | **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.ts:splitHistory`, `inner-pages.ts:defineActivity`, `inner-pages.ts:defineDeficit`, `inner-pages.ts:defineGdp`, `inner-pages.ts:defineTemp`, `inner-pages.ts:defineValuation`, `pressure.ts:defineFlow`, `pressure.ts:defineMortgage`, `pressure.ts:definePressure`, `pressure.ts:pulseHistory`, `render-pages.ts:defineHormones`, `render-pages.ts:defineSpreads`, `render-pages.ts:defineVolatility` |
-| **`vGrid`** | `.bt-vgrid` | `charts.ts:divergeChart`, `charts.ts:yearMarks`, `history-charts.ts:deficitChart`, `pulse-strips.ts:stripPaper`, `render-pages.ts:paintSpreads` |
+| **`vGrid`** | `.bt-vgrid` | `charts.ts:divergeChart`, `charts.ts:yearMarks`, `history-charts.ts:deficitChart`, `pulse-strips.ts:stripPaper` |
 | **`vhOpen`** | `.vh-svg` | `history-charts.ts:columnHistory`, `history-charts.ts:deficitChart`, `pulse-strips.ts:pulseStripsChart` |
-| **`xLabel`** | `.bt-xl` | `charts.ts:divergeChart`, `charts.ts:yearMarks`, `history-charts.ts:deficitChart`, `pulse-strips.ts:pulseStripsChart`, `render-pages.ts:paintSpreads` |
-| **`zeroRule`** | `.m2-zero` | `charts.ts:divergeChart`, `history-charts.ts:columnHistory`, `history-charts.ts:deficitChart` |
+| **`xLabel`** | `.bt-xl` | `charts.ts:divergeChart`, `charts.ts:yearMarks`, `history-charts.ts:deficitChart`, `pulse-strips.ts:pulseStripsChart` |
+| **`zeroRule`** | `.m2-zero` | `charts.ts:divergeChart`, `history-charts.ts:columnHistory`, `history-charts.ts:deficitChart`, `render-pages.ts:paintSpreads` |
 
 ## cycle-analysis.ts
 
@@ -291,6 +291,7 @@ renderer speaks. Listed most-used first.
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`calBtn`** | cycle-analysis.ts | 3 places |
 | **`cap`** | cycle-analysis.ts | 3 places |
+| **`colScale`** | charts.ts | 3 places |
 | **`curveAt`** | data.ts | 3 places |
 | **`cycleOfYear`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |

@@ -1,7 +1,7 @@
 import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, srcBlock, titleCase } from "./format.ts";
 import { addSources, need, svgEl } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
+import { AXIS, chartAxes, colScale, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
 import { curveAsOf, curveAt, curveSpread, FENCE_SRC, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
 import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
@@ -169,7 +169,7 @@ function pressureHead(maturities: Maturity[], mat: Maturity | undefined, title: 
 function definePressure(){
   var svg: Element;
   var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
-  var innerW = W - padL - padR, innerH = H - padT - padB;
+  var innerW = W - padL - padR;
   var el = svgEl;
 
   var quarters = t3mYieldHistory.map(function(d){ return d.q; });
@@ -193,11 +193,8 @@ function definePressure(){
 
   var ylmFrom = 0, ylmTo = quarters.length;
   function ylmCount(){ return ylmTo - ylmFrom; }
-  function x(i: number){
-    var half = innerW / (2 * Math.max(1, ylmCount()));
-    return padL + half + ((innerW - 2 * half) * (i - ylmFrom)) / ((ylmCount() - 1) || 1);
-  }
-  var minV: number, maxV: number;
+  var minV: number, maxV: number, cs: { X: Plot; Y: Plot };
+  function x(i: number){ return cs.X(i - ylmFrom); }
   function computeScale(){
     var vals: number[] = [];
     maturities.forEach(function(m){
@@ -209,15 +206,16 @@ function definePressure(){
     maxV = Math.ceil(Math.max.apply(null, vals) / 1) * 1;
     if (maxV <= minV) maxV = minV + 1;
   }
-  function y(v: number){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
+  function y(v: number){ return cs.Y(v); }
 
   function render(){
     svg = need("ylm-svg");
     var shell = svg.parentElement;
     F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
-    innerW = W - padL - padR; innerH = H - padT - padB;
+    innerW = W - padL - padR;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     computeScale();
+    cs = colScale(F, ylmCount(), minV, maxV);
     svg.innerHTML = "";
 
     var steps = maxV - minV <= 6 ? (maxV - minV) : 6, ylmTicks = [];
@@ -243,8 +241,6 @@ function definePressure(){
 
     ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR);
 
-    var crosshair = el("line", {x1:0, x2:0, y1:padT, y2:H - padB, class:"crosshair"});
-    svg.appendChild(crosshair);
     var hit = el("rect", {x:padL, y:0, width:innerW, height:H, class:"hero-hit"});
     svg.appendChild(hit);
   }
