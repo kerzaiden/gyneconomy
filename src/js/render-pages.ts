@@ -126,8 +126,8 @@ function paintSpreads(key: string, from: number, to: number){
                    at:function(d: { q: string }){ return qLabel(d.q); },
                    fmt:pts,
                    refs:[{ label:"NBER recession", swatch:"var(--border-strong)" },
-                         { label:"Normal",         swatch:"var(--good)" },
-                         { label:"Inverted",       swatch:"var(--critical)" }] });
+                         { label:"Normal",         swatch:"var(--hist-2)" },
+                         { label:"Inverted",       swatch:"var(--hist-4)" }] });
 }
 // ---- RENDER: un-inversion-to-recession historical lag panel ----
 function deriveUninversionDetail(){

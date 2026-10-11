@@ -1338,38 +1338,47 @@ settles it; none is open after V668.
 
 ### Each page's picture
 
-- **Growth's history is real GDP year over year, quarterly from 1988, as columns from zero, coloured by the
-  season model's regime like everywhere Growth appears: gold in expansion, periwinkle in contraction.** It is a
-  yearly history like the rest of the app, and Keren chose regime over sign so a column says the phase, not
-  which side of zero it fell on. (V371, V380, V668)
+- **Every history colours its columns from one palette, the Interest Rates chart's: yellow, orange and dark
+  plum, as one ramp of six steps (`--hist-0` to `--hist-5`, pale yellow, yellow, amber, orange, plum).** A
+  history with two states (a reading's good side or bad side of its line, a normal or inverted curve, expansion
+  surplus or deficit, a regular or odd beat) draws the easy one yellow (`--hist-2`) and the
+  hard one orange (`--hist-4`), as the Interest Rates chart draws rates yellow and prices orange; a third,
+  worse state is plum (`--hist-5`); a history coloured by level (Temperature, Hormones, Mortgage, Volume) steps
+  along the ramp. Keren found a teal, blue or red per history confusing: one code read the same way on every
+  page. The state each column is in is still decided by each page's own rule, and Cycle Statistics' verdict
+  bars keep the tier colours. (History Colours)
+
+- **Growth's history is real GDP year over year, quarterly from 1988, as columns from zero, all in one colour
+  (`hist-2`).** The season already says the regime, so a second colour per column repeated it and made the
+  chart harder to read. (V371, V380, V668, History Colours)
 - **A view of two measurements of one quantity (GDP year on year) is drawn as pairs: a quiet "before" and a
   coloured "after" joined by a connector with a disc at each end, so the mark itself is the difference.** It
   follows Keren's before/after reference; two columns from zero would hide a change of about 2%, and a
   truncated axis would lie. (undated, Sep 20, 2026)
 - **Temperature's history is CPI year over year, monthly from 1989, as columns from zero with the 2% target as
-  its reference; the columns use the heat ramp (yellow to orange, mixed from the dial's Autumn and Summer,
-  climbing in darkness as well as hue, periwinkle below the range), binned by the reading (`heatStep`), so the
-  same CPI is always the same colour.** It has to look like a heat map; the reading's identity outranks one
-  colour per shape. (V257, V373, V378, V390)
+  its reference; the columns climb the history ramp from pale yellow to orange, dark plum below the range,
+  binned by the reading (`heatStep`), so the same CPI is always the same colour.** It has to look like a heat
+  map. (V257, V373, V378, V390, History Colours)
 - **Temperature is drawn as a chart, never a ring, and with no bear-year shading.** Keren's call, from Natural
   Cycles' temperature view; the dial's market band already carries the bear years. (undated, Sep 17, 2026)
-- **Volume's columns are one red hue in steps, darkest where the money stock contracts and palest at the
-  flood: height says how much, colour says which way.** Losing a lot of blood is dark red; blood in abundance
-  is a faint pink. (V389, V390)
+- **Volume's columns step along the history ramp, dark plum where the money stock contracts and palest at the
+  flood: height says how much, colour says which way.** Losing a lot of blood is the darkest; blood in abundance
+  the faintest. (V389, V390, History Colours)
 - **Pulse draws a pulse: two lanes over the same span, today's tempo against her pre-2008 pace, where only the
   spacing of the beats varies and each beat has a real trace's heights (P, QRS, T); the trace is Pulse's
   miniature, and its history is bars like every other.** A page about the pulse should show one that looks like
   a real heartbeat. (V297, V298, V496, V668)
 - **Pressure's maturity history is columns, each coloured by what the curve was doing that quarter (inverted,
-  or normal, from the one `pressureZone()` lookup), in `--critical` and `--gold` at full weight: colour shows
-  the curve, height the yield.** There is no "Steep" zone, as it had no source (1.2.0). The colour represents
-  the pressure, and the pale zone tones failed to separate under protanopia. (V394, 1.2.0)
+  or normal, from the one `pressureZone()` lookup), inverted orange and normal yellow at full weight: colour
+  shows the curve, height the yield.** There is no "Steep" zone, as it had no source (1.2.0). The colour
+  represents the pressure, and the pale zone tones failed to separate under protanopia. (V394, 1.2.0, History
+  Colours)
 - **Pressure's history keeps quarterly averages, but the column for the quarter still running is the latest
   close from the par curve, labelled with its date (added at the end if the history has not reached that
   quarter).** Keren wants the latest data, not only the quarterly. (V644)
-- **Hormones' columns are six steps of blue, light to dark, spread across the window's own low and high, never
-  across fixed levels.** Keren asked for shades of blue; the forty-year drift shows in a ramp, not in one
-  colour. (V608)
+- **Hormones' columns (and the mortgage rate's) are the six steps of the history ramp, pale yellow to dark plum,
+  spread across the window's own low and high, never across fixed levels.** The forty-year drift shows in a
+  ramp, not in one colour. (V608, History Colours)
 - **Households draws debt service and saving together on one axis, as paired columns.** Both are shares of
   disposable personal income, so one axis is honest and spares the reader a comparison in the head. (V460,
   V500)

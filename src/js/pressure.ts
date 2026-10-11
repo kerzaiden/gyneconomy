@@ -229,8 +229,8 @@ function definePressure(){
     publishGeom("ylm", { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
                      n:ylmCount(), at:function(d: unknown, i: number){ return colLabel(ylmFrom + i); },
                      fmt:function(v: number){ return v.toFixed(2) + "%"; },
-                     refs:[{ label:"Inverted", swatch:"var(--critical)" },
-                           { label:"Normal",   swatch:"var(--gold)" }],
+                     refs:[{ label:"Inverted", swatch:"var(--hist-4)" },
+                           { label:"Normal",   swatch:"var(--hist-2)" }],
                      vals:(picked ? picked.data.slice(ylmFrom, ylmTo).map(function(d){
                             return d.v == null ? null : { v:d.v }; }) : []) });
 
