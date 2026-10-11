@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,966 lines** in 43 files, about 613 KB, roughly **174 thousand tokens**. No session can
+The source is **8,967 lines** in 43 files, about 613 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `3e71d39` on 2026-10-11.
+Generated from commit `f07adcf` on 2026-10-11.
 
 ## The page
 
@@ -18,7 +18,7 @@ Generated from commit `3e71d39` on 2026-10-11.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,205 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,206 | the whole stylesheet, every token and rule |
 | `page-body.html` | 246 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 39 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
@@ -1487,19 +1487,19 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 397 | tab bar (app-style segmented navigation) |
 | 433 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
 | 521 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 663 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 688 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 736 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 884 | View more: the button under Year by Year and Herstory |
-| 896 | The symptoms: a cycle's years against today |
-| 1,050 | yield curve charts |
-| 1,074 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,093 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,106 | un-inversion-to-recession historical lag panel |
-| 1,115 | the reading's tag |
-| 1,119 | info icon + popover (progressive disclosure for longer notes) |
-| 1,133 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,196 | footer |
+| 664 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 689 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 737 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 885 | View more: the button under Year by Year and Herstory |
+| 897 | The symptoms: a cycle's years against today |
+| 1,051 | yield curve charts |
+| 1,075 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,094 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,107 | un-inversion-to-recession historical lag panel |
+| 1,116 | the reading's tag |
+| 1,120 | info icon + popover (progressive disclosure for longer notes) |
+| 1,134 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,197 | footer |
 
 ## Markup landmarks
 

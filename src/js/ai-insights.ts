@@ -54,8 +54,8 @@ function cycleCard(){
   var m = nowModel, meta = wheelMeta[m.season], ret = sp500AnnualReturns[calendarTodayY];
   return '<button type="button" class="trend-card today-cycle" data-go-tab="cycle" aria-label="Open the current cycle">' + miniRing(m) +
     '<span class="today-cycle-hub"><span class="today-cycle-kicker">' + m.era.name + ' \u00b7 Year ' + m.yearIndex + '</span>' +
-    '<span class="today-cycle-season">' + meta.name + (meta.theme ? ' <span class="today-cycle-stage">' + meta.theme + '</span>' : '') + '</span>' +
-    (ret != null ? '<span class="today-cycle-ret">' + (ret >= 0 ? "Bull" : "Bear") + ' year \u00b7 <b>' + fmtSigned(ret, 1) + '%</b> in ' + calendarTodayY + '</span>' : '') + '</span>' + CHEV + '</button>';
+    '<span class="today-cycle-season">' + meta.name + (meta.theme ? ' <span class="today-cycle-stage">\u00b7 ' + meta.theme + '</span>' : '') + '</span>' +
+    (ret != null ? '<span class="today-cycle-ret"><b class="' + (ret >= 0 ? "bull" : "bear") + '">' + fmtSigned(ret, 1) + '%</b> in ' + calendarTodayY + '</span>' : '') + '</span>' + CHEV + '</button>';
 }
 function todayHtml(){
   var r = now.report, c = openCycle();

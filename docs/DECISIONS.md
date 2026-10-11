@@ -111,7 +111,9 @@ settles it; none is open after V668.
   Risk Factors says. (0.6.5, 0.6.6, AI Insights Everywhere, Element Insights, Weather Report, Today Tab)
 - **Under the Weather Report, Today carries the current cycle in small: the dial's own ring, small, on the left (its seasons,
   bull and bear years and the typical cycle ahead, without the year badge, its lines drawn bolder), and on the right
-  the cycle and its year, the season and its stage on one line, and the year so far ("Bull year · +14.4% in 2026");
+  the cycle and its year, the season and its stage on one line ("Autumn · Stagflation"), and the year so far
+  ("+14.4% in 2026", the figure in the bull or bear ink, which says the year's side without a word); the two small
+  lines share one size so neither competes with the season;
   the whole card opens the Cycle tab.** Keren wanted the cycle in view where the app opens, as a door to its page:
   the ring only shows the colours and where the cycle stands (the large one is a tap away), and the card carries no
   date, since the Weather Report above it already does. The ring is the dial's, drawn by one function (`dialRing`), so the two cannot part. (Story In Place)

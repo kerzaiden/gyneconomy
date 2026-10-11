@@ -614,9 +614,10 @@
   .today-cycle .mini-ring *{ pointer-events:none; }
   .today-cycle .mini-ring .dial-mkt{ stroke-width:11; }
   .today-cycle-hub{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
-  .today-cycle-kicker{ font-size:var(--type-label); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); }
-  .today-cycle-ret{ font-size:var(--type-meta); color:var(--text-secondary); }
-  .today-cycle-ret b{ font-weight:700; color:var(--text-primary); }
+  .today-cycle-kicker, .today-cycle-ret{ font-size:var(--type-meta); color:var(--text-muted); }
+  .today-cycle-ret b{ font-weight:700; }
+  .today-cycle-ret .bull{ color:var(--bull-ink); }
+  .today-cycle-ret .bear{ color:var(--bear-ink); }
   .today-cycle-season{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-section); line-height:1.15; color:var(--text-primary); }
   .today-cycle-stage{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-row); line-height:1.1; color:var(--text-secondary); }
   .today-cycle .peek-chev{ color:var(--text-muted); }
@@ -51835,7 +51836,7 @@
   }
   function cycleCard() {
     var m = nowModel, meta = wheelMeta[m.season], ret = sp500AnnualReturns[calendarTodayY];
-    return '<button type="button" class="trend-card today-cycle" data-go-tab="cycle" aria-label="Open the current cycle">' + miniRing(m) + '<span class="today-cycle-hub"><span class="today-cycle-kicker">' + m.era.name + " · Year " + m.yearIndex + '</span><span class="today-cycle-season">' + meta.name + (meta.theme ? ' <span class="today-cycle-stage">' + meta.theme + "</span>" : "") + "</span>" + (ret != null ? '<span class="today-cycle-ret">' + (ret >= 0 ? "Bull" : "Bear") + " year · <b>" + fmtSigned(ret, 1) + "%</b> in " + calendarTodayY + "</span>" : "") + "</span>" + CHEV + "</button>";
+    return '<button type="button" class="trend-card today-cycle" data-go-tab="cycle" aria-label="Open the current cycle">' + miniRing(m) + '<span class="today-cycle-hub"><span class="today-cycle-kicker">' + m.era.name + " · Year " + m.yearIndex + '</span><span class="today-cycle-season">' + meta.name + (meta.theme ? ' <span class="today-cycle-stage">· ' + meta.theme + "</span>" : "") + "</span>" + (ret != null ? '<span class="today-cycle-ret"><b class="' + (ret >= 0 ? "bull" : "bear") + '">' + fmtSigned(ret, 1) + "%</b> in " + calendarTodayY + "</span>" : "") + "</span>" + CHEV + "</button>";
   }
   function todayHtml() {
     var r = now.report, c = openCycle();
