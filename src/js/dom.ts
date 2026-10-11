@@ -138,9 +138,9 @@ export function detailSlot(html: unknown){
   }
   return idx;
 }
-export function expandBtn(fullHtml: unknown, label?: string, icon?: string){
-  return '<button type="button" class="' + (icon ? "icon-btn " : label ? "info-btn " : "") + 'expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
-         '" aria-label="' + (label || "Expand details") + '"' + (label ? ' title="' + label + '"' : "") + '>' + (icon || "i") + '</button>';
+export function expandBtn(fullHtml: unknown, label?: string){
+  return '<button type="button" class="' + (label ? "info-btn " : "") + 'expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
+         '" aria-label="' + (label || "Expand details") + '"' + (label ? ' title="' + label + '"' : "") + '>i</button>';
 }
 
 var detailSlots: Record<string, number>;

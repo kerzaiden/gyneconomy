@@ -320,6 +320,14 @@ async function openPage(p, url, sheet) {
      today.boxes === 'story,sys' && today.doors === 0 && today.score && today.kicker)
       ? ok('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Cycle Story, then the cycle year by year', JSON.stringify(today));
+    await p.click('#cycle-kicker .icon-btn'); await settle(p);
+    const legendDoor = await p.evaluate(() => { const s = document.getElementById('sheet-book'), bar = s.querySelector('.topbar').getBoundingClientRect(), card = document.getElementById('cycle-model').getBoundingClientRect();
+      return { open: !s.hidden && document.getElementById('more-menu').hidden, inView: card.top >= bar.bottom && card.top < bar.bottom + 40 }; });
+    await p.click('#sheet-book [data-sheet-back]'); await settle(p);
+    const legendBack = await p.evaluate(() => document.getElementById('sheet-book').hidden && document.activeElement.matches('#cycle-kicker .icon-btn') && document.body.style.overflow === '');
+    (legendDoor.open && legendDoor.inView && legendBack)
+      ? ok('the dial\u2019s legend icon opens About Gyneconomy at the Cycle Model, and its back arrow returns to the dial')
+      : bad('the dial\u2019s legend icon opens About Gyneconomy at the Cycle Model, and its back arrow returns to the dial', JSON.stringify({ legendDoor, legendBack }));
     const ringDoor = await p.evaluate(() => { document.querySelector('.tab-btn[data-tab="today"]').click(); document.querySelector('#today-home .today-cycle').click();
       return { tab: document.querySelector('.tab-btn.active').dataset.tab, shown: !!document.getElementById('diagnosis').offsetParent, title: document.getElementById('topbar-title').textContent }; });
     (ringDoor.tab === 'cycle' && ringDoor.shown && ringDoor.title === 'Current Cycle')
@@ -690,7 +698,7 @@ async function openPage(p, url, sheet) {
       const sheet = document.getElementById('sheet-book');
       return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,
         framework: sheet.querySelectorAll('#framework-rows .lag-row').length, cycle: /The Cycle Model/.test(sheet.textContent),
-        row: /About Gyneconomy/.test(document.querySelector('[data-sheet="book"]').textContent),
+        row: /About Gyneconomy/.test(document.querySelector('.menu-row[data-sheet="book"]').textContent),
         line: /completed \d+ cycles, \d+\.\d years long on average/.test(document.getElementById('cycle-model-line').textContent),
         titles: [...sheet.querySelectorAll('.menu-section')].every(h => h.parentElement.classList.contains('model-card')),
         idea: (() => { const shown = () => [...document.querySelectorAll('#idea-prose p')].filter(x => !x.hidden).length, a = shown();

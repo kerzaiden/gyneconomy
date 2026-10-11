@@ -318,21 +318,19 @@
     position:relative;
   }
   .season-head{ flex:1 0 100%; order:-2; align-self:flex-start; margin-bottom:-6px; position:relative; z-index:2; }
-  .detail-modal .legend-rows{ margin:12px 0 4px; }
-  .detail-modal .legend-row, .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
-  .detail-modal .legend-row:last-child, .model-card .legend-row:last-child{ border-bottom:none; }
-  .detail-modal .legend-row svg{ width:20px; height:20px; flex:none; }
+  .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
+  .model-card .legend-row:last-child{ border-bottom:none; }
+  .model-card .legend-row svg{ width:20px; height:20px; flex:none; }
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
   .winter, .spring, .autumn, .summer{ --season-wash:color-mix(in srgb, var(--season) 40%, var(--surface)); }
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
 
   .strip-run.ytd{ opacity:0.55; }
   .key-list{ list-style:none; padding:0; }
-  .key-sw, .season-sw{ display:inline-block; flex:none; border-radius:3px; background:var(--season); }
-  .key-sw.bar, .season-sw{ width:20px; height:6px; }
+  .key-sw{ display:inline-block; flex:none; border-radius:3px; background:var(--season); }
+  .key-sw.bar{ width:20px; height:6px; }
   .key-sw.ytd{ opacity:0.55; }
-  .detail-modal .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
-  .detail-modal .legend-head{ font-family:var(--font-sans); font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
+  .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
 
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
@@ -368,7 +366,7 @@
   .season-wheel-hub-open:disabled{ cursor:default; }
   .season-wheel-hub-date{ font-family:var(--font-sans); font-size:calc(var(--dial) * 0.042); line-height:1.1; color:var(--text-secondary); }
   .season-wheel-hub-date b{ font-weight:700; color:var(--text-primary); }
-  .season-wheel-hub-theme, .detail-modal .legend-row, .seasons-rows .lag-row span:first-child{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
+  .season-wheel-hub-theme, .seasons-rows .lag-row span:first-child{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
   .season-wheel-hub-theme.bull, .season-wheel-hub-theme.bear{ padding:0.04em 0.32em 0.08em; border-radius:0.3em; }
   .season-wheel-hub-theme.bull{ color:var(--bull-ink); background:var(--bull-wash); }
   .season-wheel-hub-theme.bear{ color:var(--bear-ink); background:var(--bear-wash); }
@@ -1118,7 +1116,6 @@
     .detail-modal-close{ top:18px; right:18px; z-index:2; }
     .detail-modal h4{ font-size:var(--type-reading-head); line-height:1.15; padding-right:0; margin-bottom:12px; }
     .detail-modal .caption, .detail-modal p{ font-size:var(--type-reading); line-height:1.6; }
-    .detail-modal .legend-row{ font-size:var(--type-reading); padding:10px 0; }
     .detail-modal .aux-stat, .metric-sheet .aux-stat{ font-size:var(--type-interface); }
     .detail-modal .src{ font-size:var(--type-meta); }
   }

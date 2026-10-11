@@ -479,17 +479,13 @@ settles it; none is open after V668.
   the cool row contraction, so the blue half of the ring is where recessions fall, and Spring's yellow is the gold
   Growth already wears in expansion. Autumn stays light blue against the calendar's orange because in the model it is
   a contraction season. Summer keeps its red-orange, since a true red would read as Risk or a bear year. (V180, 0.8.7)
-- **The dial's legend states each range in plain mathematical signs: Winter CPI < 1%, Spring CPI ≤ 3%, Summer
-  CPI > 3%, Autumn CPI ≥ 1%; a bull year's return ≥ 0%, a bear year's < 0%.** The signs are the model's own tests
-  (`readSeason`, `TEMP_BAND_LO`/`TEMP_BAND_HI`), and every range should be stated in basic mathematical signs. (0.6.6)
-- **Under the seasons the legend explains only the 1–3% range (a point either side of the Fed's 2% target, part
-  of the Season Model's structure), and it carries no how-to paragraph.** Good UI needs no explaining. (0.6.6)
-- **The legend's last section is "The market cycle": a typical market cycle, a bull market and the bear market that
-  ends it, has run about 5 to 6½ years across the long record (First Trust about 5.2, Fisher about 6.4); a typical
-  length, not a forecast.** It stands in place of "The ring's span" and its notes on scaling, and says no more than
-  that, in numbers. (0.6.6)
-- **The legend opens on its sections with no introduction: "Seasons (Q)", drawn by quarter, and "S&P 500 (YoY)", each
-  year's calendar return.** An introductory paragraph was unneeded; the sections say what each ring counts. (0.6.6)
+- **The dial has no legend of its own: its legend icon opens About Gyneconomy at The Cycle Model, whose key is the
+  dial's (Bull year, Bear year, Year in progress, Peak year), and the Season Model below it carries the seasons'
+  colours and rules.** The legend was the Season Model told a second time, and the two had parted: its price-only
+  signs left out growth (Spring ≤ 3% missed Spring · Disinflation above 3%), and its 5 to 6½ years stood beside the
+  app's own average. The Cycle Model's (i) gives the published 5 to 6½ years (First Trust, Fisher) as agreement
+  with the app's own record, a typical length and not a forecast; the Season Model's (i) cites the Fed for the 2%
+  point. The back arrow returns to the dial when About was opened from it. (0.6.6; Legend Icon)
 - **The ring closes on itself but for a small seam at 12 o'clock; don't re-add the coral drop in the seam
   (Clue's day-1 mark).** The small gap closes the cycle between its start and end; the drop added too much. (V199,
   V200)
@@ -551,10 +547,9 @@ settles it; none is open after V668.
   seasons have, and the YEAR badge sits just after the last quarter that has a season (on the seam when the
   cycle fills the ring).** A season that has not been computed has not happened yet; Keren saw the bull bar
   run past the season bar. (V552, V554)
-- **The dial carries no title: at its top left sits only a legend icon (three dots, three lines), which opens the
-  one legend: the seasons' colours and the market band's colours; no season line or note sits beside the wheel.**
-  The cycle's name and years already head the story under the dial, so a name above it repeated them; the icon says
-  what it opens where an (i) did not. (V176, Sep 19, 2026; 0.6.6; Legend Icon)
+- **The dial carries no title: at its top left sits only a legend icon (three dots, three lines) in the muted grey,
+  so it does not compete with the dial; no season line or note sits beside the wheel.** The cycle's name and years
+  already head the story under the dial, so a name above it repeated them. (V176, Sep 19, 2026; 0.6.6; Legend Icon)
 
 ### The market band and the peak
 

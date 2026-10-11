@@ -1,8 +1,8 @@
-import { facts, ledeHtml, listed, srcBlock } from "./format.ts";
+import { facts, ledeHtml, legendKey, listed, srcBlock } from "./format.ts";
 import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
-import { CLOCK_SRC, frameworkRows, HOLD_BAND, marketCycles } from "./data.ts";
+import { CLOCK_SRC, FED_TARGET_SRC, frameworkRows, HOLD_BAND, marketCycles, typicalCycleSrc } from "./data.ts";
 import { cpiNow, currentEra, currentSeason, GNP_TREND, inflationFigure, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { FRAMEWORK_SRC, sourceShelves } from "./sources.ts";
@@ -34,11 +34,11 @@ function seasonModelNote(){
   return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([
     "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock\u2019s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 growth is Balke and Gordon\u2019s quarterly real GNP, read against its own trend over the same peaks (" + GNP_TREND.toFixed(1) + "% a year).",
     "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
-    "<b>Price level</b>: inflation on CPI before 2000 and PCE since. The middle of each bar is the 1\u20133% band, a point either side of the Fed\u2019s 2% target: below it is cold (blue), within it warm (yellow), above it hot (red). Like a shower, the band is the water you can stand in: not too hot, not too cold.",
+    "<b>Price level</b>: inflation on CPI before 2000 and PCE since. The middle of each bar is the 1\u20133% band, a point either side of the Fed\u2019s 2% target: below it is cold (blue), within it warm (yellow), above it hot (red). The Fed publishes the point, in force since January 2012, not a band; the band is part of the Season Model\u2019s structure. Like a shower, the band is the water you can stand in: not too hot, not too cold.",
     ...sideFacts(),
     recessionLine(),
     seasonWhy
-  ]) + srcBlock([CLOCK_SRC[0]]);
+  ]) + srcBlock([CLOCK_SRC[0], FED_TARGET_SRC]);
 }
 function rangePos(v: number){
   if (v < 1) return 0.03 + 0.21 * Math.max(0, Math.min(1, (v + 1) / 2));
@@ -48,6 +48,18 @@ function rangePos(v: number){
 function cycleModelLine(){
   var closed = marketCycles.filter(function(c){ return !c.ongoing; }), years = closed.reduce(function(a, c){ return a + c.to - c.from + 1; }, 0);
   return "A cycle begins with its first bull year and ends with the bear year that closes it. Since " + marketCycles[0].from + " the market has completed " + closed.length + " cycles, " + (years / closed.length).toFixed(1) + " years long on average, and the app measures today against every one of them.";
+}
+var PEAK_MARK = '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>';
+function renderCycleModel(){
+  put("cycle-model-line", cycleModelLine());
+  put("cycle-model-key", legendKey([["mkt-up", "Bull year", "the market closed up"], ["mkt-down", "Bear year", "the market closed down"],
+    ["mkt-up ytd", "Year in progress", "not yet closed"], ["", "Peak year", "the cycle\u2019s highest return", PEAK_MARK]], { shape:"bar", cls:"legend-rows", row:"legend-row" }));
+  put("cycle-model-kicker", "The Cycle Model" + expandBtn('<h4>The Cycle Model</h4>' +
+    ledeHtml("The dial draws one cycle in two rings: its seasons, quarter by quarter, and the S&amp;P 500\u2019s years, bull or bear.") + facts([
+      "<b>Length</b>: the app measures each cycle from its own record, first bull year to the bear year that ends it. Published histories agree: a bull market and the bear market that ends it have run about 5 to 6\u00bd years since the 1940s.",
+      "<b>Peak year</b>: the year of the cycle\u2019s highest S&amp;P 500 total return.",
+      "<b>A typical length, not a forecast</b>: no cycle is obliged to run its average."
+    ]) + srcBlock(typicalCycleSrc)));
 }
 function wireIdea(){
   viewMore(need("idea-more"), [].slice.call(need("idea-prose").querySelectorAll("p[hidden]")));
@@ -78,7 +90,7 @@ function renderSeasonRows(){
       return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
         '<span class="range-cell" title="' + r.range + (now ? ' · PCE ' + inflationFigure(cpiNow) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
     }).join(""));
-  put("cycle-model-line", cycleModelLine());
+  renderCycleModel();
   put("seasons-kicker", "The Season Model" + expandBtn(
     seasonModelNote()));
 
@@ -187,20 +199,26 @@ function wireMenu(){
     }).join(""));
     built = true;
   }
-  var openSheet: HTMLElement | null = null, openRow: HTMLElement | null = null;
+  var openSheet: HTMLElement | null = null, openRow: HTMLElement | null = null, sheetLocked = false;
   function showSheet(name: string, row: HTMLElement){
     var el = byId("sheet-" + name); if (!el) return;
     if (name === "sources" && !built) buildSources();
-    el.scrollTop = 0; slideIn(el); openSheet = el; openRow = row;
-    var b = el.querySelector<HTMLElement>("[data-sheet-back]"); if (b) b.focus();
+    var fromPage = !menu.contains(row), at = row.getAttribute("data-sheet-at"), b = el.querySelector<HTMLElement>("[data-sheet-back]");
+    if (fromPage && !locked){ prevOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; sheetLocked = true; }
+    if (b) b.setAttribute("aria-label", fromPage ? "Back" : "Back to the menu");
+    slideIn(el); openSheet = el; openRow = row;
+    var to = at ? byId(at) : null, bar = el.querySelector<HTMLElement>(".topbar");
+    el.scrollTop = to ? to.offsetTop - (bar ? bar.offsetHeight : 0) - 12 : 0;
+    if (b) b.focus({ preventScroll:true });
   }
   function hideSheet(){
     if (!openSheet) return;
     var el = openSheet, row = openRow; openSheet = null; openRow = null;
+    if (sheetLocked){ document.body.style.overflow = prevOverflow; sheetLocked = false; }
     if (row) row.focus();
     slideOut(el);
   }
-  menu.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest<HTMLElement>(".menu-row[data-sheet]"), name = row && row.getAttribute("data-sheet"); if (row && name != null) showSheet(name, row); });
+  document.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest<HTMLElement>("[data-sheet]"), name = row && row.getAttribute("data-sheet"); if (row && name != null) showSheet(name, row); });
   document.addEventListener("click", function(e){ if ((e.target as Element).closest && (e.target as Element).closest("[data-sheet-back]")) hideSheet(); });
   layer(2, { open:function(){ return !!openSheet; }, close:hideSheet, box:function(){ return openSheet; } });
   layer(3, { open:function(){ return !menu.hidden && menu.classList.contains("in"); }, close:hide, box:function(){ return menu; } });
