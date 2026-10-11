@@ -339,7 +339,9 @@
     "unempHistoryChart": 38,
     "fedFundsHistoryChart": 3,
     "mortgageHistoryChart": 3,
-    "rateColumnsChart": 42,
+    "rateWave": 4,
+    "rateColumns": 13,
+    "rateColumnsChart": 31,
     "cpiHistoryChart": 38,
     "gdpHistoryChart": 47,
     "m2GrowthChart": 41,
@@ -802,6 +804,7 @@
     "plotSvg": 6,
     "bandsHtml": 5,
     "waveChart": 4,
+    "waveMarks": 4,
     "waveLegend": 3
   },
   "caption": 20,

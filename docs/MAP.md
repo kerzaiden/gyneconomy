@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,910 lines** in 42 files, about 609 KB, roughly **173 thousand tokens**. No session can
+The source is **8,921 lines** in 42 files, about 610 KB, roughly **173 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `d326b0b` on 2026-10-11.
+Generated from commit `bdc5853` on 2026-10-11.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `d326b0b` on 2026-10-11.
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **778** top-level functions, **123** top-level vars, **377** exported names, **20** boots.
+Counts: **38** modules, **781** top-level functions, **123** top-level vars, **378** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -55,7 +55,7 @@ Counts: **38** modules, **778** top-level functions, **123** top-level vars, **3
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 75 | 13 | `data`, `dom`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster`, `wave-chart` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 321 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `readings`, `refresh-season` |
+| `js/history-charts.ts` | 328 | 15 | `charts`, `data`, `format`, `history`, `history-fred`, `readings`, `refresh-season`, `wave-chart` |
 | `js/history-fred.ts` | 32 | 14 | — |
 | `js/indicators.ts` | 170 | 29 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 230 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -65,7 +65,7 @@ Counts: **38** modules, **778** top-level functions, **123** top-level vars, **3
 | `js/pulse-strips.ts` | 168 | 20 | `charts`, `data`, `format` |
 | `js/reading.ts` | 95 | 12 | `charts`, `dom`, `format`, `history`, `render-core`, `roster` |
 | `js/rhythm.ts` | 47 | 8 | `data`, `format` |
-| `js/wave-chart.ts` | 102 | 25 | `format` |
+| `js/wave-chart.ts` | 106 | 26 | `format` |
 | `js/main.ts` | 44 | 0 | `analysis`, `credit`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
 
 ## The boots
@@ -1154,19 +1154,21 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 10 | `deficitChart` · export | `function deficitChart(` |
-| 77 | `colScale` | `function colScale(` |
-| 82 | `yearTicks` | `function yearTicks(` |
-| 97 | `unempHistoryChart` · export | `function unempHistoryChart(` |
-| 135 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 138 | `mortgageHistoryChart` · export | `function mortgageHistoryChart(` |
-| 141 | `rateColumnsChart` | `function rateColumnsChart(` |
-| 183 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 221 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 268 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 309 | `m2Step` | `function m2Step(` |
-| 313 | `heatEdges` | `function heatEdges(` |
-| 317 | `heatStep` | `function heatStep(` |
+| 11 | `deficitChart` · export | `function deficitChart(` |
+| 78 | `colScale` | `function colScale(` |
+| 83 | `yearTicks` | `function yearTicks(` |
+| 98 | `unempHistoryChart` · export | `function unempHistoryChart(` |
+| 136 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
+| 139 | `mortgageHistoryChart` · export | `function mortgageHistoryChart(` |
+| 142 | `rateWave` | `function rateWave(` |
+| 146 | `rateColumns` | `function rateColumns(` |
+| 159 | `rateColumnsChart` | `function rateColumnsChart(` |
+| 190 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 228 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 275 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 316 | `m2Step` | `function m2Step(` |
+| 320 | `heatEdges` | `function heatEdges(` |
+| 324 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 
@@ -1445,7 +1447,8 @@ falls in. **export** marks a name other modules import.
 | 84 | `plotSvg` | `function plotSvg(` |
 | 90 | `bandsHtml` | `function bandsHtml(` |
 | 95 | `waveChart` · export | `function waveChart(` |
-| 99 | `waveLegend` · export | `function waveLegend(` |
+| 99 | `waveMarks` · export | `function waveMarks(` |
+| 103 | `waveLegend` · export | `function waveLegend(` |
 
 ## Registries — the lookup tables that route behaviour
 

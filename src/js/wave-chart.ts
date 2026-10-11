@@ -9,16 +9,16 @@ type Scale = { y: (v: number) => number; lo: number; hi: number; step: number };
 
 // ---- The wave chart ----
 var KEY_CLASS = { line: "wave-key-line", band: "wave-key-band", blank: "wave-key-blank" };
-var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 60, CURL = 0.45, WAVE = 10, LEVEL = { h: 22, plotH: 150 }, GRID_STEPS = [1, 2, 5, 10];
+var VIEW_W = 1000, VIEW_H = 300, ROOM = 1, POINTS = 60, FINE = 300, CURL = 0.45, WAVE = 10, LEVEL = { h: 22, plotH: 150 }, GRID_STEPS = [1, 2, 5, 10];
 export function monthIdx(k: string){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1; }
 function pct(n: number){ return (n * 100).toFixed(2) + "%"; }
 function lineTone(color: string){ return "--line:var(--" + color + ")"; }
 function bandTone(band?: string){ return band ? ' style="--band:var(--' + band + ')"' : ""; }
-function monthPoints(list: MonthPoint[], from: number, to: number){
-  var at: Record<number, number> = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out: Pt[] = [];
-  list.forEach(function(d){ var i = monthIdx(d.m); if (i <= to) at[i] = d.v; });
-  for (var k = 0; k <= POINTS; k++){
-    var c = from + (to - from) * k / POINTS, w = 0, sum = 0;
+function monthPoints(list: MonthPoint[], from: number, to: number, sigma = Math.max(1, (to - from + 1) / WAVE), points = POINTS){
+  var at: Record<number, number> = {}, out: Pt[] = [];
+  list.forEach(function(d){ var i = monthIdx(d.m); if (i <= to && d.v != null) at[i] = d.v; });
+  for (var k = 0; k <= points; k++){
+    var c = from + (to - from) * k / points, w = 0, sum = 0;
     for (var i = Math.floor(c - 3 * sigma); i <= Math.ceil(c + 3 * sigma); i++) if (at[i] != null){ var g = Math.exp(-(i - c) * (i - c) / (2 * sigma * sigma)); w += g; sum += g * at[i]; }
     if (w) out.push({ i: c, v: sum / w });
   }
@@ -76,9 +76,9 @@ function fillId(s: WaveSeries){ return "wave-fill-" + s.color + "-" + Math.round
 function fillDefs(series: WaveSeries[]){
   return '<defs>' + series.map(function(s){ return '<linearGradient id="' + fillId(s) + '" style="' + lineTone(s.color) + ';--fill:' + s.fill + '" x1="0" y1="0" x2="0" y2="1"><stop class="wave-fill-top" offset="0"/><stop class="wave-fill-low" offset="1"/></linearGradient>'; }).join("") + '</defs>';
 }
-function areaPath(segs: number[][], s: WaveSeries){
+function areaPath(segs: number[][], s: WaveSeries, floor = VIEW_H){
   if (!segs.length) return "";
-  return '<path class="wave-area" fill="url(#' + fillId(s) + ')" d="' + curve(segs) + ' L' + segs[segs.length - 1][6].toFixed(1) + ' ' + VIEW_H + ' L' + segs[0][0].toFixed(1) + ' ' + VIEW_H + ' Z"/>';
+  return '<path class="wave-area" fill="url(#' + fillId(s) + ')" d="' + curve(segs) + ' L' + segs[segs.length - 1][6].toFixed(1) + ' ' + floor.toFixed(1) + ' L' + segs[0][0].toFixed(1) + ' ' + floor.toFixed(1) + ' Z"/>';
 }
 function lineSvg(segs: number[][], s: WaveSeries){ return '<path class="wave-line' + (s.bold ? ' wave-bold' : '') + '" style="' + lineTone(s.color) + '" d="' + curve(segs) + '" vector-effect="non-scaling-stroke"/>'; }
 function plotSvg(series: WaveSeries[], lines: Pt[][], sc: Scale, from: number, to: number){
@@ -95,6 +95,10 @@ function bandsHtml(bands: WaveBand[], from: number, to: number){
 export function waveChart(o: WaveChart){
   var lines = o.series.map(function(s){ return monthPoints(s.list, o.from, o.to); }), sc = levelScale(lines);
   return '<div class="wave-plot"' + bandTone(o.band) + '><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + '</span>' + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + '</div>' + axisHtml(o.from, o.to, o.open);
+}
+export function waveMarks(s: WaveSeries, from: number, to: number, x: (i: number) => number, y: (v: number) => number, floor: number){
+  var segs = segments(monthPoints(s.list, from, to, Math.max(1, (to - from + 1) / FINE), Math.max(POINTS, to - from)), x, y);
+  return fillDefs([s]) + areaPath(segs, s, floor) + lineSvg(segs, s);
 }
 export function waveLegend(keys: WaveKey[], band?: string){
   return '<ul class="wave-legend"' + bandTone(band) + '>' + keys.map(function(k){ return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + '>' + k.name + '</li>'; }).join("") + '</ul>';

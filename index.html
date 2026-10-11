@@ -46956,7 +46956,7 @@
     function at(e) {
       var col0 = host.querySelector(".hcol");
       var g = host.__geom;
-      var svg = col0 && col0.ownerSVGElement || host.querySelector("svg.hist-svg") || host.querySelector("svg");
+      var svg = col0 && col0.ownerSVGElement || host.querySelector("svg.hist-svg, svg.vh-svg") || host.querySelector("svg");
       if (!g || !svg || !tip) return;
       var box = svg.getBoundingClientRect();
       var scale = box.width / g.W || 1;
@@ -49070,6 +49070,181 @@
     wireDetailModal();
     need("asof-text").textContent = "Data compiled " + dataCompiledLabel;
   }
+  var KEY_CLASS = {
+    line: "wave-key-line",
+    band: "wave-key-band",
+    blank: "wave-key-blank"
+  };
+  var VIEW_W = 1e3;
+  var VIEW_H = 300;
+  var ROOM = 1;
+  var POINTS = 60;
+  var FINE = 300;
+  var CURL = .45;
+  var WAVE = 10;
+  var LEVEL = {
+    h: 22,
+    plotH: 150
+  };
+  var GRID_STEPS = [ 1, 2, 5, 10 ];
+  function monthIdx(k) {
+    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
+  }
+  function pct(n) {
+    return (n * 100).toFixed(2) + "%";
+  }
+  function lineTone(color) {
+    return "--line:var(--" + color + ")";
+  }
+  function bandTone(band) {
+    return band ? ' style="--band:var(--' + band + ')"' : "";
+  }
+  function monthPoints(list, from, to, sigma = Math.max(1, (to - from + 1) / WAVE), points = POINTS) {
+    var at = {}, out = [];
+    list.forEach(function(d) {
+      var i2 = monthIdx(d.m);
+      if (i2 <= to && d.v != null) at[i2] = d.v;
+    });
+    for (var k = 0; k <= points; k++) {
+      var c = from + (to - from) * k / points, w = 0, sum = 0;
+      for (var i = Math.floor(c - 3 * sigma); i <= Math.ceil(c + 3 * sigma); i++) if (at[i] != null) {
+        var g = Math.exp(-(i - c) * (i - c) / (2 * sigma * sigma));
+        w += g;
+        sum += g * at[i];
+      }
+      if (w) out.push({
+        i: c,
+        v: sum / w
+      });
+    }
+    return out;
+  }
+  function slopes(p) {
+    return p.map(function(b, k) {
+      var a = p[Math.max(k - 1, 0)], c = p[Math.min(k + 1, p.length - 1)], s0 = (b[1] - a[1]) / (b[0] - a[0] || 1), s1 = (c[1] - b[1]) / (c[0] - b[0] || 1);
+      return s0 * s1 <= 0 ? 0 : Math.sign(s0) * Math.min(Math.abs(s0 + s1) / 2, 3 * Math.abs(s0), 3 * Math.abs(s1));
+    });
+  }
+  function segments(pts2, x, y) {
+    var p = pts2.map(function(d) {
+      return [ x(d.i), y(d.v) ];
+    }), m = slopes(p), out = [];
+    for (var k = 0; k < p.length - 1; k++) {
+      var b = p[k], c = p[k + 1], h = (c[0] - b[0]) * CURL;
+      out.push([ b[0], b[1], b[0] + h, b[1] + m[k] * h, c[0] - h, c[1] - m[k + 1] * h, c[0], c[1] ]);
+    }
+    return out;
+  }
+  function curve(segs) {
+    if (!segs.length) return "";
+    return "M" + segs[0][0].toFixed(1) + " " + segs[0][1].toFixed(1) + segs.map(function(g) {
+      return " C" + g.slice(2).map(function(n) {
+        return n.toFixed(1);
+      }).join(" ");
+    }).join("");
+  }
+  function levelScale(lines) {
+    var all = [].concat.apply([], lines).map(function(p) {
+      return p.v;
+    });
+    var lo = Math.min.apply(null, all) - ROOM, hi = Math.max.apply(null, all) + ROOM;
+    var step = GRID_STEPS.filter(function(s) {
+      return (hi - lo) / s <= 6;
+    })[0] || 20;
+    return {
+      lo: lo,
+      hi: hi,
+      step: step,
+      y: function(v) {
+        return VIEW_H * (1 - (v - lo) / (hi - lo));
+      }
+    };
+  }
+  function ruleLevels(sc) {
+    var out = [];
+    for (var v = Math.ceil(sc.lo / sc.step) * sc.step; v <= sc.hi; v += sc.step) out.push(v);
+    return out;
+  }
+  function rulesHtml(sc) {
+    return ruleLevels(sc).map(function(v) {
+      return '<i class="wave-rule" style="top:' + pct(sc.y(v) / VIEW_H) + '"></i>';
+    }).join("");
+  }
+  function levelTags(sc) {
+    return ruleLevels(sc).filter(function(v) {
+      return sc.y(v) / VIEW_H > LEVEL.h / LEVEL.plotH;
+    }).map(function(v) {
+      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%";
+      return '<span class="wave-level" style="top:' + pct(sc.y(v) / VIEW_H) + ";width:" + (6 + 6 * text.length) + 'px">' + text + "</span>";
+    }).join("");
+  }
+  function axisMark(left, text) {
+    return '<span class="wave-year' + (left == null ? ' wave-end"' : '" style="left:' + pct(left) + '"') + ">" + text + "</span>";
+  }
+  function axisTicks(from, to) {
+    var span = to - from + 1, out = "";
+    if (span <= 13) for (var i = from; i < to - 1; i += 3) out += axisMark((i - from) / span, MONTHS_SHORT[i % 12]); else for (var y = Math.ceil(from / 12), step = Math.ceil((Math.floor(to / 12) - y) / 4); (y * 12 - from) / span < .7; y += step) out += axisMark((y * 12 - from) / span, String(y));
+    return out;
+  }
+  function axisHtml(from, to, open) {
+    return '<div class="wave-axis">' + axisTicks(from, to) + axisMark(null, open ? "Today" : MONTHS_SHORT[to % 12] + " " + Math.floor(to / 12)) + "</div>";
+  }
+  function fillId(s) {
+    return "wave-fill-" + s.color + "-" + Math.round(s.fill * 100);
+  }
+  function fillDefs(series) {
+    return "<defs>" + series.map(function(s) {
+      return '<linearGradient id="' + fillId(s) + '" style="' + lineTone(s.color) + ";--fill:" + s.fill + '" x1="0" y1="0" x2="0" y2="1"><stop class="wave-fill-top" offset="0"/><stop class="wave-fill-low" offset="1"/></linearGradient>';
+    }).join("") + "</defs>";
+  }
+  function areaPath(segs, s, floor = VIEW_H) {
+    if (!segs.length) return "";
+    return '<path class="wave-area" fill="url(#' + fillId(s) + ')" d="' + curve(segs) + " L" + segs[segs.length - 1][6].toFixed(1) + " " + floor.toFixed(1) + " L" + segs[0][0].toFixed(1) + " " + floor.toFixed(1) + ' Z"/>';
+  }
+  function lineSvg(segs, s) {
+    return '<path class="wave-line' + (s.bold ? " wave-bold" : "") + '" style="' + lineTone(s.color) + '" d="' + curve(segs) + '" vector-effect="non-scaling-stroke"/>';
+  }
+  function plotSvg(series, lines, sc, from, to) {
+    var x = function(i) {
+      return (i - from) / Math.max(to - from, 1) * VIEW_W;
+    };
+    var segs = lines.map(function(l) {
+      return segments(l, x, sc.y);
+    });
+    var paths = fillDefs(series) + segs.map(function(g, k) {
+      return areaPath(g, series[k]);
+    }).join("") + segs.map(function(g, k) {
+      return lineSvg(g, series[k]);
+    }).join("");
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>";
+  }
+  function bandsHtml(bands, from, to) {
+    return bands.map(function(b) {
+      return {
+        a: Math.max(b.from, from),
+        z: Math.min(b.to, to)
+      };
+    }).filter(function(b) {
+      return b.z > b.a;
+    }).map(function(b) {
+      return '<i class="wave-band" style="left:' + pct((b.a - from) / (to - from)) + ";width:" + pct((b.z - b.a) / (to - from)) + '"></i>';
+    }).join("");
+  }
+  function waveChart(o) {
+    var lines = o.series.map(function(s) {
+      return monthPoints(s.list, o.from, o.to);
+    }), sc = levelScale(lines);
+    return '<div class="wave-plot"' + bandTone(o.band) + '><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + "</span>" + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + "</div>" + axisHtml(o.from, o.to, o.open);
+  }
+  function waveMarks(s, from, to, x, y, floor) {
+    var segs = segments(monthPoints(s.list, from, to, Math.max(1, (to - from + 1) / FINE), Math.max(POINTS, to - from)), x, y);
+    return fillDefs([ s ]) + areaPath(segs, s, floor) + lineSvg(segs, s);
+  }
+  function waveLegend(keys, band) {
+    return '<ul class="wave-legend"' + bandTone(band) + ">" + keys.map(function(k) {
+      return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + ">" + k.name + "</li>";
+    }).join("") + "</ul>";
+  }
   function deficitChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -49283,12 +49458,38 @@
     return vhOpen(W, H) + 'aria-label="The unemployment rate, every month from ' + y0 + " to " + y1 + ', against the 3.5 to 5 per cent band and CBO’s estimate of the noncyclical rate">' + out.join("") + "</svg>";
   }
   function fedFundsHistoryChart(Wpx, from, o) {
-    return rateColumnsChart(fedFundsHistory, "fedFundsHistoryChart", "The effective federal funds rate", Wpx, from, o);
+    return rateColumnsChart(fedFundsHistory, "fedFundsHistoryChart", "The effective federal funds rate", Wpx, from, o, true);
   }
   function mortgageHistoryChart(Wpx, from, o) {
     return rateColumnsChart(mortgageHistory, "mortgageHistoryChart", "The 30-year fixed mortgage rate", Wpx, from, o);
   }
-  function rateColumnsChart(series, geom, what, Wpx, from, o) {
+  function rateWave(vals, X, Y, floor) {
+    var m0 = monthIdx(vals[0].m);
+    return waveMarks({
+      list: vals,
+      color: "hist-2",
+      fill: .45
+    }, m0, monthIdx(vals[vals.length - 1].m), function(i) {
+      return X(i - m0);
+    }, Y, floor);
+  }
+  function rateColumns(vals, X, Y, zero, sw) {
+    var seenV = vals.filter(function(d) {
+      return d.v != null;
+    }).map(function(d) {
+      return d.v;
+    });
+    var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
+    var step = function(v) {
+      if (!(vHi > vLo)) return 5;
+      return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
+    };
+    return vals.map(function(d, i) {
+      if (d.v == null) return "";
+      return '<path class="ff-col hcol f' + step(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>';
+    }).join("");
+  }
+  function rateColumnsChart(series, geom, what, Wpx, from, o, wave) {
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -49326,19 +49527,7 @@
       cycle: o.cycle,
       narrow: narrow2
     }, X, T, B, f);
-    var sw = colWidth((R - L) / n);
-    var seenV = seen.map(function(d) {
-      return d.v;
-    });
-    var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
-    var step = function(v) {
-      if (!(vHi > vLo)) return 5;
-      return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
-    };
-    vals.forEach(function(d, i) {
-      if (d.v == null) return;
-      out.push('<path class="ff-col hcol f' + step(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
-    });
+    out.push(wave ? rateWave(vals, X, Y, zero) : rateColumns(vals, X, Y, zero, colWidth((R - L) / n)));
     var avgV = seen.reduce(function(a, d) {
       return a + d.v;
     }, 0) / seen.length;
@@ -50250,176 +50439,6 @@
     if (!m) throw new Error("the reading " + R.id + " shows no figure");
     var v = +m[0].replace("−", "-").replace(/,/g, "");
     return R.flip ? /surplus/.test(R.cardUnit || "") ? Math.abs(v) : -Math.abs(v) : v;
-  }
-  var KEY_CLASS = {
-    line: "wave-key-line",
-    band: "wave-key-band",
-    blank: "wave-key-blank"
-  };
-  var VIEW_W = 1e3;
-  var VIEW_H = 300;
-  var ROOM = 1;
-  var POINTS = 60;
-  var CURL = .45;
-  var WAVE = 10;
-  var LEVEL = {
-    h: 22,
-    plotH: 150
-  };
-  var GRID_STEPS = [ 1, 2, 5, 10 ];
-  function monthIdx(k) {
-    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
-  }
-  function pct(n) {
-    return (n * 100).toFixed(2) + "%";
-  }
-  function lineTone(color) {
-    return "--line:var(--" + color + ")";
-  }
-  function bandTone(band) {
-    return band ? ' style="--band:var(--' + band + ')"' : "";
-  }
-  function monthPoints(list, from, to) {
-    var at = {}, sigma = Math.max(1, (to - from + 1) / WAVE), out = [];
-    list.forEach(function(d) {
-      var i2 = monthIdx(d.m);
-      if (i2 <= to) at[i2] = d.v;
-    });
-    for (var k = 0; k <= POINTS; k++) {
-      var c = from + (to - from) * k / POINTS, w = 0, sum = 0;
-      for (var i = Math.floor(c - 3 * sigma); i <= Math.ceil(c + 3 * sigma); i++) if (at[i] != null) {
-        var g = Math.exp(-(i - c) * (i - c) / (2 * sigma * sigma));
-        w += g;
-        sum += g * at[i];
-      }
-      if (w) out.push({
-        i: c,
-        v: sum / w
-      });
-    }
-    return out;
-  }
-  function slopes(p) {
-    return p.map(function(b, k) {
-      var a = p[Math.max(k - 1, 0)], c = p[Math.min(k + 1, p.length - 1)], s0 = (b[1] - a[1]) / (b[0] - a[0] || 1), s1 = (c[1] - b[1]) / (c[0] - b[0] || 1);
-      return s0 * s1 <= 0 ? 0 : Math.sign(s0) * Math.min(Math.abs(s0 + s1) / 2, 3 * Math.abs(s0), 3 * Math.abs(s1));
-    });
-  }
-  function segments(pts2, x, y) {
-    var p = pts2.map(function(d) {
-      return [ x(d.i), y(d.v) ];
-    }), m = slopes(p), out = [];
-    for (var k = 0; k < p.length - 1; k++) {
-      var b = p[k], c = p[k + 1], h = (c[0] - b[0]) * CURL;
-      out.push([ b[0], b[1], b[0] + h, b[1] + m[k] * h, c[0] - h, c[1] - m[k + 1] * h, c[0], c[1] ]);
-    }
-    return out;
-  }
-  function curve(segs) {
-    if (!segs.length) return "";
-    return "M" + segs[0][0].toFixed(1) + " " + segs[0][1].toFixed(1) + segs.map(function(g) {
-      return " C" + g.slice(2).map(function(n) {
-        return n.toFixed(1);
-      }).join(" ");
-    }).join("");
-  }
-  function levelScale(lines) {
-    var all = [].concat.apply([], lines).map(function(p) {
-      return p.v;
-    });
-    var lo = Math.min.apply(null, all) - ROOM, hi = Math.max.apply(null, all) + ROOM;
-    var step = GRID_STEPS.filter(function(s) {
-      return (hi - lo) / s <= 6;
-    })[0] || 20;
-    return {
-      lo: lo,
-      hi: hi,
-      step: step,
-      y: function(v) {
-        return VIEW_H * (1 - (v - lo) / (hi - lo));
-      }
-    };
-  }
-  function ruleLevels(sc) {
-    var out = [];
-    for (var v = Math.ceil(sc.lo / sc.step) * sc.step; v <= sc.hi; v += sc.step) out.push(v);
-    return out;
-  }
-  function rulesHtml(sc) {
-    return ruleLevels(sc).map(function(v) {
-      return '<i class="wave-rule" style="top:' + pct(sc.y(v) / VIEW_H) + '"></i>';
-    }).join("");
-  }
-  function levelTags(sc) {
-    return ruleLevels(sc).filter(function(v) {
-      return sc.y(v) / VIEW_H > LEVEL.h / LEVEL.plotH;
-    }).map(function(v) {
-      var text = (v < 0 ? "−" : "") + Math.abs(v) + "%";
-      return '<span class="wave-level" style="top:' + pct(sc.y(v) / VIEW_H) + ";width:" + (6 + 6 * text.length) + 'px">' + text + "</span>";
-    }).join("");
-  }
-  function axisMark(left, text) {
-    return '<span class="wave-year' + (left == null ? ' wave-end"' : '" style="left:' + pct(left) + '"') + ">" + text + "</span>";
-  }
-  function axisTicks(from, to) {
-    var span = to - from + 1, out = "";
-    if (span <= 13) for (var i = from; i < to - 1; i += 3) out += axisMark((i - from) / span, MONTHS_SHORT[i % 12]); else for (var y = Math.ceil(from / 12), step = Math.ceil((Math.floor(to / 12) - y) / 4); (y * 12 - from) / span < .7; y += step) out += axisMark((y * 12 - from) / span, String(y));
-    return out;
-  }
-  function axisHtml(from, to, open) {
-    return '<div class="wave-axis">' + axisTicks(from, to) + axisMark(null, open ? "Today" : MONTHS_SHORT[to % 12] + " " + Math.floor(to / 12)) + "</div>";
-  }
-  function fillId(s) {
-    return "wave-fill-" + s.color + "-" + Math.round(s.fill * 100);
-  }
-  function fillDefs(series) {
-    return "<defs>" + series.map(function(s) {
-      return '<linearGradient id="' + fillId(s) + '" style="' + lineTone(s.color) + ";--fill:" + s.fill + '" x1="0" y1="0" x2="0" y2="1"><stop class="wave-fill-top" offset="0"/><stop class="wave-fill-low" offset="1"/></linearGradient>';
-    }).join("") + "</defs>";
-  }
-  function areaPath(segs, s) {
-    if (!segs.length) return "";
-    return '<path class="wave-area" fill="url(#' + fillId(s) + ')" d="' + curve(segs) + " L" + segs[segs.length - 1][6].toFixed(1) + " " + VIEW_H + " L" + segs[0][0].toFixed(1) + " " + VIEW_H + ' Z"/>';
-  }
-  function lineSvg(segs, s) {
-    return '<path class="wave-line' + (s.bold ? " wave-bold" : "") + '" style="' + lineTone(s.color) + '" d="' + curve(segs) + '" vector-effect="non-scaling-stroke"/>';
-  }
-  function plotSvg(series, lines, sc, from, to) {
-    var x = function(i) {
-      return (i - from) / Math.max(to - from, 1) * VIEW_W;
-    };
-    var segs = lines.map(function(l) {
-      return segments(l, x, sc.y);
-    });
-    var paths = fillDefs(series) + segs.map(function(g, k) {
-      return areaPath(g, series[k]);
-    }).join("") + segs.map(function(g, k) {
-      return lineSvg(g, series[k]);
-    }).join("");
-    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + paths + "</svg>";
-  }
-  function bandsHtml(bands, from, to) {
-    return bands.map(function(b) {
-      return {
-        a: Math.max(b.from, from),
-        z: Math.min(b.to, to)
-      };
-    }).filter(function(b) {
-      return b.z > b.a;
-    }).map(function(b) {
-      return '<i class="wave-band" style="left:' + pct((b.a - from) / (to - from)) + ";width:" + pct((b.z - b.a) / (to - from)) + '"></i>';
-    }).join("");
-  }
-  function waveChart(o) {
-    var lines = o.series.map(function(s) {
-      return monthPoints(s.list, o.from, o.to);
-    }), sc = levelScale(lines);
-    return '<div class="wave-plot"' + bandTone(o.band) + '><span class="wave-clip">' + bandsHtml(o.bands, o.from, o.to) + rulesHtml(sc) + "</span>" + plotSvg(o.series, lines, sc, o.from, o.to) + levelTags(sc) + "</div>" + axisHtml(o.from, o.to, o.open);
-  }
-  function waveLegend(keys, band) {
-    return '<ul class="wave-legend"' + bandTone(band) + ">" + keys.map(function(k) {
-      return '<li class="' + KEY_CLASS[k.kind] + '"' + (k.color ? ' style="' + lineTone(k.color) + '"' : "") + ">" + k.name + "</li>";
-    }).join("") + "</ul>";
   }
   function movesToDate() {
     var moves = fedMoves.slice(), day = isoDay(now.fedFunds.asOf), move = Number(String(now.fedFunds.lastMove).replace("−", "-"));

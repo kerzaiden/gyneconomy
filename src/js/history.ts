@@ -346,7 +346,7 @@ function wireHistHover(host: HTMLElement, tipId: string){
   function at(e: { clientX: number; clientY: number }){
     var col0 = host.querySelector<SVGElement>(".hcol");
     var g = host.__geom;
-    var svg = (col0 && col0.ownerSVGElement) || host.querySelector("svg.hist-svg") || host.querySelector("svg");
+    var svg = (col0 && col0.ownerSVGElement) || host.querySelector("svg.hist-svg, svg.vh-svg") || host.querySelector("svg");
     if (!g || !svg || !tip) return;
     var box = svg.getBoundingClientRect();
     var scale = box.width / g.W || 1;

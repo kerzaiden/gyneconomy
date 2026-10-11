@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d326b0b` on 2026-10-11. **109 components**, **19 shared patterns**.
+Generated from commit `bdc5853` on 2026-10-11. **109 components**, **19 shared patterns**.
 
 ## ai-insights.ts
 
@@ -125,7 +125,7 @@ Generated from commit `d326b0b` on 2026-10-11. **109 components**, **19 shared p
 | **`deficitChart`** | `.def-col` `.spread-history-band` | `inner-pages.ts:defineDeficit` |
 | **`gdpHistoryChart`** | `.growth-col` | `inner-pages.ts:defineGdp` |
 | **`m2GrowthChart`** | `.m2-col` | `pressure.ts:defineFlow` |
-| **`rateColumnsChart`** | `.ff-col` | `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:mortgageHistoryChart` |
+| **`rateColumns`** | `.ff-col` | `history-charts.ts:rateColumnsChart` |
 | **`unempHistoryChart`** | `.unemp-col` | `inner-pages.ts:defineActivity` |
 
 ## history.ts
@@ -204,11 +204,11 @@ Generated from commit `d326b0b` on 2026-10-11. **109 components**, **19 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`areaPath`** | `.wave-area` | `wave-chart.ts:plotSvg` |
+| **`areaPath`** | `.wave-area` | `wave-chart.ts:plotSvg`, `wave-chart.ts:waveMarks` |
 | **`axisHtml`** | `.wave-axis` | `wave-chart.ts:waveChart` |
 | **`axisMark`** | `.wave-end` | `wave-chart.ts:axisHtml`, `wave-chart.ts:axisTicks` |
 | **`bandsHtml`** | `.wave-band` | `wave-chart.ts:waveChart` |
-| **`fillDefs`** | `.wave-fill-low` `.wave-fill-top` | `wave-chart.ts:plotSvg` |
+| **`fillDefs`** | `.wave-fill-low` `.wave-fill-top` | `wave-chart.ts:plotSvg`, `wave-chart.ts:waveMarks` |
 | **`levelTags`** | `.wave-level` | `wave-chart.ts:waveChart` |
 | **`rulesHtml`** | `.wave-rule` | `wave-chart.ts:waveChart` |
 | **`waveChart`** | `.wave-clip` `.wave-plot` | `fed-phases.ts:ratesCard` |
@@ -280,6 +280,7 @@ renderer speaks. Listed most-used first.
 | **`growthWord`** | model.ts | 4 places |
 | **`inflationFigure`** | model.ts | 4 places |
 | **`lineInsight`** | indicators.ts | 4 places |
+| **`monthIdx`** | wave-chart.ts | 4 places |
 | **`moreRow`** | dom.ts | 4 places |
 | **`mWindowFrom`** | history.ts | 4 places |
 | **`nowWhen`** | cycle-analysis.ts | 4 places |
@@ -308,7 +309,6 @@ renderer speaks. Listed most-used first.
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
-| **`monthIdx`** | wave-chart.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`moodTrack`** | model.ts | 3 places |
 | **`mortgageLast`** | pressure.ts | 3 places |
@@ -339,7 +339,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 |---|---|---|
 | `.caption` | 20 | `credit.ts:readingOf`, `dial-cycle.ts:renderCycleKicker`, `pressure.ts:pressureMaturities`, `pulse-strips.ts:stripsInfo`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `readings.ts:yearLead`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
 | `.follow` | 16 | `credit.ts:readingOf`, `pulse-strips.ts:stripsInfo`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:horizonInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:pulseInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volumeInfoHtml`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries`, `rhythm.ts:rhythmInfo` |
-| `.hcol` | 6 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:rateColumnsChart`, `history-charts.ts:unempHistoryChart` |
+| `.hcol` | 6 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:rateColumns`, `history-charts.ts:unempHistoryChart` |
 | `.cycsel-nm` | 3 | `history.ts:headMenuHtml`, `history.ts:headPickRow`, `history.ts:nameAside` |
 | `.marker-sub` | 3 | `indicators.ts:splitInfo`, `inner-pages.ts:valuationInfo`, `readings.ts:volatilityDetailHtml` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |

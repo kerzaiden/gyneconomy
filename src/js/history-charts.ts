@@ -5,6 +5,7 @@ import { fedFundsHistory, mortgageHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, m2Yoy, NROU_NOW, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
 import { windowScale } from "./history.ts";
+import { monthIdx, waveMarks } from "./wave-chart.ts";
 import { unempState } from "./readings.ts";
 
 export function deficitChart(Wpx: number, from: number, to?: number | null){
@@ -133,12 +134,29 @@ export function unempHistoryChart(Wpx: number, from: number, o?: HistOpts){
     ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
 }
 export function fedFundsHistoryChart(Wpx: number, from: number, o?: HistOpts){
-  return rateColumnsChart(fedFundsHistory, "fedFundsHistoryChart", "The effective federal funds rate", Wpx, from, o);
+  return rateColumnsChart(fedFundsHistory, "fedFundsHistoryChart", "The effective federal funds rate", Wpx, from, o, true);
 }
 export function mortgageHistoryChart(Wpx: number, from: number, o?: HistOpts){
   return rateColumnsChart(mortgageHistory, "mortgageHistoryChart", "The 30-year fixed mortgage rate", Wpx, from, o);
 }
-function rateColumnsChart(series: MonthPoint[], geom: string, what: string, Wpx: number, from: number, o?: HistOpts){
+function rateWave(vals: MonthPoint[], X: (i: number) => number, Y: (v: number) => number, floor: number){
+  var m0 = monthIdx(vals[0].m);
+  return waveMarks({ list: vals, color: "hist-2", fill: 0.45 }, m0, monthIdx(vals[vals.length - 1].m), function(i){ return X(i - m0); }, Y, floor);
+}
+function rateColumns(vals: MonthPoint[], X: (i: number) => number, Y: (v: number) => number, zero: number, sw: number){
+  var seenV = vals.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
+  var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
+  var step = function(v: number){
+    if (!(vHi > vLo)) return 5;
+    return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
+  };
+  return vals.map(function(d, i){
+    if (d.v == null) return "";
+    return '<path class="ff-col hcol f' + step(d.v) + '" stroke-width="' + sw.toFixed(2) +
+      '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>';
+  }).join("");
+}
+function rateColumnsChart(series: MonthPoint[], geom: string, what: string, Wpx: number, from: number, o?: HistOpts, wave?: boolean){
   o = o || {};
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
@@ -156,18 +174,7 @@ function rateColumnsChart(series: MonthPoint[], geom: string, what: string, Wpx:
     top:(T - AXIS.LEG - AXIS.READ), bot:B,
     fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
-  var sw = colWidth((R - L) / n);
-  var seenV = seen.map(function(d){ return d.v; });
-  var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
-  var step = function(v: number){
-    if (!(vHi > vLo)) return 5;
-    return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
-  };
-  vals.forEach(function(d, i){
-    if (d.v == null) return;
-    out.push('<path class="ff-col hcol f' + step(d.v) + '" stroke-width="' + sw.toFixed(2) +
-      '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
-  });
+  out.push(wave ? rateWave(vals, X, Y, zero) : rateColumns(vals, X, Y, zero, colWidth((R - L) / n)));
   var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
   out.push(avgRule(L, R, f(Y(avgV))));
   out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v: number){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
