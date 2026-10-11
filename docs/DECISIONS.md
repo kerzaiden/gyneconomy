@@ -824,9 +824,9 @@ settles it; none is open after V668.
   Growth has no tolerance of its own since the eight-quarter trend went in 0.8.0. (1.2.2; the full list is in
   code-review/trends-1.3.0.md in the project files)
 - **In expansion, hot is Summer–Inflation; otherwise cooling is Spring–Disinflation and heating is
-  Spring–Reflation, within or below the range. In contraction, cold is Winter–Deflation; otherwise heating, or
-  prices steady above the range, is Autumn–Stagflation and cooling is Autumn–Disinflation, within or above the
-  range.** Keren's season table.
+  Spring–Reflation, within or below the range. In contraction, inflation below zero is Winter–Deflation and 0–1% is
+  Autumn–Disinflation; otherwise heating, or prices steady above the range, is Autumn–Stagflation and cooling is
+  Autumn–Disinflation, within or above the range.** Keren's season table.
   Steady prices (a twelve-month trend inside ±0.02 points a month) keep the prior quarter's direction, as growth
   inside its margin keeps the prior regime: without a significant change, the season simply continues. With no
   prior direction, steady reads Reflation in expansion and Disinflation in contraction. (Sep 18–19, 2026; 0.8.0,
@@ -841,6 +841,13 @@ settles it; none is open after V668.
   stagnant growth, not only a direction; prices stuck above the range are hard to bring down. Prices hot but
   cooling stay Disinflation (2023 Q4). Measured first: one quarter moves, 1967 Q4 (3.3%, steady), and today is
   unchanged. (Oct 11, 2026)
+- **Winter–Deflation needs prices falling outright, inflation below zero; contraction with inflation between 0% and
+  1% is Autumn–Disinflation whatever its direction.** Deflation is a falling price level, so "cold" (below 1%) is
+  not enough; and stagflation means warm, sticky prices, so a rise from near zero is not it. Keren chose
+  Disinflation over reading 0–1% by direction (four quarters, 2016 Q2 among them, would have read Stagflation at
+  under 1%) and over keeping the 1% Winter. Measured first: eleven quarters leave Winter (39 to 28), among them
+  2008 Q4 and 2020 Q2, so COVID-19 has no Winter; after 1954 Winter is 2009 Q1–Q3 alone; today is unchanged.
+  (Oct 11, 2026)
 - **Stagflation does not need prices above the range; it mirrors expansion.** Keren made the two sides
   symmetric "even though heating-within-range is empirically rare". (undated, Sep 19, 2026)
 - **Spring–Disinflation (expansion, prices cooling, within or below the range) replaced the Goldilocks Zone;

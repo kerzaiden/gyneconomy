@@ -307,7 +307,7 @@ export var seasonReading: Record<Season, SeasonReading> = {
   },
   autumn: {
     body: "Early luteal. Progesterone takes over from estrogen; temperature is up and stays up, energy is steady but turns inward, and the body settles into consolidation rather than display.",
-    economy: "Disinflation. Growth has slipped below the economy’s potential and prices are cooling, though still at or above target. Rates stop rising and eventually fall, and the curve steepens."
+    economy: "Disinflation. Growth has slipped below the economy’s potential and inflation is cooling, or sits between zero and 1% without turning to deflation. Rates stop rising and eventually fall, and the curve steepens."
   },
   lateautumn: {
     body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
@@ -315,7 +315,7 @@ export var seasonReading: Record<Season, SeasonReading> = {
   },
   winter: {
     body: "Menstruation — groundation. Shedding, rest and the lowest energy of the cycle. The lining that was built up releases; the body is not failing, it is clearing the way.",
-    economy: "Deflation, or close to it. Growth runs below its potential, prices and rates fall, and the bleed shows up on the Calendar as a down year for the market."
+    economy: "Deflation. Growth runs below its potential, prices fall outright and rates follow, and the bleed shows up on the Calendar as a down year for the market."
   },
   springdeflation: {
     body: "",
