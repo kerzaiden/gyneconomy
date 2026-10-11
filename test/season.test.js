@@ -54,10 +54,7 @@ ok('expansion + cooling prices    = springdeflation', season(cpi(2.0, -0.05), up
 ok('expansion + heating prices    = spring',          season(cpi(2.0, 0.05), up),  'spring');
 ok('expansion + steady prices     = spring',          season(cpi(2.0, 0), up),     'spring');
 ok('expansion + cold prices heating = spring',        season(cpi(0.4, 0.05), up),  'spring');
-ok('contraction + falling prices  = winter',          season(cpi(-0.5, -0.05), down), 'winter');
-ok('contraction + 0–1% cooling    = autumn',          season(cpi(0.4, -0.05), down), 'autumn');
-ok('contraction + 0–1% heating    = autumn',          season(cpi(0.4, 0.05), down),  'autumn');
-ok('inflation of exactly 0 is not deflation',         season(cpi(0, -0.05), down),   'autumn');
+ok('contraction + cold prices     = winter',          season(cpi(0.4, -0.05), down), 'winter');
 ok('contraction + cooling prices  = autumn',          season(cpi(2.0, -0.05), down), 'autumn');
 ok('contraction + steady prices   = autumn',          season(cpi(2.0, 0), down),     'autumn');
 ok('steady after cooling stays springdeflation', readSeason(cpi(2.0, 0), up, P, null, 'falling').season, 'springdeflation');

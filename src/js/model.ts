@@ -53,7 +53,7 @@ function readSeason(cpi12: MonthPoint[], gdp: QuarterPoint, potential: number, p
   var cpiHot = cpiNow > 3.0, cpiCold = cpiNow < 1.0;
   var regime = regimeOf(gdp.v, potential, prevRegime), season: Season;
   if (regime === "expansion") season = cpiHot ? "summer" : heading === "falling" ? "springdeflation" : "spring";
-  else season = cpiNow < 0 ? "winter" : !cpiCold && (heading === "rising" || (cpiHot && cpiDirection === "steady")) ? "lateautumn" : "autumn";
+  else season = cpiCold ? "winter" : heading === "rising" || (cpiHot && cpiDirection === "steady") ? "lateautumn" : "autumn";
   return { season:season, regime:regime, cpiNow:cpiNow, cpiSlope:cpiSlope, cpiDirection:cpiDirection, heading:heading, cpiHot:cpiHot, cpiCold:cpiCold,
            potential:potential, gdpLatest:gdp };
 }
@@ -159,9 +159,9 @@ var seasonRuleSentence: Record<Season, string> = {
   spring:"Expansion with prices heating, within or below the range, is reflation — Spring.",
   springdeflation:"Expansion with prices cooling, within or below the range, is Spring — disinflation.",
   summer:"Expansion with prices above the range — hot — is inflation, Summer.",
-  autumn:"Contraction with prices cooling within or above the range, or between 0% and 1%, is disinflation — Autumn.",
+  autumn:"Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
   lateautumn:"Contraction with prices heating within or above the range, or steady above it, is Autumn — stagflation.",
-  winter:"Contraction with prices falling outright, inflation below zero, is deflation — Winter."
+  winter:"Contraction with prices below the range — cold — is deflation, Winter."
 };
 export function potentialGap(r: ModelReading){
   var gap = r.gdpLatest.v - r.potential;
