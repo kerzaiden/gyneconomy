@@ -320,9 +320,10 @@
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
 
   .strip-run.ytd{ opacity:0.55; }
-  .season-sw{ display:inline-block; width:20px; height:6px; border-radius:3px; flex:none; background:var(--season); }
-  .detail-modal .legend-row .bar{ width:20px; height:6px; border-radius:3px; flex:none; }
-  .detail-modal .legend-row .bar.ytd{ opacity:0.55; }
+  .key-list{ list-style:none; padding:0; }
+  .key-sw, .season-sw{ display:inline-block; flex:none; border-radius:3px; background:var(--season); }
+  .key-sw.bar, .season-sw{ width:20px; height:6px; }
+  .key-sw.ytd{ opacity:0.55; }
   .detail-modal .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
   .detail-modal .legend-head{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
 
@@ -605,7 +606,7 @@
   .clock-asset{ font-size:var(--type-meta); fill:var(--text-muted); }
   .clock-asset.now{ fill:var(--text-primary); }
   .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
-  .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
+  .aux-stat .key-sw{ margin-right:10px; vertical-align:middle; }
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
@@ -800,7 +801,7 @@
   .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
   .hist-key{ list-style:none; margin:12px 0 0; padding:0; display:grid; gap:6px; font-size:var(--type-meta); color:var(--text-secondary); }
   .hist-key li{ display:flex; align-items:flex-start; gap:8px; line-height:1.4; }
-  .hk{ flex:none; width:14px; height:9px; margin-top:4px; border-radius:3px; }
+  .key-sw.chip{ width:14px; height:9px; margin-top:4px; }
   .hk-0{ background:var(--hist-0); } .hk-1{ background:var(--hist-1); } .hk-2{ background:var(--hist-2); } .hk-3{ background:var(--hist-3); } .hk-4{ background:var(--hist-4); } .hk-5{ background:var(--hist-5); } .hk-x{ background:var(--hist-x); }
   .hk-ramp{ background:linear-gradient(90deg, var(--hist-0), var(--hist-2), var(--hist-4), var(--hist-5)); }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
@@ -929,11 +930,9 @@
   .len-bars rect.now{ fill:var(--good); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
   .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
-  .len-key i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 12px; vertical-align:-1px; }
-  .len-key i:first-child{ margin-left:0; }
-  .len-key i.ok{ background:var(--good); }
-  .len-key i.odd{ background:var(--critical); }
-  .len-key i.warn{ background:var(--gold); }
+  .key-sw.square{ width:12px; height:12px; margin:0 6px 0 12px; vertical-align:-1px; }
+  .key-list > :first-child > .key-sw.square{ margin-left:0; }
+  .key-sw.ok{ --season:var(--good); } .key-sw.odd{ --season:var(--critical); } .key-sw.warn{ --season:var(--gold); }
   .insight-mark{ display:flex; flex:none; color:var(--cat); }
   .insight-mark svg{ width:18px; height:18px; }
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
@@ -995,7 +994,7 @@
   .cal-q.on{ box-shadow:inset 0 0 0 2px var(--accent); font-weight:700; }
   :is(.cal-band, .cal-y, .cal-q, .ind-reset):focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .ind-filter .cal-key{ display:flex; gap:14px; margin:8px 2px 0; font-size:var(--type-meta); color:var(--text-muted); }
-  .cal-key i{ display:inline-block; width:9px; height:9px; margin-right:5px; border-radius:50%; background:var(--season); }
+  .key-sw.dot{ width:9px; height:9px; margin-right:5px; border-radius:50%; }
   .ind-show{ width:100%; margin-top:24px; padding:14px 22px; }
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
@@ -1572,6 +1571,15 @@
         says: w.says
       };
     };
+  }
+  function keySwatch(shape, tone2, style) {
+    return '<i class="key-sw ' + shape + (tone2 ? " " + tone2 : "") + '"' + (style ? ' style="' + style + '"' : "") + "></i>";
+  }
+  function legendKey(rows, o) {
+    var box = o.inline ? "p" : "ul", tag = o.inline ? "span" : "li";
+    return "<" + box + ' class="key-list ' + o.cls + '">' + rows.map(function(r) {
+      return "<" + tag + (o.row ? ' class="' + o.row + '"' : "") + ">" + (r[3] || keySwatch(o.shape, r[0])) + r[1] + (r[2] ? "<small>" + r[2] + "</small>" : "") + "</" + tag + ">";
+    }).join(o.inline ? " " : "") + "</" + box + ">";
   }
   function readingNote(n) {
     return (n.title != null ? "<h4>" + n.title + "</h4>" : "") + (n.lead != null ? '<p class="caption">' + n.lead + "</p>" : "") + (n.paras || []).map(function(p) {
@@ -46451,11 +46459,6 @@
   function yLabel(x, y, text, anchor, cls) {
     return '<text class="bt-yl' + (cls ? " " + cls : "") + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '">' + text + "</text>";
   }
-  function histKey(rows) {
-    return '<ul class="hist-key">' + rows.map(function(r) {
-      return '<li><i class="hk ' + r[0] + '"></i>' + r[1] + "</li>";
-    }).join("") + "</ul>";
-  }
   function crossLine(top, bot) {
     return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
   }
@@ -50883,7 +50886,10 @@
       sheet.innerHTML = timingPill(R.timing) + '<div id="' + R.id + '-chart"></div><div id="' + R.id + '-highlights"></div>';
       host.appendChild(sheet);
       histNote(R.hk || R.id, function() {
-        return r.info() + (r.key ? histKey(r.key()) : "");
+        return r.info() + (r.key ? legendKey(r.key(), {
+          shape: "chip",
+          cls: "hist-key"
+        }) : "");
       });
       drawsPage(R.id, function(W) {
         drawReading(R, W);
@@ -52388,9 +52394,13 @@
   function periodCal(key) {
     return '<div class="period-cal">' + marketCycles.slice().reverse().map(function(c) {
       return calCycle(c, key);
-    }).join("") + '</div><p class="cal-key">' + [ "winter", "spring", "summer", "autumn" ].map(function(g) {
-      return '<span class="' + g + '"><i></i>' + cap(g) + "</span>";
-    }).join("") + "</p>";
+    }).join("") + "</div>" + legendKey([ "winter", "spring", "summer", "autumn" ].map(function(g) {
+      return [ g, cap(g) ];
+    }), {
+      shape: "dot",
+      cls: "cal-key",
+      inline: true
+    });
   }
   function shown(id, at, j) {
     var f = findOf(id);
@@ -52546,12 +52556,17 @@
   function mark(cls, name) {
     return '<span class="stat-tick' + cls + '">' + TICK + "</span>" + name;
   }
-  var TYPICAL_KEY = '<p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>';
-  var HEALTH_KEY = '<p class="len-key"><i class="ok"></i>Normal <i class="warn"></i>Attention <i class="odd"></i>Risk</p>';
+  function lenKey(rows) {
+    return legendKey(rows, {
+      shape: "square",
+      cls: "len-key",
+      inline: true
+    });
+  }
   var RELATIVE = "<p>Typical is relative: it is read against the market’s own past cycles, not a fixed standard.</p>";
   function healthPage(i) {
     var s = score(i), t = scoreTier(s.v), n = normOf(pastScores());
-    return "<h3>Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of the " + s.of + " results that are Normal. It is judged against the scores of the " + closedCount() + " closed cycles: Normal from " + Math.ceil(n.lo) + ", Risk below " + Math.max(0, Math.ceil(n.floor)) + ", past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>" + HEALTH_KEY + cycleBars(marketCycles.map(function(_, k) {
+    return "<h3>Health Score</h3><p>" + t + ": " + s.v + " out of 100, the share of the " + s.of + " results that are Normal. It is judged against the scores of the " + closedCount() + " closed cycles: Normal from " + Math.ceil(n.lo) + ", Risk below " + Math.max(0, Math.ceil(n.floor)) + ", past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>" + lenKey([ [ "ok", "Normal" ], [ "warn", "Attention" ], [ "odd", "Risk" ] ]) + cycleBars(marketCycles.map(function(_, k) {
       return score(k).v;
     }), function(v) {
       return healthTone(v)[0];
@@ -52584,7 +52599,7 @@
     }).map(function(c) {
       return cycLabel(c).name;
     });
-    return "<h3>Cycle length</h3><p>" + (typical(v, open) ? "Typical" : "Atypical") + ": the " + marketCycles[i].name + (open ? " has run " : " ran ") + yearsWord(v) + " years. The " + lengths().length + " closed cycles since " + marketCycles[0].from + " average " + yearsWord(meanOf(lengths())) + " years. A typical one lasts " + yearsWord(n.floor) + " to " + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of the closed cycles, the standard rule for an outlier." + (odd.length ? " " + listWords(odd) + " ran longer." : "") + "</p>" + RELATIVE + TYPICAL_KEY + cycleBars(visits().map(len), function(x, k) {
+    return "<h3>Cycle length</h3><p>" + (typical(v, open) ? "Typical" : "Atypical") + ": the " + marketCycles[i].name + (open ? " has run " : " ran ") + yearsWord(v) + " years. The " + lengths().length + " closed cycles since " + marketCycles[0].from + " average " + yearsWord(meanOf(lengths())) + " years. A typical one lasts " + yearsWord(n.floor) + " to " + yearsWord(n.fence) + " years: inside Tukey’s fences around the middle half of the closed cycles, the standard rule for an outlier." + (odd.length ? " " + listWords(odd) + " ran longer." : "") + "</p>" + RELATIVE + lenKey([ [ "ok", "Typical" ], [ "odd", "Atypical" ] ]) + cycleBars(visits().map(len), function(x, k) {
       return barClass(typical(x), k);
     }, [ i ], "Each cycle’s length in years") + srcBlock([ FENCE_SRC ]);
   }
@@ -52602,7 +52617,7 @@
   }
   function flowPage(i) {
     var F = flows(), n = normOf(F), v = visits()[i].bleed, ok = flowTypical(v);
-    return "<h3>Period flow</h3><p>" + (ok ? "Typical" : "Atypical") + ": the " + marketCycles[i].name + " closed on " + word(v) + " down year" + (v === 1 ? "" : "s") + " of the S&amp;P 500. The " + F.length + " closed cycles since " + marketCycles[0].from + " average " + yearsWord(meanOf(F)) + " years. A typical flow lasts at most " + yearsText(n.fence) + ": inside Tukey’s fence above the middle half of the closed cycles, the standard rule for an outlier." + (n.lo === n.hi ? " The middle half all bled exactly " + yearsText(n.lo) + ", so the fence sits there." : "") + "</p>" + RELATIVE + TYPICAL_KEY + cycleBars(visits().map(flow), function(x, k) {
+    return "<h3>Period flow</h3><p>" + (ok ? "Typical" : "Atypical") + ": the " + marketCycles[i].name + " closed on " + word(v) + " down year" + (v === 1 ? "" : "s") + " of the S&amp;P 500. The " + F.length + " closed cycles since " + marketCycles[0].from + " average " + yearsWord(meanOf(F)) + " years. A typical flow lasts at most " + yearsText(n.fence) + ": inside Tukey’s fence above the middle half of the closed cycles, the standard rule for an outlier." + (n.lo === n.hi ? " The middle half all bled exactly " + yearsText(n.lo) + ", so the fence sits there." : "") + "</p>" + RELATIVE + lenKey([ [ "ok", "Typical" ], [ "odd", "Atypical" ] ]) + cycleBars(visits().map(flow), function(x, k) {
       return barClass(flowTypical(x), k);
     }, [ i ], "Each cycle’s period flow in years") + srcBlock([ FENCE_SRC ]);
   }
@@ -53111,9 +53126,15 @@
     rovingKeys(group, "[data-theme-choice]", "aria-checked", true);
   }
   function renderCycleKicker() {
-    var html = '<h4>Legend</h4><div class="legend-head">Seasons (Q)</div><div class="legend-rows">' + [ [ "winter", "Winter", "Prices &lt; " + TEMP_BAND_LO + "%" ], [ "spring", "Spring", "Prices ≤ " + TEMP_BAND_HI + "%" ], [ "summer", "Summer", "Prices &gt; " + TEMP_BAND_HI + "%" ], [ "autumn", "Autumn", "Prices ≥ " + TEMP_BAND_LO + "%" ] ].map(function(r) {
-      return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + "<small>" + r[2] + "</small></div>";
-    }).join("") + '</div><p class="caption">The range is ' + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% inflation, CPI before 2000 and PCE since, a point either side of the Fed’s " + CPI_TARGET + "% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model’s structure.</p>" + srcBlock([ FED_TARGET_SRC ]) + '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows"><div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return ≥ 0%</small></div><div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div><div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div><div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div></div><div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
+    var html = '<h4>Legend</h4><div class="legend-head">Seasons (Q)</div>' + legendKey([ [ "winter", "Winter", "Prices &lt; " + TEMP_BAND_LO + "%" ], [ "spring", "Spring", "Prices ≤ " + TEMP_BAND_HI + "%" ], [ "summer", "Summer", "Prices &gt; " + TEMP_BAND_HI + "%" ], [ "autumn", "Autumn", "Prices ≥ " + TEMP_BAND_LO + "%" ] ], {
+      shape: "bar",
+      cls: "legend-rows",
+      row: "legend-row"
+    }) + '<p class="caption">The range is ' + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% inflation, CPI before 2000 and PCE since, a point either side of the Fed’s " + CPI_TARGET + "% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model’s structure.</p>" + srcBlock([ FED_TARGET_SRC ]) + '<div class="legend-head">S&amp;P 500 (YoY)</div>' + legendKey([ [ "mkt-up", "Bull year", "return ≥ 0%" ], [ "mkt-down", "Bear year", "return &lt; 0%" ], [ "mkt-up ytd", "Year in progress", "in progress" ], [ "", "Peak year", "highest return", '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>' ] ], {
+      shape: "bar",
+      cls: "legend-rows",
+      row: "legend-row"
+    }) + '<div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
     var idx = detailSlot(html);
     put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span><button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
   }
@@ -53669,7 +53690,7 @@
     var r = nowModel.reading;
     var weights = ALL_WEATHER.map(function(a) {
       return auxStat({
-        label: '<span class="season-sw" style="--season:var(' + a.ink + ')"></span>' + a.what,
+        label: keySwatch("bar", "", "--season:var(" + a.ink + ")") + a.what,
         value: a.w + "%"
       });
     }).join("");

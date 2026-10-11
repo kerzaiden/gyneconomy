@@ -319,9 +319,10 @@
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
 
   .strip-run.ytd{ opacity:0.55; }
-  .season-sw{ display:inline-block; width:20px; height:6px; border-radius:3px; flex:none; background:var(--season); }
-  .detail-modal .legend-row .bar{ width:20px; height:6px; border-radius:3px; flex:none; }
-  .detail-modal .legend-row .bar.ytd{ opacity:0.55; }
+  .key-list{ list-style:none; padding:0; }
+  .key-sw, .season-sw{ display:inline-block; flex:none; border-radius:3px; background:var(--season); }
+  .key-sw.bar, .season-sw{ width:20px; height:6px; }
+  .key-sw.ytd{ opacity:0.55; }
   .detail-modal .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
   .detail-modal .legend-head{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
 
@@ -608,7 +609,7 @@
   .clock-asset{ font-size:var(--type-meta); fill:var(--text-muted); }
   .clock-asset.now{ fill:var(--text-primary); }
   .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
-  .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
+  .aux-stat .key-sw{ margin-right:10px; vertical-align:middle; }
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   .wr-by{ display:block; margin:4px 0 8px; font-size:var(--type-meta); color:var(--text-muted); }
@@ -806,7 +807,7 @@
   .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
   .hist-key{ list-style:none; margin:12px 0 0; padding:0; display:grid; gap:6px; font-size:var(--type-meta); color:var(--text-secondary); }
   .hist-key li{ display:flex; align-items:flex-start; gap:8px; line-height:1.4; }
-  .hk{ flex:none; width:14px; height:9px; margin-top:4px; border-radius:3px; }
+  .key-sw.chip{ width:14px; height:9px; margin-top:4px; }
   .hk-0{ background:var(--hist-0); } .hk-1{ background:var(--hist-1); } .hk-2{ background:var(--hist-2); } .hk-3{ background:var(--hist-3); } .hk-4{ background:var(--hist-4); } .hk-5{ background:var(--hist-5); } .hk-x{ background:var(--hist-x); }
   .hk-ramp{ background:linear-gradient(90deg, var(--hist-0), var(--hist-2), var(--hist-4), var(--hist-5)); }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
@@ -938,11 +939,9 @@
   .len-bars rect.now{ fill:var(--good); opacity:0.45; }
   .len-bars text{ font-size:var(--type-label); fill:var(--text-muted); text-anchor:middle; }
   .len-bars text.this{ fill:var(--text-primary); font-weight:700; }
-  .len-key i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin:0 6px 0 12px; vertical-align:-1px; }
-  .len-key i:first-child{ margin-left:0; }
-  .len-key i.ok{ background:var(--good); }
-  .len-key i.odd{ background:var(--critical); }
-  .len-key i.warn{ background:var(--gold); }
+  .key-sw.square{ width:12px; height:12px; margin:0 6px 0 12px; vertical-align:-1px; }
+  .key-list > :first-child > .key-sw.square{ margin-left:0; }
+  .key-sw.ok{ --season:var(--good); } .key-sw.odd{ --season:var(--critical); } .key-sw.warn{ --season:var(--gold); }
   .insight-mark{ display:flex; flex:none; color:var(--cat); }
   .insight-mark svg{ width:18px; height:18px; }
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
@@ -1004,7 +1003,7 @@
   .cal-q.on{ box-shadow:inset 0 0 0 2px var(--accent); font-weight:700; }
   :is(.cal-band, .cal-y, .cal-q, .ind-reset):focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .ind-filter .cal-key{ display:flex; gap:14px; margin:8px 2px 0; font-size:var(--type-meta); color:var(--text-muted); }
-  .cal-key i{ display:inline-block; width:9px; height:9px; margin-right:5px; border-radius:50%; background:var(--season); }
+  .key-sw.dot{ width:9px; height:9px; margin-right:5px; border-radius:50%; }
   .ind-show{ width:100%; margin-top:24px; padding:14px 22px; }
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }

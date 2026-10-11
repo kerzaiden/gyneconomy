@@ -1,4 +1,4 @@
-import { facts, fmtSigned, hubLine, ledeHtml, monthLabel, qLabel, srcBlock } from "./format.ts";
+import { facts, fmtSigned, hubLine, ledeHtml, legendKey, monthLabel, qLabel, srcBlock } from "./format.ts";
 import { byId, detailSlot, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
@@ -120,17 +120,10 @@ function wireThemeChoice(){
 // ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the ----
 function renderCycleKicker(){
   var html = '<h4>Legend</h4>' +
-    '<div class="legend-head">Seasons (Q)</div><div class="legend-rows">' +
-    [["winter","Winter","Prices &lt; " + TEMP_BAND_LO + "%"],["spring","Spring","Prices \u2264 " + TEMP_BAND_HI + "%"],["summer","Summer","Prices &gt; " + TEMP_BAND_HI + "%"],["autumn","Autumn","Prices \u2265 " + TEMP_BAND_LO + "%"]].map(function(r){
-      return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + '<small>' + r[2] + '</small></div>';
-    }).join("") + '</div>' +
+    '<div class="legend-head">Seasons (Q)</div>' + legendKey([["winter","Winter","Prices &lt; " + TEMP_BAND_LO + "%"],["spring","Spring","Prices \u2264 " + TEMP_BAND_HI + "%"],["summer","Summer","Prices &gt; " + TEMP_BAND_HI + "%"],["autumn","Autumn","Prices \u2265 " + TEMP_BAND_LO + "%"]], { shape:"bar", cls:"legend-rows", row:"legend-row" }) +
     '<p class="caption">The range is ' + TEMP_BAND_LO + '–' + TEMP_BAND_HI + '% inflation, CPI before 2000 and PCE since, a point either side of the Fed\u2019s ' + CPI_TARGET + '% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model\u2019s structure.</p>' + srcBlock([FED_TARGET_SRC]) +
-    '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows">' +
-    '<div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return \u2265 0%</small></div>' +
-    '<div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div>' +
-    '<div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div>' +
-    '<div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div>' +
-    '</div>' +
+    '<div class="legend-head">S&amp;P 500 (YoY)</div>' + legendKey([["mkt-up", "Bull year", "return \u2265 0%"], ["mkt-down", "Bear year", "return &lt; 0%"], ["mkt-up ytd", "Year in progress", "in progress"],
+      ["", "Peak year", "highest return", '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>']], { shape:"bar", cls:"legend-rows", row:"legend-row" }) +
     '<div class="legend-head">The market cycle</div>' +
     '<p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6\u00bd years across the long record. It is a typical length, not a forecast.</p>' +
     srcBlock(typicalCycleSrc);

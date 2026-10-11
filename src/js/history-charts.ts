@@ -1,6 +1,6 @@
 type HistOpts = { to?: number | null; cycle?: boolean };
-import { atMonth, atQuarter, fmtSigned, mean, pctl, qAtIndex, quartile } from "./format.ts";
-import { type KeyRow, avgRule, AXIS, chartAxes, colPath, colScale, colWidth, crossLine, fitGroup, fitLine, histFrame, hitRect, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, yearMarks, zeroRule } from "./charts.ts";
+import { type KeyRow, atMonth, atQuarter, fmtSigned, mean, pctl, qAtIndex, quartile } from "./format.ts";
+import { avgRule, AXIS, chartAxes, colPath, colScale, colWidth, crossLine, fitGroup, fitLine, histFrame, hitRect, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, yearMarks, zeroRule } from "./charts.ts";
 import { fedFundsHistory, mortgageHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, m2Yoy, NROU_NOW, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";

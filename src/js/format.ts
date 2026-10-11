@@ -83,6 +83,16 @@ export function sideWord(o: { line: number; above: Side; below: Side; strict?: b
     return { state:w.state, text:w.text, says:w.says };
   };
 }
+export type KeyRow = [string, string, string?, string?];
+export function keySwatch(shape: string, tone: string, style?: string){
+  return '<i class="key-sw ' + shape + (tone ? " " + tone : "") + '"' + (style ? ' style="' + style + '"' : "") + '></i>';
+}
+export function legendKey(rows: KeyRow[], o: { shape: string; cls: string; row?: string; inline?: boolean }){
+  var box = o.inline ? "p" : "ul", tag = o.inline ? "span" : "li";
+  return '<' + box + ' class="key-list ' + o.cls + '">' + rows.map(function(r){
+    return '<' + tag + (o.row ? ' class="' + o.row + '"' : "") + '>' + (r[3] || keySwatch(o.shape, r[0])) + r[1] + (r[2] ? '<small>' + r[2] + '</small>' : "") + '</' + tag + '>';
+  }).join(o.inline ? " " : "") + '</' + box + '>';
+}
 export function readingNote(n: { title?: string; lead?: string; paras?: string[]; src?: Src[] }){
   return (n.title != null ? '<h4>' + n.title + '</h4>' : '') + (n.lead != null ? '<p class="caption">' + n.lead + '</p>' : '') +
     (n.paras || []).map(function(p){ return '<p class="caption follow">' + p + '</p>'; }).join("") + (n.src ? srcBlock(n.src) : '');

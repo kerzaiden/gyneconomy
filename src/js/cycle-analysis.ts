@@ -1,4 +1,4 @@
-import { CHEV, facts, qLabel, quartile, srcBlock } from "./format.ts";
+import { type KeyRow, CHEV, facts, legendKey, qLabel, quartile, srcBlock } from "./format.ts";
 import { byId, detailSlot, focusQuiet, moreRow, need } from "./dom.ts";
 import { page, pageCycle, tabBar } from "./history.ts";
 import { histFrame } from "./charts.ts";
@@ -244,7 +244,7 @@ function calCycle(c: Cycle, key: string){
 }
 function periodCal(key: string){
   return '<div class="period-cal">' + marketCycles.slice().reverse().map(function(c){ return calCycle(c, key); }).join("") + '</div>' +
-    '<p class="cal-key">' + ["winter", "spring", "summer", "autumn"].map(function(g){ return '<span class="' + g + '"><i></i>' + cap(g) + '</span>'; }).join("") + '</p>';
+    legendKey(["winter", "spring", "summer", "autumn"].map(function(g): KeyRow { return [g, cap(g)]; }), { shape:"dot", cls:"cal-key", inline:true });
 }
 function shown(id: string, at: At, j: Lab[]){ var f = findOf(id); return j.filter(function(l){ return (!f.cat || l.cat === f.cat) && (f.tier === "all" || tier(l, at) === f.tier); }).length; }
 function filterSheet(id: string, at: At, j: Lab[], rows: PeriodRow[]){
@@ -329,13 +329,12 @@ function verdict(ok: boolean){ return mark(ok ? " ok" : " odd", ok ? "Typical" :
 var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function tone(ok: boolean){ return ok ? "t-ok" : "t-odd"; }
 function mark(cls: string, name: string){ return '<span class="stat-tick' + cls + '">' + TICK + '</span>' + name; }
-var TYPICAL_KEY = '<p class="len-key"><i class="ok"></i>Typical <i class="odd"></i>Atypical</p>';
-var HEALTH_KEY = '<p class="len-key"><i class="ok"></i>Normal <i class="warn"></i>Attention <i class="odd"></i>Risk</p>';
+function lenKey(rows: KeyRow[]){ return legendKey(rows, { shape:"square", cls:"len-key", inline:true }); }
 var RELATIVE = '<p>Typical is relative: it is read against the market’s own past cycles, not a fixed standard.</p>';
 function healthPage(i: number){
   var s = score(i), t = scoreTier(s.v), n = normOf(pastScores()) as Norm;
   return '<h3>Health Score</h3><p>' + t + ': ' + s.v + ' out of 100, the share of the ' + s.of + ' results that are Normal. It is judged against the scores of the ' + closedCount() + ' closed cycles: Normal from ' + Math.ceil(n.lo) + ', Risk below ' + Math.max(0, Math.ceil(n.floor)) + ', past Tukey’s fence.</p><p>Normal is relative: it is read against the market’s own past cycles, not a fixed standard.</p>' +
-    HEALTH_KEY + cycleBars(marketCycles.map(function(_, k){ return score(k).v; }), function(v){ return healthTone(v)[0]; }, [i], "Each cycle\u2019s health score out of 100") + srcBlock([FENCE_SRC]);
+    lenKey([["ok", "Normal"], ["warn", "Attention"], ["odd", "Risk"]]) + cycleBars(marketCycles.map(function(_, k){ return score(k).v; }), function(v){ return healthTone(v)[0]; }, [i], "Each cycle\u2019s health score out of 100") + srcBlock([FENCE_SRC]);
 }
 function healthTone(v: number){ return ({ Normal:["ok", "t-ok"], Attention:["warn", "t-warn"], Risk:["odd", "t-odd"] } as Record<string, string[]>)[scoreTier(v)]; }
 function healthRow(i: number){
@@ -354,7 +353,7 @@ function barClass(ok: boolean, i: number){ return marketCycles[i].ongoing ? "now
 function lengthPage(i: number){
   var n = normOf(lengths()) as Norm, v = visits()[i].years, open = !!marketCycles[i].ongoing, odd = marketCycles.filter(function(c, k){ return !c.ongoing && !typical(visits()[k].years); }).map(function(c){ return cycLabel(c).name; });
   return '<h3>Cycle length</h3><p>' + (typical(v, open) ? 'Typical' : 'Atypical') + ': the ' + marketCycles[i].name + (open ? ' has run ' : ' ran ') + yearsWord(v) + ' years. The ' + lengths().length + ' closed cycles since ' + marketCycles[0].from + ' average ' + yearsWord(meanOf(lengths())) + ' years. A typical one lasts ' + yearsWord(n.floor) + ' to ' + yearsWord(n.fence) + ' years: inside Tukey’s fences around the middle half of the closed cycles, the standard rule for an outlier.' + (odd.length ? ' ' + listWords(odd) + ' ran longer.' : '') + '</p>' +
-    RELATIVE + TYPICAL_KEY + cycleBars(visits().map(len), function(x, k){ return barClass(typical(x), k); }, [i], "Each cycle\u2019s length in years") + srcBlock([FENCE_SRC]);
+    RELATIVE + lenKey([["ok", "Typical"], ["odd", "Atypical"]]) + cycleBars(visits().map(len), function(x, k){ return barClass(typical(x), k); }, [i], "Each cycle\u2019s length in years") + srcBlock([FENCE_SRC]);
 }
 function driftWord(i: number){ var d = visits()[i].years - meanOf(lengths()); return Math.round(Math.abs(d) * 4) === 0 ? "On average" : (d < 0 ? "\u2212" : "+") + yearsText(Math.abs(d)); }
 function variationPage(i: number){
@@ -365,7 +364,7 @@ function variationPage(i: number){
 function flowPage(i: number){
   var F = flows(), n = normOf(F) as Norm, v = visits()[i].bleed, ok = flowTypical(v);
   return '<h3>Period flow</h3><p>' + (ok ? 'Typical' : 'Atypical') + ': the ' + marketCycles[i].name + ' closed on ' + word(v) + ' down year' + (v === 1 ? '' : 's') + ' of the S&amp;P 500. The ' + F.length + ' closed cycles since ' + marketCycles[0].from + ' average ' + yearsWord(meanOf(F)) + ' years. A typical flow lasts at most ' + yearsText(n.fence) + ': inside Tukey’s fence above the middle half of the closed cycles, the standard rule for an outlier.' + (n.lo === n.hi ? ' The middle half all bled exactly ' + yearsText(n.lo) + ', so the fence sits there.' : '') + '</p>' +
-    RELATIVE + TYPICAL_KEY + cycleBars(visits().map(flow), function(x, k){ return barClass(flowTypical(x), k); }, [i], "Each cycle\u2019s period flow in years") + srcBlock([FENCE_SRC]);
+    RELATIVE + lenKey([["ok", "Typical"], ["odd", "Atypical"]]) + cycleBars(visits().map(flow), function(x, k){ return barClass(flowTypical(x), k); }, [i], "Each cycle\u2019s period flow in years") + srcBlock([FENCE_SRC]);
 }
 function statsHome(i: number){
   var x = visits()[i], open = !!marketCycles[i].ongoing, closed = visits().slice(0, closedCount()), ok = typical(x.years, open), wet = flowTypical(x.bleed);

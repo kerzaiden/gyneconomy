@@ -1,6 +1,6 @@
-import { auxStat, hiCard, highlightsHtml, lede, pointLabel } from "./format.ts";
+import { type KeyRow, auxStat, hiCard, highlightsHtml, legendKey, lede, pointLabel } from "./format.ts";
 import { addSources, byIdMaybe, put } from "./dom.ts";
-import { type KeyRow, histBar, histKey, histTip } from "./charts.ts";
+import { histBar, histTip } from "./charts.ts";
 import { attachHistory, headSigma, histHead, histNote, refitHistory } from "./history.ts";
 import { keyed, ROSTER } from "./roster.ts";
 import { drawsPage, metricSheet, sheetRenderers, timingPill } from "./render-core.ts";
@@ -54,7 +54,7 @@ export function mountReadings(host: HTMLElement){
     sheet.classList.add("cat-" + R.cat);
     sheet.innerHTML = timingPill(R.timing) + '<div id="' + R.id + '-chart"></div><div id="' + R.id + '-highlights"></div>';
     host.appendChild(sheet);
-    histNote(R.hk || R.id, function(){ return r.info() + (r.key ? histKey(r.key()) : ""); });
+    histNote(R.hk || R.id, function(){ return r.info() + (r.key ? legendKey(r.key(), { shape:"chip", cls:"hist-key" }) : ""); });
     drawsPage(R.id, function(W?: number){ drawReading(R, W); });
     paintInsight(R);
     if (r.src) addSources(r.src);

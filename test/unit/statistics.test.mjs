@@ -91,7 +91,7 @@ test('the Health Score opens every cycle’s score, and Interest Rates on Analys
   const page = detailTexts[+document.querySelector('#chart-home .lab-score-box .details-link').dataset.detailIdx];
   const bars = page.match(/<rect class="(ok|warn|odd)"/g) || [];
   assert.equal(bars.length, marketCycles.length, 'one bar per cycle');
-  assert.ok(page.includes('<i class="warn"></i>Attention'));
+  assert.match(page, /<i class="[^"]*\bwarn"><\/i>Attention/);
 });
 
 test('every cycle lists its readings in the roster’s order, whatever their results', () => {
