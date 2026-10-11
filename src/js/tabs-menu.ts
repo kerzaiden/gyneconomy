@@ -52,7 +52,7 @@ function renderSeasonRows(){
     {key:"spring",          growth:"Expansion",  temp:"Heating \u2192", zones:{within:1, below:1}, range:"Heating — within or below the range"},
     {key:"summer",          growth:"Expansion",  temp:"Hot / Heating \u2192", zones:{above:1},  range:"Above the range — hot, heating or steady"},
     {key:"lateautumn",      growth:"Contraction", temp:"Hot / Heating \u2192", zones:{above:1}, range:"Above the range — hot, heating or steady"},
-    {key:"autumn",          growth:"Contraction", temp:"\u2190 Cooling", zones:{within:1, above:1}, range:"Within the range, or hot and cooling"},
+    {key:"autumn",          growth:"Contraction", temp:"Warm / \u2190 Cooling", zones:{within:1, above:1}, range:"Within the range, or hot and cooling"},
     {key:"winter",          growth:"Contraction", temp:"\u21c4 Cold",    zones:{below:1},  range:"Below the range — cold"}
   ];
   var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
