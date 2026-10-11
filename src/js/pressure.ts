@@ -1,4 +1,4 @@
-import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, srcBlock, titleCase } from "./format.ts";
+import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, mean, metered, qYears, srcBlock, titleCase } from "./format.ts";
 import { addSources, need, svgEl } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
@@ -282,7 +282,7 @@ function definePressure(){
       var w: number[] = [], mt = matOf(matPick);
       if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d){ if (d.v != null) w.push(d.v); });
       return { geom:"ylm", paint:render,
-        chart:function(){ return chartShell("ylm", "US Treasury yield levels by maturity, quarterly, 2005 to 2026"); },
+        chart:function(){ return chartShell("ylm", "US Treasury yield levels by maturity, quarterly, " + qYears(maturities[0].data.slice(ylmFrom, ylmTo), " to ")); },
         trend:trendPill(trendOf(w, "points", "quarter"), null, true, { rising:"climbing", falling:"easing" }) };
     },
     insight:pressureInsights

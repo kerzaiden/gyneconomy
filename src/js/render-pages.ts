@@ -1,4 +1,4 @@
-import { atMonth, auxStat, factsFrom, hiCard, highlightsHtml, isoDay, lede, metered, qLabel, srcBlock, stateOf } from "./format.ts";
+import { atMonth, auxStat, factsFrom, hiCard, highlightsHtml, isoDay, lede, metered, qLabel, qYears, srcBlock, stateOf } from "./format.ts";
 import { addSources, appendSvgMarkup, byId, expandBtn, need, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPath, colWidth, divergeChart, fitLine, histFrame, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
@@ -10,17 +10,16 @@ import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, t
 import { curveVerdict, fearCurve, horizonInfoHtml, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
 import { fedFundsHistoryChart, rateKey } from "./history-charts.ts";
 import { chartShell, defineReading, redrawReading } from "./reading.ts";
-type SpreadSeries = { title: string; lede: string; data: typeof t10y3mHistory; detail: string; sources: Src[] };
+type SpreadSeries = { lede: string; data: typeof t10y3mHistory; detail: string; sources: Src[] };
 type VolPoint = (typeof volatilityHistory)[number];
 
 // ---- RENDER: yield-curve spread history chart, 10Y-3M or 10Y-2Y ----
 function spreadSeries(): Record<string, SpreadSeries>{
   return {
     "3m": {
-      title: "10-Year minus 3-Month spread since 2005",
       lede: "Every U.S. recession since the late 1960s has followed an inversion of this spread — the Fed's own preferred near-term recession gauge. History says the recession tends to start only after the curve un-inverts, not while it's still inverted.",
       data: t10y3mHistory,
-      detail: '<h4>10-Year Minus 3-Month Spread, 2005–2026</h4>' +
+      detail: '<h4>10-Year Minus 3-Month Spread, ' + qYears(t10y3mHistory, "\u2013") + '</h4>' +
         '<p class="caption">Quarterly averages, not daily — so a very brief inversion (like the single-day dip on Mar 22, 2019) can be smoothed away. The point is each cycle’s shape, not every daily wiggle. Gray bands are NBER-dated recessions.</p>' +
         '<p class="caption follow">One episode often described as a false alarm, September 1998 (the Russia default/LTCM crisis), is a closer call than that: the spread came down to +0.12 points but never actually crossed zero, so it isn’t a true exception — the popular “1998 near-miss” story more likely refers to other spreads or to credit markets, not this one. The current cycle inverted in October 2022 — the deepest (−1.89 points on May 4, 2023) and longest in the daily series’ record, which starts in 1982 — and un-inverted in a choppy transition: the monthly average first reached zero in December 2024, dipped negative again in March–April and June–August 2025, and has held positive since September 2025 (the last negative daily close was October 16, 2025). See “Time from un-inversion to recession, historically” below for what past cycles suggest happens next.</p>' +
         srcBlock([
@@ -38,10 +37,9 @@ function spreadSeries(): Record<string, SpreadSeries>{
       ]
     },
     "2y": {
-      title: "10-Year minus 2-Year spread since 2005",
       lede: "The version of this signal most widely quoted in financial media — it inverted about three months before the 3-month version did.",
       data: t10y2yHistory,
-      detail: '<h4>10-Year Minus 2-Year Spread, 2005–2026</h4>' +
+      detail: '<h4>10-Year Minus 2-Year Spread, ' + qYears(t10y2yHistory, "\u2013") + '</h4>' +
         '<p class="caption">Quarterly averages of the FRED T10Y2Y series, recomputed and cross-checked against the underlying 10-year and 2-year constant-maturity series (GS10, GS2). Gray bands are NBER-dated recessions.</p>' +
         '<p class="caption follow">It inverted July 6, 2022 (first negative daily close on FRED’s series) — about three months before the 3-month version did — and un-inverted in early September 2024 (touched zero on August 27, then held positive from September 6), its first sustained positive reading in over two years. It has preceded the same recessions the 3-month spread has, though exact inversion and un-inversion dates differ slightly between the two, cycle to cycle. The “Time from un-inversion to recession” panel below uses the 3-month spread specifically, since it has the longer, more rigorously documented track record.</p>' +
         srcBlock([
@@ -191,7 +189,7 @@ function defineSpreads(){
       data.slice(from, to).forEach(function(d){ if (d.v != null) w.push(d.v); });
       spreadsHead();
       return { geom:"spreadHistory",
-        chart:function(){ return chartShell("spread-history", "Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded", "hist-svg"); },
+        chart:function(){ return chartShell("spread-history", "Treasury yield-curve spread, quarterly, " + qYears(data.slice(from, to), " to ") + ", with recession periods shaded", "hist-svg"); },
         paint:function(){ paintSpreads(spreadPick, from, to); },
         trend:trendPill(trendOf(w, "points", "quarter"), null, true, { rising:"steepening", falling:"flattening" }) };
     },
@@ -235,8 +233,7 @@ function ffCycleMonths(c: Cycle){
 }
 function hormonesInfo(){ return '<h4>Effective Federal Funds Rate</h4>' + factsFrom(
     "The rate banks actually charge each other overnight, averaged by month. It is the price the whole " +
-    "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " +
-    "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " +
+    "yield curve is quoted against. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " +
     "so the two are different figures and the page says which is which: the range is the decision, the " +
     "chart is where money traded. Target " + fedFundsRange() + (now.fedFunds.asOf ? ", set " + now.fedFunds.asOf : "") +
     (now.fedFunds.vote ? " on a " + now.fedFunds.vote + " vote" : "") + "; the effective rate ran at " +

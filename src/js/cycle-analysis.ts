@@ -20,7 +20,7 @@ export type Lab = { id: string; name: string; cat: string; good?: "up" | "down";
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
-var SD_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — Measures of Scale (standard deviation)", u:"https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm" };
+export var SD_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — Measures of Scale (standard deviation)", u:"https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm" };
 
 function normOf(vs: number[]): Norm | null {
   if (vs.length < 2) return null;

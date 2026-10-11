@@ -62,7 +62,7 @@ const esc = s => String(s)
   if (other) {
     console.error('REFUSING to write: the app put ' + other.items.length + ' source(s) in an "Other" group.');
     other.items.forEach(i => console.error('  ' + i.u));
-    console.error('A source matched none of the patterns in index.html. Add a pattern there, not a bucket here.');
+    console.error('A registered source belongs to no reading and no shelf: cite it from its reading, or add it to a shelf in src/js/sources.ts.');
     process.exit(1);
   }
 

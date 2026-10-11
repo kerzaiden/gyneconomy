@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `3d80533` on 2026-10-11. **110 components**, **18 shared patterns**.
+Generated from commit `72eae88` on 2026-10-11. **110 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -197,7 +197,7 @@ Generated from commit `3d80533` on 2026-10-11. **110 components**, **18 shared p
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`renderSeasonRows`** | `.cell` `.cold` `.hot` `.meta` `.range-bar` `.range-cell` | `tabs-menu.ts:bootTabsMenu` |
+| **`renderSeasonRows`** | `.cell` `.cold` `.hot` `.meta` `.range-bar` `.range-cell` | `tabs-menu.ts:bootGuide` |
 | **`seasonGrid`** | `.season-grid` `.sg-cell` `.sg-head` | `tabs-menu.ts:seasonModelNote` |
 | **`wireMenu`** | `.menu-card` `.menu-label` `.menu-row` `.menu-section` | `tabs-menu.ts:bootTabsMenu` |
 
@@ -224,7 +224,7 @@ renderer speaks. Listed most-used first.
 |---|---|---|
 | **`fmtSigned`** | format.ts | 24 places |
 | **`need`** | dom.ts | 24 places |
-| **`titleCase`** | format.ts | 17 places |
+| **`titleCase`** | format.ts | 16 places |
 | **`pageCycle`** | history.ts | 15 places |
 | **`byId`** | dom.ts | 14 places |
 | **`defineReading`** | reading.ts | 12 places |
@@ -248,6 +248,7 @@ renderer speaks. Listed most-used first.
 | **`put`** | dom.ts | 7 places |
 | **`qAtIndex`** | format.ts | 7 places |
 | **`atMonth`** | format.ts | 6 places |
+| **`categoriesShown`** | roster.ts | 6 places |
 | **`dxSys`** | render-core.ts | 6 places |
 | **`factsFrom`** | format.ts | 6 places |
 | **`fileRow`** | data.ts | 6 places |
@@ -263,6 +264,7 @@ renderer speaks. Listed most-used first.
 | **`detailSlot`** | dom.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
+| **`listWords`** | cycle-analysis.ts | 5 places |
 | **`meanOf`** | cycle-analysis.ts | 5 places |
 | **`pctl`** | format.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
@@ -271,11 +273,9 @@ renderer speaks. Listed most-used first.
 | **`visits`** | cycle-analysis.ts | 5 places |
 | **`windowScale`** | history.ts | 5 places |
 | **`bandEnds`** | format.ts | 4 places |
-| **`categoriesShown`** | roster.ts | 4 places |
 | **`cpiYear`** | model.ts | 4 places |
 | **`cycleByName`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
-| **`dollars`** | indicators.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`growthWord`** | model.ts | 4 places |
 | **`inflationFigure`** | model.ts | 4 places |
@@ -302,6 +302,7 @@ renderer speaks. Listed most-used first.
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
+| **`dollars`** | indicators.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
 | **`fmt`** | cycle-analysis.ts | 3 places |
 | **`fmtAsOf`** | format.ts | 3 places |
@@ -309,7 +310,6 @@ renderer speaks. Listed most-used first.
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`lagRow`** | inner-pages.ts | 3 places |
 | **`lengths`** | cycle-analysis.ts | 3 places |
-| **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`monthIdx`** | wave-chart.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
@@ -318,6 +318,7 @@ renderer speaks. Listed most-used first.
 | **`one`** | dial-cycle.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`potentialGap`** | model.ts | 3 places |
+| **`qYears`** | format.ts | 3 places |
 | **`readingFor`** | reading.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |

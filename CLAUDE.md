@@ -101,10 +101,10 @@ rules below are the ones that matter most.
 ```sh
 npm i && npm run setup   # once; setup fetches Chromium (skip setup in the Anthropic sandbox)
 npm run check            # the gate before every commit: build, email, hygiene, map, ledger, tool and unit tests
-npm run check:all        # plus the browser suite (about 110 checks, ~40 s) and axe — what CI runs
+npm run check:all        # plus the browser suite (about 123 checks, ~95 s) and axe — what CI runs
 npm test                 # the browser suite alone; it waits on the app, never on a clock
-npm run test:unit        # the app booted in Node (jsdom): every page drawn, the model on the real record, ~3 s
-npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
+npm run test:unit        # the app booted in Node (jsdom): every page drawn, the model on the real record, ~41 s with coverage
+npm run snap             # 66-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump patch       # at merge only: major | minor | patch, or exact (`npm run bump 1.4.0`); build + 1
 npm run typecheck        # strict TypeScript over the modules (in check)

@@ -263,14 +263,47 @@ w("")
 
 out = "\n".join(o) + "\n"
 
+ARCH = os.path.join(HERE, "docs", "ARCHITECTURE.md")
+ROSTER_START, ROSTER_END = "<!-- roster:start -->", "<!-- roster:end -->"
+
+def unescape(x):
+    return re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), x)
+
+def roster_table():
+    src = read(os.path.join(JS, "roster.ts"))
+    field = lambda row, k: (re.search(r'\b' + k + r':"((?:[^"\\]|\\.)*)"', row) or [None, ""])[1]
+    cats = re.findall(r'\{ key:"(\w+)", title:"([^"]+)", shown:(\d+)', src)
+    labels = dict(re.findall(r'(\w+):\s*\{ label:"([^"]+)" \}', src))
+    body = src[src.index("function declareRoster"):]
+    rows = [r for r in re.split(r"\n    \{ id:", body)[1:]]
+    rows = [{k: field("id:" + r, k) for k in ("id", "name", "cat", "sub", "timing", "head")} for r in rows]
+    t = ["| Element | Subcategory | Reading | Timing | History head |", "|---|---|---|---|---|"]
+    for key, title, _ in sorted(cats, key=lambda c: int(c[2])):
+        for r in rows:
+            if r["cat"] == key:
+                t.append("| %s | %s | %s | %s | %s |" % (title, r["sub"], r["name"], labels.get(r["timing"], r["timing"]),
+                         unescape(r["head"] or "(picked on the page)")))
+    return "\n".join(t)
+
+arch = read(ARCH)
+a, b = arch.find(ROSTER_START), arch.find(ROSTER_END)
+if a < 0 or b < a:
+    print("ARCHITECTURE.md has no %s ... %s block" % (ROSTER_START, ROSTER_END))
+    sys.exit(1)
+arch_out = arch[:a + len(ROSTER_START)] + "\n" + roster_table() + "\n" + arch[b:]
+
 cur = read(OUT) if os.path.exists(OUT) else ""
 strip = lambda s: re.sub(r"Generated from commit .*", "", s)
-if strip(cur) == strip(out):
-    print("MAP.md is current")
+map_ok, arch_ok = strip(cur) == strip(out), arch == arch_out
+print("MAP.md is current" if map_ok else "MAP.md is OUT OF DATE — run: npm run map")
+print("ARCHITECTURE.md's roster table is current" if arch_ok else "ARCHITECTURE.md's roster table is OUT OF DATE — run: npm run map")
+if map_ok and arch_ok:
     sys.exit(0)
 if "--check" in sys.argv:
-    print("MAP.md is OUT OF DATE — run: npm run map")
     sys.exit(1)
-
-io.open(OUT, "w", encoding="utf-8").write(out)
-print("wrote %s — %d lines, from %s lines of src/" % (os.path.relpath(OUT, HERE), out.count("\n") + 1, num(N)))
+if not map_ok:
+    io.open(OUT, "w", encoding="utf-8").write(out)
+    print("wrote %s — %d lines, from %s lines of src/" % (os.path.relpath(OUT, HERE), out.count("\n") + 1, num(N)))
+if not arch_ok:
+    io.open(ARCH, "w", encoding="utf-8").write(arch_out)
+    print("wrote the roster table in docs/ARCHITECTURE.md")

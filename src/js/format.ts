@@ -76,6 +76,7 @@ export function factsFrom(text: unknown){
   var parts = String(text).replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+(?=[A-Z(“"'"'"'])/);
   return facts(parts.filter(function(x){ return x.trim(); }));
 }
+export function qYears(d: readonly { q: string }[], sep: string){ return d.length ? d[0].q.slice(0, 4) + sep + d[d.length - 1].q.slice(0, 4) : ""; }
 export function srcBlock(list: Src[]){ return '<div class="src">' + srcHtml(list) + '</div>'; }
 function srcHtml(list: Src[]){ return list.map(function(s: Src){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
 export function fmtSigned(v: number, dp: number){ var a = Math.abs(v).toFixed(dp); return (+a === 0 ? "" : v > 0 ? "+" : "\u2212") + a; }

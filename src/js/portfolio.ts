@@ -11,7 +11,7 @@ type Phase = { key: string; name: string; growth: string; prices: string; holds:
 
 var WEATHER_ID = "sheet-all-weather", CLOCK_ID = "sheet-investment-clock";
 var WEATHER_NAME = "All Weather", CLOCK_NAME = "Investment Clock";
-var WEATHER_SRC: Src[] = [
+export var WEATHER_SRC: Src[] = [
   {t:"Bridgewater Associates — The All Weather Story (2012)", u:"https://www.bridgewater.com/resources/all-weather-story.pdf"},
   {t:"Tony Robbins — Money: Master the Game (Simon & Schuster, 2014), the All Seasons allocation Ray Dalio gave for individuals", u:"https://www.simonandschuster.com/books/MONEY-Master-the-Game/Tony-Robbins/9781476757803"}
 ];

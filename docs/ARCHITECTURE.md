@@ -93,9 +93,11 @@ blank the app on every later visit):
   range arriving first blanked the file's date before the floor had seen it, and a 2023 decision was accepted.
 - **An object document keeps each field's type (1.6.1).** `fieldsKept`: a field the file has must arrive as
   the same type and never as an object; a field the file lacks must be a string; `rows` go through `overRows`.
-- **A stale feed turns the Data run red (1.6.1).** `staleDocs` in `fetch-live` flags a daily figure (curve,
+- **A stale feed is flagged, not fatal (1.6.1).** `staleDocs` in `fetch-live` flags a daily figure (curve,
   VIX) older than 7 days, which covers a long weekend with a holiday, and CAPE older than 93 days, because
   Shiller's monthly sheet runs a month or two behind. The Fed has no age limit: its date is its last decision.
+  A flagged figure is left alone and the Data run stays green: it writes a `::warning` and a row in the run's
+  summary (`data.yml`), and an FOMC calendar that has run out is only a console line in `fetch-live`.
 - **A live row changes figures, never structure (1.2.1).** `overRows` lays a document's rows over the
   file's: the strings and numbers the file row has, and the meter's value, min and max. The page renderer, the
   band and the zone labels stay the file's, so a row that went through JSON (and lost its functions) cannot
@@ -243,7 +245,7 @@ with no handler is recorded, which makes the suite able to see it.
 
 Since V707 the same holds between modules: the view hooks that rode on `ui` behind a silent `if`
 (`calendarReset`, `metricPageReset`, `drawSpreadWindow`) are `GYN` actions, and the
-`window` channel is an export (`sourceIndex` from `pages-nav`). `ui.topbarBack` and `ui.eraPageBack` stay in the store: they are state (what Back does now),
+`window` channel is an export (the Sources screen's shelves, `sourceShelves` from `sources`). `ui.topbarBack` and `ui.eraPageBack` stay in the store: they are state (what Back does now),
 not hooks.
 
 ## Who refreshes what
@@ -376,7 +378,7 @@ manifest's.
   `rhythm` (how evenly the velocity of M2 changes pace, the Pulse page's second reading), `pulse-strips` (the Pulse history: one EKG strip per year, 0.9.25), `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` (cards and page helpers), `fed-phases` (the Fed's phases on Analysis, and each cycle's rates story),
   `reading` (the one reading component: every reading's figure, word and page, 0.9.20), `render-pages` and `pressure`
   (the policy, spread, fear, Treasury and money readings), `indicators`, `era`, `insights` (each category's insights, behind Indicators' More details on that category), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (the Today tab's Weather Report, the Cycle Story card on every cycle page and its page, and Risk Factors), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`,
-  `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
+  `sources` (the Sources screen: each reading's own citations by element and subcategory, then the model's shelves), `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
 
@@ -396,8 +398,43 @@ Herstory, the list of closed cycles (`#calendar-list`), is its last container si
 "About the book" (V657). Cycle = the dial, then Browse, six categories since 0.9.11: Weather (Economic Season ·
 Market) · Activity (Labor · Output; key `activity`) · Mood (Valuations · Sentiment) · Desire (Demand · Risk) ·
 Circulation (Pressure · Money) · Stress (Households · Government; key `stress`). Debt became Households and
-Government in 0.9.21, and Consumer credit sits in Desire › Demand since 0.9.25. Named Weather, never Season; Volatility,
-never Fear or Sentiment (V663); Debt-to-income ratio, never Debt service or Debt payments.
+Government in 0.9.21, and Consumer credit sits in Desire › Demand since 0.9.25. Named Weather, never Season; the VIX
+reading is Fear (0.8.5, replacing V663's Volatility), under Mood › Sentiment with Confidence; Debt-to-income ratio, never
+Debt service or Debt payments. The table below is generated from ROSTER by `npm run map`, and `map:check` fails when it
+drifts; edit `src/js/roster.ts`, never the table.
+
+<!-- roster:start -->
+| Element | Subcategory | Reading | Timing | History head |
+|---|---|---|---|---|
+| Weather | Economic Season | Temperature | Lagging | CPI and PCE Inflation |
+| Weather | Economic Season | Growth gap | Coincident | GDP Growth vs Potential |
+| Weather | Economic Season | Federal funds rate | Leading | Federal Funds Rate |
+| Weather | Market | S&P 500 | Leading | S&P 500, Total Return by Year |
+| Activity | Labor | Unemployment rate | Lagging | Unemployment Rate |
+| Activity | Labor | Job growth | Coincident | Nonfarm Payrolls, YoY |
+| Activity | Output | GDP growth | Coincident | Real GDP |
+| Activity | Output | Productivity growth | Structural | Output per Hour, YoY |
+| Mood | Valuations | Shiller CAPE | Structural | Shiller CAPE, Against Fair Value |
+| Mood | Valuations | Buffett indicator | Structural | Buffett Indicator, Market Value ÷ GDP |
+| Mood | Sentiment | Fear | Leading | Cboe Volatility Index (VIX) |
+| Mood | Sentiment | Confidence | Leading | OECD Consumer Confidence |
+| Desire | Demand | Discretionary spending | Coincident | Discretionary Spending |
+| Desire | Demand | Retail sales | Coincident | Retail Sales, YoY |
+| Desire | Demand | Consumer credit | Lagging | Consumer Credit, YoY |
+| Desire | Risk | Concentration risk | Structural | S&P 500, Top 10 Share of Market Cap |
+| Desire | Risk | Equity risk premium | Structural | Shiller Excess CAPE Yield |
+| Desire | Risk | Default risk | Lagging | Bank Loans Past Due |
+| Circulation | Pressure | US 10-year Treasury | Leading | (picked on the page) |
+| Circulation | Pressure | Treasury spreads | Leading | (picked on the page) |
+| Circulation | Pressure | 30-year mortgage rate | Leading | 30-Year Fixed Mortgage Rate |
+| Circulation | Money | Pulse | Coincident | Velocity of Money (M2) |
+| Circulation | Money | Volume | Leading | M2 Money Stock |
+| Stress | Households | Savings rate | Structural | Personal Savings Rate, Share of Income |
+| Stress | Households | Debt-to-income ratio | Structural | Debt Payments ÷ Disposable Income |
+| Stress | Households | Margin debt | Leading | Margin Debt, YoY |
+| Stress | Government | Federal debt | Structural | Gross Federal Debt, Share of GDP |
+| Stress | Government | Federal budget | Structural | Federal Deficit or Surplus, Share of GDP |
+<!-- roster:end -->
 
 Rules that shape the pages:
 
@@ -428,7 +465,7 @@ Rules that shape the pages:
   sourced line drawn across them, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
   Indicators holds the groups as its subcategories (0.8.5), and there are no group pages (0.8.6).
   The Power score is gone (V660): its card, page, composite and history;
-  the three fiscal markers it summed each keep their own page.
+  of the three fiscal markers it summed, the two left since 0.9.36 (Federal debt and Federal budget) each keep their own page.
 - **A parent owns what its children share (V662)**, so a shared property changes in one place rather than page by
   page. `npm run check` runs `tools/hygiene.js`,
   which fails on: a chart height set outside `histFrame`; a chart margin set outside it (only the mini chart,
@@ -532,8 +569,8 @@ BEA's annualized print (−28.0 to +34.9 across 2020) is never carried and never
 yield's 2005 gap is real. Match by date, never by row offset.
 
 **Sources policy.** Every figure cites a primary source: agency, central bank, index originator. No news
-sites, no aggregators. Two compilations cited and labelled: Slickcharts for S&P total returns (cross-checked
-against Damodaran, every year within 0.5 pt) and Trading Economics for ISM's record high/low. Two figures
+sites, no aggregators. One compilation cited and labelled: Slickcharts for S&P total returns (cross-checked
+against Damodaran, every year within 0.5 pt). Two figures
 computed in-house and say so in the (i): the Buffett Indicator and productivity YoY. **Check the source, not
 a summary** — a Google summary once attributed a "normal range" to CME that CME does not give. FRED's
 reliable endpoint is `https://fred.stlouisfed.org/data/<SERIES>.txt`; a fetch summarizer misreads long
@@ -556,7 +593,6 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 | Shiller CAPE | 4.78 Dec 1920 – 44.19 Dec 1999 | ≤ 17×, the series' long-run mean 17.42 |
 | Durable goods spending (Desire) | the monthly record since 1960, BEA via FRED DDURRA3M086SBEA | ≥ 0, definitional (more or less than a year earlier) |
 | Equity risk premium (Desire) | the monthly record since 1928, Shiller's Excess CAPE Yield | ≥ 0, definitional (stocks earn more or less than bonds); no word |
-| ISM Manufacturing PMI | 29.4 May 1980 – 77.5 Jul 1950 | ≥ 50, definitional |
 | Unemployment | 2.5% May–Jun 1953 (FRED UNRATE) – 24.9% 1933 (Census) | 3.5–5%, bracketing CBO's NROU ~4.2%; the (i) says which half is sourced |
 | CPI YoY | −15.8% Jun 1921 – 23.7% Jun 1920, BLS | 1–3%, a TARGET |
 | M2 velocity (Pulse) | 1.126 Q2 2020 – 2.192 Q3 1997, FRED M2V | 1.7–2.2×, word **Pre-2008** |
@@ -567,7 +603,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 **What each band is**, and the (i) says which: computed from the app's own series (Pulse's pre-2008 range,
 deliberately not "normal"); the 10th–90th percentile where no published norm exists and the series is long
 enough to speak, **and the window is free of a policy floor** (79 years of saving qualifies; the Treasury
-series does not); cited to an outside authority (CAPE, Buffett); definitional (PMI 50, Horizon's, Desire's and the premium's
+series does not); cited to an outside authority (CAPE, Buffett); definitional (Horizon's, Desire's and the premium's
 zero); bracketed around a published estimate; read one-sided against CBO's 50-year averages (a two-sided
 band would flag the healthy end); against its own mean (debt service — when a verdict already contains a
 threshold, the bar takes that threshold); editorial and Keren's (Temperature). **A band ships with its
@@ -583,11 +619,10 @@ moving anything — only Keren moves the band.
 percentile construction fails here: the 87 quarters held contain a decade of a zero-pinned short end. Keren
 was offered three constructions and chose none. **Do not draw one without asking her again.**
 
-The three fiscal markers are one balance sheet asked three questions — stock, flow, carrying cost. Power,
-which summed them (100 − their stress composite), went in V660; `git show 46e5b1f:src/js/03-data.js` (V659 on
-`main`) has the last copy. **Mood's fast members (Volatility,
-Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
-FINRA monthly series.
+The two fiscal markers are one balance sheet asked two questions — stock and flow; the third, the carrying cost
+(Interest payments), left in 0.9.36. Power, which summed them (100 − their stress composite), went in V660;
+`git show 46e5b1f:src/js/03-data.js` (V659 on `main`) has the last copy. **Mood's fast readings (Sentiment: Fear and
+Confidence) and slow ones (Valuations) are two subcategories; don't merge them.**
 
 ## The Diagnosis (V664, under the dial since V665)
 
@@ -895,9 +930,19 @@ its page id (`labRow`); the day another gets a series, give its roster row a `hi
 
 ## Editorial slots
 
-`sources.html` is generated by `npm run sources` from the app's own Sources screen; the grouping patterns
-live in the app and nowhere else, and **the generator refuses to write if anything lands in "Other"** — the
-fix is a pattern in the app, not a bucket in the generator.
+`sources.html` is generated by `npm run sources` from the app's own Sources screen. The screen restates nothing
+(0.9.71, `src/js/sources.ts`): its groups are ROSTER's elements and subcategories, in Analysis's order, and each
+reading's sources are the ones it already cites — its reading's `src`, its indicator's `src`, the links in its (i),
+Insights and aside (and the (i) notes they open), and a roster row's `src` for what it cites only in a panel its (i)
+does not hold (a Treasury tenor, the 10Y−2Y view, the live feeds). An element's own Insights cite under the element.
+Fixed shelves follow for what belongs to no reading: the Season Model, Cycles, Portfolio, the Framework, Methods. A
+source shows once, where it is first cited. `test/unit/sources.test.mjs` fails when any `u:` in `src/js` is missing
+from the screen, and **the generator refuses to write if anything lands in "Other"** — the fix is to cite the source
+from its reading or put it on a shelf, not a bucket in the generator.
+
+How to Read's "Where Each Reading Sits" lines (`#howto-places`) are written by `renderHowto` in `tabs-menu` from ROSTER: one
+line per element, its subcategories and readings with their timing, then the readings by timing. Keren's narrative
+paragraphs around them stay in `page-body.html`; a sentence there must not say where a reading sits.
 
 Awaiting Keren: the About-the-book paragraph,
 `seasonReading.springdeflation` (empty by her choice), the five era blurbs (an AI first draft),
@@ -958,7 +1003,7 @@ figure that moves with the data is compared, never written in. What is Keren's d
 static gates, not the browser: a removed class or id is hygiene's `GONE`, the chart geometry pins are
 hygiene's `PINNED`. The model's rules are tool tests (`test/cycle.test.js` lifts the functions from
 model with fixture data, so each window is tested at its edge). **The unit tests (V695, `npm run test:unit`, in
-`check`, about 6 s)** import the modules in Node: `test/unit/dom.mjs` boots the whole app once in jsdom from
+`check`, about 41 s with the coverage run)** import the modules in Node: `test/unit/dom.mjs` boots the whole app once in jsdom from
 `page-body.html` with the network refused, so every figure is its literal fallback. They draw every page at four
 widths (no NaN, undefined or Infinity; every history chart in `histFrame`), run the model over every cycle on the
 real record, and pin the pure functions at their edges. `content.test.mjs` (V697) checks what the pages say: it delivers live documents through the real door and reads
@@ -969,7 +1014,7 @@ tested against the rule (each feeling's cut-offs, growth's window). Every note o
 history head's and each More details) is read, and none may call a band a "normal range" unless it says it
 is not one: a target is never relabelled normal. Proof (V667): of thirteen regressions planted one at a time,
 the suite and gate catch all thirteen; the old suite caught one of the audit's ten.
-**Every refactor ships with "48 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown); it caught three breaks in V630 alone,
+**Every refactor ships with "66 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown); it caught three breaks in V630 alone,
 none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url`, always in place, with a short `label`. If
@@ -1007,8 +1052,8 @@ Validate every three-plus-colour set and prove ramp monotonicity by luminance pe
 
 ## Type
 
-Cormorant Garamond italic for the season word, cycle names, reading heads and quotes — never below 20px,
-never upright for a title. Public Sans for everything else. IBM Plex Mono for figures only, never a
+Cormorant Garamond 500, upright, for the season word, cycle names, reading heads and every title, never below
+20px; a quotation from the book stays italic (V272, V506, 0.6.2). Public Sans for everything else. IBM Plex Mono for figures only, never a
 word-label or prose; a value that is a phrase takes the text face. **Every `font-size` is a token** (V662, from the
 Lovable DSM's type scale): `--type-label` 11 · `--type-meta` 12.5 · `--type-interface` 14 · `--type-reading` 15 ·
 `--type-row` 17 · `--type-section` 20 · `--type-reading-head` 26 · `--type-page-title` 30. The DSM's Type page names
@@ -1023,7 +1068,8 @@ request.
 
 `--pad` inside a container, `--gap` between containers, `--gap-top` for the page frame. A new container
 takes `margin-top:var(--gap)`, never its own figure; per-tab or per-breakpoint spacing overrides are a
-bug. `--radius` and `--radius-inner` (a segment in a padded track) are the only two; `50%` only where the
+bug. `--radius` (a container) and `--radius-inner` (a segment in a padded track) are the two container radii, and
+`--round` (fully round) is the third, for every selection bar, search field and button (0.8.5); `50%` only where the
 shape is a circle. Marks and type keep their own figures — a bar cap, a label gap — as shapes, not spacing.
 
 ## Chart language
@@ -1062,8 +1108,9 @@ by its own picture, by cycle = the average never the total.
 
 ## Wording
 
-Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
-or "Sentiment"; Debt-to-income ratio, not "Debt service" or "Debt payments"; Valuations, plural; Growth, not "GDP growth"; Stress is
+Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Fear (the VIX, 0.8.5), never "Volatility" or "Fear & Greed",
+under the Sentiment subcategory; Debt-to-income ratio, not "Debt service" or "Debt payments"; Valuations, plural; the season's growth is the
+Growth gap, and GDP growth is its own reading under Activity › Output; Stress is
 Households (Savings rate, Debt-to-income ratio, Margin debt) and Government (Federal debt, Federal budget) (0.9.21), and Delinquencies are Default risk, under Desire › Risk (0.9.22); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
