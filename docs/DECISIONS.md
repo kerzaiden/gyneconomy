@@ -1831,6 +1831,9 @@ settles it; none is open after V668.
   **Since 0.6.1 every release moves the last number, and the middle number moves only when Keren says so.**
   Versions had been moving too fast. `npm run bump major` refuses on 0.x; 1.0.0 is given exactly,
   `npm run bump 1.0.0`. (0.0.9, 0.6.1)
+- **Keren called the first draft finished on October 11, 2026: "we already have an app, this is the first version
+  of it."** So the release after 0.9.72 (843) is **1.0.0, build 844** (Home Tab), and from it every release again
+  moves the last number, the middle one only on her word. (1.0.0)
 - **A release gets its number when it merges, not when its branch starts.** Several threads work in parallel,
   and numbering each at the start meant renumbering, re-merging and re-checking whenever another merged first.
   A branch and its PR carry only the release's name; the merging session merges `main` in, bumps, checks and
