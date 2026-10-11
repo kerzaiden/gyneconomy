@@ -1341,17 +1341,16 @@ settles it; none is open after V668.
 - **Every history colours its columns from one palette, the Interest Rates chart's: yellow, orange and dark
   plum, as one ramp of six steps (`--hist-0` to `--hist-5`, pale yellow, yellow, amber, orange, plum).** A
   history with two states (a reading's good side or bad side of its line, a normal or inverted curve, expansion
-  or contraction, surplus or deficit, a regular or odd beat) draws the easy one yellow (`--hist-2`) and the
+  surplus or deficit, a regular or odd beat) draws the easy one yellow (`--hist-2`) and the
   hard one orange (`--hist-4`), as the Interest Rates chart draws rates yellow and prices orange; a third,
   worse state is plum (`--hist-5`); a history coloured by level (Temperature, Hormones, Mortgage, Volume) steps
   along the ramp. Keren found a teal, blue or red per history confusing: one code read the same way on every
   page. The state each column is in is still decided by each page's own rule, and Cycle Statistics' verdict
   bars keep the tier colours. (History Colours)
 
-- **Growth's history is real GDP year over year, quarterly from 1988, as columns from zero, coloured by the
-  season model's regime: the history's easy side (yellow) in expansion, its hard side (orange) in contraction.**
-  It is a yearly history like the rest of the app, and Keren chose regime over sign so a column says the phase,
-  not which side of zero it fell on. (V371, V380, V668, History Colours)
+- **Growth's history is real GDP year over year, quarterly from 1988, as columns from zero, all in one colour
+  (`hist-2`).** The season already says the regime, so a second colour per column repeated it and made the
+  chart harder to read. (V371, V380, V668, History Colours)
 - **A view of two measurements of one quantity (GDP year on year) is drawn as pairs: a quiet "before" and a
   coloured "after" joined by a connector with a disc at each end, so the mark itself is the difference.** It
   follows Keren's before/after reference; two columns from zero would hide a change of about 2%, and a

@@ -452,7 +452,6 @@
   .era-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .menu-btn[hidden]{ display:none; }
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); }
-  .growth-col.down{ stroke:var(--hist-4); }
 
   .temp-col{ fill:none; stroke-linecap:round; }
   .temp-col.s0{ stroke:var(--hist-5); }
@@ -45958,9 +45957,6 @@
     if (!e) throw new Error("no season reading by " + endYear);
     return e.reading;
   }
-  function quarterRegime(d) {
-    return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction");
-  }
   function qIndex(q) {
     return +q.slice(0, 4) * 4 + +q.slice(6) - 1;
   }
@@ -49495,7 +49491,7 @@
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
-      out.push('<path class="growth-col hcol' + (quarterRegime(d) === "contraction" ? " down" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
+      out.push('<path class="growth-col hcol" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var gAvg = vals.reduce(function(a, d) {
       return a + d.v;

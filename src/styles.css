@@ -453,7 +453,6 @@
   .era-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .menu-btn[hidden]{ display:none; }
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); }
-  .growth-col.down{ stroke:var(--hist-4); }
 
   .temp-col{ fill:none; stroke-linecap:round; }
   .temp-col.s0{ stroke:var(--hist-5); }

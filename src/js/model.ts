@@ -72,7 +72,6 @@ function closingReading(endYear: number){
   var e = seasonTrack.filter(function(x){ return x.y <= endYear; }).pop();
   if (!e) throw new Error("no season reading by " + endYear); return e.reading;
 }
-export function quarterRegime(d: QuarterPoint){ return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction"); }
 function qIndex(q: string){ return +q.slice(0, 4) * 4 + +q.slice(6) - 1; }
 export function recessionRecord(){
   var inRec: Record<number, number> = {}, caught = 0, quarters = 0, total = 0;
