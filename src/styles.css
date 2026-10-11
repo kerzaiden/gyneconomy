@@ -1000,6 +1000,11 @@
   .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); }
   .plain .lab-mark{ vertical-align:-3px; margin-right:6px; }
   .plain .lab-mark svg{ width:16px; height:16px; }
+  .lab-door{ width:100%; border:0; border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); font-family:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .lab-door:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .plain .lab-door .ind-cat-name{ font-size:var(--type-reading); font-weight:700; color:var(--accent); }
+  .plain .lab-door .lab-mark svg{ width:18px; height:18px; }
+  .lab-door .peek-chev{ color:var(--text-muted); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--normal); border-bottom:1px solid var(--border); }
   .lab-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; padding:11px 16px; cursor:default; }

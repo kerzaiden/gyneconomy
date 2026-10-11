@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,866 lines** in 42 files, about 605 KB, roughly **172 thousand tokens**. No session can
+The source is **8,869 lines** in 42 files, about 605 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `1e06e85` on 2026-10-11.
+Generated from commit `42d2ea2` on 2026-10-11.
 
 ## The page
 
@@ -18,7 +18,7 @@ Generated from commit `1e06e85` on 2026-10-11.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,180 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,185 | the whole stylesheet, every token and rule |
 | `page-body.html` | 246 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
@@ -48,7 +48,7 @@ Counts: **38** modules, **779** top-level functions, **123** top-level vars, **3
 | `js/tabs-menu.ts` | 228 | 10 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 62 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
-| `js/ai-insights.ts` | 63 | 20 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `render-core`, `roster` |
+| `js/ai-insights.ts` | 61 | 20 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `render-core`, `roster` |
 | `js/charts.ts` | 239 | 32 | — |
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 486 | 137 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `roster` |
@@ -845,20 +845,20 @@ falls in. **export** marks a name other modules import.
 | 14 | `dateWords` | `function dateWords(` |
 | 15 | `riskDoor` | `function riskDoor(` |
 | 16 | `riskFactors` | `function riskFactors(` |
-| 21 | `prose` | `function prose(` |
-| 27 | `edition` | `function edition(` |
-| 28 | `storyOf` | `function storyOf(` |
-| 29 | `lead` | `function lead(` |
-| 30 | `storyCard` · export | `function storyCard(` |
-| 35 | `elements` | `function elements(` |
-| 41 | `storyBox` | `function storyBox(` |
-| 42 | `todayHtml` | `function todayHtml(` |
-| 47 | `storyHtml` | `function storyHtml(` |
-| 48 | `drawToday` · export | `function drawToday(` |
-| 49 | `drawStory` | `function drawStory(` |
-| 50 | `redrawReport` · export | `function redrawReport(` |
-| 51 | `pickStory` | `function pickStory(` |
-| 55 | `mountReport` · export | `function mountReport(` |
+| 19 | `prose` | `function prose(` |
+| 25 | `edition` | `function edition(` |
+| 26 | `storyOf` | `function storyOf(` |
+| 27 | `lead` | `function lead(` |
+| 28 | `storyCard` · export | `function storyCard(` |
+| 33 | `elements` | `function elements(` |
+| 39 | `storyBox` | `function storyBox(` |
+| 40 | `todayHtml` | `function todayHtml(` |
+| 45 | `storyHtml` | `function storyHtml(` |
+| 46 | `drawToday` · export | `function drawToday(` |
+| 47 | `drawStory` | `function drawStory(` |
+| 48 | `redrawReport` · export | `function redrawReport(` |
+| 49 | `pickStory` | `function pickStory(` |
+| 53 | `mountReport` · export | `function mountReport(` |
 
 ### `js/charts.ts`
 
@@ -1480,14 +1480,14 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 722 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 864 | View more: the button under Year by Year and Herstory |
 | 876 | The symptoms: a cycle's years against today |
-| 1,025 | yield curve charts |
-| 1,049 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,068 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,081 | un-inversion-to-recession historical lag panel |
-| 1,090 | the reading's tag |
-| 1,094 | info icon + popover (progressive disclosure for longer notes) |
-| 1,108 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,171 | footer |
+| 1,030 | yield curve charts |
+| 1,054 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,073 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,086 | un-inversion-to-recession historical lag panel |
+| 1,095 | the reading's tag |
+| 1,099 | info icon + popover (progressive disclosure for longer notes) |
+| 1,113 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,176 | footer |
 
 ## Markup landmarks
 

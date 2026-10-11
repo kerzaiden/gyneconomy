@@ -1,11 +1,11 @@
-import { byIdMaybe, learnMore, moreDoor, need, put, trendBox, trendDoor, trendHead, trendText } from "./dom.ts";
+import { byIdMaybe, learnMore, need, put, trendBox, trendDoor, trendHead, trendText } from "./dom.ts";
 import { dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { bookSvg, weatherSvg } from "./marks.ts";
 import { marketCycles, now } from "./data.ts";
 import { cycLabel, cycleByName, openCycle } from "./model.ts";
 import type { CycleModel } from "./model.ts";
 import { categoriesShown, ROSTER_BY } from "./roster.ts";
-import { CAT_MARK, IND, riskCard, riskLabs } from "./cycle-analysis.ts";
+import { CAT_MARK, IND, riskCard } from "./cycle-analysis.ts";
 
 // ---- Today: the Weather Report and the cycle's story; every cycle page: its Cycle Story and its risk factors against their own record ----
 export var STORY_ID = "sheet-story";
@@ -14,9 +14,7 @@ var shown = { cycle:"" };
 function dateWords(iso: string){ var d = iso.split("-").map(Number); return (d[2] ? d[2] + " " : "") + MONTH_NAMES[d[1] - 1] + " " + d[0]; }
 function riskDoor(t: string, c: Cycle){ return ' data-open="' + IND + '" data-title="Elements" data-ind-cat="" data-ind-tier="' + t + '" data-ind-cycle="' + c.name + '"'; }
 function riskFactors(c: Cycle){
-  var i = marketCycles.indexOf(c), n = riskLabs(i, "borderline").length;
-  return riskCard(i, riskDoor("abnormal", c), "Nothing reads as Risk " + (c.ongoing ? "today" : "in this cycle") + ".") +
-    (n ? moreDoor(riskDoor("borderline", c), n + (n > 1 ? " readings need" : " reading needs") + " attention") : "");
+  return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk " + (c.ongoing ? "today" : "in this cycle") + ".");
 }
 function prose(t: string){
   return t.replace(/\[([^\]]+)\]\((sheet-[a-z0-9-]+)\)/g, function(_, label: string, id: string){

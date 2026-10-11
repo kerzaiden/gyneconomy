@@ -371,7 +371,7 @@ function labBox(inner: string){ return '<div class="lab-box">' + inner + '</div>
 function countTag(n: number){ return '<small class="lab-n" aria-label="' + n + ' readings">' + n + '</small>'; }
 export function riskCard(i: number, attrs: string, none: string){
   var at = atCycle(i), ls = riskLabs(i).filter(function(l){ return ROSTER_BY[l.id]; });
-  return labBox(catHeadCard("lab-sec plain", "risk", { tag:"div", cls:"lab-head ", attrs:"", name:labCat(attrs, markName(diceSvg, "Risk Factors")), aside:countTag(ls.length) },
+  return labBox(catHeadCard("lab-sec plain", "risk", { tag:"button", cls:"lab-head lab-door ", attrs:' type="button"' + attrs, name:markName(diceSvg, "Risk Factors"), aside:CHEV },
     '<ul>' + ls.map(function(l){ return labItem(l, at); }).join("") + '</ul>' + (ls.length ? "" : noneLine(none, ""))));
 }
 function insightsHome(i: number){

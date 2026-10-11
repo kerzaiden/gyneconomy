@@ -150,7 +150,7 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   const card = () => document.querySelector('#diagnosis .trend-card');
   const sheet = () => document.getElementById('sheet-story');
   const home = document.getElementById('chart-home');
-  const heads = el => [...el.querySelectorAll('.dx-sys-head, .trend-head, .lab-cat')].map(h => h.textContent);
+  const heads = el => [...el.querySelectorAll('.dx-sys-head, .trend-head, .lab-door')].map(h => h.textContent);
   const open = () => { card().click(); sheetRenderers['sheet-story'](); return sheet(); };
   const risksOf = c => riskLabs(marketCycles.indexOf(c)).map(l => l.name).sort();
   const ranked = el => [...el.querySelectorAll('.cat-risk .lab-row > div:first-child > b')].map(b => b.textContent.trim()).sort();
@@ -171,11 +171,11 @@ test('Today is the Weather Report with risk factors and six elements; every cycl
   assert.equal(ten.querySelector('.lab-res b').textContent, todayFace(ROSTER_BY['sheet-sign-pressure']).text, 'one figure, one number: the risk factor reads today’s close');
   const links = [...today.querySelectorAll('.wr-link')];
   assert.ok(links.length >= 12 && links.every(a => ROSTER_BY[a.dataset.open] && a.dataset.title === ROSTER_BY[a.dataset.open].name), 'every link opens its reading');
-  assert.equal(today.querySelector('.lab-box + .more-row').dataset.indCycle, nowModel.era.name);
-  today.querySelector('.lab-box + .more-row[data-ind-tier="borderline"]').click();
+  assert.equal(today.querySelector('.lab-door').dataset.indCycle, nowModel.era.name);
+  today.querySelector('.lab-door[data-ind-tier="abnormal"]').click();
   sheetRenderers['sheet-find']();
   const left = [...document.querySelectorAll('#sheet-find .lab-item')].filter(li => !li.hidden);
-  assert.ok(left.length && left.every(li => li.classList.contains('t-borderline')), 'a risk factor opens Elements on its tier');
+  assert.ok(left.length && left.every(li => li.classList.contains('t-abnormal')), 'Risk Factors opens Elements on Risk');
   assert.equal(document.querySelector('#sheet-find .labs > .lab-box ~ .trend-card'), null, 'no element carries its own insights');
   assert.deepEqual(broken(today.innerHTML), []);
   for (const c of marketCycles.filter(c => !c.ongoing)) {

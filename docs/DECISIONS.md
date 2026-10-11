@@ -595,11 +595,12 @@ settles it; none is open after V668.
   The emotional reading of each cycle has not been worked out yet; the lede's opening, "Born out of the 2022
   correction", which Keren liked, stays. (0.6.6, 0.6.12, 0.6.13, AI Insights Everywhere)
 - **Risk Factors lists every reading Cycle Statistics reads as Risk, on Today and on each cycle's Cycle Story page,
-  in the Elements card's design: a white title with the dice, then the readings on apricot rows, each with its
-  word and tier, its value in red with its triangle, and its range.** A design readers already know from Elements
-  reads at a glance; the record lines and dates added little beside the edition's own text. The title opens that
-  cycle's Elements filtered to Risk, a row opens its reading, and a row under the card counts the readings at
-  Attention and opens Elements on them (its place is still open). Where each reading stands in its own record
+  in the Elements card's design: a white title row, then the readings on apricot rows, each with its word and tier,
+  its value in red with its triangle, and its range.** A design readers already know from Elements reads at a
+  glance; the record lines and dates added little beside the edition's own text. Its title is set like the other
+  titles on Today (the dice, bold, in the accent) so it blends with the page, and a chevron in place of a count says
+  the title opens that cycle's Elements filtered to Risk; a row opens its reading. The readings at Attention are
+  not counted here for now. Where each reading stands in its own record
   ("highest since", "above every quarterly reading since Q1 2005") is still worked out, for the Weather Report
   routine's facts, so an edition can say it. (0.6.13, AI Insights Everywhere, Element Insights, Weather Report,
   Today Risk Factors)

@@ -991,6 +991,11 @@
   .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); }
   .plain .lab-mark{ vertical-align:-3px; margin-right:6px; }
   .plain .lab-mark svg{ width:16px; height:16px; }
+  .lab-door{ width:100%; border:0; border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); font-family:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .lab-door:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .plain .lab-door .ind-cat-name{ font-size:var(--type-reading); font-weight:700; color:var(--accent); }
+  .plain .lab-door .lab-mark svg{ width:18px; height:18px; }
+  .lab-door .peek-chev{ color:var(--text-muted); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--normal); border-bottom:1px solid var(--border); }
   .lab-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; padding:11px 16px; cursor:default; }
@@ -51425,11 +51430,11 @@
       return ROSTER_BY[l.id];
     });
     return labBox(catHeadCard("lab-sec plain", "risk", {
-      tag: "div",
-      cls: "lab-head ",
-      attrs: "",
-      name: labCat(attrs, markName(diceSvg, "Risk Factors")),
-      aside: countTag(ls.length)
+      tag: "button",
+      cls: "lab-head lab-door ",
+      attrs: ' type="button"' + attrs,
+      name: markName(diceSvg, "Risk Factors"),
+      aside: CHEV
     }, "<ul>" + ls.map(function(l) {
       return labItem(l, at);
     }).join("") + "</ul>" + (ls.length ? "" : noneLine(none, ""))));
@@ -51616,8 +51621,7 @@
     return ' data-open="' + IND + '" data-title="Elements" data-ind-cat="" data-ind-tier="' + t + '" data-ind-cycle="' + c.name + '"';
   }
   function riskFactors(c) {
-    var i = marketCycles.indexOf(c), n = riskLabs(i, "borderline").length;
-    return riskCard(i, riskDoor("abnormal", c), "Nothing reads as Risk " + (c.ongoing ? "today" : "in this cycle") + ".") + (n ? moreDoor(riskDoor("borderline", c), n + (n > 1 ? " readings need" : " reading needs") + " attention") : "");
+    return riskCard(marketCycles.indexOf(c), riskDoor("abnormal", c), "Nothing reads as Risk " + (c.ongoing ? "today" : "in this cycle") + ".");
   }
   function prose(t) {
     return t.replace(/\[([^\]]+)\]\((sheet-[a-z0-9-]+)\)/g, function(_, label, id) {

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `1e06e85` on 2026-10-11. **109 components**, **18 shared patterns**.
+Generated from commit `42d2ea2` on 2026-10-11. **109 components**, **18 shared patterns**.
 
 ## ai-insights.ts
 
@@ -51,7 +51,7 @@ Generated from commit `1e06e85` on 2026-10-11. **109 components**, **18 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`calOff`** | `.is-off` | `cycle-analysis.ts:calQuarter`, `cycle-analysis.ts:calYear` |
-| **`countTag`** | `.lab-n` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:insightSec`, `cycle-analysis.ts:riskCard` |
+| **`countTag`** | `.lab-n` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:insightSec` |
 | **`cycleBars`** | `.len-bars` `.this` | `cycle-analysis.ts:flowPage`, `cycle-analysis.ts:healthPage`, `cycle-analysis.ts:lengthPage`, `cycle-analysis.ts:variationPage` |
 | **`drawChart`** | `.home-secs` `.labs` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:openWhen`, `cycle-analysis.ts:pickCat`, `cycle-analysis.ts:wireFinder`, `cycle-analysis.ts:wirePicks` |
 | **`filterSheet`** | `.ind-filter` `.ind-filter-head` `.ind-reset` `.ind-show` | `cycle-analysis.ts:drawChart` |
@@ -60,7 +60,7 @@ Generated from commit `1e06e85` on 2026-10-11. **109 components**, **18 shared p
 | **`healthRow`** | `.lab-score-box` | `cycle-analysis.ts:statsHome` |
 | **`insightSec`** | `.insight-mark` | `cycle-analysis.ts:insightsHome` |
 | **`labBox`** | `.lab-box` | `cycle-analysis.ts:drawChart`, `cycle-analysis.ts:riskCard` |
-| **`labCat`** | `.lab-cat` | `cycle-analysis.ts:labSec`, `cycle-analysis.ts:riskCard` |
+| **`labCat`** | `.lab-cat` | `cycle-analysis.ts:labSec` |
 | **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:foldSec`, `cycle-analysis.ts:riskCard` |
 | **`mark`** | `.len-key` `.odd` `.ok` `.warn` | `cycle-analysis.ts:healthRow`, `dial-cycle.ts:renderCycleDial` |
 | **`markName`** | `.lab-mark` | `cycle-analysis.ts:riskCard`, `cycle-analysis.ts:subSec` |
@@ -94,7 +94,7 @@ Generated from commit `1e06e85` on 2026-10-11. **109 components**, **18 shared p
 |---|---|---|
 | **`learnMore`** | `.learn-more` | `ai-insights.ts:storyCard`, `fed-phases.ts:footnoteHtml` |
 | **`moreButton`** | `.cyc-more` `.dx-more` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
-| **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `ai-insights.ts:riskFactors`, `dom.ts:moreRow` |
+| **`moreDoor`** | `.more-lead` `.more-mark` `.more-row` | `dom.ts:moreRow` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `ai-insights.ts:elements`, `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
