@@ -95,7 +95,7 @@ function defineFlow(){
       var len = m2Yoy.length - 4, key = page.range["volume-range"], cyc = pageCycle("volume-range");
       var idx = cyc ? cycleQtrIdx(M2_FROM_YEAR + 1, cyc, len) : null;
       var from = idx ? idx[0] : qWindowFrom(len, key), to = idx ? idx[1] : undefined;
-      return { geom:"m2GrowthChart", wrap:"vh-host", chart:function(w: number){ return m2GrowthChart(w, from, to); },
+      return { geom:"m2GrowthChart", wrap:"vh-host", chart:function(w: number){ return m2GrowthChart(w, from, { to:to }); },
         trend:trendPill(trendOf(m2Yoy.slice(4).slice(from, to).filter(function(v){ return v != null; }), "points", "quarter"), null, true,
           { rising:"expanding", falling:"contracting" }) };
     },

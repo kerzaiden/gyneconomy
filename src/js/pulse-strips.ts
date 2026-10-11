@@ -70,7 +70,7 @@ export function pulseStripsChart(Wpx: number, from: number, to?: number | null){
   var X = function(q: number){ return L + (R - L) * q / 4; }, out: string[] = [], body: string[] = [stripPaper(L, R, T, T + full, h)];
   strips.off = 0;
   out.push(chartAxes({ ticks:[], y:function(){ return B; }, x0:L, x1:F.R, base:B, top:(T - AXIS.READ), bot:B, fmt:String, gutter:AXIS.L + PULSE_GUTTER }));
-  ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, B + 17)); });
+  ["Q1", "Q2", "Q3", "Q4"].forEach(function(t, q){ out.push(xLabel(f1((X(q) + X(q + 1)) / 2), t, F.H - AXIS.FOOT)); });
   for (var y = y0; y <= y1; y++) body.push(stripRow({ y:y, top:T + h * (y1 - y), h:h, sq:sq, from:from, end:end, X:X }));
   out.push('<clipPath id="psview"><rect x="0" y="' + f1(T) + '" width="' + F.W + '" height="' + f1(B - T) + '"/></clipPath><g clip-path="url(#psview)"><g class="ps-rows">' + body.join("") + '</g></g>');
   var cell = function(i: number){ return { q:(from + i) % 4 }; };

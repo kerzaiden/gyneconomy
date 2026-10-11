@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,957 lines** in 42 files, about 613 KB, roughly **174 thousand tokens**. No session can
+The source is **8,838 lines** in 42 files, about 606 KB, roughly **172 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `3d80533` on 2026-10-11.
+Generated from commit `72eae88` on 2026-10-11.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `3d80533` on 2026-10-11.
 | `js/main.ts` | 38 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **38** modules, **790** top-level functions, **125** top-level vars, **391** exported names, **20** boots.
+Counts: **38** modules, **795** top-level functions, **126** top-level vars, **394** exported names, **20** boots.
 
 ## Modules, in boot order
 
@@ -49,13 +49,13 @@ Counts: **38** modules, **790** top-level functions, **125** top-level vars, **3
 | `js/repaint.ts` | 39 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 62 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 61 | 20 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `render-core`, `roster` |
-| `js/charts.ts` | 248 | 33 | — |
+| `js/charts.ts` | 266 | 37 | — |
 | `js/concentration.ts` | 49 | 5 | `data`, `format`, `history-fred` |
 | `js/cycle-analysis.ts` | 500 | 142 | `charts`, `data`, `dom`, `era`, `fed-phases`, `format`, `history`, `insights`, `marks`, `model`, `reading`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 16 | 2 | `reading` |
 | `js/fed-phases.ts` | 75 | 13 | `data`, `dom`, `format`, `history-fred`, `marks`, `model`, `refresh-season`, `render-core`, `roster`, `wave-chart` |
 | `js/format.ts` | 85 | 37 | — |
-| `js/history-charts.ts` | 342 | 17 | `charts`, `data`, `format`, `history`, `history-fred`, `readings`, `refresh-season` |
+| `js/history-charts.ts` | 205 | 19 | `charts`, `data`, `format`, `history`, `history-fred`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 33 | 15 | — |
 | `js/indicators.ts` | 174 | 30 | `charts`, `credit`, `data`, `format`, `history`, `history-fred`, `model`, `reading`, `readings`, `refresh-season`, `roster` |
 | `js/inner-pages.ts` | 233 | 18 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `model`, `reading`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -888,33 +888,37 @@ falls in. **export** marks a name other modules import.
 | 80 | `colPath` · export | `function colPath(` |
 | 85 | `colWidth` · export | `function colWidth(` |
 | 90 | `AXIS` · export | `var AXIS =` |
-| 91 | `histFrame` · export | `function histFrame(` |
-| 98 | `xLabel` · export | `function xLabel(` |
-| 101 | `yLabel` · export | `function yLabel(` |
-| 105 | `histKey` · export | `function histKey(` |
-| 108 | `crossLine` · export | `function crossLine(` |
-| 111 | `zeroRule` · export | `function zeroRule(` |
-| 114 | `meanRule` · export | `function meanRule(` |
-| 116 | `publishGeom` · export | `function publishGeom(` |
-| 117 | `histBar` · export | `function histBar(` |
-| 120 | `histTip` · export | `function histTip(` |
-| 121 | `avgRule` · export | `function avgRule(` |
-| 124 | `vhOpen` · export | `function vhOpen(` |
-| 125 | `autoTicks` | `function autoTicks(` |
-| 133 | `chartAxes` · export | `function chartAxes(` |
-| 161 | `divergeChart` · export | `function divergeChart(` |
+| 91 | `YEAR_ROW` | `var YEAR_ROW =` |
+| 92 | `histFrame` · export | `function histFrame(` |
+| 99 | `colScale` · export | `function colScale(` |
+| 104 | `yearMarks` · export | `function yearMarks(` |
+| 113 | `hitRect` · export | `function hitRect(` |
+| 116 | `xLabel` · export | `function xLabel(` |
+| 119 | `yLabel` · export | `function yLabel(` |
+| 123 | `histKey` · export | `function histKey(` |
+| 126 | `crossLine` · export | `function crossLine(` |
+| 129 | `zeroRule` · export | `function zeroRule(` |
+| 132 | `meanRule` · export | `function meanRule(` |
+| 134 | `publishGeom` · export | `function publishGeom(` |
+| 135 | `histBar` · export | `function histBar(` |
+| 138 | `histTip` · export | `function histTip(` |
+| 139 | `avgRule` · export | `function avgRule(` |
+| 142 | `vhOpen` · export | `function vhOpen(` |
+| 143 | `autoTicks` | `function autoTicks(` |
+| 151 | `chartAxes` · export | `function chartAxes(` |
+| 179 | `divergeChart` · export | `function divergeChart(` |
 
 #### A series' highest reading within a span
 
 | Line | Name | Anchor |
 |---|---|---|
-| 197 | `PEEK_MARKS` | `var PEEK_MARKS =` |
-| 198 | `PEEK_W` | `var PEEK_W =` |
-| 199 | `PEEK_H` | `var PEEK_H =` |
-| 200 | `colPeek` · export | `function colPeek(` |
-| 217 | `windowYears` · export | `function windowYears(` |
-| 225 | `refName` | `function refName(` |
-| 229 | `beatPath` · export | `function beatPath(` |
+| 215 | `PEEK_MARKS` | `var PEEK_MARKS =` |
+| 216 | `PEEK_W` | `var PEEK_W =` |
+| 217 | `PEEK_H` | `var PEEK_H =` |
+| 218 | `colPeek` · export | `function colPeek(` |
+| 235 | `windowYears` · export | `function windowYears(` |
+| 243 | `refName` | `function refName(` |
+| 247 | `beatPath` · export | `function beatPath(` |
 
 ### `js/concentration.ts`
 
@@ -1162,22 +1166,24 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 10 | `deficitChart` · export | `function deficitChart(` |
-| 77 | `colScale` | `function colScale(` |
-| 82 | `yearTicks` | `function yearTicks(` |
-| 97 | `unempHistoryChart` · export | `function unempHistoryChart(` |
-| 135 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 138 | `mortgageHistoryChart` · export | `function mortgageHistoryChart(` |
-| 141 | `rateFence` · export | `function rateFence(` |
-| 145 | `rateKey` · export | `function rateKey(` |
-| 149 | `heatKey` · export | `function heatKey(` |
-| 155 | `m2Key` · export | `function m2Key(` |
-| 161 | `rateColumnsChart` | `function rateColumnsChart(` |
-| 204 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 242 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 289 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 330 | `m2Step` | `function m2Step(` |
-| 334 | `heatEdges` | `function heatEdges(` |
-| 338 | `heatStep` | `function heatStep(` |
+| 80 | `axisPct` | `function axisPct(` |
+| 81 | `rowYear` | `function rowYear(` |
+| 82 | `colYears` | `function colYears(` |
+| 94 | `columnHistory` | `function columnHistory(` |
+| 130 | `unempHistoryChart` · export | `function unempHistoryChart(` |
+| 136 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
+| 139 | `mortgageHistoryChart` · export | `function mortgageHistoryChart(` |
+| 142 | `rateFence` · export | `function rateFence(` |
+| 146 | `rateKey` · export | `function rateKey(` |
+| 150 | `heatKey` · export | `function heatKey(` |
+| 156 | `m2Key` · export | `function m2Key(` |
+| 162 | `rateSpec` | `function rateSpec(` |
+| 175 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 181 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 186 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 193 | `m2Step` | `function m2Step(` |
+| 197 | `heatEdges` | `function heatEdges(` |
+| 201 | `heatStep` | `function heatStep(` |
 
 ### `js/history-fred.ts`
 

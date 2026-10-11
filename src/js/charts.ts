@@ -88,12 +88,30 @@ export function colWidth(slot: number){
   return Math.min(20, slot * COL_FILL);
 }
 export var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };
+var YEAR_ROW = 17;
 export function histFrame(Wpx?: number | null): HistFrame {
   var W = Math.max(270, Math.round(Wpx || 360));
   var narrow = W < 430;
   var H = narrow ? 335 : 375;
   return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
-           T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
+           T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - YEAR_ROW - AXIS.FOOT };
+}
+export function colScale(F: HistFrame, n: number, lo: number, hi: number){
+  var h = (F.R - F.L) / (2 * Math.max(1, n));
+  return { X:function(i: number){ return F.L + h + (F.R - F.L - 2 * h) * i / Math.max(1, n - 1); },
+           Y:function(v: number){ return F.B - (F.B - F.T) * (v - lo) / (hi - lo); } };
+}
+export function yearMarks(F: HistFrame, years: number[], idx: (yr: number) => number, X: (i: number) => number){
+  var grids: string[] = [], labels: string[] = [];
+  years.forEach(function(yr){
+    var i = idx(yr); if (i < 0) return;
+    grids.push(vGrid(X(i), F.T, F.B));
+    labels.push(xLabel(X(i).toFixed(1), yr, F.H - AXIS.FOOT));
+  });
+  return { grids:grids, labels:labels };
+}
+export function hitRect(F: HistFrame){
+  return '<rect class="hero-hit" x="' + F.L + '" y="' + F.T + '" width="' + (F.R - F.L) + '" height="' + (F.B - F.T) + '"/>';
 }
 export function xLabel(x: number | string, text: string | number, y: number | string){
   return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + '</text>';
