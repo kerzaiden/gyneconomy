@@ -23,12 +23,19 @@ function recessionLine(){
   var r = recessionRecord();
   return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of the " + r.total + " quarters of the " + r.recessions + " NBER recessions fell in Autumn or Winter (" + r.autumn + " Autumn, " + r.winter + " Winter), seasons that hold " + r.share + "% of all quarters.";
 }
+function sideFacts(){
+  return [
+    "<b>Direction</b>: the twelve-month trend of inflation, cooling, steady or heating. A trend that moves less than about a quarter point over the year is steady.",
+    "<b>Expansion</b>: cooling at any level is Spring \u00b7 disinflation; heating while cold or warm is Spring \u00b7 reflation; hot and heating or steady is Summer \u00b7 inflation. Steady while cold or warm keeps the prior direction.",
+    "<b>Contraction</b>: hot and heating or steady is Autumn \u00b7 stagflation; hot and cooling, or warm in any direction, is Autumn \u00b7 disinflation; cold in any direction is Winter \u00b7 deflation. Each of the 18 combinations has its season."
+  ];
+}
 function seasonModelNote(){
   return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([
     "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock\u2019s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 growth is Balke and Gordon\u2019s quarterly real GNP, read against its own trend over the same peaks (" + GNP_TREND.toFixed(1) + "% a year).",
     "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
-    "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model\u2019s 1\u20133% band, a point either side of the Fed\u2019s 2% target.",
-    "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn. A trend that moves less than about a quarter point over the year is steady and keeps the prior direction.",
+    "<b>Price level</b>: inflation on CPI before 2000 and PCE since. The middle of each bar is the 1\u20133% band, a point either side of the Fed\u2019s 2% target: below it is cold (blue), within it warm (yellow), above it hot (red). Like a shower, the band is the water you can stand in: not too hot, not too cold.",
+    ...sideFacts(),
     recessionLine(),
     seasonWhy
   ]) + srcBlock([CLOCK_SRC[0]]);

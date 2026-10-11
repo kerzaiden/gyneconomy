@@ -67,6 +67,13 @@ ok('contraction + heating in range = autumn',       season(cpi(2.5, 0.05), down)
 ok('contraction + hot prices heating = lateautumn',   season(cpi(4.2, 0.05), down),  'lateautumn');
 ok('contraction + hot prices steady = lateautumn',    readSeason(cpi(4.2, 0), down, P, null, 'falling').season, 'lateautumn');
 ok('contraction + hot prices cooling = autumn',       season(cpi(4.2, -0.05), down), 'autumn');
+const levels = { cold: 0.4, warm: 2.0, hot: 4.2 }, moves = { cooling: -0.05, steady: 0, heating: 0.05 };
+const table = {
+  expansion:   { cold: ['springdeflation', 'spring', 'spring'], warm: ['springdeflation', 'spring', 'spring'], hot: ['springdeflation', 'summer', 'summer'] },
+  contraction: { cold: ['winter', 'winter', 'winter'], warm: ['autumn', 'autumn', 'autumn'], hot: ['autumn', 'lateautumn', 'lateautumn'] }
+};
+for (const [regime, rows] of Object.entries(table)) for (const [level, want] of Object.entries(rows)) Object.entries(moves).forEach(([move, step], k) =>
+  ok(regime + ' + ' + level + ' + ' + move, season(cpi(levels[level], step), regime === 'expansion' ? up : down), want[k]));
 ok('a contraction held at potential is not spring',   season(cpi(2.0, 0), { q: 'x', v: P }, 'contraction'), 'autumn');
 ok('the reading carries its potential', readSeason(cpi(2.0, 0), up, 2.2).potential, 2.2);
 
