@@ -918,9 +918,15 @@ from; **never truncate the axis under a column.** The strips keep the one frame 
 quarters sit in a grid rather than a line, their geometry adds `xOf(i)` (where quarter i's plate sits) and
 `pick(x, y)` (which quarter a touch lands on), which the history component uses in place of its even spacing. Their frame is every history's: a longer window shows four strips and a sliver of the fifth (`PULSE_VIEW`, `PULSE_PEEK`) so the scroll shows, fewer years stretch to fill it (a beat's amplitude grows with the strip in proportion to the three-square strip it was set for, and the paper's horizontal lines are laid out from each strip's midline so the beat sits centred), and more years than fit scroll: the years sit in one clipped `.ps-rows` group, and the page's `paint` lays a native scroll box (`.ps-scroll`, an empty spacer as tall as the years) over the plot. Its scroll translates the group and sets `strips.off`, which `pick` adds to a touch, so the reading, the quarter axis and the frame stay put; beside it a scroll bar (`.ps-bar`, in a `PULSE_BAR` gutter the strips give up only when they scroll) drives the same box: its thumb, at least `PULSE_THUMB` tall for a finger, drags with pointer capture, and a tap on the track scrolls there; the arrow keys scroll the lit quarter into view. Every history's hover goes through `touchGate` (history.ts): a mouse picks at once, but a touch waits `TOUCH_HOLD` ms or a sideways move past `TOUCH_SLOP`, a vertical move drops it as a scroll, and a lift before either is a tap; otherwise a finger scrolling the strips or the page lit a period and dimmed the rest. `chartAxes`' `gutter` widens the label column for the year and its velocity. Their trend pill shows its word without the toggle, since a fitted line has no place on the strips; the suite names Pulse as the one history whose pill does not draw a line (`TREND_WORD_ONLY`). **Every chart is
 width-aware** and measures its host. Temperature's columns are binned by the reading, not by rank, so the
-same CPI is the same colour in any cycle. `unempHistoryChart` copies `cpiHistoryChart` as a **separate
-function on purpose**: folding two subjects into one function behind flags is how a component stops
-being readable.
+same CPI is the same colour in any cycle. **The column histories are one component**, `columnHistory(spec)`
+(history-charts.ts): unemployment, the federal funds rate, the mortgage rate, CPI, GDP and M2 are each a spec
+(series, month or quarter, reference line, column class and step ramp, digits, aria text) over one body, which
+draws the axes, year marks, columns, average, fit, zero rule, reference rule, crosshair and hit area in that
+order. The Federal budget stays its own function because its fiscal-year axis, recession shading and 1983
+mark are not a variant of the others, but it takes its column width from `colWidth` like every chart. Every history column carries `.hcol`, which owns its fill and cap, and a ramp names its steps from the one
+set `hc-0` to `hc-5` and `hc-x`, each the `--hist-` ink of the same name; a column's own class keeps only what is its
+own (a default ink, an opacity, a state such as `inv` or `surplus`). A peek's columns take the same fill and cap from
+`.peek-chart.heat`, since they carry no `.hcol`.
 
 **The Balance** (Weather's Insights) reads the GAP between total price change and total real growth
 over a cycle's closed years — Dot-Com −3.6, Housing +1.5, Big Tech +0.2, Stimulus +3.5. They finish close

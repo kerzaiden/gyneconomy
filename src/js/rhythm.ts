@@ -1,4 +1,4 @@
-import { hiCard, pctl, qAtIndex } from "./format.ts";
+import { hiCard, listed, mean, pctl, qAtIndex, readingNote } from "./format.ts";
 import { M2V_FROM_YEAR, m2vHistory } from "./data.ts";
 
 // ---- Rhythm: how evenly the pulse of money changes pace ----
@@ -7,7 +7,7 @@ type Rhythm = { history: QuarterPoint[]; edge: number };
 var rhythm: Rhythm | null = null;
 
 function spread(xs: number[]){
-  var m = xs.reduce(function(a, x){ return a + x; }, 0) / xs.length;
+  var m = mean(xs);
   return Math.sqrt(xs.reduce(function(a, x){ return a + (x - m) * (x - m); }, 0) / xs.length);
 }
 export function rhythmRecord(): Rhythm {
@@ -30,7 +30,6 @@ function stretches(r: Rhythm){
     return r.history[s.a].q.slice(0, 4) + "–" + r.history[s.b].q.slice(0, 4);
   });
 }
-function listed(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 export function rhythmCard(){
   var r = rhythmRecord(), h = r.history, last = h[h.length - 1], odd = last.v > r.edge;
   var steadier = h.filter(function(d){ return d.v < last.v; }).length;
@@ -40,7 +39,7 @@ export function rhythmCard(){
 }
 export function rhythmInfo(){
   var r = rhythmRecord();
-  return '<p class="caption follow"><b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' +
+  return readingNote({ paras:['<b>Rhythm</b>: a pulse is read for its rate and its rhythm. Each quarter velocity rises or falls by some percent; the rhythm is the standard deviation of the last ' +
     RHYTHM_WINDOW + ' of those changes, two years of them. <b>The cut-off is computed, not set by convention</b>: nobody publishes a normal for it, so it is ' + pts(r.edge) +
-    ', the 90th percentile of every two-year window from ' + M2V_FROM_YEAR + ' to ' + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.</p>';
+    ', the 90th percentile of every two-year window from ' + M2V_FROM_YEAR + ' to ' + (RHYTHM_BEFORE - 1) + ', the years the rate is measured against. The eight quarters and the 90th percentile are Claude’s choice.'] });
 }

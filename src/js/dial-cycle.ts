@@ -1,11 +1,11 @@
-import { facts, fmtSigned, hubLine, ledeHtml, monthLabel, qLabel, srcBlock } from "./format.ts";
-import { byId, detailSlot, need, put, rovingKeys, ui } from "./dom.ts";
+import { facts, fmtSigned, hubLine, ledeHtml, legendKey, monthLabel, qLabel, srcBlock } from "./format.ts";
+import { byId, expandBtn, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
 import { CPI_TARGET, FED_TARGET_SRC, gdpSrc, HOLD_BAND, sp500AnnualReturns, TEMP_BAND_HI, TEMP_BAND_LO, typicalCycleSrc, typicalCycleYears } from "./data.ts";
 import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
-import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
+import { closedSegs, marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
 import { fitYearDots, renderDiagnosis } from "./diagnosis.ts";
 import { cycleViewEl } from "./render-pages.ts";
@@ -38,7 +38,7 @@ function drawDial(m: CycleModel){
   var parts = ['<path class="dial-track" d="' + arcPath(R, START - LEAD + capDegT, SEAM_END - capDegT) + '"></path>'];
   var quarters: DialQuarter[] = [];
 
-  var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; });
+  var segs = closedSegs(m);
   var insetDeg = capDegM + MARGIN, runs: { seg: TrackSeg; a0: number; a1: number }[][] = [];
   segs.forEach(function(seg){
     var last = runs[runs.length - 1];
@@ -120,22 +120,14 @@ function wireThemeChoice(){
 // ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the ----
 function renderCycleKicker(){
   var html = '<h4>Legend</h4>' +
-    '<div class="legend-head">Seasons (Q)</div><div class="legend-rows">' +
-    [["winter","Winter","Prices &lt; " + TEMP_BAND_LO + "%"],["spring","Spring","Prices \u2264 " + TEMP_BAND_HI + "%"],["summer","Summer","Prices &gt; " + TEMP_BAND_HI + "%"],["autumn","Autumn","Prices \u2265 " + TEMP_BAND_LO + "%"]].map(function(r){
-      return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + '<small>' + r[2] + '</small></div>';
-    }).join("") + '</div>' +
+    '<div class="legend-head">Seasons (Q)</div>' + legendKey([["winter","Winter","Prices &lt; " + TEMP_BAND_LO + "%"],["spring","Spring","Prices \u2264 " + TEMP_BAND_HI + "%"],["summer","Summer","Prices &gt; " + TEMP_BAND_HI + "%"],["autumn","Autumn","Prices \u2265 " + TEMP_BAND_LO + "%"]], { shape:"bar", cls:"legend-rows", row:"legend-row" }) +
     '<p class="caption">The range is ' + TEMP_BAND_LO + '–' + TEMP_BAND_HI + '% inflation, CPI before 2000 and PCE since, a point either side of the Fed\u2019s ' + CPI_TARGET + '% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model\u2019s structure.</p>' + srcBlock([FED_TARGET_SRC]) +
-    '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows">' +
-    '<div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return \u2265 0%</small></div>' +
-    '<div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div>' +
-    '<div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div>' +
-    '<div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div>' +
-    '</div>' +
+    '<div class="legend-head">S&amp;P 500 (YoY)</div>' + legendKey([["mkt-up", "Bull year", "return \u2265 0%"], ["mkt-down", "Bear year", "return &lt; 0%"], ["mkt-up ytd", "Year in progress", "in progress"],
+      ["", "Peak year", "highest return", '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>']], { shape:"bar", cls:"legend-rows", row:"legend-row" }) +
     '<div class="legend-head">The market cycle</div>' +
     '<p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6\u00bd years across the long record. It is a typical length, not a forecast.</p>' +
     srcBlock(typicalCycleSrc);
-  var idx = detailSlot(html);
-  put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span><button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
+  put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span>' + expandBtn(html, "Legend"));
 }
 // ---- the hub: the reading inside the circle ----
 function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, open: HubOpen){
@@ -286,7 +278,7 @@ export function showCycle(era: Cycle){ if (ui.shownEra !== era) renderCycleView(
 function aheadWord(cyc: Cycle){ return cyc.ongoing ? "not yet run" : "shorter than a typical cycle"; }
 export function seasonStripHtml(cyc: Cycle, spanOverride?: number){
   return (function(){
-    var m = cycleModel(cyc), segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), runs = seasonRuns(segs);
+    var m = cycleModel(cyc), segs = closedSegs(m), runs = seasonRuns(segs);
     var lead = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead + segs.length;
     var span = Math.max(spanOverride || 0, typicalCycleYears * 4,
                         cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);

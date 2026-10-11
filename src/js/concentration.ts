@@ -1,11 +1,11 @@
-import { qAtIndex } from "./format.ts";
+import { mean, qAtIndex, sideWord } from "./format.ts";
 import { topTenQuarterly } from "./data.ts";
 import { topTenRecent } from "./history-fred.ts";
 
 // ---- Concentration: the ten largest S&P 500 holdings' share of the index ----
-export var CONCENTRATION_TO = 2025;
+var CONCENTRATION_TO = 2025;
 export var CONCENTRATION_MEAN: number;
-export var CONCENTRATION_SRC: Src[] = [
+var CONCENTRATION_SRC: Src[] = [
   { t:"SEC EDGAR — SPDR S&P 500 ETF Trust (SPY), annual and semi-annual reports (Form N-30D), the full schedule of investments since December 1995", u:"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000884394&type=N-30D" },
   { t:"SEC EDGAR — SPDR S&P 500 ETF Trust (SPY), Form N-PORT, the full portfolio at each quarter end since September 2019", u:"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000884394&type=NPORT-P" },
   { t:"State Street Global Advisors — SPY daily holdings, the latest figure", u:"https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy" }
@@ -16,15 +16,14 @@ export var topTenHistory: { q: string; v: number | null }[] = [];
 function concentrationSpan(){ return topTenQuarterly[0].q.slice(0, 4) + "–" + CONCENTRATION_TO; }
 function concentrationWord(v: number): CreditWord {
   var avg = CONCENTRATION_MEAN.toFixed(1) + "%";
-  if (v >= CONCENTRATION_MEAN) return { state:"warning", text:"Concentrated",
-    says:"above its " + concentrationSpan() + " average of " + avg + ": more of the index rests on its ten largest stocks than usual" };
-  return { state:"good", text:"Broad", says:"below its " + concentrationSpan() + " average of " + avg + ": the index is spread wider than usual" };
+  return sideWord({ line:CONCENTRATION_MEAN, above:{ state:"warning", text:"Concentrated", says:"above its " + concentrationSpan() + " average of " + avg + ": more of the index rests on its ten largest stocks than usual" },
+    below:{ state:"good", text:"Broad", says:"below its " + concentrationSpan() + " average of " + avg + ": the index is spread wider than usual" } })(v);
 }
 function concentrationRecord(){
   var years: Record<string, number[]> = {};
   topTenQuarterly.forEach(function(d){ var y = d.q.slice(0, 4); if (+y <= CONCENTRATION_TO) (years[y] = years[y] || []).push(d.v); });
-  var means = Object.keys(years).map(function(y){ return years[y].reduce(function(a, v){ return a + v; }, 0) / years[y].length; });
-  CONCENTRATION_MEAN = Math.round(means.reduce(function(a, v){ return a + v; }, 0) / means.length * 10) / 10;
+  var means = Object.keys(years).map(function(y){ return mean(years[y]); });
+  CONCENTRATION_MEAN = Math.round(mean(means) * 10) / 10;
   var last = topTenQuarterly[topTenQuarterly.length - 1].q, recent = topTenRecent.filter(function(d){ return d.q > last; });
   topTenReadings.length = 0;
   (topTenQuarterly as CreditPoint[]).concat(recent).forEach(function(d){ topTenReadings.push(d); });

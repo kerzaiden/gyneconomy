@@ -5,7 +5,7 @@ import { calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
-import { dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
+import { closedSegs, dxHead, dxSys, econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, IND } from "./cycle-analysis.ts";
 import { mountReport, storyCard } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
@@ -21,7 +21,7 @@ function diagnosisHtml(m: CycleModel){
   return storyCard(m) + yearByYear(m);
 }
 function yearByYear(m: CycleModel){
-  var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
+  var segs = closedSegs(m), rows: string[] = [];
   for (var y = m.era.from; y <= m.endYear; y++){
     var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), ytd = m.ongoing && y === calendarTodayY, now = yearSoFar(y);
     rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd),

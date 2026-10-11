@@ -1,14 +1,14 @@
-import { auxStat, hiCard, highlightsHtml, lede, pointLabel } from "./format.ts";
+import { type KeyRow, auxStat, hiCard, highlightsHtml, legendKey, lede, pointLabel } from "./format.ts";
 import { addSources, byIdMaybe, put } from "./dom.ts";
-import { type KeyRow, histBar, histKey, histTip } from "./charts.ts";
+import { histBar } from "./charts.ts";
 import { attachHistory, headSigma, histHead, histNote, refitHistory } from "./history.ts";
 import { keyed, ROSTER } from "./roster.ts";
 import { drawsPage, metricSheet, sheetRenderers, timingPill } from "./render-core.ts";
 
 // ---- One reading: its figure, its words, its page ----
-export type Face = { text: string; word: string };
+type Face = { text: string; word: string };
 export type History = { chart: (w: number) => string; geom: string; trend: string; wrap?: string; sigma?: string | null; paint?: (box: HTMLElement) => void };
-export type Reading = {
+type Reading = {
   face: () => [string, string];
   info: () => string;
   key?: () => KeyRow[];
@@ -33,28 +33,28 @@ export function todayFace(R: RosterRow): Face {
 function historyHtml(R: RosterRow, h: History, W: number){
   var svg = h.chart(W);
   return '<div class="page-chart">' + histHead(R.hk || R.id) + (h.wrap ? '<div class="' + h.wrap + '">' + svg + '</div>' : svg) +
-    h.trend + histTip(R.id + "-tip") + '</div>';
+    h.trend + '</div>';
 }
 function drawReading(R: RosterRow, W?: number){
   var r = readingFor(R.id), w = W || 340, h = r.history(w);
   put(R.id + "-chart", histBar(r.controls()) + historyHtml(R, h, w) + (r.aside ? r.aside() : ""));
   var box = document.querySelector<HTMLElement>("#" + R.id + "-chart .page-chart");
   if (h.paint && box) h.paint(box); else refitHistory(box, h.chart);
-  attachHistory(box, R.id + "-tip", h.geom);
+  attachHistory(box, h.geom);
   if (h.sigma !== undefined) headSigma(R.hk || R.id, h.sigma);
   paintInsight(R);
 }
 export function chartShell(id: string, label: string, cls?: string){
   return '<div class="chart-shell" id="' + id + '-shell"><svg id="' + id + '-svg"' + (cls ? ' class="' + cls + '"' : "") + ' role="img" aria-label="' + label + '"></svg></div>';
 }
-export function paintInsight(R: RosterRow){ put(R.id + "-highlights", readingFor(R.id).insight()); }
+function paintInsight(R: RosterRow){ put(R.id + "-highlights", readingFor(R.id).insight()); }
 export function mountReadings(host: HTMLElement){
   ROSTER.forEach(function(R){
     var r = readingFor(R.id), sheet = metricSheet(R.id);
     sheet.classList.add("cat-" + R.cat);
     sheet.innerHTML = timingPill(R.timing) + '<div id="' + R.id + '-chart"></div><div id="' + R.id + '-highlights"></div>';
     host.appendChild(sheet);
-    histNote(R.hk || R.id, function(){ return r.info() + (r.key ? histKey(r.key()) : ""); });
+    histNote(R.hk || R.id, function(){ return r.info() + (r.key ? legendKey(r.key(), { shape:"chip", cls:"hist-key" }) : ""); });
     drawsPage(R.id, function(W?: number){ drawReading(R, W); });
     paintInsight(R);
     if (r.src) addSources(r.src);
@@ -65,8 +65,8 @@ export function redrawReading(id: string){
   if (d) d(host && host.clientWidth ? host.clientWidth : 340);
 }
 // ---- One record, read the same way on every page ----
-export type RecordPoint = Point & { v: number; d?: string };
-export type RecordWords = { lede: string; fmt: (v: number) => string; mid: number; state?: Tone; band?: [number, number]; line?: string; facts?: string; more?: string };
+type RecordPoint = Point & { v: number; d?: string };
+type RecordWords = { lede: string; fmt: (v: number) => string; mid: number; state?: Tone; band?: [number, number]; line?: string; facts?: string; more?: string };
 export function recordPoints(R: RosterRow): RecordPoint[] {
   var h = R.hist as HistSpec;
   if (h.k === "qi" || h.k === "yi") return keyed(h).filter(function(d){ return d.v != null; })

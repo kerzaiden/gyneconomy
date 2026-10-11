@@ -1,4 +1,4 @@
-import { facts, ledeHtml, srcBlock } from "./format.ts";
+import { facts, ledeHtml, listed, srcBlock } from "./format.ts";
 import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
@@ -7,7 +7,6 @@ import { cpiNow, currentEra, currentSeason, GNP_TREND, inflationFigure, PEAK_TRE
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { FRAMEWORK_SRC, sourceShelves } from "./sources.ts";
 import { categoriesShown, ROSTER, TIMING } from "./roster.ts";
-import { listWords } from "./cycle-analysis.ts";
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
 function seasonGrid(){
@@ -92,14 +91,14 @@ function placeLine(c: { key: string; title: string }){
   var rows = ROSTER.filter(function(R){ return R.cat === c.key; }), subs: string[] = [];
   rows.forEach(function(R){ if (subs.indexOf(R.sub) === -1) subs.push(R.sub); });
   return '<p><b>' + c.title + '</b>: ' + subs.map(function(sub){
-    return sub + ' holds ' + listWords(rows.filter(function(R){ return R.sub === sub; }).map(function(R){ return R.name + ' (' + TIMING[R.timing].label.toLowerCase() + ')'; }));
+    return sub + ' holds ' + listed(rows.filter(function(R){ return R.sub === sub; }).map(function(R){ return R.name + ' (' + TIMING[R.timing].label.toLowerCase() + ')'; }));
   }).join('; ') + '.</p>';
 }
 function timingLine(){
   var inOrder = categoriesShown().reduce(function(a: RosterRow[], c){ return a.concat(ROSTER.filter(function(R){ return R.cat === c.key; })); }, []);
   var says: Record<RosterTiming, string> = { leading:"signs turn first", coincident:"signs report the present", lagging:"signs confirm afterwards", structural:"markers move slowly, by design" };
   return '<p>' + (Object.keys(says) as RosterTiming[]).map(function(t){
-    return '<b>' + TIMING[t].label + '</b> ' + says[t] + ': ' + listWords(inOrder.filter(function(R){ return R.timing === t; }).map(function(R){ return R.name; })) + '.';
+    return '<b>' + TIMING[t].label + '</b> ' + says[t] + ': ' + listed(inOrder.filter(function(R){ return R.timing === t; }).map(function(R){ return R.name; })) + '.';
   }).join(' ') + '</p>';
 }
 function renderHowto(){ put("howto-places", categoriesShown().map(placeLine).join("") + timingLine()); }

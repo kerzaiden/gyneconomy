@@ -81,8 +81,8 @@ export function moreRow(fullHtml: string | null | undefined, label?: string){
   if (!fullHtml) return "";
   return moreDoor(' data-detail-idx="' + detailSlot(fullHtml) + '"', label || "More details");
 }
-export function moreDoor(attrs: string, label: string, mark?: string){
-  return '<button type="button" class="more-row"' + attrs + '><span' + (mark ? ' class="more-lead"><span class="more-mark" aria-hidden="true">' + mark + '</span>' : '>') + label + '</span>' + CHEV + '</button>';
+function moreDoor(attrs: string, label: string){
+  return '<button type="button" class="more-row"' + attrs + '><span>' + label + '</span>' + CHEV + '</button>';
 }
 export function moreButton(more: boolean){
   return '<button type="button" class="cyc-more dx-more" aria-expanded="false"' + (more ? "" : " hidden") + '><span>View more</span>' + CHEV + '</button>';
@@ -138,9 +138,9 @@ export function detailSlot(html: unknown){
   }
   return idx;
 }
-export function expandBtn(fullHtml: unknown){
-  return '<button type="button" class="expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
-         '" aria-label="Expand details">i</button>';
+export function expandBtn(fullHtml: unknown, label?: string){
+  return '<button type="button" class="' + (label ? "info-btn " : "") + 'expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
+         '" aria-label="' + (label || "Expand details") + '"' + (label ? ' title="' + label + '"' : "") + '>i</button>';
 }
 
 var detailSlots: Record<string, number>;

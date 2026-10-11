@@ -1,4 +1,4 @@
-import { facts, fmtSigned, hiCard, lede, monthLabel, srcBlock } from "./format.ts";
+import { facts, fmtSigned, hiCard, lede, monthLabel, numberWord, srcBlock } from "./format.ts";
 import { ui } from "./dom.ts";
 import { calendarTodayY, inflationHistory, wheelMeta } from "./refresh-season.ts";
 import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.ts";
@@ -65,14 +65,12 @@ function insightWeather(){
   var run = 0;
   for (var i = rows.length - 1; i >= 0; i--){ if (rows[i].gap > GAP_BAND) run++; else break; }
   var ORD = ["", "", "second", "third", "fourth", "fifth", "sixth"];
-  var NUM = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-  var spell = function(n: number){ return NUM[n] || String(n); };
   var lead = now.gap > GAP_BAND ? "Prices are running ahead of output"
            : now.gap < -GAP_BAND ? "The economy is growing into its prices"
                                  : "Prices and output are keeping pace";
   var txt = lead + ". Since " + now.from + " prices are up " + f1(now.p) + " and the economy is up " +
     f1(now.g) + " \u2014 " + absGap(now).toFixed(1) + " points apart. Over a whole cycle these two normally " +
-    "finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " +
+    "finish close together: the " + numberWord(past.length, 9) + " closed cycles since " + rows[0].from + " came in " +
     past.map(function(r){ return absGap(r).toFixed(1); }).join(", ") + " points apart, the " + tightest.name +
     " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
   if (widest === now)
@@ -94,7 +92,7 @@ function marketCycleCard(m: CycleModel){
   var bear = years.filter(function(d: YearPoint){ return d.v < 0; }), before = sp500Years.filter(function(d: YearPoint){ return d.y < m.era.from && d.v < 0; }).pop();
   var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d: YearPoint){
     return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%"; }).join(", ");
-  var n = function(k: number, what: string){ return (k ? (["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"][k - 1] || k) : "no") + " " + what + (k === 1 || !k ? " year" : " years"); };
+  var n = function(k: number, what: string){ return numberWord(k, 9) + " " + what + (k === 1 || !k ? " year" : " years"); };
   var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
   return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list +
     ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" +

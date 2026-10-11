@@ -1,4 +1,4 @@
-import { fmtSigned, pointLabel, qAtIndex, srcBlock, titleCase } from "./format.ts";
+import { fmtSigned, mean, pointLabel, qAtIndex, readingNote, sideWord, titleCase } from "./format.ts";
 import { colPeek } from "./charts.ts";
 import { consumerCreditHistory, delinquencyHistory, marginHistory } from "./history-fred.ts";
 import { DSR_FROM_YEAR, DSR_MEAN, dsrHistory, SAV_FROM_YEAR, SAV_HIGH, SAV_LOW, SAV_MID, SAV_THIN, savHistory } from "./data.ts";
@@ -6,26 +6,26 @@ import { activitySpecs } from "./activity.ts";
 import { concentrationSpecs } from "./concentration.ts";
 
 // ---- Credit, households and debt: consumer credit, margin debt, the saving rate, the debt-to-income ratio and delinquencies ----
-export type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
-export type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
+type CreditReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; wordSays: string };
+type CreditPage = { goodAbove?: boolean; line: string; fmt: (v: number) => string; tick: (v: number) => string; src: Src[]; lede: string; series: CreditPoint[] };
 
 export var CONSUMER_LINE = 0, MARGIN_LINE = 0, DELINQUENCY_TO = 2025;
-export var CONSUMER_SRC: Src[] = [
+var CONSUMER_SRC: Src[] = [
   { t:"Federal Reserve — G.19 Consumer Credit, monthly: revolving (credit cards) and nonrevolving (auto and student loans) credit owed by households, mortgages excluded", u:"https://www.federalreserve.gov/releases/g19/current/" },
   { t:"FRED — Total Consumer Credit Owned and Securitized (TOTALSL)", u:"https://fred.stlouisfed.org/series/TOTALSL" },
   { t:"The Conference Board — Lagging Economic Index, whose components include consumer installment credit outstanding to personal income", u:"https://www.conference-board.org/topics/us-leading-indicators" }
 ];
-export var MARGIN_SRC: Src[] = [
+var MARGIN_SRC: Src[] = [
   { t:"FINRA — Margin Statistics: debit balances in customers’ securities margin accounts, monthly", u:"https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics" }
 ];
-export var SAVING_SRC: Src[] = [
+var SAVING_SRC: Src[] = [
   { t:"BEA via FRED \u2014 Personal Saving Rate, quarterly since 1947 (PSAVERT)", u:"https://fred.stlouisfed.org/series/PSAVERT" }
 ];
-export var DEBT_PAYMENTS_SRC: Src[] = [
+var DEBT_PAYMENTS_SRC: Src[] = [
   { t:"Federal Reserve via FRED \u2014 Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)", u:"https://fred.stlouisfed.org/series/TDSP" },
   { t:"Jord\u00e0, Schularick and Taylor \u2014 When Credit Bites Back: Leverage, Business Cycles, and Crises (NBER Working Paper 17621, 2011)", u:"https://www.nber.org/papers/w17621" }
 ];
-export var DELINQUENCY_SRC: Src[] = [
+var DELINQUENCY_SRC: Src[] = [
   { t:"Federal Reserve — Charge-Off and Delinquency Rates on Loans and Leases at Commercial Banks, all loans, seasonally adjusted", u:"https://www.federalreserve.gov/releases/chargeoff/" },
   { t:"FRED — Delinquency Rate on All Loans, All Commercial Banks (DRALACBS)", u:"https://fred.stlouisfed.org/series/DRALACBS" }
 ];
@@ -35,14 +35,12 @@ export var debtPaymentPoints: QuarterPoint[] = dsrHistory.map(function(v, i){ re
 
 function avgSpan(){ return delinquencyHistory[0].q.slice(0, 4) + "\u2013" + DELINQUENCY_TO; }
 function consumerWord(v: number): CreditWord {
-  if (v >= CONSUMER_LINE) return { state:"norm", text:"Borrowing more",
-    says:"above zero: households owe more on cards, cars and student loans than a year earlier" };
-  return { state:"norm", text:"Borrowing less", says:"below zero: households owe less on cards, cars and student loans than a year earlier" };
+  return sideWord({ line:CONSUMER_LINE, above:{ state:"norm", text:"Borrowing more", says:"above zero: households owe more on cards, cars and student loans than a year earlier" },
+    below:{ state:"norm", text:"Borrowing less", says:"below zero: households owe less on cards, cars and student loans than a year earlier" } })(v);
 }
 function marginWord(v: number): CreditWord {
-  if (v >= MARGIN_LINE) return { state:"norm", text:"Borrowing more",
-    says:"above zero: investors owe their brokers more than a year earlier" };
-  return { state:"norm", text:"Borrowing less", says:"below zero: investors owe their brokers less than a year earlier" };
+  return sideWord({ line:MARGIN_LINE, above:{ state:"norm", text:"Borrowing more", says:"above zero: investors owe their brokers more than a year earlier" },
+    below:{ state:"norm", text:"Borrowing less", says:"below zero: investors owe their brokers less than a year earlier" } })(v);
 }
 function savingWord(v: number): CreditWord {
   var band = " the " + SAV_LOW.toFixed(1) + "\u2013" + SAV_HIGH.toFixed(1) + "% that held in eight quarters of ten since " + SAV_FROM_YEAR;
@@ -53,8 +51,8 @@ function savingWord(v: number): CreditWord {
 }
 function debtPaymentsWord(v: number): CreditWord {
   var avg = DSR_MEAN.toFixed(1) + "%";
-  if (v > DSR_MEAN) return { state:"warning", text:"Above average", says:"above its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes more of what households take home than usual" };
-  return { state:"good", text:"Below average", says:"below its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes less of what households take home than usual" };
+  return sideWord({ line:DSR_MEAN, strict:true, above:{ state:"warning", text:"Above average", says:"above its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes more of what households take home than usual" },
+    below:{ state:"good", text:"Below average", says:"below its " + DSR_FROM_YEAR + " onward average of " + avg + ": debt takes less of what households take home than usual" } })(v);
 }
 function householdSpecs(): CreditSpec[] {
   var pct = function(v: number){ return v.toFixed(1) + "%"; };
@@ -77,9 +75,8 @@ function householdSpecs(): CreditSpec[] {
 }
 function delinquencyWord(v: number): CreditWord {
   var avg = DELINQUENCY_MEAN.toFixed(2) + "%";
-  if (v >= DELINQUENCY_MEAN) return { state:"warning", text:"Above average",
-    says:"above its " + avgSpan() + " average of " + avg + ": more loans are going unpaid than usual" };
-  return { state:"good", text:"Below average", says:"below its " + avgSpan() + " average of " + avg + ": fewer loans are going unpaid than usual" };
+  return sideWord({ line:DELINQUENCY_MEAN, above:{ state:"warning", text:"Above average", says:"above its " + avgSpan() + " average of " + avg + ": more loans are going unpaid than usual" },
+    below:{ state:"good", text:"Below average", says:"below its " + avgSpan() + " average of " + avg + ": fewer loans are going unpaid than usual" } })(v);
 }
 function specs(): CreditSpec[] {
   return [
@@ -116,9 +113,8 @@ function readingOf(S: CreditSpec): CreditReading {
     meter:{ min:lo.v, max:hi.v, value:last.v, optimal:S.optimal, ends:S.ends }, span:span, lead:"",
     caption:at + ", " + S.econ.toLowerCase() + " at " + S.fmt(last.v) + ", " + word.says + ". The track runs over the record since " + pointLabel(h[0]) + ": " + span + ".",
     info:function(){
-      return '<h4>' + titleCase(S.econ) + '</h4>' +
-        '<p class="caption">The reading is <b>' + word.text + '</b>: ' + S.fmt(last.v) + ', ' + word.says + ' (' + r.metricSub + '). The record runs ' + span + '.</p>' +
-        '<p class="caption follow">' + S.about + '</p><p class="caption follow">' + S.band + '</p>' + srcBlock(S.src);
+      return readingNote({ title:titleCase(S.econ), lead:'The reading is <b>' + word.text + '</b>: ' + S.fmt(last.v) + ', ' + word.says + ' (' + r.metricSub + '). The record runs ' + span + '.',
+        paras:[S.about, S.band], src:S.src });
     }
   };
   Object.defineProperty(r, "peek", { get:function(){
@@ -130,7 +126,7 @@ export var creditReadings: Record<string, CreditReading> = {};
 export var creditPages: Record<string, CreditPage> = {};
 export function bootCredit(){
   var closed = delinquencyHistory.filter(function(d){ return +d.q.slice(0, 4) <= DELINQUENCY_TO; });
-  DELINQUENCY_MEAN = Math.round(closed.reduce(function(a, d){ return a + d.v; }, 0) / closed.length * 100) / 100;
+  DELINQUENCY_MEAN = Math.round(mean(closed.map(function(d){ return d.v; })) * 100) / 100;
   specs().concat(householdSpecs(), activitySpecs(), concentrationSpecs()).forEach(function(S){
     creditReadings[S.id] = readingOf(S);
     creditPages[S.id] = { goodAbove:S.goodAbove, line:S.line, fmt:S.fmt, tick:S.fmt, src:S.src, lede:S.lede, series:S.series };
