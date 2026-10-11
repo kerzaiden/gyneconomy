@@ -1,5 +1,5 @@
 import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf, titleCase } from "./format.ts";
-import { divergeChart, trendOf, trendPill, windowYears } from "./charts.ts";
+import { type KeyRow, divergeChart, trendOf, trendPill, windowYears } from "./charts.ts";
 import { debtDollarsQuarterly, debtToday, grossDebtQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { buffettHistory, CONFIDENCE_SRC, DEBT_DOLLAR_SRC, DESIRE_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
@@ -73,6 +73,10 @@ function splitSpec(R: RosterRow, P: SplitPage): SplitSpec {
   s.series = (R.hist as { s: readonly Point[] }).s as SeriesPt[]; s.midLabel = P.line + ", " + (P.tick || P.fmt)(midOf(R));
   return s;
 }
+function splitKey(s: SplitSpec): KeyRow[] {
+  var line = s.midLabel + " (" + s.fmt(s.mid) + ")";
+  return [["hk-2", (s.goodAbove ? "Above " : "Below ") + line], ["hk-4", (s.goodAbove ? "Below " : "Above ") + line]];
+}
 function splitInfo(s: SplitSpec){
   return s.info ? s.info() : '<h4>' + titleCase(s.name) + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
     (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
@@ -98,7 +102,7 @@ export function defineSplits(){
   var pages = splitPages();
   ROSTER.filter(function(R){ return pages[R.id]; }).forEach(function(R){
     var s = splitSpec(R, pages[R.id]);
-    defineReading(R.id, { face:function(){ var P = splitPages()[R.id]; return [P.row.flagValue, P.word()]; }, asOf:pages[R.id].asOf, info:function(){ return splitInfo(s); },
+    defineReading(R.id, { face:function(){ var P = splitPages()[R.id]; return [P.row.flagValue, P.word()]; }, asOf:pages[R.id].asOf, info:function(){ return splitInfo(s); }, key:function(){ return splitKey(s); },
       controls:function(){ return histControls(R.id, { series:s.series }); }, history:function(){ return splitHistory(s); },
       insight:function(){ return s.insight(s); }, src:s.src });
   });

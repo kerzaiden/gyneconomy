@@ -2,14 +2,14 @@ import { atMonth, factsFrom, fmtAsOf, fmtSigned, hiCard, highlightsHtml, lede, m
 import { addSources, need, svgEl } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
-import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
+import { curveAsOf, curveAt, curveSpread, FENCE_SRC, fedFundsRange, M2_FROM_YEAR, PULSE_PRE2008, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle } from "./model.ts";
 import { headPickRow, histControls, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory } from "./history.ts";
 import { indOf, periodIso, pressureTendency, pressureZone, pulseCard, pulseInfoHtml, tendencyOf, volumeInfoHtml } from "./readings.ts";
 import type { Tendency } from "./readings.ts";
 import { chartShell, defineReading, indicatorInsight, redrawReading } from "./reading.ts";
 import { ROSTER_BY } from "./roster.ts";
-import { m2GrowthChart, mortgageHistoryChart } from "./history-charts.ts";
+import { m2GrowthChart, m2Key, mortgageHistoryChart, rateKey } from "./history-charts.ts";
 import { mortgageHistory } from "./history-fred.ts";
 import { pulseStripsChart, stripScroller, stripsInfo } from "./pulse-strips.ts";
 import { rhythmCard, rhythmInfo } from "./rhythm.ts";
@@ -79,6 +79,7 @@ function defineFlow(){
   defineReading("sheet-sign-pulse", {
     face:function(){ var ind = flowRow("Pulse"); return [ind.metric, ind.tag ? ind.tag.text : ""]; },
     info:function(){ return pulseInfoHtml(flowRow("Pulse")) + stripsInfo() + rhythmInfo(); },
+    key:function(){ return [["hk-5", "A regular beat"], ["hk-x", "An odd quarter: velocity moved past Tukey\u2019s fence of its quarterly changes, flat where it fell past the far-out fence"]]; },
     controls:function(){ return histControls("pulse-range", { depth:Math.floor(m2vHistory.length / 4) }); },
     history:pulseHistory,
     insight:function(){ var ind = flowRow("Pulse"); return indicatorInsight(ROSTER_BY["sheet-sign-pulse"], ind, function(v){ return v.toFixed(2) + "\u00d7"; }, pulseCard(metered(ind.meter), PULSE_PRE2008, ind) + rhythmCard()); },
@@ -88,6 +89,7 @@ function defineFlow(){
     face:function(){ var ind = flowRow("Volume"); return [ind.metric, ind.tag ? ind.tag.text : ""]; },
     asOf:function(){ return periodIso(String(flowRow("Volume").metricSub || "")).slice(0, 7); },
     info:function(){ return volumeInfoHtml(flowRow("Volume")); },
+    key:m2Key,
     controls:function(){ return histControls("volume-range", { depth:Math.floor((m2Yoy.length - 4) / 4) }); },
     history:function(){
       var len = m2Yoy.length - 4, key = page.range["volume-range"], cyc = pageCycle("volume-range");
@@ -272,6 +274,7 @@ function definePressure(){
     face:function(){ var y = curveAt("10Y"); return [y == null ? "\u2014" : y.toFixed(2) + "%", pressureTendency.word]; },
     asOf:curveAsOf,
     info:function(){ return '<h4>' + titleCase(matTitle()) + '</h4>' + factsFrom(matDetail()); },
+    key:function(){ return [["hk-2", "Normal: the 10-year above the 3-month"], ["hk-4", "Inverted: the 10-year below the 3-month"]]; },
     controls:function(){ return histControls("pressure-range", { depth:Math.floor(quarters.length / 4) }, ylmY0); },
     history:function(){
       ylmY0 = ylmWindow();
@@ -337,7 +340,7 @@ function mortgageInfo(){
     "The word reads it like a barometer, by which way it moves: " + T.word.toLowerCase() + ", " + fmtSigned(T.d, 2) +
     " points against twelve months earlier. Steady is within " + pt(T.still) + " points and quickly is past " + pt(T.fast) +
     ", the lower and upper quartiles of every twelve-month move since " + atMonth({ m:T.from }) + ". No band is drawn: as with the " +
-    "Treasury yields, no published convention says where a mortgage rate turns high.") + srcBlock(MORTGAGE_SRC);
+    "Treasury yields, no published convention says where a mortgage rate turns high; the colour key below marks only the record\u2019s own outliers.") + srcBlock(MORTGAGE_SRC.concat([FENCE_SRC]));
 }
 function mortgageInsight(){
   var h = mortgageHistory, last = mortgageLast(), pct = function(v: number){ return v.toFixed(2) + "%"; };
@@ -359,6 +362,7 @@ function defineMortgage(){
     face:function(){ return [mortgageLast().v.toFixed(2) + "%", mortgageTendency.word]; },
     asOf:function(){ return mortgageLast().m; },
     info:mortgageInfo,
+    key:function(){ return rateKey(mortgageHistory); },
     controls:function(){ return histControls(key, { series:h }, Y0); },
     history:function(){
       var cyc = pageCycle(key), span = cyc ? cycleSlice(h, cyc) : null;

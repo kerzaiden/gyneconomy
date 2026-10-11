@@ -330,7 +330,7 @@
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
     --season-winter:#6a74c2; --season-spring:#f0b04a; --season-summer:#d96d3e; --season-autumn:#aab0d8; --gold:#f0b04a; --earth:#7d8c3f;
     --hist-0:color-mix(in srgb, var(--gold) 40%, var(--surface)); --hist-1:color-mix(in srgb, var(--gold) 70%, var(--surface)); --hist-2:var(--gold);
-    --hist-3:color-mix(in srgb, var(--season-summer) 55%, var(--gold)); --hist-4:var(--season-summer); --hist-5:var(--accent);
+    --hist-3:color-mix(in srgb, var(--season-summer) 55%, var(--gold)); --hist-4:var(--season-summer); --hist-5:color-mix(in srgb, var(--bleed-mid) 55%, var(--blush)); --hist-x:var(--accent);
     /* ---- THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change ---- */
     --mini-h:42px;
     --pad:10px;
@@ -464,7 +464,7 @@
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); }
 
   .temp-col{ fill:none; stroke-linecap:round; }
-  .temp-col.s0{ stroke:var(--hist-5); }
+  .temp-col.s0{ stroke:var(--hist-x); }
   .temp-col.s1{ stroke:var(--hist-0); }
   .temp-col.s2{ stroke:var(--hist-1); }
   .temp-col.s3{ stroke:var(--hist-2); }
@@ -630,7 +630,7 @@
   .ekg-minor{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 10%, transparent); stroke-width:0.6; }
   .ekg-major{ fill:none; stroke:color-mix(in srgb, var(--bleed-mid) 24%, transparent); stroke-width:0.8; }
   .ps-beat{ fill:none; stroke:var(--hist-5); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; transition:opacity 0.08s; }
-  .ps-beat.odd, .ps-beat.flat{ stroke:var(--hist-4); }
+  .ps-beat.odd, .ps-beat.flat{ stroke:var(--hist-x); }
   .ps-beat.blank{ stroke:var(--text-muted); }
   .bt-yl.ps-year{ font-size:var(--type-meta); fill:var(--text-secondary); }
   .ps-scroll{ position:absolute; left:0; right:0; overflow-y:auto; scrollbar-width:none; }
@@ -660,14 +660,14 @@
   .m2-col.v2{ stroke:var(--hist-2); }
   .m2-col.v3{ stroke:var(--hist-3); }
   .m2-col.v4{ stroke:var(--hist-4); }
-  .m2-col.v5{ stroke:var(--hist-5); }
+  .m2-col.v5{ stroke:var(--hist-x); }
 
 
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--hist-4); }
   .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--hist-2); opacity:0.9; }
   .unemp-col.tight, .unemp-col.warning{ stroke:var(--hist-4); }
-  .unemp-col.serious{ stroke:var(--hist-5); }
+  .unemp-col.serious{ stroke:var(--hist-x); }
   .def-col{ fill:none; stroke-linecap:round; stroke:var(--hist-4); opacity:0.85; }
   .def-col.surplus{ stroke:var(--hist-2); opacity:0.95; }
 
@@ -801,8 +801,14 @@
   .ff-col.f3{ stroke:var(--hist-3); }
   .ff-col.f4{ stroke:var(--hist-4); }
   .ff-col.f5{ stroke:var(--hist-5); }
+  .ff-col.fx{ stroke:var(--hist-x); }
   .dv-bar.over{ stroke:var(--hist-4); } .dv-bar.under{ stroke:var(--hist-2); }
   .dv-bar.over.good-above{ stroke:var(--hist-2); } .dv-bar.under.good-above{ stroke:var(--hist-4); }
+  .hist-key{ list-style:none; margin:12px 0 0; padding:0; display:grid; gap:6px; font-size:var(--type-meta); color:var(--text-secondary); }
+  .hist-key li{ display:flex; align-items:flex-start; gap:8px; line-height:1.4; }
+  .hk{ flex:none; width:14px; height:9px; margin-top:4px; border-radius:3px; }
+  .hk-0{ background:var(--hist-0); } .hk-1{ background:var(--hist-1); } .hk-2{ background:var(--hist-2); } .hk-3{ background:var(--hist-3); } .hk-4{ background:var(--hist-4); } .hk-5{ background:var(--hist-5); } .hk-x{ background:var(--hist-x); }
+  .hk-ramp{ background:linear-gradient(90deg, var(--hist-0), var(--hist-2), var(--hist-4), var(--hist-5)); }
   .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
   .bt-xl, .bt-yl{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); fill:var(--text-muted); }
 
