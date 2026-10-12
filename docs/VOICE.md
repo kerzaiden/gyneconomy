@@ -136,11 +136,11 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    paragraph raised, never by a jump, and the body keeps returning so the reader moves from biology to the economy and
    back. An abstract idea (credit, money creation) is shown in an everyday example before it is named.
    *(Keren, October 12, 2026.)*
-15. **A chapter is a map.** It names its starting point and its destination (what the reader will understand by the
-   end) and walks one route between them, so nothing doubles back. Each body part is introduced once, at the stop
-   where its economic twin needs it, rather than up front and again later. Before a chapter is edited, its roadmap
-   (start, destination, the stops between) is drafted and agreed first, and the paragraphs follow it. *(Keren,
-   October 12, 2026: heart, then spiral arteries, then heart again was confusing.)*
+15. **Every chapter has a spine.** Before a chapter is edited, its spine is written and agreed: one question the
+   chapter answers, then a numbered chain of claims, each following from the one before by cause and effect
+   ("because… so…"), ending in the answer. Every paragraph serves one step of the spine, in its order; a paragraph that
+   serves no step is cut or moved, and nothing returns to an earlier step. Each body part is introduced once, at the
+   step that needs it. *(Keren, October 12, 2026: the chapter read like spaghetti, going back and forth.)*
 16. **Numbers the plain way.** A figure is given as a simple percentage or a plain "most," never as a ratio the
    reader has to work out ("around 10%," not "one dollar in every ten"); readers are not mathematicians. *(Keren,
    October 12, 2026.)*
