@@ -147,6 +147,11 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
 17. **Precise, not poetic.** The body is described scientifically: every "it" and "one" names what it is (the
    lining, a fertilized egg), and an image never stands in for the fact. Stock openers worn thin by use ("Long before…")
    are left out. *(Keren, October 12, 2026.)*
+18. **Say what it is.** A thing is stated directly, never first by what it is not ("energy is not made in one place…
+   it is made inside cells"). *(Keren, October 12, 2026.)*
+19. **The cut test.** If a sentence, image or example could be cut and the reader would still understand the book,
+   it is cut. A metaphor earns its place only by explaining something the plain text cannot. *(Keren, October 12,
+   2026.)*
 
 ## How this page learns
 
