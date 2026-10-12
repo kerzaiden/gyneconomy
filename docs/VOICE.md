@@ -132,6 +132,10 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
 13. **The economist's word.** Where economics has a term, the book uses it rather than a looser everyday verb: the
    Fed injects money, it does not pour it. The right term usually carries the body image too (an injection into the
    bloodstream), so the two worlds meet in one word. *(Keren, October 12, 2026.)*
+14. **Every paragraph grows from the one before.** A new subject arrives as the answer to a question the last
+   paragraph raised, never by a jump, and the body keeps returning so the reader moves from biology to the economy and
+   back. An abstract idea (credit, money creation) is shown in an everyday example before it is named.
+   *(Keren, October 12, 2026.)*
 
 ## How this page learns
 
