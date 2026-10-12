@@ -144,6 +144,9 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
 16. **Numbers the plain way.** A figure is given as a simple percentage or a plain "most," never as a ratio the
    reader has to work out ("around 10%," not "one dollar in every ten"); readers are not mathematicians. *(Keren,
    October 12, 2026.)*
+17. **Precise, not poetic.** The body is described scientifically: every "it" and "one" names what it is (the
+   lining, a fertilized egg), and an image never stands in for the fact. Stock openers worn thin by use ("Long before…")
+   are left out. *(Keren, October 12, 2026.)*
 
 ## How this page learns
 
