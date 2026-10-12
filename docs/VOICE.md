@@ -121,7 +121,8 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    Where a passage needs a picture to be understood, the draft marks it `[Diagram: what it shows]` until it is drawn.
    *(Keren, October 12, 2026.)*
 11. **Nothing before its introduction.** A term, a body part or an idea is introduced and explained before the text
-   relies on it. Search the book first: if an earlier chapter already explained it, point back to it; if not, it
+   relies on it, and a condition or disease that would need its own explanation is left out in favor of the words
+   the reader already has. Search the book first: if an earlier chapter already explained it, point back to it; if not, it
    is new material and gets its introduction where it first appears. *(Keren, October 12, 2026.)*
 
 ## How this page learns
