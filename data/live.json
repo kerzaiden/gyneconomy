@@ -71,13 +71,13 @@
  },
  "vixClose": {
   "kind": "scalar",
-  "value": 15.41,
-  "asOf": "2026-10-08"
+  "value": 14.84,
+  "asOf": "2026-10-09"
  },
  "vix3mClose": {
   "kind": "scalar",
-  "value": 18.08,
-  "asOf": "2026-10-08"
+  "value": 17.77,
+  "asOf": "2026-10-09"
  },
  "capeValue": {
   "kind": "scalar",
@@ -85,7 +85,7 @@
   "asOf": "2026-10-01"
  },
  "_meta": {
-  "fetchedAt": "2026-10-09T22:49:55Z",
+  "fetchedAt": "2026-10-12T22:50:51Z",
   "ok": [
    "yieldCurve",
    "fedFunds",
