@@ -126,7 +126,9 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    is new material and gets its introduction where it first appears. *(Keren, October 12, 2026.)*
 12. **Context before a claim.** An event, a date or a figure never arrives bare: first say what happened and why,
    in words the reader already has, then what it did to the body or the economy. A record low in 2020 is told after
-   the pandemic that caused it. *(Keren, October 12, 2026.)*
+   the pandemic that caused it. When someone acts, the text says why: cause, then effect, so the Fed pours money in
+   because the pulse collapsed, never just because. An event everyone lived through is named the way people name it
+   ("during the COVID-19 pandemic"), not introduced as news. *(Keren, October 12, 2026.)*
 
 ## How this page learns
 
