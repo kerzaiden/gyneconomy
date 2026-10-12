@@ -1,4 +1,4 @@
-import { facts, legendKey, listed, srcBlock } from "./format.ts";
+import { facts, legendKey, listed, numberWord, srcBlock } from "./format.ts";
 import { byId, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
@@ -6,6 +6,7 @@ import { CLOCK_SRC, FED_TARGET_SRC, frameworkRows, gdpSrc, marketCycles, typical
 import { currentEra, currentSeason, recessionRecord, seasonGroup } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { FRAMEWORK_SRC, sourceShelves } from "./sources.ts";
+import { WINDOW } from "./cycle-analysis.ts";
 import { categoriesShown, ROSTER, TIMING } from "./roster.ts";
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
@@ -29,7 +30,7 @@ function seasonGrid(){
 }
 function cycleModelLine(){
   var closed = marketCycles.filter(function(c){ return !c.ongoing; }), years = closed.reduce(function(a, c){ return a + c.to - c.from + 1; }, 0);
-  return "A cycle begins with its first bull year and ends with the bear year that closes it. Since " + marketCycles[0].from + " the market has completed " + closed.length + " cycles, " + (years / closed.length).toFixed(1) + " years long on average, and the app measures today against every one of them.";
+  return "A cycle begins with its first bull year and ends with the bear year that closes it. Since " + marketCycles[0].from + " the market has completed " + closed.length + " cycles, " + (years / closed.length).toFixed(1) + " years long on average. Each cycle is measured against all of them; its readings against the last " + numberWord(WINDOW) + ", since " + marketCycles[closed.length - WINDOW].from + ".";
 }
 var PEAK_MARK = '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>';
 function renderCycleModel(){
