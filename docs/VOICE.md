@@ -140,7 +140,9 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    chapter answers, then a numbered chain of claims, each following from the one before by cause and effect
    ("because… so…"), ending in the answer. Every paragraph serves one step of the spine, in its order; a paragraph that
    serves no step is cut or moved, and nothing returns to an earlier step. Each body part is introduced once, at the
-   step that needs it. *(Keren, October 12, 2026: the chapter read like spaghetti, going back and forth.)*
+   step that needs it. Each section has a spine of the same shape. A spine is simple: a few words per step, and no more
+   than four or five steps (for Circulation's The Circular Flow: cells and the blood; the economy as an organism;
+   wages and spending; the pulse). *(Keren, October 12, 2026: the chapter read like spaghetti, going back and forth.)*
 16. **Numbers the plain way.** A figure is given as a simple percentage or a plain "most," never as a ratio the
    reader has to work out ("around 10%," not "one dollar in every ten"); readers are not mathematicians. *(Keren,
    October 12, 2026.)*
