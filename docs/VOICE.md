@@ -124,6 +124,9 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    relies on it, and a condition or disease that would need its own explanation is left out in favor of the words
    the reader already has. Search the book first: if an earlier chapter already explained it, point back to it; if not, it
    is new material and gets its introduction where it first appears. *(Keren, October 12, 2026.)*
+12. **Context before a claim.** An event, a date or a figure never arrives bare: first say what happened and why,
+   in words the reader already has, then what it did to the body or the economy. A record low in 2020 is told after
+   the pandemic that caused it. *(Keren, October 12, 2026.)*
 
 ## How this page learns
 
