@@ -28,6 +28,7 @@
     "sheet-sign-productivity-growth",
     "sheet-sign-pressure",
     "sheet-sign-spreads",
+    "sheet-sign-mortgage",
     "sheet-sign-pulse",
     "sheet-sign-volume",
     "sheet-sign-saving",
@@ -125,7 +126,7 @@
       "element": "circulation",
       "figure": "5.24%",
       "word": "Rising",
-      "tier": "Risk",
+      "tier": "Normal",
       "asOf": "2026-10-09"
     },
     {
@@ -134,8 +135,17 @@
       "element": "circulation",
       "figure": "+0.99",
       "word": "Optimistic",
-      "tier": "Attention",
+      "tier": "Normal",
       "asOf": "2026-10-09"
+    },
+    {
+      "id": "sheet-sign-mortgage",
+      "name": "30-year mortgage rate",
+      "element": "circulation",
+      "figure": "7.34%",
+      "word": "Rising",
+      "tier": "Normal",
+      "asOf": "2026-10"
     },
     {
       "id": "sheet-sign-pulse",
@@ -179,7 +189,7 @@
       "element": "stress",
       "figure": "+37%",
       "word": "Borrowing more",
-      "tier": "Attention",
+      "tier": "Normal",
       "asOf": ""
     },
     {
@@ -222,10 +232,10 @@
       "id": "sheet-sign-sentiment",
       "name": "Fear",
       "element": "mood",
-      "figure": "15.4",
+      "figure": "14.8",
       "word": "Calm",
       "tier": "Normal",
-      "asOf": "2026-10-08"
+      "asOf": "2026-10-09"
     },
     {
       "id": "sheet-sign-confidence",
@@ -233,7 +243,7 @@
       "element": "mood",
       "figure": "96.1",
       "word": "Pessimistic",
-      "tier": "Risk",
+      "tier": "Attention",
       "asOf": ""
     },
     {
@@ -269,7 +279,7 @@
       "element": "desire",
       "figure": "40.6%",
       "word": "Concentrated",
-      "tier": "Risk",
+      "tier": "Normal",
       "asOf": "2026-10-08"
     },
     {
@@ -292,21 +302,17 @@
     }
   ],
   "risks": [
-    "US 10-year Treasury 9 October 2026 · 5.24% · Above every quarterly reading since Q1 2005; the highest was 5.07%, in Q2 2006.",
-    "Buffett indicator Q2 2026 · 256% · Highest on record, which starts in Q1 1970.",
-    "Confidence September 2026 · 96.1 · Its low since January 1960 is 96.0, in May 2026.",
-    "Concentration risk 8 October 2026 · 40.6% · No quarterly reading has been this high since Q4 2025; its high since Q4 1995 is 40.7%, in Q4 2025."
+    "Buffett indicator Q2 2026 · 256% · Highest on record, which starts in Q1 1970."
   ],
   "attention": [
     "Temperature",
     "Job growth",
-    "Treasury spreads",
     "Pulse",
     "Savings rate",
-    "Margin debt",
     "Federal debt",
     "Federal budget",
     "Shiller CAPE",
+    "Confidence",
     "Consumer credit",
     "Equity risk premium"
   ],
@@ -322,6 +328,7 @@
     "2.2",
     "5.24",
     "0.99",
+    "7.34",
     "1.42",
     "5.7",
     "2.8",
@@ -331,20 +338,66 @@
     "5.8",
     "40.7",
     "256",
-    "15.4",
+    "14.8",
     "96.1",
     "4.6",
     "5.4",
     "2.7",
     "40.6",
     "0.6",
-    "5.07",
-    "96.0",
     "4",
     "0.25"
   ],
+  "years": [
+    "1927",
+    "1928",
+    "1931",
+    "1932",
+    "1940",
+    "1941",
+    "1944",
+    "1946",
+    "1947",
+    "1948",
+    "1949",
+    "1950",
+    "1953",
+    "1954",
+    "1959",
+    "1960",
+    "1966",
+    "1970",
+    "1971",
+    "1974",
+    "1981",
+    "1982",
+    "1985",
+    "1986",
+    "1993",
+    "1995",
+    "1997",
+    "1998",
+    "2000",
+    "2001",
+    "2002",
+    "2005",
+    "2007",
+    "2008",
+    "2009",
+    "2010",
+    "2015",
+    "2017",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025",
+    "2026"
+  ],
   "lastEdition": {
     "asOf": "2026-10-09",
-    "headline": "A hot autumn, a calm market and an uneasy household"
+    "headline": "The 10-year climbs past every quarter since 2005"
   }
 }
