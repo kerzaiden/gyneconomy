@@ -138,8 +138,9 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    *(Keren, October 12, 2026.)*
 15. **A chapter is a map.** It names its starting point and its destination (what the reader will understand by the
    end) and walks one route between them, so nothing doubles back. Each body part is introduced once, at the stop
-   where its economic twin needs it, rather than up front and again later. *(Keren, October 12, 2026: heart, then
-   spiral arteries, then heart again was confusing.)*
+   where its economic twin needs it, rather than up front and again later. Before a chapter is edited, its roadmap
+   (start, destination, the stops between) is drafted and agreed first, and the paragraphs follow it. *(Keren,
+   October 12, 2026: heart, then spiral arteries, then heart again was confusing.)*
 
 ## How this page learns
 
