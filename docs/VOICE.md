@@ -129,6 +129,9 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    the pandemic that caused it. When someone acts, the text says why: cause, then effect, so the Fed pours money in
    because the pulse collapsed, never just because. An event everyone lived through is named the way people name it
    ("during the COVID-19 pandemic"), not introduced as news. *(Keren, October 12, 2026.)*
+13. **The economist's word.** Where economics has a term, the book uses it rather than a looser everyday verb: the
+   Fed injects money, it does not pour it. The right term usually carries the body image too (an injection into the
+   bloodstream), so the two worlds meet in one word. *(Keren, October 12, 2026.)*
 
 ## How this page learns
 
