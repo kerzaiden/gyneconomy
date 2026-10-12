@@ -1218,7 +1218,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.0.3 (847)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.0.4 (848)</span></p>
     </div>
   </div>
 
@@ -45190,7 +45190,6 @@
       altName: null
     }
   };
-  var seasonOverride = null;
   var PCE_FROM = "2000-01";
   var inflationHistory = series_default.cpiYoYHistory;
   var gdpQuarterlyYoY = series_default.gdpQuarterlyYoY;
@@ -47332,7 +47331,7 @@
     });
     var prevEntry = seasonTrackAll[gdpEnd - 1], gq = gdpQuarterlyYoY[gdpEnd];
     var reading = ongoing ? readSeason(cpi12, gq, potentialOf(gq.q), prevEntry && prevEntry.reading.regime, prevEntry && prevEntry.reading.heading) : seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : closingReading(endYear);
-    var season = ongoing && seasonOverride || reading.season;
+    var season = reading.season;
     var track = [];
     seasonTrack.forEach(function(entry) {
       if (entry.y < era.from || entry.y > endYear) return;
@@ -55679,7 +55678,7 @@
     }), years = closed.reduce(function(a, c) {
       return a + c.to - c.from + 1;
     }, 0);
-    return "A cycle begins with its first bull year and ends with the bear year that closes it. Since " + marketCycles[0].from + " the market has completed " + closed.length + " cycles, " + (years / closed.length).toFixed(1) + " years long on average, and the app measures today against every one of them.";
+    return "A cycle begins with its first bull year and ends with the bear year that closes it. Since " + marketCycles[0].from + " the market has completed " + closed.length + " cycles, " + (years / closed.length).toFixed(1) + " years long on average. Each cycle is measured against all of them; its readings against the last " + numberWord(WINDOW) + ", since " + marketCycles[closed.length - WINDOW].from + ".";
   }
   var PEAK_MARK = '<svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>';
   function renderCycleModel() {

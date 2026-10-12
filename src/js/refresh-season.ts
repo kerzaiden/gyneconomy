@@ -20,7 +20,6 @@ export var wheelMeta: Record<Season, { name: string; theme: string; altName: str
   springdeflation:{name:"Spring", theme:"Disinflation", altName:null},
   spring:{name:"Spring", theme:"Reflation", altName:null}
 };
-export var seasonOverride: Season | null = null;
 var PCE_FROM = "2000-01";
 export var inflationHistory: MonthPoint[] = SERIES.cpiYoYHistory;
 export var gdpQuarterlyYoY = SERIES.gdpQuarterlyYoY;

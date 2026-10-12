@@ -170,3 +170,21 @@ test('every cycle tells its own rates story under the chart, with its peak month
     assert.equal(legend, 'Easing|Tightening|Rates|Prices', c.name + ' legend');
   }
 });
+
+test('the small cycle ring draws one arc per run of bull or bear years, in order, on every cycle', async () => {
+  const { miniRing } = await import('../../src/js/dial-ring.ts');
+  const { sp500AnnualReturns } = await import('../../src/js/data.ts');
+  let bears = 0;
+  for (const c of marketCycles) {
+    const m = cycleModel(c), want = [];
+    for (let y = c.from; y <= m.endYear; y++) {
+      const r = sp500AnnualReturns[y];
+      if (r == null || Math.min(y - c.from + 1, m.elapsedYears) <= y - c.from) continue;
+      const side = r >= 0 ? 'up' : 'down';
+      if (want[want.length - 1] !== side) want.push(side);
+      bears += r < 0 ? 1 : 0;
+    }
+    assert.deepEqual((miniRing(m).match(/dial-mkt (up|down)/g) || []).map(s => s.split(' ')[1]), want, c.name);
+  }
+  assert.ok(bears > 10, 'the record holds bear years');
+});

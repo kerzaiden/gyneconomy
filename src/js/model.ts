@@ -2,7 +2,7 @@ import { yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { confidenceHistory, gnpQuarterlyBefore, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
-import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
+import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY } from "./refresh-season.ts";
 export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; heading: string; cpiHot: boolean; cpiCold: boolean; potential: number; gdpLatest: QuarterPoint };
 type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
@@ -139,7 +139,7 @@ export function cycleModel(era: Cycle){
   var reading = ongoing
     ? readSeason(cpi12, gq, potentialOf(gq.q), prevEntry && prevEntry.reading.regime, prevEntry && prevEntry.reading.heading)
     : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : closingReading(endYear));
-  var season = (ongoing && seasonOverride) || reading.season;
+  var season = reading.season;
   var track: TrackSeg[] = [];
   seasonTrack.forEach(function(entry){
     if (entry.y < era.from || entry.y > endYear) return;

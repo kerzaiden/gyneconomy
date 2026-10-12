@@ -8,7 +8,7 @@ read it whole, so this file exists to get you to the right two hundred lines.
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `d84942b` on 2026-10-11.
+Generated from commit `cb0b434` on 2026-10-12.
 
 ## The page
 
@@ -31,7 +31,7 @@ Counts: **40** modules, **809** top-level functions, **125** top-level vars, **3
 |---|---|---|---|
 | `js/dom.ts` | 158 | 28 | `format` |
 | `js/live.ts` | 213 | 23 | `format` |
-| `js/refresh-season.ts` | 41 | 5 | `format`, `history-fred` |
+| `js/refresh-season.ts` | 40 | 5 | `format`, `history-fred` |
 | `js/data.ts` | 550 | 77 | `format`, `history-fred`, `live` |
 | `js/credit.ts` | 135 | 10 | `activity`, `charts`, `concentration`, `data`, `format`, `history-fred` |
 | `js/model.ts` | 400 | 62 | `data`, `dom`, `format`, `history-fred`, `live`, `refresh-season` |
@@ -45,7 +45,7 @@ Counts: **40** modules, **809** top-level functions, **125** top-level vars, **3
 | `js/analysis.ts` | 79 | 6 | `data`, `diagnosis`, `dial-cycle`, `dom`, `format`, `history`, `live`, `marks`, `model`, `render-core`, `render-pages` |
 | `js/portfolio.ts` | 108 | 17 | `data`, `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 141 | 12 | `dial-cycle`, `dom`, `indicators`, `inner-pages`, `live`, `pressure`, `reading`, `render-core`, `render-pages` |
-| `js/tabs-menu.ts` | 213 | 16 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
+| `js/tabs-menu.ts` | 214 | 16 | `cycle-analysis`, `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `roster`, `sources` |
 | `js/repaint.ts` | 40 | 5 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core` |
 | `js/activity.ts` | 60 | 5 | `data`, `format`, `history-fred`, `refresh-season` |
 | `js/ai-insights.ts` | 66 | 14 | `cycle-analysis`, `data`, `dial-ring`, `dom`, `format`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
@@ -81,7 +81,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 1 | `bootDom` | `js/dom.ts:148`–157 |
 | 2 | `bootDone` | `js/live.ts:204`–206 |
 | 3 | `bootLive` | `js/live.ts:207`–212 |
-| 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–40 |
+| 4 | `bootRefreshSeason` | `js/refresh-season.ts:32`–39 |
 | 5 | `bootData` | `js/data.ts:497`–549 |
 | 6 | `bootCredit` | `js/credit.ts:127`–134 |
 | 7 | `bootModel` | `js/model.ts:379`–399 |
@@ -96,7 +96,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 16 | `bootAnalysis` | `js/analysis.ts:74`–78 |
 | 17 | `bootPortfolio` | `js/portfolio.ts:107`–? |
 | 18 | `bootPagesNav` | `js/pages-nav.ts:135`–140 |
-| 19 | `bootTabsMenu` | `js/tabs-menu.ts:202`–212 |
+| 19 | `bootTabsMenu` | `js/tabs-menu.ts:203`–213 |
 | 20 | `bootRepaint` | `js/repaint.ts:26`–39 |
 
 ## Script, module by module
@@ -187,9 +187,9 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 24 | `PCE_FROM` | `var PCE_FROM =` |
-| 26 | `gdpQuarterlyYoY` · export | `var gdpQuarterlyYoY =` |
-| 30 | `fedGauge` | `function fedGauge(` |
+| 23 | `PCE_FROM` | `var PCE_FROM =` |
+| 25 | `gdpQuarterlyYoY` · export | `var gdpQuarterlyYoY =` |
+| 29 | `fedGauge` | `function fedGauge(` |
 
 ### `js/data.ts`
 
@@ -797,42 +797,42 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 12 | `recessionLine` | `function recessionLine(` |
-| 16 | `seasonCell` | `function seasonCell(` |
-| 21 | `seasonGrid` | `function seasonGrid(` |
-| 30 | `cycleModelLine` | `function cycleModelLine(` |
-| 34 | `PEAK_MARK` | `var PEAK_MARK =` |
-| 35 | `renderCycleModel` | `function renderCycleModel(` |
-| 41 | `wireIdea` | `function wireIdea(` |
-| 44 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 13 | `recessionLine` | `function recessionLine(` |
+| 17 | `seasonCell` | `function seasonCell(` |
+| 22 | `seasonGrid` | `function seasonGrid(` |
+| 31 | `cycleModelLine` | `function cycleModelLine(` |
+| 35 | `PEAK_MARK` | `var PEAK_MARK =` |
+| 36 | `renderCycleModel` | `function renderCycleModel(` |
+| 42 | `wireIdea` | `function wireIdea(` |
+| 45 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 #### How to Read: where each reading sits and when it speaks, from the roster
 
 | Line | Name | Anchor |
 |---|---|---|
-| 60 | `placeLine` | `function placeLine(` |
-| 67 | `timingLine` | `function timingLine(` |
-| 74 | `renderHowto` | `function renderHowto(` |
+| 61 | `placeLine` | `function placeLine(` |
+| 68 | `timingLine` | `function timingLine(` |
+| 75 | `renderHowto` | `function renderHowto(` |
 
 #### TAB NAVIGATION (Today / Cycle / Analysis / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 76 | `renderTopbar` | `function renderTopbar(` |
-| 105 | `wireTabKeys` | `function wireTabKeys(` |
-| 106 | `wireTabDoors` | `function wireTabDoors(` |
+| 77 | `renderTopbar` | `function renderTopbar(` |
+| 106 | `wireTabKeys` | `function wireTabKeys(` |
+| 107 | `wireTabDoors` | `function wireTabDoors(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 114 | `wireMenu` | `function wireMenu(` |
+| 115 | `wireMenu` | `function wireMenu(` |
 
 #### Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its
 
 | Line | Name | Anchor |
 |---|---|---|
-| 194 | `bootGuide` | `function bootGuide(` |
+| 195 | `bootGuide` | `function bootGuide(` |
 
 ### `js/repaint.ts`
 
