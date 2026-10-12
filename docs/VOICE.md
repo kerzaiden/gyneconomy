@@ -136,6 +136,10 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    paragraph raised, never by a jump, and the body keeps returning so the reader moves from biology to the economy and
    back. An abstract idea (credit, money creation) is shown in an everyday example before it is named.
    *(Keren, October 12, 2026.)*
+15. **A chapter is a map.** It names its starting point and its destination (what the reader will understand by the
+   end) and walks one route between them, so nothing doubles back. Each body part is introduced once, at the stop
+   where its economic twin needs it, rather than up front and again later. *(Keren, October 12, 2026: heart, then
+   spiral arteries, then heart again was confusing.)*
 
 ## How this page learns
 
