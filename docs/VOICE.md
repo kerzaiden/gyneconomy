@@ -103,20 +103,21 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
    chapter notes at the back keyed to the page and phrase (no numbers in the text), and an alphabetical bibliography,
    in Chicago style. A data series is cited the same way in the book and on the app's Sources page. *(Keren, October
    12, 2026.)*
-3. **One term, one meaning, the whole book through:** the seasons, Groundation, Via Positiva and Via Negativa,
-   growth against potential. A term changes everywhere or nowhere.
+3. **One term, one meaning, the whole book through:** the seasons, expansion and contraction (words biology and
+   economics share, never another author's), growth against potential, and *herstory*, one word, the female
+   version of history, told in cycles. A term changes everywhere or nowhere. *(Keren, October 13, 2026.)*
 4. **A parallel is stated once, clearly, and not stretched.** Where the body and the economy part ways, say so in
    one sentence and move on. The parallels in use are the ones DIAGNOSIS.md confirms.
 5. **Plain words in sentences that connect,** in the market's terms; a technical term is explained the first time it appears.
 6. **American spelling and dates:** "October 9, 2026".
-7. **Credit where an idea is someone else's,** in the text where it first appears: the Two Vias and the inner seasons
-   (*Wild Power*), the short and long cycles and the pendulum (Marks), the short-term debt cycle (Dalio).
+7. **Credit where an idea is someone else's,** in the text where it first appears: the inner seasons (*Wild Power*), the short and long cycles and the pendulum (Marks), the short-term debt cycle (Dalio).
 8. **One world per paragraph.** The body explains a step in full; the next paragraph takes the same step in the
    economy, opening with one plain bridge sentence. Body words and market words never share a sentence. *(Keren,
    October 12, 2026: switching mid-sentence between, say, the corpus luteum and loans is too confusing.)*
 9. **"Fertility cycle," never "menstrual cycle," and no "menstrual" in the book's own voice.** The cycle is named
-   for what it makes possible; the bleeding is "the period" or "bleeding," and the phase is Groundation. Established
-   names keep their word (premenstrual syndrome, menstrual tents in the history). *(Keren, October 12, 2026.)*
+   for what it makes possible; the bleeding is "the period" or "bleeding," never "menstruation." Groundation names only the
+   inward pole's electrical image or the ritual of rest and return, since a woman can have a period with no grounding
+   at all. Established names keep their word (premenstrual syndrome). *(Keren, October 12 and 13, 2026.)*
 10. **A slow zoom.** Say what the body is doing and why before naming its parts, and introduce one new term at a time.
    Where a passage needs a picture to be understood, the draft marks it `[Diagram: what it shows]` until it is drawn.
    *(Keren, October 12, 2026.)*
