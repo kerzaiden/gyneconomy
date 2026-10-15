@@ -2,7 +2,7 @@
 
 **How Mrs. Market sounds.** DIAGNOSIS.md says what the book and the app think; this page says how they say it. Every
 edit to the book, and every piece of writing in the app, reads both. Built October 12, 2026, from the
-manuscript's own best passages, three authors' craft and Keren's corrections while editing.
+manuscript's own best passages, four authors' craft and Keren's corrections while editing.
 
 ## Who is speaking
 
@@ -66,10 +66,11 @@ reads as a lecture, and empathy without science reads as comfort.
 6. **Working notes in the text.** Chat residue, bracketed questions, link stubs and outline notes are finished or cut
    before a chapter is called done.
 
-## The three lenses
+## The four lenses
 
-Keren's voice is the base. Three authors lend techniques, never wording; each leads where its strength is. A
-paragraph often runs in their order: her scene, then the mechanism, then the judgment.
+Keren's voice is the base. Four authors lend techniques, never wording; each leads where its strength is. A
+paragraph often runs in their order: her scene, then the mechanism, then the judgment; the story carries the reader
+between them.
 
 **The inside of a phase** (from *Wild Power*; leads in the body chapters and the season openings)
 - A dated observation: Mrs. Market on a cycle day beside the economy on a calendar date, from real records only.
@@ -94,6 +95,18 @@ paragraph often runs in their order: her scene, then the mechanism, then the jud
 - A term defined by its contrast; the first reading and the deeper reading side by side.
 - A long careful thought, then one short plain line.
 - Leave: repetition, buy-and-sell advice, stacks of famous quotations, long bracketed sentences.
+
+**The story** (from Yuval Noah Harari's *Sapiens*; leads in A Brief Herstory of Time, chapter openings and every
+hand-off between paragraphs; Keren, October 15, 2026, for more narrative and flow)
+- Open on a question or a scene the reader can see, then answer it; never on a definition or a survey.
+- Each paragraph ends on the thread the next one picks up: a consequence, a question, a "but". The reader is
+  pulled forward, never restarted.
+- Zoom: one object or person up close, then thousands of years at once, then back to the close-up.
+- Time runs forward: a later paragraph never steps back before the one it follows without saying so.
+- A plain claim, then its evidence, then the turn in one short line ("History, it seems, begins with the economy").
+- A light, dry irony in place of indignation; every people, faith and ruler is told with the same distance.
+- Leave: his terms, sweeping certainty about what ancient people felt or believed, claims without a source,
+  provocation for its own sake.
 
 ## Rules
 
