@@ -17,6 +17,8 @@ rules below are the ones that matter most.
 - `docs/MAP.md`, `docs/COMPONENTS.md` — generated navigation of the source (`npm run map`). Read them
   before grepping; the source is ~7,000 lines of TypeScript and ~1,400 of CSS.
 - `docs/DESIGN-SYSTEM.md` — where the design system lives (the design-system artifact) and how it stays in step.
+- `docs/VOICE.md` — how the book *Mrs. Market* and the app's writing sound; read it with `docs/DIAGNOSIS.md` before
+  writing any prose.
 - `docs/task.md` — the daily courier task's only instructions. Edit that file to change the task.
 - `docs/report-task.md` — the Weather Report routine's only instructions: when it writes an edition and how.
 - `git log` — every version is a commit `1.4.0 — Short Name` and an annotated tag `v1.4.0` (before 1.0.0:

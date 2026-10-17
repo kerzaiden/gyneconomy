@@ -1,0 +1,195 @@
+# Voice
+
+**How Mrs. Market sounds.** DIAGNOSIS.md says what the book and the app think; this page says how they say it. Every
+edit to the book, and every piece of writing in the app, reads both. Built October 12, 2026, from the
+manuscript's own best passages, four authors' craft and Keren's corrections while editing.
+
+## Who is speaking
+
+Keren, in the first person: a designer who came to markets through her own body, read the great investors, and found
+the same rhythm in both. Not a guru and not an economist. Her authority is the attention she paid, so she shows the
+reader what she saw rather than telling them what to believe.
+
+**Mrs. Market is the lens; the economy is what the book examines.** Seeing the market as a woman's living body
+is how the book reads the economy (Keren, October 12, 2026). She is a character with a body, a month and a history (the patient with
+irregular cycles, "Mrs. Japan"). She is never the reader and never the author. "Mr. Market" is Graham's, and is
+named only to set her apart.
+
+**The cast.** Each voice has one job and never borrows another's, so the reader always knows who is speaking and
+about whom. *(Keren, October 17, 2026.)*
+- **You** is the reader, a woman. Every body passage speaks to her ("your cycle", "in the days before your period").
+  In history and economics, "you" appears only in the conditional ("If you had farmed in the Fertile Crescent, you
+  would have counted the months by the moon"), never as a command.
+- **Mrs. Market** is the economy, always "she", never women in general. She lives the body's step in the economy's
+  terms: credit, rates, defaults.
+- **I** is Keren, for her own story and choices only (piryon, why Groundation), and rarely, so it lands.
+- **We** is society and humankind, for history and policy.
+- **Women**, in the third person, is for historical fact only ("the women of Judah").
+
+A body paragraph in "you", one bridge sentence, then a Mrs. Market paragraph: the bridge is where the two meet ("What
+your body does in a month, Mrs. Market does over years"). This is rule 8, one world per paragraph, with a person for
+each world.
+
+## The recipe
+
+Keren's four words for the voice are empathetic, scientific, emotional, and at eye level (*begovah ha'einayim*).
+Those four, plus flow, go into every chapter, held together by one image. *(Keren, October 12, 2026.)*
+
+1. **At eye level.** This is the base everything is made in. The words are plain, and a reader who never studied
+   biology or economics follows every sentence. The writer sits beside the reader, never above.
+2. **Empathy.** The reader is living a cycle too. A hard phase is met with understanding before it is explained, and
+   nothing that is a phase is called weak or failing. A detail that alarms without helping is left out.
+3. **Science.** Every claim rests on a mechanism and a source. Each idea gets one measure, defined once, with its
+   yardstick. The body is explained accurately, and only as far as the book needs.
+4. **Emotion.** How a phase feels, for a woman and for a market: the scene, the appetite, the fear. It is felt
+   first, then explained. The big images speak to the heart, not only the head: we are all connected, cells of one
+   living tissue.
+5. **Flow.** Connected sentences carry the reader from one step to the next. A paragraph ends on a full sentence that
+   ties it together, never a run of single words.
+
+**The image that holds it all: the economy as a living female body.** It is stated once and then reasoned from, and
+its signs are measured, the same vital signs the app reads. The balance is what matters. Science without empathy
+reads as a lecture, and empathy without science reads as comfort.
+
+## What the voice does at its best
+
+1. **A scene before the idea.** The same presentation given on two days of the month; the patient whose period comes
+   after twenty days, then fifty; the trading floor on October 19, 1987. The reader sees it, then the idea names it.
+2. **The body explains the mechanism; the market's own word names it.** The lining is built, held, shed; the
+   chapter then says credit, rates, defaults. Body words never replace market terms.
+3. **One question as the hinge.** "What phase am I in?" "What in this wave is actually taking root?" A chapter
+   turns on one question, asked once.
+4. **A closing sentence that connects, after the work is done.** "The hormones do their work out of sight all month
+   long, and the period is where that work becomes visible." It is earned by the paragraph before it.
+5. **Tendencies, not laws.** "Hormones do not determine behavior. They create tendencies." The same care for markets:
+   a season makes some outcomes more likely, it never promises one.
+
+## Habits to edit out
+
+1. **Saying it twice.** Each idea, story and example lives in one place; the second telling is cut, not merged. As
+   in code, a thing is defined once and referred to after that. A later passage points back in a clause ("like the
+   cells at the start of this chapter") only when the link helps the reader understand, and then it says how the
+   two connect. *(Keren, October 12, 2026.)*
+2. **"Not X. It is Y." in stacks.** One per section at most; the rest become plain statements.
+3. **Runs of fragments and aphorisms.** "Cleaner. Wiser. More accurate." "Build, hold, release." Word-by-word
+   beats sound like a machine; the voice is fluent, and a closing line is a full sentence that connects. *(Keren,
+   October 12, 2026.)*
+4. **Instructing the reader.** "Embrace the changes." "Think of the economy as…" The book states and shows; the
+   reader decides. *(Keren, October 12, 2026: a writer does not command the reader.)*
+5. **Anyone else's words.** Every passage is in Keren's words. A source is cited, never transcribed, and a quote is
+   used only when it is verified and attributed exactly.
+6. **Working notes in the text.** Chat residue, bracketed questions, link stubs and outline notes are finished or cut
+   before a chapter is called done.
+
+## The four lenses
+
+Keren's voice is the base. Four authors lend techniques, never wording; each leads where its strength is. A
+paragraph often runs in their order: her scene, then the mechanism, then the judgment; the story carries the reader
+between them.
+
+**The inside of a phase** (from *Wild Power*; leads in the body chapters and the season openings)
+- A dated observation: Mrs. Market on a cycle day beside the economy on a calendar date, from real records only.
+- One template for every season: scene, body mechanism, market mechanism, the season's signs, a case, its one
+  question, and where the parallel breaks.
+- A disliked phase recast as information, said once as a thesis and then shown.
+- A named patient carries a case (as "Mrs. Japan" does); a chapter closes on a question, not a practice to follow.
+- Leave: claims nobody can test, commands to the reader, capitalised abstractions, parallels stretched to the world.
+
+**The mechanism** (from Ray Dalio; leads in credit, debt, policy and the seasons' economics)
+- A plain one-sentence definition before anything else.
+- Cause chains where each effect is the next cause, until the loop closes.
+- The archetype first, then each case read against it, and the differences are what teach.
+- One small worked number at human scale for each mechanism.
+- A healthy and a pathological form named for each phase, told apart by a test that can be measured.
+- Leave: the machine, the confidence of prediction, advice to policymakers, authority from a track record.
+
+**The judgment** (from Howard Marks; leads in the investing chapters, Cycle Tracking and the close)
+- Reasoning in public, including the doubt.
+- Odds, never outcomes, with the limit said each time a probability appears.
+- One image per chapter, stated once and reasoned from.
+- A term defined by its contrast; the first reading and the deeper reading side by side.
+- A long careful thought, then one short plain line.
+- Leave: repetition, buy-and-sell advice, stacks of famous quotations, long bracketed sentences.
+
+**The story** (from Yuval Noah Harari's *Sapiens*; leads in A Brief Herstory of Time, chapter openings and every
+hand-off between paragraphs; Keren, October 15, 2026, for more narrative and flow)
+- Each paragraph ends on the thread the next one picks up: a consequence, a question, a "but". The reader is
+  pulled forward, never restarted.
+- Zoom: one object or person up close, then thousands of years at once, then back to the close-up.
+- Time runs forward: a later paragraph never steps back before the one it follows without saying so.
+- A plain claim, then its evidence, then the turn in one short line ("History, it seems, begins with the economy").
+- A light, dry irony in place of indignation; every people, faith and ruler is told with the same distance.
+- Leave: his terms, sweeping certainty about what ancient people felt or believed, claims without a source,
+  provocation for its own sake.
+
+## Rules
+
+1. **Diagnose, never forecast.** Seasons say where she is and what is more likely, never what comes next or when.
+2. **Every figure has a source and a yardstick:** since when, against what. The source is recorded as each paragraph is
+   edited, in the draft's note for it, and the back matter is built from those notes: a source line under every chart,
+   chapter notes at the back keyed to the page and phrase (no numbers in the text), and an alphabetical bibliography,
+   in Chicago style. A data series is cited the same way in the book and on the app's Sources page. *(Keren, October
+   12, 2026.)*
+3. **One term, one meaning, the whole book through:** the seasons, expansion and contraction (words biology and
+   economics share, never another author's), growth against potential, and *herstory*, one word, the female
+   version of history, told in cycles. A term changes everywhere or nowhere. *(Keren, October 13, 2026.)*
+4. **A parallel is stated once, clearly, and not stretched.** Where the body and the economy part ways, say so in
+   one sentence and move on. The parallels in use are the ones DIAGNOSIS.md confirms.
+5. **Plain words in sentences that connect,** in the market's terms; a technical term is explained the first time it appears.
+6. **American spelling and dates:** "October 9, 2026".
+7. **Credit where an idea is someone else's,** in the text where it first appears: the inner seasons (*Wild Power*), the short and long cycles and the pendulum (Marks), the short-term debt cycle (Dalio).
+8. **One world per paragraph.** The body explains a step in full; the next paragraph takes the same step in the
+   economy, opening with one plain bridge sentence. Body words and market words never share a sentence. *(Keren,
+   October 12, 2026: switching mid-sentence between, say, the corpus luteum and loans is too confusing.)*
+9. **"Fertility cycle," never "menstrual cycle," and no "menstrual" in the book's own voice.** The cycle is named
+   for what it makes possible; the bleeding is "the period" or "bleeding," never "menstruation." Groundation names only the
+   inward pole's electrical image or the ritual of rest and return, since a woman can have a period with no grounding
+   at all. Established names keep their word (premenstrual syndrome). *(Keren, October 12 and 13, 2026.)*
+10. **A slow zoom.** Say what the body is doing and why before naming its parts, and introduce one new term at a time.
+   Where a passage needs a picture to be understood, the draft marks it `[Diagram: what it shows]` until it is drawn.
+   *(Keren, October 12, 2026.)*
+11. **Nothing before its introduction.** A term, a body part or an idea is introduced and explained before the text
+   relies on it, and a condition or disease that would need its own explanation is left out in favor of the words
+   the reader already has. Search the book first: if an earlier chapter already explained it, point back to it; if not, it
+   is new material and gets its introduction where it first appears. *(Keren, October 12, 2026.)*
+12. **Context before a claim.** An event, a date or a figure never arrives bare: first say what happened and why,
+   in words the reader already has, then what it did to the body or the economy. A record low in 2020 is told after
+   the pandemic that caused it. When someone acts, the text says why: cause, then effect, so the Fed pours money in
+   because the pulse collapsed, never just because. An event everyone lived through is named the way people name it
+   ("during the COVID-19 pandemic"), not introduced as news. *(Keren, October 12, 2026.)*
+13. **The economist's word.** Where economics has a term, the book uses it rather than a looser everyday verb: the
+   Fed injects money, it does not pour it. The right term usually carries the body image too (an injection into the
+   bloodstream), so the two worlds meet in one word. *(Keren, October 12, 2026.)*
+14. **Every paragraph grows from the one before.** A new subject arrives as the answer to a question the last
+   paragraph raised, never by a jump, and the body keeps returning so the reader moves from biology to the economy and
+   back. An abstract idea (credit, money creation) is shown in an everyday example before it is named. The same bridge
+   crosses chapter breaks: a chapter ends on the question the next chapter answers, so the reader turns the page
+   already holding it. *(Keren, October 12, 2026; chapters October 17, 2026, from Sapiens.)*
+15. **Every chapter has a spine.** Before a chapter is edited, its spine is written and agreed: one question the
+   chapter answers, then a numbered chain of claims, each following from the one before by cause and effect
+   ("because… so…"), ending in the answer. Every paragraph serves one step of the spine, in its order; a paragraph that
+   serves no step is cut or moved, and nothing returns to an earlier step. Each body part is introduced once, at the
+   step that needs it. Each section has a spine of the same shape. A spine is simple: a few words per step, and no more
+   than four or five steps (for Circulation's The Circular Flow: cells and the blood; the economy as an organism;
+   wages and spending; the pulse). *(Keren, October 12, 2026: the chapter read like spaghetti, going back and forth.)*
+16. **Numbers the plain way.** A figure is given as a simple percentage or a plain "most," never as a ratio the
+   reader has to work out ("around 10%," not "one dollar in every ten"); readers are not mathematicians. *(Keren,
+   October 12, 2026.)*
+17. **Precise, not poetic.** The body is described scientifically: every "it" and "one" names what it is (the
+   lining, a fertilized egg), and an image never stands in for the fact. Stock openers worn thin by use ("Long before…")
+   are left out. *(Keren, October 12, 2026.)*
+18. **Say what it is.** A thing is stated directly, never first by what it is not ("energy is not made in one place…
+   it is made inside cells"). *(Keren, October 12, 2026.)*
+19. **The cut test.** If a sentence, image or example could be cut and the reader would still understand the book,
+   it is cut. A metaphor earns its place only by explaining something the plain text cannot. *(Keren, October 12,
+   2026.)*
+20. **One topic per paragraph.** A paragraph covers one topic and then gives the reader room to breathe; when it
+   starts on a second, the second becomes its own paragraph. A long paragraph that covers several topics is split,
+   not trimmed. *(Keren, October 17, 2026.)*
+21. **One "and" per sentence.** A sentence joins its parts with "and" at most once; a second "and" means
+   a second sentence. *(Keren, October 17, 2026.)*
+
+## How this page learns
+
+Each decision Keren makes while we edit becomes a rule here, or rewrites one, with its reason folded in; a rule she
+drops is deleted. Her corrections to a passage are the strongest signal, because they are hers.
