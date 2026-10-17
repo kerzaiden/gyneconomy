@@ -15,6 +15,21 @@ is how the book reads the economy (Keren, October 12, 2026). She is a character 
 irregular cycles, "Mrs. Japan"). She is never the reader and never the author. "Mr. Market" is Graham's, and is
 named only to set her apart.
 
+**The cast.** Each voice has one job and never borrows another's, so the reader always knows who is speaking and
+about whom. *(Keren, October 17, 2026.)*
+- **You** is the reader, a woman. Every body passage speaks to her ("your cycle", "in the days before your period").
+  In history and economics, "you" appears only in the conditional ("If you had farmed in the Fertile Crescent, you
+  would have counted the months by the moon"), never as a command.
+- **Mrs. Market** is the economy, always "she", never women in general. She lives the body's step in the economy's
+  terms: credit, rates, defaults.
+- **I** is Keren, for her own story and choices only (piryon, why Groundation), and rarely, so it lands.
+- **We** is society and humankind, for history and policy.
+- **Women**, in the third person, is for historical fact only ("the women of Judah").
+
+A body paragraph in "you", one bridge sentence, then a Mrs. Market paragraph: the bridge is where the two meet ("What
+your body does in a month, Mrs. Market does over years"). This is rule 8, one world per paragraph, with a person for
+each world.
+
 ## The recipe
 
 Keren's four words for the voice are empathetic, scientific, emotional, and at eye level (*begovah ha'einayim*).
