@@ -148,8 +148,9 @@ hand-off between paragraphs; Keren, October 15, 2026, for more narrative and flo
    bloodstream), so the two worlds meet in one word. *(Keren, October 12, 2026.)*
 14. **Every paragraph grows from the one before.** A new subject arrives as the answer to a question the last
    paragraph raised, never by a jump, and the body keeps returning so the reader moves from biology to the economy and
-   back. An abstract idea (credit, money creation) is shown in an everyday example before it is named.
-   *(Keren, October 12, 2026.)*
+   back. An abstract idea (credit, money creation) is shown in an everyday example before it is named. The same bridge
+   crosses chapter breaks: a chapter ends on the question the next chapter answers, so the reader turns the page
+   already holding it. *(Keren, October 12, 2026; chapters October 17, 2026, from Sapiens.)*
 15. **Every chapter has a spine.** Before a chapter is edited, its spine is written and agreed: one question the
    chapter answers, then a numbered chain of claims, each following from the one before by cause and effect
    ("because… so…"), ending in the answer. Every paragraph serves one step of the spine, in its order; a paragraph that
