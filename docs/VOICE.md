@@ -168,6 +168,9 @@ hand-off between paragraphs; Keren, October 15, 2026, for more narrative and flo
 19. **The cut test.** If a sentence, image or example could be cut and the reader would still understand the book,
    it is cut. A metaphor earns its place only by explaining something the plain text cannot. *(Keren, October 12,
    2026.)*
+20. **One topic per paragraph.** A paragraph covers one topic and then gives the reader room to breathe; when it
+   starts on a second, the second becomes its own paragraph. A long paragraph that covers several topics is split,
+   not trimmed. *(Keren, October 17, 2026.)*
 
 ## How this page learns
 
