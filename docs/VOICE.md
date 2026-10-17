@@ -187,6 +187,8 @@ hand-off between paragraphs; Keren, October 15, 2026, for more narrative and flo
 20. **One topic per paragraph.** A paragraph covers one topic and then gives the reader room to breathe; when it
    starts on a second, the second becomes its own paragraph. A long paragraph that covers several topics is split,
    not trimmed. *(Keren, October 17, 2026.)*
+21. **One "and" per sentence.** A sentence joins its parts with "and" at most once; a second "and" means
+   a second sentence. *(Keren, October 17, 2026.)*
 
 ## How this page learns
 
