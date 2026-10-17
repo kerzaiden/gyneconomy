@@ -113,7 +113,6 @@ between them.
 
 **The story** (from Yuval Noah Harari's *Sapiens*; leads in A Brief Herstory of Time, chapter openings and every
 hand-off between paragraphs; Keren, October 15, 2026, for more narrative and flow)
-- Open on a question or a scene the reader can see, then answer it; never on a definition or a survey.
 - Each paragraph ends on the thread the next one picks up: a consequence, a question, a "but". The reader is
   pulled forward, never restarted.
 - Zoom: one object or person up close, then thousands of years at once, then back to the close-up.
