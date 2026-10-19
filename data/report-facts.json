@@ -124,19 +124,19 @@
       "id": "sheet-sign-pressure",
       "name": "US 10-year Treasury",
       "element": "circulation",
-      "figure": "5.10%",
+      "figure": "5.15%",
       "word": "Rising",
       "tier": "Normal",
-      "asOf": "2026-10-15"
+      "asOf": "2026-10-19"
     },
     {
       "id": "sheet-sign-spreads",
       "name": "Treasury spreads",
       "element": "circulation",
-      "figure": "+0.82",
+      "figure": "+0.88",
       "word": "Optimistic",
-      "tier": "Attention",
-      "asOf": "2026-10-15"
+      "tier": "Normal",
+      "asOf": "2026-10-19"
     },
     {
       "id": "sheet-sign-mortgage",
@@ -232,10 +232,10 @@
       "id": "sheet-sign-sentiment",
       "name": "Fear",
       "element": "mood",
-      "figure": "16.9",
+      "figure": "20.0",
       "word": "Calm",
       "tier": "Normal",
-      "asOf": "2026-10-14"
+      "asOf": "2026-10-16"
     },
     {
       "id": "sheet-sign-confidence",
@@ -307,7 +307,6 @@
   "attention": [
     "Temperature",
     "Job growth",
-    "Treasury spreads",
     "Pulse",
     "Savings rate",
     "Federal debt",
@@ -327,8 +326,8 @@
     "0.3",
     "2.1",
     "2.2",
-    "5.10",
-    "0.82",
+    "5.15",
+    "0.88",
     "7.34",
     "1.42",
     "5.7",
@@ -339,7 +338,7 @@
     "5.8",
     "40.7",
     "256",
-    "16.9",
+    "20.0",
     "96.1",
     "4.6",
     "5.4",
@@ -379,6 +378,7 @@
     "1997",
     "1998",
     "2000",
+    "2001",
     "2002",
     "2005",
     "2007",
@@ -397,7 +397,7 @@
     "2026"
   ],
   "lastEdition": {
-    "asOf": "2026-10-09",
-    "headline": "The 30-year mortgage rate reads 7.34% and rising"
+    "asOf": "2026-10-15",
+    "headline": "Treasury spreads move to Attention at +0.82"
   }
 }
