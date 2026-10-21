@@ -5,15 +5,15 @@
   "rows": [
    {
     "m": "1M",
-    "y": 4.1
+    "y": 4.09
    },
    {
     "m": "2M",
-    "y": 4.17
+    "y": 4.16
    },
    {
     "m": "3M",
-    "y": 4.26
+    "y": 4.25
    },
    {
     "m": "4M",
@@ -21,31 +21,31 @@
    },
    {
     "m": "6M",
-    "y": 4.36
+    "y": 4.35
    },
    {
     "m": "1Y",
-    "y": 4.51
+    "y": 4.52
    },
    {
     "m": "2Y",
-    "y": 4.79
+    "y": 4.81
    },
    {
     "m": "3Y",
-    "y": 4.86
+    "y": 4.89
    },
    {
     "m": "5Y",
-    "y": 4.94
+    "y": 4.95
    },
    {
     "m": "7Y",
-    "y": 5.02
+    "y": 5.03
    },
    {
     "m": "10Y",
-    "y": 5.12
+    "y": 5.13
    },
    {
     "m": "20Y",
@@ -56,7 +56,7 @@
     "y": 5.42
    }
   ],
-  "asOf": "2026-10-20"
+  "asOf": "2026-10-21"
  },
  "fedFunds": {
   "kind": "object",
@@ -85,15 +85,16 @@
   "asOf": "2026-10-01"
  },
  "_meta": {
-  "fetchedAt": "2026-10-20T23:01:35Z",
+  "fetchedAt": "2026-10-21T23:01:49Z",
   "ok": [
    "yieldCurve",
-   "fedFunds",
-   "vixClose",
-   "vix3mClose",
    "capeValue"
   ],
-  "failed": [],
+  "failed": [
+   "fedFunds: Unexpected token '<', \"<!doctype \"... is not valid JSON",
+   "vix: Unexpected token '<', \"<!doctype \"... is not valid JSON",
+   "vix3mClose: Unexpected token '<', \"<!doctype \"... is not valid JSON"
+  ],
   "note": "Fetched from primary sources. A reading that failed keeps its previous document and its own asOf. The daily task copies every document into the artifact's database."
  }
 }
