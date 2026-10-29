@@ -7,7 +7,7 @@
     "range": "3.75–4.00%",
     "lastMove": "raised a quarter point",
     "on": "Sep 16, 2026",
-    "next": "Oct 28, 2026"
+    "next": "Dec 9, 2026"
   },
   "categories": [
     "weather",
@@ -124,19 +124,19 @@
       "id": "sheet-sign-pressure",
       "name": "US 10-year Treasury",
       "element": "circulation",
-      "figure": "4.96%",
+      "figure": "5.05%",
       "word": "Rising",
       "tier": "Normal",
-      "asOf": "2026-10-22"
+      "asOf": "2026-10-28"
     },
     {
       "id": "sheet-sign-spreads",
       "name": "Treasury spreads",
       "element": "circulation",
-      "figure": "+0.74",
+      "figure": "+0.87",
       "word": "Optimistic",
-      "tier": "Attention",
-      "asOf": "2026-10-22"
+      "tier": "Normal",
+      "asOf": "2026-10-28"
     },
     {
       "id": "sheet-sign-mortgage",
@@ -232,10 +232,10 @@
       "id": "sheet-sign-sentiment",
       "name": "Fear",
       "element": "mood",
-      "figure": "16.7",
+      "figure": "17.5",
       "word": "Calm",
       "tier": "Normal",
-      "asOf": "2026-10-21"
+      "asOf": "2026-10-27"
     },
     {
       "id": "sheet-sign-confidence",
@@ -307,7 +307,6 @@
   "attention": [
     "Temperature",
     "Job growth",
-    "Treasury spreads",
     "Pulse",
     "Savings rate",
     "Federal debt",
@@ -327,8 +326,8 @@
     "0.3",
     "2.1",
     "2.2",
-    "4.96",
-    "0.74",
+    "5.05",
+    "0.87",
     "7.34",
     "1.42",
     "5.7",
@@ -339,7 +338,7 @@
     "5.8",
     "40.7",
     "256",
-    "16.7",
+    "17.5",
     "96.1",
     "4.6",
     "5.4",
@@ -398,7 +397,7 @@
     "2026"
   ],
   "lastEdition": {
-    "asOf": "2026-10-19",
-    "headline": "Treasury spreads widen to +0.88 and return to Normal"
+    "asOf": "2026-10-22",
+    "headline": "Treasury spreads narrow to +0.74 and return to Attention"
   }
 }
