@@ -124,19 +124,19 @@
       "id": "sheet-sign-pressure",
       "name": "US 10-year Treasury",
       "element": "circulation",
-      "figure": "4.98%",
+      "figure": "4.95%",
       "word": "Rising",
       "tier": "Normal",
-      "asOf": "2026-10-29"
+      "asOf": "2026-11-03"
     },
     {
       "id": "sheet-sign-spreads",
       "name": "Treasury spreads",
       "element": "circulation",
-      "figure": "+0.80",
+      "figure": "+0.74",
       "word": "Optimistic",
       "tier": "Attention",
-      "asOf": "2026-10-29"
+      "asOf": "2026-11-03"
     },
     {
       "id": "sheet-sign-mortgage",
@@ -232,10 +232,10 @@
       "id": "sheet-sign-sentiment",
       "name": "Fear",
       "element": "mood",
-      "figure": "16.9",
-      "word": "Calm",
+      "figure": "21.1",
+      "word": "Elevated",
       "tier": "Normal",
-      "asOf": "2026-10-28"
+      "asOf": "2026-11-02"
     },
     {
       "id": "sheet-sign-confidence",
@@ -327,8 +327,8 @@
     "0.3",
     "2.1",
     "2.2",
-    "4.98",
-    "0.80",
+    "4.95",
+    "0.74",
     "7.34",
     "1.42",
     "5.7",
@@ -339,7 +339,7 @@
     "5.8",
     "40.7",
     "256",
-    "16.9",
+    "21.1",
     "96.1",
     "4.6",
     "5.4",
@@ -398,7 +398,7 @@
     "2026"
   ],
   "lastEdition": {
-    "asOf": "2026-10-28",
-    "headline": "Treasury spreads widen to +0.87 and return to Normal"
+    "asOf": "2026-10-29",
+    "headline": "Treasury spreads narrow to +0.80 and return to Attention"
   }
 }
