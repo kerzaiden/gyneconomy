@@ -124,10 +124,10 @@
       "id": "sheet-sign-pressure",
       "name": "US 10-year Treasury",
       "element": "circulation",
-      "figure": "4.84%",
+      "figure": "4.86%",
       "word": "Rising",
       "tier": "Normal",
-      "asOf": "2026-11-05"
+      "asOf": "2026-11-06"
     },
     {
       "id": "sheet-sign-spreads",
@@ -136,7 +136,7 @@
       "figure": "+0.67",
       "word": "Optimistic",
       "tier": "Attention",
-      "asOf": "2026-11-05"
+      "asOf": "2026-11-06"
     },
     {
       "id": "sheet-sign-mortgage",
@@ -232,10 +232,10 @@
       "id": "sheet-sign-sentiment",
       "name": "Fear",
       "element": "mood",
-      "figure": "16.6",
-      "word": "Calm",
-      "tier": "Normal",
-      "asOf": "2026-11-04"
+      "figure": "28.2",
+      "word": "Elevated",
+      "tier": "Attention",
+      "asOf": "2026-11-05"
     },
     {
       "id": "sheet-sign-confidence",
@@ -313,6 +313,7 @@
     "Federal debt",
     "Federal budget",
     "Shiller CAPE",
+    "Fear",
     "Confidence",
     "Consumer credit",
     "Equity risk premium"
@@ -327,7 +328,7 @@
     "0.3",
     "2.1",
     "2.2",
-    "4.84",
+    "4.86",
     "0.67",
     "7.34",
     "1.42",
@@ -339,7 +340,7 @@
     "5.8",
     "40.7",
     "256",
-    "16.6",
+    "28.2",
     "96.1",
     "4.6",
     "5.4",
@@ -381,6 +382,7 @@
     "2000",
     "2002",
     "2005",
+    "2006",
     "2007",
     "2008",
     "2009",
@@ -397,7 +399,7 @@
     "2026"
   ],
   "lastEdition": {
-    "asOf": "2026-11-03",
-    "headline": "Fear rises to 21.1 and reads Elevated"
+    "asOf": "2026-11-05",
+    "headline": "Fear eases to 16.6 and reads Calm again"
   }
 }
