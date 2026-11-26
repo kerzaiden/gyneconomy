@@ -5,58 +5,58 @@
   "rows": [
    {
     "m": "1M",
-    "y": 4.21
+    "y": 4.27
    },
    {
     "m": "2M",
-    "y": 4.28
+    "y": 4.3
    },
    {
     "m": "3M",
-    "y": 4.36
+    "y": 4.34
    },
    {
     "m": "4M",
-    "y": 4.36
+    "y": 4.37
    },
    {
     "m": "6M",
-    "y": 4.46
+    "y": 4.44
    },
    {
     "m": "1Y",
-    "y": 4.59
+    "y": 4.56
    },
    {
     "m": "2Y",
-    "y": 4.63
+    "y": 4.61
    },
    {
     "m": "3Y",
-    "y": 4.67
+    "y": 4.64
    },
    {
     "m": "5Y",
-    "y": 4.69
+    "y": 4.65
    },
    {
     "m": "7Y",
-    "y": 4.79
+    "y": 4.74
    },
    {
     "m": "10Y",
-    "y": 4.91
+    "y": 4.85
    },
    {
     "m": "20Y",
-    "y": 5.33
+    "y": 5.28
    },
    {
     "m": "30Y",
-    "y": 5.3
+    "y": 5.24
    }
   ],
-  "asOf": "2026-11-24"
+  "asOf": "2026-11-25"
  },
  "fedFunds": {
   "kind": "object",
@@ -71,13 +71,13 @@
  },
  "vixClose": {
   "kind": "scalar",
-  "value": 35.89,
-  "asOf": "2026-11-20"
+  "value": 26.36,
+  "asOf": "2026-11-24"
  },
  "vix3mClose": {
   "kind": "scalar",
-  "value": 25.5,
-  "asOf": "2026-11-23"
+  "value": 25.47,
+  "asOf": "2026-11-24"
  },
  "capeValue": {
   "kind": "scalar",
@@ -85,16 +85,15 @@
   "asOf": "2026-11-01"
  },
  "_meta": {
-  "fetchedAt": "2026-11-25T05:00:21Z",
+  "fetchedAt": "2026-11-26T04:19:32Z",
   "ok": [
    "yieldCurve",
+   "fedFunds",
+   "vixClose",
    "vix3mClose",
    "capeValue"
   ],
-  "failed": [
-   "fedFunds: DFEDTARU: HTTP 502",
-   "vix: VIXCLS: HTTP 502"
-  ],
+  "failed": [],
   "note": "Fetched from primary sources. A reading that failed keeps its previous document and its own asOf. The daily task copies every document into the artifact's database."
  }
 }
